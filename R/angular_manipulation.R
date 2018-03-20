@@ -19,7 +19,9 @@ angular <- function(data = as.matrix(quakes),  # flea[,1:6], 74 x 6 (n x p)
   f  <<- rbind(diag(2), matrix(0, ncol = 2, nrow = ncol(data)-2))  # Trivial orthonormal 2D basis, (p x 2)
   e3 <<- rbind(matrix(0, ncol = 1, nrow = ncol(data)-1), 1)
   e  <<- qr.Q(qr(cbind(f,e3)))  # Q of the QR Deocomposition, the Orthonormal basis of the trivial (f1, f2, e3), (p x 3)
-
+  
+  input <<- e
+  
   h_dist <<- sqrt(x_dist^2 + y_dist^2)
   theta  <<- atan(y_dist/x_dist)
   phi    <<- h_dist / plot_size
@@ -51,10 +53,15 @@ angular <- function(data = as.matrix(quakes),  # flea[,1:6], 74 x 6 (n x p)
   rotated_data <<- xyz %*% rotated_hvd  # rotated data in 3D, (n x 3) * (3 x 3) = (n x 3) # is this the 3D projection from p-D?
   dim_contributions <<- cbind(f,e3) %*% (rotated_hvd)  # (p x 3) * (3 x 3) = (p x 3)
 
-    return(dim_contributions[, 1:2])[0]
+  output <<- dim_contributions
+    
+  return(dim_contributions[, 1:2])[0]
 }
 
 angular()
+plot(input)
+plot(output)
+abs(input)-abs(output)
 
 angular(quakes, 200, 800)
 plot(rotated_data[, 1],rotated_data[, 2], main = "2D Projection of rotated data")
