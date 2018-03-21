@@ -1,81 +1,152 @@
-#' Radialy roatate 1 dim of a p-dim basis.
+#' horizonaly roatate 1 dim of a p-dim basis.
 #' 
-#' Performs a radial rotation on 1 dimension of a given p-dimensional basis.
-#' Returns the z,y,z contribution from each dimension of the rotated basis as a (p x 3) matrix.
+#' Performs a horizonal rotation on 1 dimension of a given p-dimensional basis.
+#' Returns the x,y,z contribution from each dimension of the rotated basis as a (p x 3) matrix.
 #'
 #' @param basis starting basis to rotate
-#' @param dim dimension to rotate
-#' @param step change the magnetude of \code{dim}
 #'
 #' @export
 #' @examples
-#' Plot projection of rotated data, and print the x, y contributions from the dimensions.
-#' plot(rotated_data[, 1],rotated_data[, 2], main = "2D projection of rotated data")
 #' 
+#' 
+
 
 library(roxygen2)
 library(devtools)
+#library(tourr)
 
 # dim(flea[,1:6])  # flea[,1:6] gives a n=74,   p=6 example (n x p)
 # dim(quakes)      # quakes     gives a n=1000, p=5 example (n x p)
 
 
-##13 mar note: 
-#-change arg to basis, not data.
-#-new arg input dim
-#-new arg mag [-1,1]
-#How does magnitude fit with angel and distance?
-#-chart of axes, look at tourr package.
-#-Plot on data to example not in the function.
-
-radial <- function(basis = rbind(diag(2), matrix(0, ncol = 2, nrow = 4-2)), 
-                     # input 2-d basis (p x 2).
-                   dim = 1,
-                   step = 1){
-  input <<- basis
-  v <- matrix(0, ncol = 1, nrow = nrow(basis)) # 0 vector (p x 1)
-  v[dim, 1] <- step # set dim to adjust and the value to adjust.  (p x 1)
-  #print(v) #debug
-  e <<- qr.Q(qr(cbind(basis, v)))  
-    # Q of the QR Decomposition, Orthonorm basis of (f[,1], f[,2], e), (p x 3)
-  #print(e) #debug
-  
-  theta  <<- 0#0 for horizontal, 90 for vertical. #angular: atan(y_dist/x_dist)
-  phi    <<- 0#angular: h_dist / plot_size
-  if (theta==0 & phi==0) print("no rotation set!!!")
-  
-  #xyz <<- data %*% e  # data in 3 dim, (n x p) * (p x 3) = (n x 3)
-  hvd <<- diag(3)  # Tirival orthonormal basis, the Identity Matrix, (3 x 3)
-  
-  R = matrix(c(cos(theta)^2 * cos(phi) + sin(theta)^2,  # Rotational matrix as a function of theta and phi, (3 x 3)
-               -cos(theta) * sin(theta) * (1 - cos(phi)),
-               -cos(theta) * sin(phi),                      # 3 of 9
-               -cos(theta) * sin(theta) * (1 - cos(phi)),
-               sin(theta)^2 * cos(phi) + cos(theta)^2,
-               -sin(theta) * sin(phi),                      # 6 of 9
-               cos(theta) * sin(phi),
-               sin(theta) * sin(phi),
-               cos(phi) )                                   # 9 of 9
-             ,nrow = 3, ncol = 3)
-  
-  rotated_hvd  <<- hvd %*% R  # rotated orthonormal basis, (3 x 3) * (3 x 3) = (3 x 3)
-  #rotated_basis <<- e %*% rotated_hvd  # rotated data in 3D, (n x 3) * (3 x 3) = (n x 3) # is this the 3D projection from p-D?
-  dim_contributions <<- cbind(basis,v) %*% (rotated_hvd)  # (p x 3) * (3 x 3) = (p x 3)
-  
-  output <<- dim_contributions[,1:2]
-  
-return(dim_contributions[,1:2])
-}
-
-basis_random <- function(n, d = 2) {
-  mvn <- matrix(stats::rnorm(n * d), ncol = d)
+basis_random <- function(p, d = 2) {
+  mvn <- matrix(stats::rnorm(p * d), ncol = d)
   return(qr.Q(qr(mvn))) #orthonormalize
 }
-myBasis <- basis_random(10,5)
 
-radial(basis=myBasis, dim=1, step=1)
-abs(input)-abs(output)
+###for testing
+basis_trivial <- function(p = 5, d = 2){
+  trivial_basis <- rbind(diag(d), matrix(0, ncol = d, nrow = p - d))
+  return(trivial_basis)
+}
 
 
+create_manip_space <- function(basis = basis_random(p = 5, d = 2), # basis [p,n]
+                               manip_var = 3){ #which variable to changing
+  v <- rep(0, len = nrow(basis)) # 0 vector [p,1]
+  v[manip_var] <- 1 # set manip_var
+  manip_space <- qr.Q(qr(cbind(basis, v)))  
+  # Q of the QR Decomposition, the orthonormalized manip space, [p,n+1]
+  return(manip_space)
+}
 
+
+horizonal_manip <- function(manip_space, # 3-d space [p,3]
+                            phi = 0){ # angle to rotate
+  theta   <- 0 #0 for horizontal, pi/2 for vertical. #angular: atan(y_dist/x_dist)
+  #phi     <- phi #horizonal as arg. #angular: h_dist / plot_size
+  s_theta <- sin(theta)
+  c_theta <- cos(theta)
+  s_phi   <- sin(phi)
+  c_phi   <- cos(phi)
+  if (theta==0 & phi==0) cat("no rotation set!!!")
+  
+  ##2-d rotation
+  #R <- matrix(c(c_phi,  # Rotational matrix as a function of phi, [2,2]
+  #              s_phi,
+  #              -s_phi,
+  #              c_phi)    # 4 of 4
+  #          ,nrow = 2, ncol = 2, byrow = TRUE)
+  
+  #3-d rotation
+  R <- matrix(c(c_theta^2 * c_phi + s_theta^2,  # Rotational matrix as a function of theta and phi, [3,3]
+              -c_theta * s_theta * (1 - c_phi),
+              -c_theta * s_phi,                      # 3 of 9
+              -c_theta * s_theta * (1 - c_phi),
+              s_theta^2 * c_phi + c_theta^2,
+              -s_theta * s_phi,                      # 6 of 9
+              c_theta * s_phi,
+              s_theta * s_phi,
+              c_phi )                                # 9 of 9
+            ,nrow = 3, ncol = 3, byrow = TRUE)
+  
+  r_space <- manip_space %*% R  # rotated space, [p,3] * [3,3] = [p,3]
+  
+  return(as.matrix(r_space[,1])) # [,1] for horizontal (x contributions).
+}
+
+
+data_proj <- function(data = quakes, # data [n,p]
+                           r_space){ # rotated space [p,2]
+  if (!is.matrix(data)) data <- as.matrix(data)
+  if (ncol(r_space) == 1)r_space <- cbind(r_space, rep(0, len = nrow(r_space))) 
+  projected_data <- data %*% r_space  #rotated data [n,p] * [p,2] = [n,2]
+  
+  return(projected_data)
+}
+
+
+##### run
+set.seed(5)
+
+my_basis <- basis_random(p = 5,d = 2) #let p=5 for quakes data. d=2 for x,y.
+my_basis
+
+my_manip_space <- create_manip_space(basis = my_basis, manip_var = 3)
+my_manip_space
+
+my_horizonal_manip <- horizonal_manip(manip_space = my_manip_space, phi = (pi/100))
+my_horizonal_manip
+
+my_data_proj <- data_proj(data = quakes[1:100,], r_space = my_horizonal_manip)
+head(my_data_proj)
+plot(my_data_proj[, 1],my_data_proj[, 2], main = "1D projection of rotated data")
+
+
+##### spot checks
+#basis - space delta. same. so orthonormal(basis+v) goes to basis+orthonormal(v)?
+my_manip_space[,1:2] - my_basis
+#as.matrix(my_manip_space[,3])
+
+#space+. - space delta. small change, good.
+horizonal_manip(manip_space=my_manip_space, phi = (pi/5)+.1) -
+  horizonal_manip(manip_space=my_manip_space, phi = (pi/5))
+
+#Plot original vs small phi. Bigger difference than expected.
+  #is this cause: basis is [,2]? casue R is [3,3]? orthonormalizing on a non trivial basis?
+  #going to basis [,1]wasn't any better.
+  #not R [3,3] cause when theta=0, we have a 2-d rotation (but is this the y rotation?)
+  #trivial basis is no better.
+  ## is this cause the cntributions of the dims are far from 1/p?
+par(mfrow=c(2,1))
+plot(quakes[1:100, 1], rep(0, len = 100), main = "X of original data")
+plot(my_data_proj[, 1],my_data_proj[, 2], main = "1D projection of rotated data")
+par(mfrow=c(1,1))
+
+#par(mfrow=c(2,1))
+#a <- horizonal_manip(manip_space=my_manip_space, phi = (pi/6))
+#b <- horizonal_manip(manip_space=my_manip_space, phi = (pi/5))
+#a <- data_proj(data = quakes[1:100,], r_space = a)
+#b <- data_proj(data = quakes[1:100,], r_space = b)
+#plot(a[, 1],a[, 2], main = "a: 1D projection of rotated data")
+#plot(b[, 1],b[, 2], main = "b: 1D projection of rotated data")
+#par(mfrow=c(1,1))
+#head((a-b)/a)
+
+
+##In the trivial case orthonormalizing does nothing, stays identity and data.
+#. <- basis_trivial(p=5,d=2)
+#.
+#. <- create_manip_space(basis = ., manip_var = 3)
+#.
+#. <- horizonal_manip(manip_space = ., phi = (pi/3))
+#.
+#. <- data_proj(data = quakes[1:100,], r_space = .)
+#head(.)
+#plot(.[, 1],.[, 2], main = "1D projection of rotated data")
+#
+#par(mfrow=c(2,1))
+#plot(quakes[1:100, 1], rep(0, len = 100), main = "X of original data")
+#plot(my_data_proj[, 1],my_data_proj[, 2], main = "1D projection of rotated data")
+#par(mfrow=c(1,1))
 
