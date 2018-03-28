@@ -1,20 +1,33 @@
 #Testing and scratchpad:
 library(devtools)
 library(roxygen2)
-build()
-load_all()
+#load_all() #Error: Could not find package root.
+
+setwd("C:/Users/Nick/Dropbox/_Main/R/basis_manipulation")
 
 source("./R/util.R")
-source("./R/manipulations.R")
+source("./R/manipulation.R")
 
-(manip <- horizontal_manip(basis = basis_random(p = 5,d = 2), manip_var = 1, phi = 1))
-(manip <- vertical_manip(basis = basis_random(p = 5,d = 2), manip_var = 1, phi = 1))
-(manip <- radial_manip(basis = basis_random(p = 5,d = 2), manip_var = 1, phi = 1, theta = 1))
-head(proj <- data_proj(data = quakes, r_space = manip))
-plot(proj[,1], proj[,2], main="Projected data")
+this_manip_space <- create_manip_space(basis = basis_random(p = 5), manip_var = 2)
+horizontal_manip(manip_space = this_manip_space, phi = pi/3)
+#vertical_manip(manip_space = this_manip_space, phi = pi/3)
+#radial_manip(manip_space = this_manip_space, phi = pi/3, theta = pi/4)
 
+for (i in seq(0, pi, pi/20)) {
+  this_r_space <- horizontal_manip(manip_space = this_manip_space, phi = i)
+  proj <- data_proj(data = quakes, r_space = this_r_space)
+  plot(proj[,1], proj[,2], main="Projected data")
+  Sys.sleep(time=.5)
+  print(i/pi)
+}
 
 stop()
+
+
+
+
+#theta # angular rotation: atan(y_dist/x_dist)
+#phi   # angular rotation: length of mouse region/size of plot region
 
 ###### run
 #set.seed(5)
