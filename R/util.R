@@ -3,7 +3,8 @@
 #' Creates a [p, d=2] random orthonormal basis
 #'
 #' @param p number of dimensions of the data
-#' @param d number of dimensions of the basis. defaults to 2 for something 2-d projections
+#' @param d number of dimensions of the basis.Defaults to 2.
+#' @return orthonormalized matrix, the [p, d=2] basis
 #' @export
 #' 
 basis_random <- function(p, d = 2) {
@@ -19,6 +20,7 @@ basis_random <- function(p, d = 2) {
 #'
 #' @param p number of dimensions of the data
 #' @param d number of dimensions of the basis, defaulting to 2
+#' @return [p, d=2] indentity matrix followed by 0s
 #' @export
 #' 
 basis_identity <- function(p, d = 2){
@@ -27,26 +29,9 @@ basis_identity <- function(p, d = 2){
 }
 
 
-#' Create a manipulation space
-#'
-#' Create an [p, 3] orthonormal manipulation space from the given [p, 2] orthonormal basis
-#'
-#' @param basis [p, 2] orthonormal basis
-#' @param manip_var number of the variable to rotate
-#' @export
-#' 
-create_manip_space <- function(basis = basis_random(p = 5, d = 2), manip_var = 1){
-  v <- rep(0, len = nrow(basis))
-  v[manip_var] <- 1
-  manip_space <- qr.Q(qr(cbind(basis, v)))
-    #Q of the QR Decomposition, the orthonormalized manipulation space, [p,3].
-  return(manip_space)
-}
-
-
 #' Rotate the manipulation space
 #'
-#' Rotates [p, 3] manipulation space by [3, 3] rotation matrix into a [p, 3] rotated space
+#' Rotates [p, 3] manipulation space by [3, 3] rotation matrix into a [p, 3] rotated space. Used by manipulations
 #'
 #' @param manip_space [p, 3] manipulation space to be rotated
 #' @param theta angle of rotation w.r.t. the x-y projection
@@ -76,7 +61,7 @@ rotate_manip_space <- function(manip_space, theta = 0, phi = 0){
 
 #' Project data onto a rotated space
 #'
-#' Project [n, p] data onto a [p, 3] rotated manipulation space into the [n, 3] projection
+#' Project [n, p] data onto a [p, 3] rotated manipulation space into the [n, 3] projection. May be used after manipulations
 #'
 #' @param data [n, p] data to project, consisting of only numeric variables (for coercion into matrix)
 #' @param r_space [p, 3] rotated manipulation space 

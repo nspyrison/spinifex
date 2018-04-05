@@ -1,0 +1,63 @@
+---
+title: "spacemanip Vignette"
+author: "Nicholas Spyrison"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette  #.html output error, temp fix doesn't work with %_vingette.
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Vignette
+
+Suppose we want to perform a rotation on one (or more) dimensions on the projection of a higher dimensional (p>3D) space/data. 
+
+Let: 
+
+- n be number of observations (rows)
+- p be number of dimensions/numeric variables (columns)
+- d be the number of dimensions (linear combinations) of projections from the original p-space. Almost always d=2 for the basis, and d=3 for the manipulation space for our purposes.
+
+In order to rotate a dimension in p-space we need to supply: 
+- `basis`, a starting basis, an orthonormal linear combination of p-dimensions, 
+- `manip_var`, which dimension(s) to rotate,
+- `phi`, angle controling the magnetude of change of `manip var`
+- `theta`, the angle of the change of the `manip var`
+
+For a test data set use quakes [n=1000, p=5]. In order to get to a manipulation space (`manip_space`) use `create_manip_space(basis, manip_var)`. Below, we will generate a random basis [p, d=2] via `basis_random(p)` and arbitrarily let the `manip_var` be 3.
+
+```{r}
+devtools::install_github("nspyrison/spacemanip")
+sessionInfo()
+
+data = quakes
+p = ncol(data)
+
+#spacemanip::this_manip_space <- create_manip_space(basis = basis_random(p = p), manip_var = 3)
+```
+
+We then rotate the 3rd variable ("depth" in this case) by an arbitrarily desired magnetude, `phi`, at an arbitrarily desired magnetude, `theta`. The [p, d+1=3] rotated space, (`r_space`) is returned. This is the the linear combination for the xyz contributions in p-space for this rotation.
+```{r}
+#radial_manip(manip_space = this_manip_space, phi = pi/3, theta = pi/4)
+```
+
+For illustration plot the projection of the data onto this new `r_space` and plot the xy contributions. Do this 20 times while varying the magnetude of of `phi` an angle controling the magnetute of manipulation of the `manip_var`. 
+
+```{r}
+for (i in seq(0, pi, pi/20)) {
+  #this_r_space <- horizontal_manip(manip_space = this_manip_space, phi = i, theta = 45)
+  #proj <- data_proj(data = data, r_space = this_r_space)
+  #plot(proj[,1], proj[,2], main="Projected data")
+  Sys.sleep(time=.5)
+  print(i/pi)
+}
+```
