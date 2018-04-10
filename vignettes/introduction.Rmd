@@ -53,7 +53,7 @@ spacemanip::radial_manip(manip_space = this_manip_space, phi = pi/3, theta = pi/
 For illustration plot the projection of the data onto this new `r_space` and plot the xy contributions. Do this 20 times while varying the magnetude of of `phi` an angle controling the magnetute of manipulation of the `manip_var`. 
 
 ```{r}
-for (i in seq(0, pi, pi/20)) {
+for (i in seq(1/5*pi, 2/5*pi, pi/20)) {
   this_r_space <- spacemanip::horizontal_manip(manip_space = this_manip_space, phi = i, theta = 45)
   proj <- spacemanip::data_proj(data = data, r_space = this_r_space)
   plot(proj[,1], proj[,2], main="Projected data")
