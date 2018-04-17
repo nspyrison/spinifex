@@ -1,8 +1,8 @@
 ---
-title: "spacemanip Vignette"
+title: "spinifex Vignette"
 author: "Nicholas Spyrison"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette  #.html output error, temp fix doesn't work with html_vingette. worked on laptop
+output: rmarkdown::html_vignette  #https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -19,7 +19,11 @@ knitr::opts_chunk$set(
 
 # Overview
 
-[ADD] relationship with tourr and motivation.
+Datasets commonly contain many (p>3) variables/dimensions. Numeric aggregation and modeling can be adapted and interpolated relatively easily as the number of variables increase. Visualization of model and estimate space (think residual or parallel coordinate plots) are nessicary for the formulation of models. Yet, visuals in data space often fall by the wayside, especially when trying to illustrate more than 3 dimensions. The lack of use of tools for visualizing many dimensions degrades the richness of intution, analysis, and discussion.
+
+The R package tourr [@Cook&Wickham] provides a 
+
+
 
 # Example 1 - Rotate Flea data
 
@@ -29,7 +33,7 @@ Let:
 
 - n be number of observations (rows)
 - p be number of dimensions/numeric variables (columns)
-- d be the number of dimensions (linear combinations) of projections from the original p-space. Almost always d=2 for the basis, and d=3 for the manipulation space for our purposes.
+- d be the number of dimensions in variable space. Each dimension is a linear combinations of the variables. For our purposes each basis will be d=2 (which will go to d=3 to rotate the linear combinations out of plane). 
 
 In order to rotate a dimension in p-space we need the following args: 
 
@@ -41,8 +45,8 @@ In order to rotate a dimension in p-space we need the following args:
 For a test data set use flea [n=74, p=6]. In order to get to a manipulation space (`manip_space`) use `create_manip_space(basis, manip_var)`. Below, we will generate a random basis [p, d=2] via `basis_random(p)` and arbitrarily let the `manip_var` be 3.
 
 ```{r}
-#devtools::install_github("nspyrison/spacemanip")
-library(spacemanip)
+#devtools::install_github("nspyrison/spinifex")
+library(spinifex)
 
 data <- flea[,1:6]
 p <- ncol(data)
@@ -130,6 +134,7 @@ Thanks to Ursla Laa for use cases and prompts to keep me focused.
 <!-- citation(package = "GGally") -->
 
 - Cook, D., & Buja, A. (1997). Manual Controls for High-Dimensional Data Projections. Journal of Computational and Graphical Statistics, 6(4), 464–480. https://doi.org/10.2307/1390747
+- Wickham, H., Cook, D., & Hofmann, H. (2015). Visualizing statistical models: Removing the blindfold: Visualizing Statistical Models. Statistical Analysis and Data Mining: The ASA Data Science Journal, 8(4), 203–225. https://doi.org/10.1002/sam.11271
 - Dianne Cook and Hadley Wickham (NA). tourr: Implement Tour Methods in R Code. Rpackage version 0.5.5.9000. https://github.com/ggobi/tourr
 - Barret Schloerke, Jason Crowley, Di Cook, Francois Briatte, Moritz Marbach,
 Edwin Thoen, Amos Elberg and Joseph Larmarange (2017). GGally: Extension to
