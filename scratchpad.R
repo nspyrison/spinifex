@@ -9,6 +9,7 @@ devtools::load_all()
 ###for Vingette:
 devtools::install_github("nspyrison/spinifex")
 library(spinifex)
+#library(spacemanip)
 ?create_manip_space #test documentation
 
 data = flea[, 1:6]
@@ -33,7 +34,7 @@ for (i in seq(0, pi, pi/20)) {
 ### data_proj   a work in progress.
 #data_proj(), should be analagus to animate(), just give an arbitrary 10 steps?
 manip = radial_manip(manip_space = this_manip_space, phi = pi/3, theta = pi/4)
-data_proj(data=flea[1:6,1:6], manip)
+data_proj(data=flea[,1:6], manip="radial")
 data_proj(data=flea[1:6,1:6], manip, from=0, to=3, by=1)
 colnames(data)
 rownames(t)<-colnames(data)
