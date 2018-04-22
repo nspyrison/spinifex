@@ -1,16 +1,16 @@
-Package: spacemanip
-Title: Manual Control for Manipulating Dimensions in High Dim Spaces
+Package: spinifex
+Title: Manual controls for manipulating dimensions in high-dim (p>3) Spaces
 Version: 0.0.0.9000
 Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
     )
 Description: Creates manipulation functions for the manual conrol of projections 
-    in higer dimensional space. Originally designed for use with the tourr
+    of higer dimensional space. Originally designed for use with the tourr
     package.
 Depends: R (>= 3.4.3)
 License: GPL-3
-BugReports: https://github.com/nspyrison/spacemanip/issues
+BugReports: https://github.com/nspyrison/spinifex/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

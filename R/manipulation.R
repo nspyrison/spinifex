@@ -15,7 +15,6 @@ create_manip_space <- function(basis = basis_random(p = 6, d = 2), manip_var = 1
   manip_space <- qr.Q(qr(cbind(basis, v))) #orthonormalize
   if (ncol(manip_space)==3) {colnames(manip_space) <- c("x","y","z")}
   rownames(manip_space) <- colnames(basis)
-  1+1
   return(manip_space)
 }
 
