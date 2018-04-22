@@ -4,13 +4,12 @@
 library(tourr)
 #devtools::create("spacemanip")
 devtools::document()
-#getwd()
-#setwd("C:/Users/nspy0001/Dropbox/_Main/R_dir/spacemanip/spacemanip")
-#setwd("C:/Users/nspy0001/Dropbox/_Main/R_dir/spacemanip")
+
 devtools::use_data(flea)
 devtools::use_vignette("introduction")
 ??naniar #Vignettes; getting-started-w-naniar.
 
+library(GGally)
 devtools::use_data(nasa) #from GGally
 ?GGally::glyphs #see example
 

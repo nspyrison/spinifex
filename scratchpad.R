@@ -1,44 +1,33 @@
 #Testing and scratchpad:
 library(devtools)
 library(roxygen2)
+library(ggplot2)
 devtools::load_all()
 
-###for Vingette:
+### load
 devtools::install_github("nspyrison/spinifex")
 library(spinifex)
 ?create_manip_space #test documentation
 
-data = flea[, 1:6]
-p = ncol(data)
+### init
+data <- flea[, 1:6]
+p <- ncol(data)
+basis <- basis_random(p = p)
+m_sp <- create_manip_space(basis = b, manip_var = 3)
 
-this_manip_space <- create_manip_space(basis = basis_random(p = p), manip_var = 3)
-horizontal_manip(manip_space = this_manip_space, phi = pi/3, theta = pi/4)
-  #passing theta doesn't influence horizontal/vertical_manip
-vertical_manip(manip_space = this_manip_space, phi = pi/3)
-radial_manip(manip_space = this_manip_space, phi = pi/3, theta = pi/4)
-
-###manual
-for (i in seq(0, pi, pi/20)) {
-  this_r_space <- radial_manip(manip_space = this_manip_space, phi = i, theta = 1/3*pi)
-  if(!is.matrix(data)) data<-as.matrix(data)
-  data %*% this_r_space
-  plot(proj[,1], proj[,2], main = "Projected data")
-  Sys.sleep(time=.5)
-  print(i/pi)
-}
-
-### data_proj   a work in progress.
-
+### data_proj
 data_proj(data=flea[1:3, 1:6], manip="radial", to=2)
-ss <- data_proj(data=data, manip="radial", manip_var=3, 
+dp <- data_proj(data=data,  manip_var=3, manip="radial",
           from=0, to=pi, by=pi/10,
-          manip_space = this_manip_space, phi = pi/3, theta = pi/4)
+          manip_space = m_sp, theta = pi/4)
+slideshow(dp, ggplot=T)
+slideshow(dp, ggplot=F)
 
-slideshow(ss)
-
-
-
-
+### manipulations
+horizontal_manip(manip_space = m_sp, phi = pi/3, theta = pi/4)
+#passing theta doesn't influence horizontal/vertical_manip
+vertical_manip(manip_space = m_sp, phi = pi/3)
+radial_manip(manip_space = m_sp, phi = pi/3, theta = pi/4)
 
 
 stop()
@@ -47,6 +36,40 @@ stop()
 #theta # angular rotation: atan(y_dist/x_dist)
 #phi   # angular rotation: length of mouse region/size of plot region
 
-plot(1:10, 1:10, ylab = "")
+##### Vignette example 1: flea
+data <- flea[, 1:6]
+p <- ncol(data)
+basis <- basis_random(p = p)
+m_sp <- create_manip_space(basis = b, manip_var = 3)
+
+data_proj(data=flea[1:3, 1:6], manip="radial", to=2)
+dp <- data_proj(data=data,  manip_var=3, manip="radial",
+                from=0, to=pi, by=pi/10,
+                manip_space = m_sp, theta = pi/4)
+slideshow(dp, ggplot=T)
+slideshow(dp, ggplot=F)
+
+##### Vignette example 2: nasa
+
+data <- nasa[
+  nasa$date >= as.POSIXct("1998-01-01") &
+  nasa$lat >= 20 &
+  nasa$lat <= 40 &
+  nasa$long >= -80 &
+  nasa$long <= -60
+  , ]
+p <- ncol(data)
+str(nasa) #1:6 demographic, 7:13 var, 14:17 demographic,
+head(nasa[,7:13]) #12 is surftemp
+
+#?GGally::glyphs #see example
+temp.gly <- glyphs(data, "long", "day", "lat", "surftemp", height=2.5)
+str(temp.gly)
+ggplot2::ggplot(temp.gly, ggplot2::aes(gx, gy, group = gid)) +
+  add_ref_lines(temp.gly, color = "grey90") +
+  add_ref_boxes(temp.gly, color = "grey90") +
+  ggplot2::geom_path() +
+  ggplot2::theme_bw() +
+  ggplot2::labs(x = "", y = "")
 
 
