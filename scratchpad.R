@@ -1,7 +1,7 @@
-#Testing and scratchpad:
-library(devtools)
-library(roxygen2)
-library(ggplot2)
+##Testing and scratchpad:
+#library(devtools)
+#library(roxygen2)
+#library(ggplot2)
 devtools::load_all()
 
 ### load
@@ -18,9 +18,9 @@ b_rand <- basis_random(p = p)
 data_proj(data=data[1:3, 1:6], manip_var=1,  manip="radial", to=pi/10)
 dp <- data_proj(data=data, basis=b_rand, manip_var=3, manip="radial",
           from=0, to=pi, by=pi/10, theta=pi/4)
-str(dp)
-slideshow(dp, ggplot=T)
-slideshow(dp, ggplot=F, from=2, to=8, by=2, delay=2)
+head(dp)
+slideshow(dp, plotly=T)
+
 
 ### manipulations
 horizontal_manip(manip_space = m_sp, phi = pi/3, theta = pi/4)
