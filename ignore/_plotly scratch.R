@@ -30,11 +30,13 @@ p
 head(dp)
 dff <- as.data.frame(dp)
 
-p2 <- dff %>%
-  plot_ly(
+col <- rainbow(length(unique(flea$species)))[as.numeric(as.factor(flea$species))]
+col <- rep(col,max(dff$index)) #need to rep col across max(index)
+
+p2 <- plotly::plot_ly(dff,
     x = ~x,
     y = ~y,
-    #color="black",
+    color= ~col,
     type = 'scatter',
     mode = 'markers',
     frame = ~index,

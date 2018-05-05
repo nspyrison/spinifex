@@ -19,22 +19,28 @@
 #' data_proj(data=data[1:3, ], manip_var=1, manip="horizontal", to=pi/10)
 #' 
 #' dp <- data_proj(data=data, basis=b_rand, manip_var=3, manip="radial",
-#'                 from=0, to=pi, by=pi/10, theta=pi/4)
+#'                 from=0, to=pi, theta=pi/4)
 #' head(dp)
 #' 
 data_proj <- function(data, manip = "radial", basis = basis_identity(p = ncol(data)),
-                      manip_var, theta = 0, center = T, scale = T,
-                      from = 0, to = 0, by = pi/20 ) {
+                      manip_var, theta = NULL, center = T, scale = T,
+                      from = 0, to = 0, by = (to - from)/10 ) {
+  if (!substr(manip, 1, 3) %in% c("rad", "hor", "ver")) {
+    stop(cat(manip, " manipulation not found."))
+  }
+  if (!is.null(theta) & manip %in% c("hor", "ver")) {
+    message("Non null theta used with horizontal or vertical manip. Note that theta is forced to 0, pi/2 respectively.")
+  }
+  
   ### redundant explicit try catch
   #tc_seq <- tryCatch(seq(from, to, by)
   #                   ,error=function(e) e, warning=function(w) w)
   #if (any(class(tc_seq) == "error")) stop(tc_seq)
   if (is.character(manip_var)) manip_var <- match(manip_var, names(data))
   if (!is.matrix(data)) data <- as.matrix(data)
-  
-  
   if (center) data <- scale(data, center = T, scale = F)
   if (scale)  data <- scale(data, center = F, scale = T)
+  if (is.null(theta)) theta <- atan(basis[,2]/basis[,1]) #sets radial theta
   
   index <- 0
   projected_data <- NULL
@@ -56,13 +62,6 @@ data_proj <- function(data, manip = "radial", basis = basis_identity(p = ncol(da
                      index, manip_var, phi, theta)
     }
     projected_data <- rbind(projected_data, delta)
-  }
-  
-  if (!substr(manip, 1, 3) %in% c("rad", "hor", "ver")) {
-    message(cat(manip, " manipulation not found."))
-  }
-  if (theta != 0 & manip %in% c("hor", "ver")) {
-    message("Non zero theta used with horizontal or vertical manip. Note that theta is forced to 0, pi/2 respectively.")
   }
   
   return(projected_data)
@@ -87,16 +86,22 @@ data_proj <- function(data, manip = "radial", basis = basis_identity(p = ncol(da
 #' b_rand <- basis_random(p = p)
 #' 
 #' dp <- data_proj(data=data, basis=b_rand, manip_var=3, manip="radial",
-#'                from=0, to=pi, by=pi/10, theta=pi/4)
+#'                from=0, to=pi, theta=pi/4)
 #' slideshow(dp)
 
-slideshow <- function(projected_data) {
+slideshow <- function(projected_data, col=NULL) {
   
-  plotly::plot_ly(as.data.frame(projected_data),
+  d <- as.data.frame(projected_data)
+  if (length(col) == 1) {c <- rep(col, nrow(d))
+  } else if (nrow(d) %% length(col) == 0) {c <- rep(col, max(d[,4]))
+  } else c <- "dummy"
+  
+  plotly::plot_ly(d,
     x = ~x,
     y = ~y,
     frame = ~index,
-    #color = col, #color doesn't like english (ie. "blue")
+    text = ~paste0('phi for this index: ', round(phi,2)),
+    color = ~c, #color doesn't like english (ie. "blue")
     #hoverinfo = "text",
     type = 'scatter',
     mode = 'markers',
@@ -105,4 +110,5 @@ slideshow <- function(projected_data) {
   
 }
 
+##manip_var, phi, theta
 
