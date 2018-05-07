@@ -24,7 +24,7 @@
 #' 
 data_proj <- function(data, manip = "radial", basis = basis_identity(p = ncol(data)),
                       manip_var, theta = NULL, center = T, scale = T,
-                      from = 0, to = 0, by = (to - from)/10 ) {
+                      from = 0, to = 0, by = (to - from)/9 ) {
   if (!substr(manip, 1, 3) %in% c("rad", "hor", "ver")) {
     stop(cat(manip, " manipulation not found."))
   }
@@ -54,11 +54,11 @@ data_proj <- function(data, manip = "radial", basis = basis_identity(p = ncol(da
                      index, manip_var, phi, theta)
     }
     else if (manip == "hor") {
-      delta <- cbind(data %*% horizontal_manip(manip_space, phi, theta), 
+      delta <- cbind(data %*% horizontal_manip(manip_space, phi), 
                      index, manip_var, phi, theta)
     }
     else if (manip == "ver") {
-      delta <- cbind(data %*% vertical_manip(manip_space, phi, theta), 
+      delta <- cbind(data %*% vertical_manip(manip_space, phi), 
                      index, manip_var, phi, theta)
     }
     projected_data <- rbind(projected_data, delta)
@@ -90,19 +90,20 @@ data_proj <- function(data, manip = "radial", basis = basis_identity(p = ncol(da
 #' slideshow(dp)
 
 slideshow <- function(projected_data, col=NULL) {
-  
+
+  cs <- NULL
   d <- as.data.frame(projected_data)
-  if (length(col) == 1) {c <- rep(col, nrow(d))
-  } else if (nrow(d) %% length(col) == 0) {c <- rep(col, max(d[,4]))
-  } else c <- "dummy"
+  if (is.null(col)) {}
+  else if (length(col) != 1 & nrow(d) %% length(col) == 0) 
+    {c <- rep(col, max(d[,4]))}
+  else message("arg col expected of length data or proj_data(data).")
   
   plotly::plot_ly(d,
     x = ~x,
     y = ~y,
     frame = ~index,
     text = ~paste0('phi for this index: ', round(phi,2)),
-    color = ~c, #color doesn't like english (ie. "blue")
-    #hoverinfo = "text",
+    color = ~c,
     type = 'scatter',
     mode = 'markers',
     showlegend = F

@@ -21,7 +21,7 @@ p <- df %>%
   )
 
 p
-
+??gganimate
 ## Create a shareable link to your chart
 ## Set up API credentials: https://plot.ly/r/getting-started
 #chart_link = api_create(p, filename="animations-basic")
@@ -44,3 +44,15 @@ p2 <- plotly::plot_ly(dff,
   )
 
 p2
+
+###color
+# left
+plot_ly(flea[,1:6], x = ~flea[,1], y = ~flea[,2],  type="scatter", 
+        mode = "markers" , color = ~flea$species , 
+        marker=list( size=20 , opacity=0.5)  )
+
+plot_ly(flea[,1:6], x = ~flea[,1], y = ~flea[,2],  type="scatter", 
+        mode = "markers" , colors = "Set2" ,  
+        color = NULL,
+        marker=list( size=20 , opacity=0.5)  )
+

@@ -57,14 +57,18 @@ draw_basis_axes <- function(proj, labels, limits, position) {
 #' 
 #' For internal use mainly
 #' 
+#' @param basis [p, d=2] basis, xy contributions of the var. 
+#' @param data optional, [n, p], applies colnames to the rows of the basis.
+#' 
 #' @export
-basis_help <- function(basis) {
+basis_help <- function(basis, data = NULL) {
   
   tmp <- as.data.frame(basis)
   tmp <- cbind(tmp, sqrt(tmp[,1]^2 + tmp[,2]^2), atan(tmp[,2]/tmp[,1]))
-  colnames(tmp) <- c("X", "Y", "H", "theta")
+  colnames(tmp) <- c("X", "Y", "H_xy", "theta")
+  if (!is.null(data)) rownames(tmp) <- colnames(data)
   basis_help <- tmp
-  
+
   return(basis_help)
 }
 
