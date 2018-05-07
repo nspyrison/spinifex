@@ -29,18 +29,19 @@ data_proj <- function(data, manip = "radial", basis = basis_identity(p = ncol(da
     stop(cat(manip, " manipulation not found."))
   }
   if (!is.null(theta) & manip %in% c("hor", "ver")) {
-    message("Non null theta used with horizontal or vertical manip. Note that theta is forced to 0, pi/2 respectively.")
+    message("Non null theta used with horizontal or vertical manip. 
+            Note that theta is forced to 0, pi/2 respectively.")
   }
   
   ### redundant explicit try catch
   #tc_seq <- tryCatch(seq(from, to, by)
   #                   ,error=function(e) e, warning=function(w) w)
   #if (any(class(tc_seq) == "error")) stop(tc_seq)
-  if (is.character(manip_var)) manip_var <- match(manip_var, names(data))
+  if (is.character(manip_var)) manip_var <- match(manip_var, names(data)) #chr to num
   if (!is.matrix(data)) data <- as.matrix(data)
   if (center) data <- scale(data, center = T, scale = F)
   if (scale)  data <- scale(data, center = F, scale = T)
-  if (is.null(theta)) theta <- atan(basis[,2]/basis[,1]) #sets radial theta
+  if (is.null(theta)) theta <- atan(basis[manip_var,2]/basis[manip_var,1]) #sets radial theta
   
   index <- 0
   projected_data <- NULL

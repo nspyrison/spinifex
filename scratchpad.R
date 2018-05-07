@@ -7,7 +7,7 @@ devtools::load_all()
 ### load
 devtools::install_github("nspyrison/spinifex")
 library(spinifex)
-?data_proj #test documentation
+? data_proj #test documentation
 
 ### init
 data <- flea[, 1:6]
@@ -47,7 +47,7 @@ dp <-
     from = 0,
     to = pi
   )
-slideshow(dp)
+slideshow(dp, col = flea[, 7])
 
 
 ##### Vignette example 2: nasa
@@ -56,25 +56,12 @@ nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") &
                nasa$lat <= 40 &
                nasa$long >= -80 &
                nasa$long <= -60
-             , ]
-str(nasa) #1:6 demographic, 7:13 var, 14:17 demographic,
-#dim(table(nasa$day)) #grain: month. 36 month-apart days, (3 years)
-head(nasa[, 7:13]) #12 is surftemp
+             ,]
+#str(nasa) #1:6 demographic, 7:13 var, 14:17 demographic
+#dim(table(nasa$day)) #grain: month. 36 obs, 3 years
+#head(nasa[, 7:15]) #12 is surftemp, 15 is day
 
-#?GGally::glyphs #see example
-#library(GGally)
-temp.gly <-
-  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
-
-g1 <-
-  ggplot2::ggplot(temp.gly, ggplot2::aes(gx, gy, group = gid)) +
-  GGally::add_ref_lines(temp.gly, color = "grey90") +
-  GGally::add_ref_boxes(temp.gly, color = "grey90") +
-  ggplot2::geom_path() +
-  ggplot2::theme_bw() +
-  ggplot2::labs(x = "", y = "")
-
-##Do a horizontal rotation on time (day), changing it's a_2.
+## Do a horizontal rotation on day, changing a_2.
 tmp <- nasa[, c(15, 7:11)] #exclude surftemp, temp
 p <- ncol(tmp)
 b_iden <- basis_identity(p = p)
@@ -85,11 +72,11 @@ dp_day <-
     manip_var = "day",
     manip = "horizontal",
     from = 0,
-    to = 1.4
+    to = 1.48
   )
 #slideshow(dp_day)
 
-##Do a vertical rotation on temp, changing b_2.
+## Do a vertical rotation on surftemp, changing b_2.
 tmp <- nasa[, c(12, 7:11)] #exclude day, temp
 p <- ncol(tmp)
 b_iden <- basis_identity(p = p)
@@ -97,27 +84,25 @@ dp_surftemp <-
   data_proj(
     data = tmp,
     basis = b_iden,
-    manip_var = "day",
+    manip_var = "surftemp",
     manip = "vertical",
     from = 0,
     to = 1.88
   )
 #slideshow(dp_surftemp)
 
-library(dplyr)
-adj_day <-
-  filter(as.data.frame(dp_day), index == max(index))[, 1] #x
-adj_surftemp <-
-  filter(as.data.frame(dp_surftemp), index == max(index))[, 2] #y
-nasa.gly <- cbind(
-  select(nasa, c("long", "day", "lat", "surftemp")),
-  adj_day = filter(as.data.frame(dp_day), index == max(index))[, 1], #x
-  adj_surftemp = filter(as.data.frame(dp_surftemp), index == max(index))[, 2] #y
+##
+#library(dplyr)
+nasa2 <- cbind(
+  dplyr::select(nasa, c("long", "day", "lat", "surftemp")),
+  adj_day = dplyr::filter(as.data.frame(dp_day), index == max(index))[, 1],
+  #x_day
+  adj_surftemp = dplyr::filter(as.data.frame(dp_surftemp), index == max(index))[, 2] #y_surftemp
 )
-head(nasa.gly)
+head(nasa2)
 
 temp.gly <-
-  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
+  GGally::glyphs(nasa2, "long", "day", "lat", "surftemp", height = 2.5)
 g1 <-
   ggplot2::ggplot(temp.gly, ggplot2::aes(gx, gy, group = gid)) +
   GGally::add_ref_lines(temp.gly, color = "grey90") +
@@ -127,7 +112,7 @@ g1 <-
   ggplot2::labs(x = "", y = "")
 
 temp.gly <-
-  GGally::glyphs(nasa, "long", "adj_day", "lat", "adj_surftemp", height = 2.5)
+  GGally::glyphs(nasa2, "long", "adj_day", "lat", "adj_surftemp", height = 2.5)
 g2 <-
   ggplot2::ggplot(temp.gly, ggplot2::aes(gx, gy, group = gid)) +
   GGally::add_ref_lines(temp.gly, color = "grey90") +
@@ -136,24 +121,24 @@ g2 <-
   ggplot2::theme_bw() +
   ggplot2::labs(x = "", y = "")
 
-gridExtra::grid.arrange(g1, g2, ncol=2)
-
+gridExtra::grid.arrange(g1, g2, ncol = 2)
 
 
 cat(
-  "how do we map back to one dim to use? we have p=6 being rotated by our variable of interest.
-  We have a [index*n, p] or [n, p]@index. "
+  "by rotating y vertically and x horizontally, we are going closer to x=y, right?",
+  "The values of Phi aren't 100% acrurate, how do we calculate?"
 )
+
 
 ##### Vignette example 3: guided tour on flea
 #library(tourr)
 data <- flea[, 1:6]
 p <- ncol(data)
-##holes is unsupervised.
-holes <-
-  tourr::save_history(data, tourr::guided_tour(index = holes), max_bases = 25)
+
+holes_tour <- ##holes is unsupervised.
+  tourr::save_history(data, tourr::guided_tour(index = tourr::holes), max_bases = 25)
 holes_basis <-
-  matrix(as.numeric(holes[, , dim(holes)[3]]), ncol = 2)
+  matrix(as.numeric(holes_tour[, , dim(holes_tour)[3]]), ncol = 2)
 ##lda is supervised.
 #lda <- tourr::save_history(data, tourr::guided_tour(
 #  index = tourr::lda_pp(flea$species)),max_bases = 25)
@@ -168,7 +153,7 @@ holes_basis <-
 
 head(data)
 GGally::ggpairs(data)
-#basis_help(holes_basis, data=data)
+view_basis(holes_basis, data = data)
 ### phi found manually. theta set via basis
 tars1 <-
   data_proj(
@@ -176,18 +161,15 @@ tars1 <-
     basis = holes_basis,
     manip_var = "tars1",
     manip = "radial",
-    from = 0,
     to = 1.57
-  ) #, theta = -0.23
+  )
 tars2 <-
   data_proj(
     data = data,
     basis = holes_basis,
     manip_var = "tars2",
     manip = "radial",
-    from = 0,
-    to = 1.41,
-    theta = 1.32
+    to = 1.41
   )
 head <-
   data_proj(
@@ -196,8 +178,7 @@ head <-
     manip_var = "head",
     manip = "radial",
     from = 0,
-    to = 1.26,
-    theta = 1.33
+    to = 1.26
   )
 aede1 <-
   data_proj(
@@ -205,9 +186,7 @@ aede1 <-
     basis = holes_basis,
     manip_var = "aede1",
     manip = "radial",
-    from = 0,
-    to = 1.41,
-    theta = 1.29
+    to = 1.41
   )
 aede2 <-
   data_proj(
@@ -215,9 +194,7 @@ aede2 <-
     basis = holes_basis,
     manip_var = "aede2",
     manip = "radial",
-    from = 0,
-    to = 1.41,
-    theta = -0.203
+    to = 1.41
   )
 aede3 <-
   data_proj(
@@ -225,13 +202,19 @@ aede3 <-
     basis = holes_basis,
     manip_var = "aede3",
     manip = "radial",
+    #default
     from = 0,
-    to = 1.73,
-    theta = 1.43
+    #default
+    to = 1.73
   )
-slideshow(tars1, col = flea[, 7])
-slideshow(tars2, col = flea[, 7])
-slideshow(head, col = flea[, 7])
-slideshow(aede1, col = flea[, 7])
-slideshow(aede2, col = flea[, 7])
-slideshow(aede3, col = flea[, 7])
+slideshow(tars1, col = flea[, 7]) # groups overlap when removed
+slideshow(aede2, col = flea[, 7]) # groups overlap when removed
+slideshow(tars2, col = flea[, 7]) # 2 groups overlap when removed
+slideshow(head, col = flea[, 7])  # groups still separate when removed
+slideshow(aede1, col = flea[, 7]) # groups still separate when removed
+slideshow(aede3, col = flea[, 7]) # groups still separate when removed
+
+cat(
+  "Should we show removing the 3 distinguishing variables in 1 animation?",
+  "how do we go from one to the next without going back and zeroing a var?"
+)

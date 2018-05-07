@@ -24,7 +24,10 @@ create_manip_space <- function(basis, manip_var){
 #' @param phi angle corisponding to the magnitude of manipulation
 #' @return r_space, a [p, 3] orthonormal rotated space
 #' @export
-rotate_manip_space <- function(manip_space, theta = 0, phi = 0){
+rotate_manip_space <- function(manip_space, theta, phi){
+  if (missing(theta)) theta <- 0
+  if (missing(phi)) phi <- 0
+  
   s_theta <- sin(theta)
   c_theta <- cos(theta)
   s_phi   <- sin(phi)
@@ -56,7 +59,8 @@ rotate_manip_space <- function(manip_space, theta = 0, phi = 0){
 #' 
 #' @return r_space, the [3, p] x,y,z contribution of the rotated manipulation space
 #' @export
-horizontal_manip <- function(manip_space, phi = 0, ...){
+horizontal_manip <- function(manip_space, phi, ...){
+  if(missing(phi)) phi <- 0
   theta <- 0 # 0 for horizontal
   rotate_manip_space(manip_space, theta, phi) -> r_space
   return(r_space)
@@ -73,7 +77,8 @@ horizontal_manip <- function(manip_space, phi = 0, ...){
 #' 
 #' @return r_space, the [3, p] x,y,z contribution of the rotated manipulation space
 #' @export
-vertical_manip <- function(manip_space, phi = 0, ...){
+vertical_manip <- function(manip_space, phi, ...){
+  if(missing(phi)) phi <- 0
   theta <- pi/2 #pi/2 for vertical.
   rotate_manip_space(manip_space, theta, phi) -> r_space
   return(r_space)
@@ -91,7 +96,9 @@ vertical_manip <- function(manip_space, phi = 0, ...){
 #' 
 #' @return r_space, the [3, p] x,y,z contribution of the rotated manipulation space
 #' @export
-radial_manip <- function(manip_space, phi = 0, theta = 0){
+radial_manip <- function(manip_space, phi, theta){
+  if(missing(phi)) phi <- pi/4
+  if(missing(theta)) theta <- pi/4
   rotate_manip_space(manip_space, theta, phi) -> r_space
   return(r_space)
 }
