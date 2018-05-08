@@ -54,3 +54,20 @@ view_basis <- function(basis, data = NULL) {
   return(view_basis)
 }
 
+
+#' Check for orthonormality of a matrix (or basis)
+#' 
+#' For internal use mainly. returns T/F.
+#' 
+#' @param basis a matrix to check for orthonormality
+#' 
+#' @export
+is_orthornormal <- function(basis) {
+  m <- basis
+  mt <- t(m)
+  a <- all.equal(mt %*% m, diag(2))
+  #if you want to see floating point error, ~e-16:
+  #all.equal(mt %*% m, diag(2), tol=0) 
+  
+  return(a)
+}

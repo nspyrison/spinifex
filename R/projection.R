@@ -92,7 +92,6 @@ data_proj <- function(data, manip = "radial", basis = basis_identity(p = ncol(da
 
 slideshow <- function(projected_data, col=NULL) {
 
-  cs <- NULL
   d <- as.data.frame(projected_data)
   if (is.null(col)) {}
   else if (length(col) != 1 & nrow(d) %% length(col) == 0) 
@@ -112,5 +111,4 @@ slideshow <- function(projected_data, col=NULL) {
   
 }
 
-##manip_var, phi, theta
 
