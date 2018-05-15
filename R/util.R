@@ -24,12 +24,16 @@ basis_random <- function(p, d = 2) {
 #' @export
 #' 
 basis_identity <- function(p, d = 2){
+
+    start <- matrix(0, nrow = p, ncol = d)
+    (diag(start) <- 1)
+    start
   identity_basis <- rbind(diag(d), matrix(0, ncol = d, nrow = p - d))
   return(identity_basis)
 }
 
 
-#' Draw tour axes with base graphics
+#' View basis axes and table
 #' 
 #' For internal use mainly 
 #' 
@@ -55,6 +59,37 @@ view_basis <- function(basis, data = NULL) {
 }
 
 
+#' Draw tour axes in plotly
+#' 
+#' For internal use mainly
+#' 
+#' @param basis [p, d=2] basis, xy contributions of the var. 
+#' @param data optional, [n, p], applies colnames to the rows of the basis.
+#' 
+#'DO NOT  @ export
+ 
+#draw_tour_axes(proj, labels, limits = 1, axes)
+draw_tour_axes <- function(basis, labels, limits, position) {
+  position <- match.arg(position, c("center", "bottomleft", "off"))
+  if (position == "off") return()
+  
+  if (position == "center") {
+    axis_scale <- 2 * limits / 3
+    axis_pos <- 0
+  } else if (position == "bottomleft") {
+    axis_scale <- limits / 6
+    axis_pos <- -2/3 * limits
+  }
+  
+  adj <- function(x) axis_pos + x * axis_scale
+  
+  segments(adj(0), adj(0), adj(basis[, 1]), adj(basis[, 2]), col="grey50")
+  theta <- seq(0, 2 * pi, length = 50)
+  lines(adj(cos(theta)), adj(sin(theta)), col = "grey50")
+  text(adj(basis[, 1]), adj(basis[, 2]), label = labels, col = "grey50")
+}
+
+
 #' Check for orthonormality of a matrix (or basis)
 #' 
 #' For internal use mainly. returns T/F.
@@ -63,11 +98,12 @@ view_basis <- function(basis, data = NULL) {
 #' 
 #' @export
 is_orthornormal <- function(basis) {
-  m <- basis
-  mt <- t(m)
-  a <- all.equal(mt %*% m, diag(2))
+  mat <- basis
+  mat_t <- t(mat)
+  ans <- all.equal(mat_t %*% mat, diag(ncol(basis)))
   #if you want to see floating point error, ~e-16:
-  #all.equal(mt %*% m, diag(2), tol=0) 
+  #all.equal(mat_t %*% mat, diag(ncol(basis)), tol=0) 
   
-  return(a)
+  return(ans)
 }
+

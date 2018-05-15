@@ -4,31 +4,34 @@ library(roxygen2)
 devtools::load_all()
 #library(ggplot2)
 
-### load
-devtools::install_github("nspyrison/spinifex")
-library(spinifex)
-? data_proj #test documentation
+#### load
+#devtools::install_github("nspyrison/spinifex")
+#library(spinifex)
+#? data_proj #test documentation
 
 ###
 data <- flea[, 1:6]
 p <- ncol(data)
-b_rand <- basis_random(p = p)
+r_basis <- basis_random(p = p)
 
-view_basis(b_rand, data)
+view_basis(r_basis, data)
 
-dp <-
+proj <-
   data_proj(
     data = data,
-    basis = b_rand,
-    manip_var = 3,
+    basis = r_basis,
+    manip_var = "head",
     manip = "radial",
     from = 0,
-    to = pi
+    to = 2*pi
   )
-#head(dp,3)
 
-slideshow(dp, col = flea[, 7])
+proj_list <- proj
+str(proj)
+(d <- dplyr::as_tibble(proj$proj_data)) ##TIBBLES DON'T KEEP ROW NAMES.
+(b <- dplyr::as_tibble(proj$proj_basis))
 
+slideshow(proj, col = flea$species)
 
 stop()
 stop()
@@ -110,10 +113,6 @@ g2 <-
 gridExtra::grid.arrange(g1, g2, ncol = 2)
 
 
-cat(
-  "by rotating y vertically and x horizontally, we are going closer to x=y, right?",
-  "The values of Phi aren't 100% acrurate, how do we calculate?"
-)
 
 
 ##### Vignette example 3: guided tour on flea
