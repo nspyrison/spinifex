@@ -10,29 +10,38 @@ devtools::load_all()
 #? data_proj #test documentation
 
 ###
-data <- flea[, 1:6]
+data <- flea[, 1:3]
 p <- ncol(data)
 r_basis <- basis_random(p = p)
 
-view_basis(r_basis, data)
+#view_basis(r_basis, data)
 
+r_basis <- matrix(c(0.707, 0, 0.707, 0, 1, 0), ncol=2, byrow=FALSE)
 proj <-
   data_proj(
     data = data,
     basis = r_basis,
     manip_var = "head",
-    manip = "radial",
+    manip = "horizontal",
     from = 0,
     to = 2*pi
   )
-
-proj_list <- proj
-str(proj)
-(d <- dplyr::as_tibble(proj$proj_data)) ##TIBBLES DON'T KEEP ROW NAMES.
-(b <- dplyr::as_tibble(proj$proj_basis))
-
 slideshow(proj, col = flea$species)
 
+
+#proj_list <- proj
+#str(proj)
+#(d <- dplyr::as_tibble(proj$proj_data)) ##TIBBLES DON'T KEEP ROW NAMES.
+(b <- dplyr::as_tibble(proj$proj_basis))
+b
+
+for (i in 1:max(b[,4])) {
+  sub <- subset(b, index==i)[,1:2]
+  print(is_orthornormal(as.matrix(sub)))
+}
+
+is_orthornormal(r_basis)
+?subset
 stop()
 stop()
 

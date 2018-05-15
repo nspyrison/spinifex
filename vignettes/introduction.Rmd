@@ -80,6 +80,8 @@ Load the data and select a random basis with `basis_random(p)`. View the basis i
 #devtools::install_github("nspyrison/spinifex")
 #library(spinifex)
 devtools::load_all()
+library(dplyr) # for %>% 
+library(plotly) # for add text
   
 data <- flea[, 1:6]
 p <- ncol(data)
@@ -123,7 +125,7 @@ nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") &
                nasa$lat <= 40 &
                nasa$long >= -80 &
                nasa$long <= -60
-             , ] #36 months of climate data. 
+             ] #36 months of climate data. 
 ```
 
 
