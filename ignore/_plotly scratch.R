@@ -78,8 +78,8 @@ p
 
 
 
-
-
+N
+?parse
 
 ###color
 plot_ly(flea[,1:6], x = ~flea[,1], y = ~flea[,2],  type="scatter", 
