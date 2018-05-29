@@ -69,30 +69,31 @@ In order to rotate a dimension in p-space we need the following args:
 
 * `data`, [n, p] matrix, or data frame of numbers.
 * `basis`, [p, d=2] matrix, the orthonormal linear combination of dimensions.
-* `manip_var`, name or number, of the dimension to rotate
-* 'phi', angle controlling the magnitude of change of `manip var`, passed as a sequence of the form `seq(from, to, by)` 
+* `manip_var`, name or number, of the dimension to rotate.
+* `phi`, angle controlling the magnitude of change of `manip var`. 
 
 As a toy data set use flea [n=74, p=6]. Each dimension is a physical distance measured across 74 insects over 3 different spieces. 
 
 Load the data and select a random basis with `basis_random(p)`. View the basis in p-space with `view_basis(basis,data)`.
 
 ```{r}
+###MAKE SURE CACHE= FALSE
 #devtools::install_github("nspyrison/spinifex")
-#library(spinifex)
 devtools::load_all()
-library(dplyr) # for %>% 
-library(plotly) # for add text
-  
+#library(spinifex) #WHEN USING library(), rmd can't find spinifex functions :()
+library(ggplot2)
+library(plotly)
+
 data <- flea[, 1:6]
 p <- ncol(data)
-b_rand <- basis_random(p = p)
+b_rand <- create_random_basis(p = p)
 
 view_basis(basis = b_rand, data = data)
 ```
 
 `view_basis` gives a map of the linear combination of the dimensions. Let's find out what happens if we rotate the variable 'head' radially (ie through the center point) by pi radians (180 degrees).
 
-Use `data_proj()` to rotate `data` at the current orientation `basis`, by manipulating `manip_var` of the `manip` type, for a sequence of 'phi' `from` thru `to` by an increment `by`.
+Use `proj_data()` to rotate `data` at the current orientation `basis`, by manipulating `manip_var` of the `manip` type, for a sequence of 'phi' `from` thru `to` by an increment `by`.
 
 For the flea data, at the random basis, rotate the variable 'head' radially, through the origin for a semi-circle.
 
@@ -100,14 +101,14 @@ Watch the projection, via `slideshow()`, coloring observations by their species.
 
 ```{r}
 dp <-
-  data_proj(
+  proj_data(
     data = data,
     basis = b_rand,
     manip_var = "head",
-    manip = "radial",
-    from = 0,
-    to = pi,
-    by = pi / 10
+    manip_type = "radial",
+    phi_from = 0,
+    phi_to = pi,
+    n_slides = 20
   )
 slideshow(dp, col = flea$species)
 ```
@@ -117,84 +118,88 @@ slideshow(dp, col = flea$species)
 
 ## Example 2 - Rotating a glyph map
 
-
 ```{r}
-#library(GGally)
+library(GGally)
+
 nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") &
-               nasa$lat >= 20 &
-               nasa$lat <= 40 &
-               nasa$long >= -80 &
-               nasa$long <= -60
+             nasa$lat >= 20 &
+             nasa$lat <= 40 &
+             nasa$long >= -80 &
+             nasa$long <= -60, 
              ] #36 months of climate data. 
-```
 
-
-```{r}
 temp.gly <-
   GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
-g1 <-
-  ggplot2::ggplot(temp.gly, ggplot2::aes(gx, gy, group = gid)) +
+glyph1 <-
+  ggplot(temp.gly, aes(gx, gy, group = gid)) +
   GGally::add_ref_lines(temp.gly, color = "grey90") +
   GGally::add_ref_boxes(temp.gly, color = "grey90") +
-  ggplot2::geom_path() +
-  ggplot2::theme_bw() +
-  ggplot2::labs(x = "", y = "")
+  geom_path() +
+  theme_bw() +
+  labs(x = "", y = "")
 
-g1
+glyph1
 ```
 
 
 ```{r}
 data <- nasa[c("long", "day")]
 p <- ncol(data)
-b_iden <- basis_identity(p = p)
+r_basis <- create_random_basis(p = p) 
 
-## Do a horizontal rotation on day, changing a_2.
-dp_day <-
-  data_proj(
-    data = data,
-    basis = b_iden,
-    manip_var = "day",
-    manip = "horizontal",
-    from = 0,
-    to = pi
-  )
-slideshow(dp_day)
+###p=2 isn't working as z, will always be a linear combination of a 2x2 basis;
+#create_manip_space goes back to 2x2 then can't perform manip_space %*%R
+#spinifex::create_manip_space removes the new z.
+#tourr::orthonormalise() does diag(2)||c(NaN, NaN)
+#tourr error for p=2: Error in segments(adj(0), adj(0), adj(proj[, 1]), adj(proj[, 2]), col = "grey50") : cannot mix zero-length and non-zero-length coordinates
 
-## Do a vertical rotation on surftemp, changing b_2.
-dp_surftemp <-
-  data_proj(
-    data = data,
-    basis = b_iden,
-    manip_var = "surftemp",
-    manip = "vertical",
-    from = 0,
-    to = 1.88
-  )
-slideshow(dp_surftemp)
+#### Do a horizontal rotation on day, changing a_2.
+#proj_rday <-
+#  proj_data(
+#    data = data,
+#    basis = r_basis,
+#    manip_var = "day",
+#    manip = "horizontal",
+#    phi_from = 0,
+#    phi_to = pi
+#  )
+#slideshow(proj_rday)
+#
+#### Do a vertical rotation on surftemp, changing b_2.
+#proj_rsurftemp <-
+#  proj_data(
+#    data = data,
+#    basis = r_basis,
+#    manip_var = "surftemp",
+#    manip = "vertical",
+#    phi_from = 0,
+#    to = 1.88
+#  )
+#slideshow(proj_rsurftemp)
 ```
 
 
 
 ```{r}
-#library(dplyr)
-nasa2 <- cbind(
-  dplyr::select(nasa, c("long", "day", "lat", "surftemp")),
-  adj_day = dplyr::filter(as.data.frame(dp_day), index == max(index))[, 1], #x_day
-  adj_surftemp = dplyr::filter(as.data.frame(dp_surftemp), index == max(index))[, 2] #y_surftemp
-)
-
-temp.gly2 <-
-  GGally::glyphs(nasa2, "long", "adj_day", "lat", "adj_surftemp", height = 2.5)
-g2 <-
-  ggplot2::ggplot(temp.gly2, ggplot2::aes(gx, gy, group = gid)) +
-  GGally::add_ref_lines(temp.gly, color = "grey90") +
-  GGally::add_ref_boxes(temp.gly, color = "grey90") +
-  ggplot2::geom_path() +
-  ggplot2::theme_bw() +
-  ggplot2::labs(x = "", y = "")
-
-gridExtra::grid.arrange(g1, g2, ncol=2)
+#nasa2 <- cbind(
+#  nasa[c("long", "day", "lat", "surftemp")],
+#  adj_day <- #x, rotated day
+#    proj_rday$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ], 
+#  adj_surftemp <- #y, rotated surftemp
+#    proj_rsurftemp$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ] 
+#)
+#
+#temp.gly2 <-
+#  GGally::glyphs(nasa2, "long", "adj_day", "lat", "adj_surftemp", height = 2.5)
+#glyph2 <-
+#  ggplot(temp.gly2, ggplot2::aes(gx, gy, group = gid)) +
+#  GGally::add_ref_lines(temp.gly, color = "grey90") +
+#  GGally::add_ref_boxes(temp.gly, color = "grey90") +
+#  geom_path() +
+#  theme_bw() +
+#  labs(x = "", y = "")
+#
+#gridExtra::grid.arrange(glyph1, glyph2, ncol=2)
 ```
 
 
@@ -202,12 +207,12 @@ gridExtra::grid.arrange(g1, g2, ncol=2)
 ## Example 3 - Rotation after holes guided tour
 
 ```{r}
-#library(tourr)
+library(tourr)
 data <- flea[, 1:6]
 p <- ncol(data)
 
 holes_tour <- ## holes is unsupervised gradient descent.
-  tourr::save_history(data, tourr::guided_tour(index = tourr::holes), max_bases = 25)
+  save_history(data, guided_tour(index = holes), max_bases = 25)
 holes_basis <-
   matrix(as.numeric(holes_tour[, , dim(holes_tour)[3]]), ncol = 2)
 ```
@@ -215,56 +220,52 @@ holes_basis <-
 
 ```{r}
 tars1 <-
-  data_proj(
+  proj_data(
     data = data,
     basis = holes_basis,
     manip_var = "tars1",
     manip = "radial",
-    to = 1.57
+    phi_to = 1.57
   )
 tars2 <-
-  data_proj(
+  proj_data(
     data = data,
     basis = holes_basis,
     manip_var = "tars2",
     manip = "radial",
-    to = 1.41
+    phi_to = 1.41
   )
 head <-
-  data_proj(
+  proj_data(
     data = data,
     basis = holes_basis,
     manip_var = "head",
     manip = "radial",
-    from = 0,
-    to = 1.26
+    phi_to = 1.26
   )
 aede1 <-
-  data_proj(
+  proj_data(
     data = data,
     basis = holes_basis,
     manip_var = "aede1",
     manip = "radial",
-    to = 1.41
+    phi_to = 1.41
   )
 aede2 <-
-  data_proj(
+  proj_data(
     data = data,
     basis = holes_basis,
     manip_var = "aede2",
     manip = "radial",
-    to = 1.41
+    phi_to = 1.41
   )
 aede3 <-
-  data_proj(
+  proj_data(
     data = data,
     basis = holes_basis,
     manip_var = "aede3",
     manip = "radial",
-    #default
-    from = 0,
-    #default
-    to = 1.73
+    phi_to = 1.73
   )
 ```
 
