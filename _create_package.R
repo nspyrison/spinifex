@@ -2,7 +2,7 @@
 #ns 5/04/2018.
 
 library(tourr)
-#devtools::create("spacemanip")
+#devtools::create("spinifex")
 devtools::document()
 
 devtools::use_data(flea)

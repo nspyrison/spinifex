@@ -79,6 +79,7 @@ Load the data and select a random basis with `basis_random(p)`. View the basis i
 ```{r}
 ###MAKE SURE CACHE= FALSE
 #devtools::install_github("nspyrison/spinifex")
+
 devtools::load_all()
 #library(spinifex) #WHEN USING library(), rmd can't find spinifex functions :()
 library(ggplot2)

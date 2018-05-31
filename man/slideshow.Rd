@@ -4,7 +4,7 @@
 \alias{slideshow}
 \title{Slide show of the projected data and basis.}
 \usage{
-slideshow(proj_list, col = NULL)
+slideshow(proj_list, col = "black")
 }
 \arguments{
 \item{proj_list}{the output of data_proj(), list of projected data and basis by index.}
