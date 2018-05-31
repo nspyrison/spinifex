@@ -34,6 +34,7 @@ knitr::opts_chunk$set(
 )
 ```
 
+#Overview
 
 ## Motivation
 
@@ -120,34 +121,34 @@ slideshow(dp, col = flea$species)
 ## Example 2 - Rotating a glyph map
 
 ```{r}
-library(GGally)
-
-nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") &
-             nasa$lat >= 20 &
-             nasa$lat <= 40 &
-             nasa$long >= -80 &
-             nasa$long <= -60, 
-             ] #36 months of climate data. 
-
-temp.gly <-
-  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
-glyph1 <-
-  ggplot(temp.gly, aes(gx, gy, group = gid)) +
-  GGally::add_ref_lines(temp.gly, color = "grey90") +
-  GGally::add_ref_boxes(temp.gly, color = "grey90") +
-  geom_path() +
-  theme_bw() +
-  labs(x = "", y = "")
-
-glyph1
+#library(GGally)
+#
+#nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") &
+#             nasa$lat >= 20 &
+#             nasa$lat <= 40 &
+#             nasa$long >= -80 &
+#             nasa$long <= -60, 
+#             ] #36 months of climate data. 
+#
+#temp.gly <-
+#  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
+#glyph1 <-
+#  ggplot(temp.gly, aes(gx, gy, group = gid)) +
+#  GGally::add_ref_lines(temp.gly, color = "grey90") +
+#  GGally::add_ref_boxes(temp.gly, color = "grey90") +
+#  geom_path() +
+#  theme_bw() +
+#  labs(x = "", y = "")
+#
+#glyph1
 ```
 
 
 ```{r}
-data <- nasa[c("long", "day")]
-p <- ncol(data)
-r_basis <- create_random_basis(p = p) 
-
+#data <- nasa[c("long", "day")]
+#p <- ncol(data)
+#r_basis <- create_random_basis(p = p) 
+#
 ###p=2 isn't working as z, will always be a linear combination of a 2x2 basis;
 #create_manip_space goes back to 2x2 then can't perform manip_space %*%R
 #spinifex::create_manip_space removes the new z.
@@ -207,13 +208,13 @@ r_basis <- create_random_basis(p = p)
 
 ## Example 3 - Rotation after holes guided tour
 
-```{r}
+```{r, results='hide'}
 library(tourr)
 data <- flea[, 1:6]
 p <- ncol(data)
 
 holes_tour <- ## holes is unsupervised gradient descent.
-  save_history(data, guided_tour(index = holes), max_bases = 25)
+  save_history(data, guided_tour(index = holes), max_bases = 25) 
 holes_basis <-
   matrix(as.numeric(holes_tour[, , dim(holes_tour)[3]]), ncol = 2)
 ```
@@ -281,22 +282,23 @@ slideshow(aede3, col = flea[, 7]) # groups still separate when removed
 ```
 
 
+# Conclusion
 
-# Summary
+## Summary
 
 [RECAP WHAT PKG HELPS US DO, nanier for example:]
 The tools in `naniar` help us identify where missingness is, while maintaining a tidy workflow. We care about these mechanisms or these patterns because they can help us understand potential mechanisms, such as equipment failures, and then identify possible solutions based upon this evidence.
 
-# Future development
+## Namesake 
 
-[further integration with tourr needed?]
+The name 'spinifex' comes from the [spinifex hopping mouse](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, I'll reffer to Di "it spins, it hops and needs a 'mouse'."
 
-# Thank you
 
-Formost, thanks to Di Cook for direction, inspiration, and the ground work underpinning this work. Her ability for conceptualizing higher dimensions and visualizing data in general is unparallel.
-Thanks to Ursla Laa for use cases and prompts to keep me focused.
+## Thank you
 
-# References
+Thanks to Dianne Cook for direction, inspiration, namesake, and the ground work underpinning this work. Thanks to Ursla Laa for use cases and prompts to keep me focused.
+
+## References
 <!-- Monash prefers APA -->
 <!-- citation(package = "tourr") -->
 <!-- citation(package = "GGally") -->
