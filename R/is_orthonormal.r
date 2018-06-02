@@ -1,6 +1,6 @@
 #' Check for orthonormality of a matrix (or basis)
 #' 
-#' For internal use mainly. returns T/F.
+#' For internal use mainly. returns TRUE or basis transposed %*% basis, would be identity matrix if basis is orthernormal
 #' 
 #' @param basis a matrix to check for orthonormality
 #' 
@@ -9,10 +9,7 @@ is_orthornormal <- function(basis) {
   mat <- basis
   mat_t <- t(mat)
   ans <- all.equal(mat_t %*% mat, diag(ncol(basis)), tol=1e-8)
-  
   if (ans != "TRUE") {ans <- mat_t %*% mat}
-  #if you want to see floating point error, ~e-16:
-  #all.equal(mat_t %*% mat, diag(ncol(basis)), tol=0) 
   
   return(ans)
 }

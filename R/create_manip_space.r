@@ -1,6 +1,6 @@
 #' Create a manipulation space
 #'
-#' Primarily internal use. Create an [p, d+1=3] orthonormal manipulation space from the given [p, d=2] orthonormal basis. This is used before a manipulation, creating the d+1 space to allow for the rotation.
+#' Primarily internal use. Create an [p, d+1=3] orthonormal manipulation space from the given basis concatonated with a zero vector, with manip_var set to 1.
 #'
 #' @param basis [p, d=2] orthonormal basis
 #' @param manip_var number of the variable to rotate
@@ -12,5 +12,7 @@ create_manip_space <- function(basis, manip_var){
   manip_space <- qr.Q(qr(cbind(basis, z))) #orthonormalize
   if (ncol(manip_space)==3) {colnames(manip_space) <- c("x","y","z")}
   rownames(manip_space) <- colnames(basis)
+  
+  stopifnot(dim(manip_space) == dim(basis) + c(0, 1))
   return(manip_space)
 }

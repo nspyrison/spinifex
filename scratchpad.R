@@ -38,4 +38,4 @@ is_orthornormal(r_basis)
 
 stop()
 stop()
-
+tourr::animate_xy(flea[,1:6])

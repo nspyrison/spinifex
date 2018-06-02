@@ -1,16 +1,14 @@
 #' Rotate and return the manipulation space
 #'
-#' Primarily for internal use. Rotates [p, 3] manipulation space by [3, 3] rotation matrix into a [p, 3] rotated space. Used by manipulations
+#' Primarily for internal use. Rotates [p, 3] manipulation space by [3, 3] rotation, Returns [p, 3] orthonormal matrix, XYZ components after roation
 #'
 #' @param manip_space [p, 3] manipulation space to be rotated
-#' @param theta angle of rotation w.r.t. the x-y projection. 
+#' @param theta angle of rotation w.r.t. the x-y projection. Typically set from manip_type in proj_data()
 #' @param phi angle corisponding to the magnitude of manipulation
-#' @return r_space, a [p, 3] orthonormal rotated space
 #' @export
 rotate_manip_space <- function(manip_space, theta, phi){
-  if (!ncol(manip_space) == 3 ) 
-    stop(paste0("dim issues with manip_space. Expected [px3] to mulitply by R[3x3] actual dim: [px", 
-         ncol(manip_space)), "]" )
+  stopifnot(ncol(manip_space) == 3)
+  stopifnot(is.matrix(manip_space))
   s_theta <- sin(theta)
   c_theta <- cos(theta)
   s_phi   <- sin(phi)
@@ -27,13 +25,11 @@ rotate_manip_space <- function(manip_space, theta, phi){
                 s_theta * s_phi,
                 c_phi )                                # 9 of 9
               ,nrow = 3, ncol = 3, byrow = TRUE)
-  
-  ## DEBUG 2D case.
 
-  ##
-  
   r_space <- manip_space %*% R
   colnames(r_space) <- colnames(manip_space)
   rownames(r_space) <- rownames(manip_space)
+  stopifnot(dim(r_space) == c(nrow(manip_space),3) )
+  stopifnot(is.matrix(r_space))
   return(r_space)
 }

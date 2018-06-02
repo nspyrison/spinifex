@@ -5,8 +5,15 @@
 #' @param proj_list the output of data_proj(), list of projected data and basis by index.
 #' @param col color of the data, 1 color or length of the data
 #' @import ggplot2
+#' @import plotly
 #' @export
 #' @examples
+#' 
+#' data <- flea[, 1:5]
+#' proj <- proj_data(data, manip_var=2)
+#' slideshow(proj)
+#' 
+#' slideshow(proj, col=flea$species)
 
 slideshow <- function(proj_list, col = "black") {
   if (length(col) != 1 &
@@ -14,7 +21,7 @@ slideshow <- function(proj_list, col = "black") {
   {
     col <- rep(col, nrow(proj_list$proj_data) / length(col))
   } else
-    message("length of col (color) expected to be 1 or length of data.")
+    stop("length of col (color) expected to be 1 or length of data.")
   
   proj_data <- proj_list$proj_data
   proj_data <- as.data.frame(proj_data)
@@ -56,6 +63,8 @@ slideshow <- function(proj_list, col = "black") {
     #subplot(ggplotly_data, ggplotly_data, nrows = 1, widths = c(0.3, 0.7)) 
   #a,b doesn't work, but aa and bb do....
   
+  stopifnot(is.list(slideshow))
+  stopifnot(length(slideshow) == 8)
   return(slideshow)
 }
   #subplot(ggplotly_basis, ggplotly_data, nrows = 1, widths = c(0.3, 0.7))
