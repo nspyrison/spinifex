@@ -16,12 +16,11 @@
 #' slideshow(proj, col=flea$species)
 
 slideshow <- function(proj_list, col = "black") {
-  if (length(col) != 1 &
-      nrow(proj_list$proj_data) %% length(col) == 0)
-  {
-    col <- rep(col, nrow(proj_list$proj_data) / length(col))
-  } else
-    stop("length of col (color) expected to be 1 or length of data.")
+  stopifnot(is.list(proj_list))
+  stopifnot(length(proj_list) == 2)
+  if (length(col) != 1 & nrow(proj_list$proj_data) %% length(col) == 0)
+    {col <- rep(col, nrow(proj_list$proj_data) / length(col))}
+  stopifnot(length(col) == 1 | length(col) == nrow(proj_list$proj_data))
   
   proj_data <- proj_list$proj_data
   proj_data <- as.data.frame(proj_data)
@@ -42,20 +41,38 @@ slideshow <- function(proj_list, col = "black") {
     spaced_basis <- rbind(spaced_basis, delta)
   }
   
-  #### PLOTTING
+  #### PLOTTING #frame needs to be in a geom_(aes()).
   ggplotly_data <- suppressWarnings(ggplotly((
     ggplot(proj_data, aes(x = x, y = y)) +
       geom_point(color = "black", aes(frame = index)) +
       ylab("") + xlab("") + coord_fixed()
     )))
-  #return(ggplotly_data)
   
-  ggplotly_basis <- suppressWarnings(ggplotly((
-    ggplot(spaced_basis, aes(x = x, y = y)) +
-      geom_point(color = "grey50", aes(frame =index)) +
-      ylab("") + xlab("") + coord_fixed()
-    )))
-  #return(ggplotly_basis)
+  cn <- as.character(proj_basis$var_name)
+  label <- paste0(substr(cn, 1, 2), substr(cn, nchar(cn), nchar(cn)))
+  ggplotly_basis <- suppressWarnings(config(
+    ggplotly(
+      ggplot(spaced_basis, aes(x = x, y = y)) +
+        geom_segment(
+          aes(xend = 0, yend = 0, frame = index),
+          color = "grey70",
+          size = .3
+        ) +
+        geom_text(
+          aes(label = label, frame = index),
+          color = "grey50",
+          hjust = 0,
+          vjust = 0
+        ) +
+        geom_path(
+          data = circ,
+          aes(x, y),
+          size = .3,
+          color = "grey70"
+        ) +
+        ylab("") + xlab("") + coord_fixed()
+    )
+  ))
   
   slideshow <- 
     subplot(ggplotly_basis, ggplotly_data, nrows = 1, widths = c(0.3, 0.7)) 

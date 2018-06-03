@@ -30,7 +30,7 @@ proj <-
     phi_to = 2*pi,
     n_slides = 10
   )
-slideshow(proj, col = flea$species) 
+slideshow(proj)#, col = flea$species) 
   ##SEE SLIDESHOW COLORS.
 
 
