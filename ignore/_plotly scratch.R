@@ -1,6 +1,7 @@
 ## plotly
 #https://plot.ly/r/animations/
 library(plotly)
+library(ggplot2)
 packageVersion('plotly')
 
 df1 <- data.frame(
@@ -32,6 +33,7 @@ plot_ly(flea[,1:6], x = ~flea[,1], y = ~flea[,2], type="scatter",
         marker=list( size=20 , opacity=0.5) )
 
 ###GAPMINDER NOT WORKING
+library(ggplot2)
 library(plotly)
 library(gapminder)
 

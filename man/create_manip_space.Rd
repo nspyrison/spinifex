@@ -15,5 +15,5 @@ create_manip_space(basis, manip_var)
 manip_space, a [p, d+1=3] orthonormal manipulation space
 }
 \description{
-Primarily internal use. Create an [p, d+1=3] orthonormal manipulation space from the given [p, d=2] orthonormal basis. This is used before a manipulation, creating the d+1 space to allow for the rotation.
+Primarily internal use. Create an [p, d+1=3] orthonormal manipulation space from the given basis concatonated with a zero vector, with manip_var set to 1.
 }

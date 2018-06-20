@@ -4,20 +4,18 @@
 \alias{proj_data}
 \title{Project data by the rotated space. Return a list of projected data and basis.}
 \usage{
-proj_data(data, basis = basis_identity(p = ncol(data)), manip_var,
+proj_data(data, manip_var, basis = basis_identity(p = ncol(data)),
   manip_type = NULL, theta = NULL, center = TRUE, scale = TRUE,
-  phi_from = 0, phi_to = 0, n_slides = 15)
+  phi_from = 0, phi_to = 2 * pi, n_slides = 15)
 }
 \arguments{
 \item{data}{[n, p] data to project, consisting of only numeric variables (for coercion into matrix)}
 
-\item{basis}{the [p, 2] orthonormal starting basis. Default to the identity basis}
-
 \item{manip_var}{integer column or string name of the variable to manipulate. Required, does not default}
 
-\item{manip_type}{character string of the type of manipulation to use. Defaults to "radial". Alternatively use "horizontal" or "vertical" Superseds theta}
+\item{basis}{the [p, 2] orthonormal starting basis. Default to the identity basis}
 
-\item{theta}{the angle that the manipvar should be rotated by in parameter space. Superseded by manip_type}
+\item{manip_type}{character string of the type of manipulation to use. Defaults to "radial". Alternatively use "horizontal" or "vertical", superseds theta if set}
 
 \item{phi_from}{value of phi to start the projection. Defaults to 0}
 
@@ -25,6 +23,27 @@ proj_data(data, basis = basis_identity(p = ncol(data)), manip_var,
 
 \item{n_slides}{number of slides to create for slideshow(). Defaults to 15}
 }
+\value{
+list of $proj_data[n*n_slides, 7], $proj_basis[p*n_slides, 9]
+}
 \description{
-Project [n, p] data by [p, 3] rotated manipulation space into [n, 3] projection.
+Project [n, p] data by [p, 3] rotated manipulation space, includes some parmeter information. Rotates the manipulation space accross phi. Returns both as a list.
+}
+\examples{
+
+data <- flea[, 1:5]
+proj1 <- proj_data(data, manip_var=2)
+
+p <- ncol(data) 
+r_basis <- create_random_basis(p = p)
+proj2 <-
+  proj_data(
+    data = data,
+    basis = r_basis,
+    manip_var = 1, 
+    manip_type = "horizontal",
+    phi_from = 0,
+    phi_to = 1.5*pi,
+    n_slides = 10
+  )
 }

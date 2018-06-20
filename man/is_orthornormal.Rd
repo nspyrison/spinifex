@@ -10,5 +10,5 @@ is_orthornormal(basis)
 \item{basis}{a matrix to check for orthonormality}
 }
 \description{
-For internal use mainly. returns T/F.
+For internal use mainly. returns TRUE or basis transposed %*% basis, would be identity matrix if basis is orthernormal
 }

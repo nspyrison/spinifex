@@ -12,7 +12,7 @@ create_random_basis(p, d = 2)
 \item{d}{number of dimensions of the basis.Defaults to 2.}
 }
 \value{
-orthonormalized matrix, the [p, d=2] basis
+orthonormalized basis [p, d=2]
 }
 \description{
 Creates a [p, d=2] basis of random values then orthonormalize it

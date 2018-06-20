@@ -14,3 +14,11 @@ slideshow(proj_list, col = "black")
 \description{
 Takes the result of data_proj() and uses base graphics to view each index with delay in base grahics
 }
+\examples{
+
+data <- flea[, 1:5]
+proj <- proj_data(data, manip_var=2)
+slideshow(proj)
+
+slideshow(proj, col=flea$species)
+}

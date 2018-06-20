@@ -9,13 +9,10 @@ rotate_manip_space(manip_space, theta, phi)
 \arguments{
 \item{manip_space}{[p, 3] manipulation space to be rotated}
 
-\item{theta}{angle of rotation w.r.t. the x-y projection.}
+\item{theta}{angle of rotation w.r.t. the x-y projection. Typically set from manip_type in proj_data()}
 
 \item{phi}{angle corisponding to the magnitude of manipulation}
 }
-\value{
-r_space, a [p, 3] orthonormal rotated space
-}
 \description{
-Primarily for internal use. Rotates [p, 3] manipulation space by [3, 3] rotation matrix into a [p, 3] rotated space. Used by manipulations
+Primarily for internal use. Rotates [p, 3] manipulation space by [3, 3] rotation, Returns [p, 3] orthonormal matrix, XYZ components after roation
 }

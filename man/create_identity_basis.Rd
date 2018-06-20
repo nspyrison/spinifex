@@ -9,10 +9,10 @@ create_identity_basis(p, d = 2)
 \arguments{
 \item{p}{number of dimensions of the data}
 
-\item{d}{number of dimensions of the basis, defaulting to 2}
+\item{d}{number of dimensions of the basis. Defaults to 2}
 }
 \value{
-[p, d=2] identity matrix followed by 0s
+[p, d=2] identity matrix followed by rows of 0s
 }
 \description{
 Creates a [p, d=2] identity basis; identity matrix followed by 0s
