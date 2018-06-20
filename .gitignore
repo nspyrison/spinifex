@@ -5,4 +5,5 @@
 inst/doc
 .pdf
 /ignore
-\ignore
+vignettes/introduction_files
+vignettes/introduction_cache

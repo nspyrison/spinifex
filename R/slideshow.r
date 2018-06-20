@@ -13,104 +13,62 @@
 #' proj <- proj_data(data, manip_var=2)
 #' slideshow(proj)
 #' 
-#' slideshow(proj, col=flea$species)
+#' pal <- rainbow(length(levels(flea$species)))
+#' col <- pal[as.numeric(flea$species)]
+#' proj <- proj_data(data, manip_var="head")
+#' slideshow(proj, col=col)
 
-slideshow <- function(proj_list, col = "black") {
+slideshow <- function(proj_list, col = "black", pch = 1) {
   stopifnot(is.list(proj_list))
   stopifnot(length(proj_list) == 2)
   if (length(col) != 1 & nrow(proj_list$proj_data) %% length(col) == 0)
     {col <- rep(col, nrow(proj_list$proj_data) / length(col))}
   stopifnot(length(col) == 1 | length(col) == nrow(proj_list$proj_data))
   
+  ### INITIALIZE
   proj_data <- proj_list$proj_data
   proj_data <- as.data.frame(proj_data)
   proj_basis <- proj_list$proj_basis
   proj_basis <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
   proj_basis <- as.data.frame(proj_basis)
   
-  ### STRUCTURE BASIS
-  n_index = length(unique(proj_basis[, 4]))
-  n_var = length(unique(proj_basis[, 8]))
-  sp_mat <- matrix(0, ncol = 4, nrow = n_index)
-  colnames(sp_mat) <- colnames(proj_basis[, 1:4])
-  spaced_basis <- NULL
-  for (i in 1:n_var) {
-    rowend <- i * n_index
-    row <- rowend - n_index + 1
-    delta <- rbind(sp_mat, proj_basis[row:rowend, 1:4])
-    spaced_basis <- rbind(spaced_basis, delta)
-  }
+  angle <- seq(0, 2 * pi, length = 50)
+  circ <- as.data.frame(cbind("x" = cos(angle), "y" = sin(angle) ) )
+  lab <- as.character(proj_basis$var_name)
+  label <- paste0(substr(lab, 1, 2), substr(lab, nchar(lab), nchar(lab)))
   
-  #### PLOTTING #frame needs to be in a geom_(aes()).
-  ggplotly_data <- suppressWarnings(ggplotly((
-    ggplot(proj_data, aes(x = x, y = y)) +
-      geom_point(color = "black", aes(frame = index)) +
-      ylab("") + xlab("") + coord_fixed()
-    )))
   
-  cn <- as.character(proj_basis$var_name)
-  label <- paste0(substr(cn, 1, 2), substr(cn, nchar(cn), nchar(cn)))
-  ggplotly_basis <- suppressWarnings(config(
-    ggplotly(
-      ggplot(spaced_basis, aes(x = x, y = y)) +
-        geom_segment(
-          aes(xend = 0, yend = 0, frame = index),
-          color = "grey70",
-          size = .3
-        ) +
-        geom_text(
-          aes(label = label, frame = index),
-          color = "grey50",
-          hjust = 0,
-          vjust = 0
-        ) +
-        geom_path(
-          data = circ,
-          aes(x, y),
-          size = .3,
-          color = "grey70"
-        ) +
-        ylab("") + xlab("") + coord_fixed()
+  ### PLOTTING #frame needs to be in a geom_(aes()).
+  # data
+  gg1 <- ggplot(data = proj_data, aes(x = x, y = y)) +
+    suppressWarnings( # suppress to ignore unused aes "frame"
+      geom_point(aes(frame = index, shape = pch), color = col, size = .7)
+    ) + 
+    ylab("") + xlab("") + coord_fixed() 
+  
+  # basis text and axes
+  gg2 <- gg1 +
+    suppressWarnings( # suppress to ignore unused aes "frame"
+      geom_text(data = proj_basis, 
+                aes(x = x, y = y, label = label, frame = index, phi = phi),
+                color = "grey50", size = 4, hjust = 0, vjust = 0)
+    ) +
+    suppressWarnings( # suppress to ignore unused aes "frame"
+      geom_segment(data = proj_basis, 
+                   aes(x = x, y = y, xend = 0, yend = 0, frame = index),
+                   color = "grey70", size = .3) 
     )
-  ))
   
-  slideshow <- 
-    subplot(ggplotly_basis, ggplotly_data, nrows = 1, widths = c(0.3, 0.7)) 
-    #subplot(ggplotly_basis, ggplotly_basis, nrows = 1, widths = c(0.3, 0.7)) 
-    #subplot(ggplotly_data, ggplotly_data, nrows = 1, widths = c(0.3, 0.7)) 
-  #a,b doesn't work, but aa and bb do....
+  # axes circle
+  gg3 <- gg2 +
+    geom_path(data = circ, aes(x, y), color = "grey80", size = .3) 
+  
+  gg3$layers = rev(gg3$layers)
+  slideshow <- ggplotly(gg3)
   
   stopifnot(is.list(slideshow))
   stopifnot(length(slideshow) == 8)
   return(slideshow)
 }
-  #subplot(ggplotly_basis, ggplotly_data, nrows = 1, widths = c(0.3, 0.7))
-  
-  #gridExtra::grid.arrange(ggplotly_basis, ggplotly_data, ncol = 2)
-  
-  ### RAW PLOTLY
-  #plotly_data <- plotly::plot_ly(proj_data,
-  #  x = ~x,
-  #  y = ~y,
-  #  frame = ~index,
-  #  text = ~paste0('phi for index ', index, ' is ', round(phi,2)),
-  #  color = ~col,
-  #  type = 'scatter',
-  #  mode = 'markers',
-  #  showlegend = F
-  #)
-  #
-  #plotly_basis <- plotly::plot_ly(spaced_basis,
-  #                             x = ~x,
-  #                             y = ~y,
-  #                             frame = ~index,
-  #                             text = ~row.names(spaced_basis),
-  #                             color = I("grey50"),
-  #                             type = 'scatter',
-  #                             mode = 'markers',
-  #                             showlegend = F
-  #) %>% add_text(x = ~x, y = ~y,
-  #               text = row.names(spaced_basis),
-  #               textposition = 'middle right')
-  #
-  #subplot(plotly_basis, plotly_data, nrows = 1, widths = c(0.3, 0.7))
+
+
