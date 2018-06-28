@@ -1,9 +1,9 @@
 ### Testing and scratchpad:
-library(devtools)
-library(roxygen2)
+#library(devtools)
+#library(roxygen2)
 devtools::load_all()
-library(ggplot2)
-library(plotly)
+#library(ggplot2)
+#library(plotly)
 
 #### load
 #devtools::install_github("nspyrison/spinifex")
@@ -20,6 +20,7 @@ r_basis <- create_random_basis(p = p)
 
 pal <- rainbow(length(levels(flea$species)))
 col <- pal[as.numeric(flea$species)]
+pch <- flea$species
 
 proj <-
   proj_data(
@@ -31,7 +32,7 @@ proj <-
     phi_to = 2*pi,
     n_slides = 20
   )
-slideshow(proj, col = col) 
+slideshow(proj, col = col, pch = flea$species)
 
 
 is_orthornormal(r_basis)

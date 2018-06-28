@@ -5,9 +5,8 @@ Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
     )
-Description: Creates manipulation functions for the manual conrol of projections 
-    of higer dimensional space. Originally designed for use with the tourr
-    package.
+Description: Allows manipulation of single variables in high dim spaces. Useful in 
+	conjunction with tours and projection persuit as implemented by the tourr package.
 Depends: R (>= 3.4.3)
 License: GPL-3
 BugReports: https://github.com/nspyrison/spinifex/issues
@@ -15,7 +14,10 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Imports:
-    ggplot2
-Suggests: knitr,
-    rmarkdown
+    ggplot2,
+  plotly
+Suggests: 
+  knitr,
+  rmarkdown,
+  tourr
 VignetteBuilder: knitr

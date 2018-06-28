@@ -4,12 +4,6 @@ author: "Nicholas Spyrison"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
-  #html_document:
-  #  number_sections: true
-  #  toc: true
-  #  code_folding: hide
-  #  theme: cosmo
-  #  highlight: tango
 #EXAMPLE: https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
@@ -20,21 +14,22 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  comment = "#>",
-  echo=TRUE,
-  message = FALSE,
-  warning = FALSE,
-  error = FALSE, 
-  collapse = TRUE,
-  comment = "",
-  fig.height = 4.5,
-  fig.width = 7,
-  fig.align = "center",
-  cache = FALSE
+  echo       = TRUE,   #code
+  include    = TRUE,   #plots
+  results    = "hide", #text
+  message    = FALSE,  #messages
+  warning    = FALSE,  #warnings
+  error      = FALSE,  #errors
+  collapse   = TRUE,
+  comment    = "#>",
+  fig.height = 6,
+  fig.width  = 9,
+  fig.align  = "center",
+  cache      = FALSE
 )
 ```
 
-#Overview
+# Overview
 
 ## Motivation
 
@@ -54,37 +49,28 @@ This concept can be illustrated susinctly by example. A 3-d object blocks a ligh
 
 # Code examples
 
-
-
 ## Example 1 - Rotate arbitrary basis
 
-Suppose we want to perform a rotation on one dimensions of p-dimensional data, where p>3. 
+We'll use the flea dataset. The data consists of 74 observations of 6 physical disance measurements of a flea-beatle belonging to 1 of 3 speices. This is analogous to the iris dataset.
 
-Let: 
+Suppose we want to perform a rotation on one dimensions of the 6-dimensional data.  
 
-* n be number of observations (rows)
-* p be number of dimensions/numeric variables (columns)
-* d be 2, the x,y contributions of dimensions in variable space.
+In order to rotate a dimension in p-space we need the following arguments: 
 
-In order to rotate a dimension in p-space we need the following args: 
+* `data`, [n, p] matrix, or data frame of numeric columns.
+* `basis`, [p, d=2] matrix, a linear combination of dimensions mapping to 2-D.
+* `manip_var`, name or number of the dimension to rotate.
 
-* `data`, [n, p] matrix, or data frame of numbers.
-* `basis`, [p, d=2] matrix, the orthonormal linear combination of dimensions.
-* `manip_var`, name or number, of the dimension to rotate.
-* `phi`, angle controlling the magnitude of change of `manip var`. 
+Flea is the data we want to rotate. We initialize a random basis and then view it. Later we'll manipulate the variable 'head'.
 
-As a toy data set use flea [n=74, p=6]. Each dimension is a physical distance measured across 74 insects over 3 different spieces. 
-
-Load the data and select a random basis with `basis_random(p)`. View the basis in p-space with `view_basis(basis,data)`.
+Load the data and select a random basis with `basis_random(p)`. View the basis in p-space with `view_basis(basis, data)`, where data is optional, but adds the dimension names.
 
 ```{r}
-###MAKE SURE CACHE= FALSE
 #devtools::install_github("nspyrison/spinifex")
-
 devtools::load_all()
-#library(spinifex) #WHEN USING library(), rmd can't find spinifex functions :()
-library(ggplot2)
-library(plotly)
+#library(spinifex) #WHEN USING library(), rmd can't find spinifex functions :(
+#imports ggplot2, and plotly
+set.seed(123)
 
 data <- flea[, 1:6]
 p <- ncol(data)
@@ -93,116 +79,127 @@ b_rand <- create_random_basis(p = p)
 view_basis(basis = b_rand, data = data)
 ```
 
-`view_basis` gives a map of the linear combination of the dimensions. Let's find out what happens if we rotate the variable 'head' radially (ie through the center point) by pi radians (180 degrees).
+<!-- I like to think of the basis as piece of paper that maps p dimension down to 2. The manipulation type (alternatively theta) is the angle of the on this basis plane between (1, 0) and the manipulation variable's vector in, our case we select 'head'. -->
+
+<!-- In order to rotate the data object we effectively rotate this map. Imagine gluing the bottome of pen to the (0, 0) origin of the paper. By rotating the pen about the origin we rotate the whole paper.  -->
 
 Use `proj_data()` to rotate `data` at the current orientation `basis`, by manipulating `manip_var` of the `manip` type, for a sequence of 'phi' `from` thru `to` by an increment `by`.
 
-For the flea data, at the random basis, rotate the variable 'head' radially, through the origin for a semi-circle.
+Optionally we can specify:
+
+* `manip_type`, "horizontal", "vertical", or "radial", controling the the angle w.r.t. the basis' plane to rotate the variable.
+* `phi_from`, the start angle to rotate the variable from, in the z direction of the basis plane.
+* `Phi_to`, the end angle to rotate the variable to, in the z direction of the basis plane.
+* `n_slides`, the number of increments to calculate phi between the from and to values.
 
 Watch the projection, via `slideshow()`, coloring observations by their species.
 
 ```{r}
-dp <-
+pal <- rainbow(length(levels(flea$species)))
+col <- pal[as.numeric(flea$species)]
+
+proj <-
   proj_data(
     data = data,
     basis = b_rand,
-    manip_var = "head",
+    manip_var = 3, # or "head"
     manip_type = "radial",
     phi_from = 0,
     phi_to = pi,
     n_slides = 20
   )
-slideshow(dp, col = flea$species)
+slideshow(proj, col = col)
+export()
 ```
 
 
 
 
-## Example 2 - Rotating a glyph map
+<!-- ## Example 2 - Rotating a glyph map -->
 
-```{r}
-#library(GGally)
-#
-#nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") &
-#             nasa$lat >= 20 &
-#             nasa$lat <= 40 &
-#             nasa$long >= -80 &
-#             nasa$long <= -60, 
-#             ] #36 months of climate data. 
-#
-#temp.gly <-
-#  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
-#glyph1 <-
-#  ggplot(temp.gly, aes(gx, gy, group = gid)) +
-#  GGally::add_ref_lines(temp.gly, color = "grey90") +
-#  GGally::add_ref_boxes(temp.gly, color = "grey90") +
-#  geom_path() +
-#  theme_bw() +
-#  labs(x = "", y = "")
-#
-#glyph1
-```
-
-
-```{r}
-#data <- nasa[c("long", "day")]
-#p <- ncol(data)
-#r_basis <- create_random_basis(p = p) 
-#
-###p=2 isn't working as z, will always be a linear combination of a 2x2 basis;
-#create_manip_space goes back to 2x2 then can't perform manip_space %*%R
-#spinifex::create_manip_space removes the new z.
-#tourr::orthonormalise() does diag(2)||c(NaN, NaN)
-#tourr error for p=2: Error in segments(adj(0), adj(0), adj(proj[, 1]), adj(proj[, 2]), col = "grey50") : cannot mix zero-length and non-zero-length coordinates
-
-#### Do a horizontal rotation on day, changing a_2.
-#proj_rday <-
-#  proj_data(
-#    data = data,
-#    basis = r_basis,
-#    manip_var = "day",
-#    manip = "horizontal",
-#    phi_from = 0,
-#    phi_to = pi
-#  )
-#slideshow(proj_rday)
-#
-#### Do a vertical rotation on surftemp, changing b_2.
-#proj_rsurftemp <-
-#  proj_data(
-#    data = data,
-#    basis = r_basis,
-#    manip_var = "surftemp",
-#    manip = "vertical",
-#    phi_from = 0,
-#    to = 1.88
-#  )
-#slideshow(proj_rsurftemp)
-```
+<!-- ```{r} -->
+<!-- #library(GGally) -->
+<!-- # -->
+<!-- #nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") & -->
+<!-- #             nasa$lat >= 20 & -->
+<!-- #             nasa$lat <= 40 & -->
+<!-- #             nasa$long >= -80 & -->
+<!-- #             nasa$long <= -60,  -->
+<!-- #             ] #36 months of climate data.  -->
+<!-- # -->
+<!-- #temp.gly <- -->
+<!-- #  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5) -->
+<!-- #glyph1 <- -->
+<!-- #  ggplot(temp.gly, aes(gx, gy, group = gid)) + -->
+<!-- #  GGally::add_ref_lines(temp.gly, color = "grey90") + -->
+<!-- #  GGally::add_ref_boxes(temp.gly, color = "grey90") + -->
+<!-- #  geom_path() + -->
+<!-- #  theme_bw() + -->
+<!-- #  labs(x = "", y = "") -->
+<!-- # -->
+<!-- #glyph1 -->
+<!-- ``` -->
 
 
+<!-- ```{r} -->
+<!-- #data <- nasa[c("long", "day")] -->
+<!-- #p <- ncol(data) -->
+<!-- #r_basis <- create_random_basis(p = p)  -->
+<!-- # -->
+<!-- ###p=2 isn't working as z, will always be a linear combination of a 2x2 basis; -->
+<!-- #create_manip_space goes back to 2x2 then can't perform manip_space %*%R -->
+<!-- #spinifex::create_manip_space removes the new z. -->
+<!-- #tourr::orthonormalise() does diag(2)||c(NaN, NaN) -->
+<!-- #tourr error for p=2: Error in segments(adj(0), adj(0), adj(proj[, 1]), adj(proj[, 2]), col = "grey50") : cannot mix zero-length and non-zero-length coordinates -->
 
-```{r}
-#nasa2 <- cbind(
-#  nasa[c("long", "day", "lat", "surftemp")],
-#  adj_day <- #x, rotated day
-#    proj_rday$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ], 
-#  adj_surftemp <- #y, rotated surftemp
-#    proj_rsurftemp$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ] 
-#)
-#
-#temp.gly2 <-
-#  GGally::glyphs(nasa2, "long", "adj_day", "lat", "adj_surftemp", height = 2.5)
-#glyph2 <-
-#  ggplot(temp.gly2, ggplot2::aes(gx, gy, group = gid)) +
-#  GGally::add_ref_lines(temp.gly, color = "grey90") +
-#  GGally::add_ref_boxes(temp.gly, color = "grey90") +
-#  geom_path() +
-#  theme_bw() +
-#  labs(x = "", y = "")
-#
-#gridExtra::grid.arrange(glyph1, glyph2, ncol=2)
-```
+<!-- #### Do a horizontal rotation on day, changing a_2. -->
+<!-- #proj_rday <- -->
+<!-- #  proj_data( -->
+<!-- #    data = data, -->
+<!-- #    basis = r_basis, -->
+<!-- #    manip_var = "day", -->
+<!-- #    manip = "horizontal", -->
+<!-- #    phi_from = 0, -->
+<!-- #    phi_to = pi -->
+<!-- #  ) -->
+<!-- #slideshow(proj_rday) -->
+<!-- # -->
+<!-- #### Do a vertical rotation on surftemp, changing b_2. -->
+<!-- #proj_rsurftemp <- -->
+<!-- #  proj_data( -->
+<!-- #    data = data, -->
+<!-- #    basis = r_basis, -->
+<!-- #    manip_var = "surftemp", -->
+<!-- #    manip = "vertical", -->
+<!-- #    phi_from = 0, -->
+<!-- #    to = 1.88 -->
+<!-- #  ) -->
+<!-- #slideshow(proj_rsurftemp) -->
+<!-- ``` -->
+
+
+
+<!-- ```{r} -->
+<!-- #nasa2 <- cbind( -->
+<!-- #  nasa[c("long", "day", "lat", "surftemp")], -->
+<!-- #  adj_day <- #x, rotated day -->
+<!-- #    proj_rday$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ],  -->
+<!-- #  adj_surftemp <- #y, rotated surftemp -->
+<!-- #    proj_rsurftemp$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ]  -->
+<!-- #) -->
+<!-- # -->
+<!-- #temp.gly2 <- -->
+<!-- #  GGally::glyphs(nasa2, "long", "adj_day", "lat", "adj_surftemp", height = 2.5) -->
+<!-- #glyph2 <- -->
+<!-- #  ggplot(temp.gly2, ggplot2::aes(gx, gy, group = gid)) + -->
+<!-- #  GGally::add_ref_lines(temp.gly, color = "grey90") + -->
+<!-- #  GGally::add_ref_boxes(temp.gly, color = "grey90") + -->
+<!-- #  geom_path() + -->
+<!-- #  theme_bw() + -->
+<!-- #  labs(x = "", y = "") -->
+<!-- # -->
+<!-- #gridExtra::grid.arrange(glyph1, glyph2, ncol=2) -->
+<!-- ``` -->
 
 
 
@@ -213,7 +210,8 @@ library(tourr)
 data <- flea[, 1:6]
 p <- ncol(data)
 
-holes_tour <- ## holes is unsupervised gradient descent.
+# holes is unsupervised gradient descent maximizing whitespace in the middle.
+holes_tour <- 
   save_history(data, guided_tour(index = holes), max_bases = 25) 
 holes_basis <-
   matrix(as.numeric(holes_tour[, , dim(holes_tour)[3]]), ncol = 2)
@@ -273,12 +271,12 @@ aede3 <-
 
 
 ```{r}
-slideshow(tars1, col = flea[, 7]) # groups overlap when removed
-slideshow(aede2, col = flea[, 7]) # groups overlap when removed
-slideshow(tars2, col = flea[, 7]) # 2 groups overlap when removed
-slideshow(head, col = flea[, 7])  # groups still separate when removed
-slideshow(aede1, col = flea[, 7]) # groups still separate when removed
-slideshow(aede3, col = flea[, 7]) # groups still separate when removed
+slideshow(tars1, col = col) # groups overlap when removed
+slideshow(aede2, col = col) # groups overlap when removed
+slideshow(tars2, col = col) # 2 groups overlap when removed
+slideshow(head,  col = col) # groups still separate when removed
+slideshow(aede1, col = col) # groups still separate when removed
+slideshow(aede3, col = col) # groups still separate when removed
 ```
 
 
@@ -291,24 +289,23 @@ The tools in `naniar` help us identify where missingness is, while maintaining a
 
 ## Namesake 
 
-The name 'spinifex' comes from the [spinifex hopping mouse](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, I'll reffer to Di "it spins, it hops and needs a 'mouse'."
+The name 'spinifex' comes from the [spinifex hopping mouse](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, in the words of Di "it spins, it hops and needs a 'mouse'."
 
 
 ## Thank you
 
-Thanks to Dianne Cook for direction, inspiration, namesake, and the ground work underpinning this work. Thanks to Ursla Laa for use cases and prompts to keep me focused.
+Thanks to Dianne Cook for direction, namesake, and the ground work underpinning this work. Thanks to Ursla Laa for use cases and prompts to keep me focused.
 
 ## References
 <!-- Monash prefers APA -->
 <!-- citation(package = "tourr") -->
 <!-- citation(package = "GGally") -->
-
 - Cook, D., & Buja, A. (1997). Manual Controls for High-Dimensional Data Projections. Journal of Computational and Graphical Statistics, 6(4), 464–480. https://doi.org/10.2307/1390747
 - Wickham, H., Cook, D., & Hofmann, H. (2015). Visualizing statistical models: Removing the blindfold: Visualizing Statistical Models. Statistical Analysis and Data Mining: The ASA Data Science Journal, 8(4), 203–225. https://doi.org/10.1002/sam.11271
 - Dianne Cook and Hadley Wickham (NA). tourr: Implement Tour Methods in R Code. Rpackage version 0.5.5.9000. https://github.com/ggobi/tourr
 - Barret Schloerke, Jason Crowley, Di Cook, Francois Briatte, Moritz Marbach,
 Edwin Thoen, Amos Elberg and Joseph Larmarange (2017). GGally: Extension to
 'ggplot2'. R package version 1.3.2. https://CRAN.R-project.org/package=GGally
-- Asimov. et al. (1985)
+
 
 
