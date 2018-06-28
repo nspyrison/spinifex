@@ -18,15 +18,15 @@
 #' proj <- proj_data(data, manip_var="head")
 #' slideshow(proj, col=col)
 
-slideshow <- function(proj_list, col = "black", pch = "a") {
+slideshow <- function(proj_list, col = "black") { #, pch = "a"
   stopifnot(is.list(proj_list))
   stopifnot(length(proj_list) == 2)
   if (length(col) != 1 & nrow(proj_list$proj_data) %% length(col) == 0)
-    {col <- rep(col, nrow(proj_list$proj_data) / length(col))}
+  {col <- rep(col, nrow(proj_list$proj_data) / length(col))}
   stopifnot(length(col) == 1 | length(col) == nrow(proj_list$proj_data))
-  if (length(pch) != 1 & nrow(proj_list$proj_data) %% length(pch) == 0)
-    {pch <- rep(pch, nrow(proj_list$proj_data) / length(pch))}
-  stopifnot(length(pch) == 1 | length(pch) == nrow(proj_list$proj_data))
+  #if (length(pch) != 1 & nrow(proj_list$proj_data) %% length(pch) == 0)
+  #{pch <- rep(pch, nrow(proj_list$proj_data) / length(pch))}
+  #stopifnot(length(pch) == 1 | length(pch) == nrow(proj_list$proj_data))
   
   ### INITIALIZE
   proj_data <- proj_list$proj_data
@@ -45,14 +45,14 @@ slideshow <- function(proj_list, col = "black", pch = "a") {
   # data
   gg1 <- ggplot2::ggplot(data = proj_data, 
                          ggplot2::aes(x = x, y = y)
-                         ) +
+  ) +
     suppressWarnings( # suppress to ignore unused aes "frame"
       ggplot2::geom_point(size = .7,
-                          ggplot2::aes(frame = index, shape = pch,color = col)
-      )
+                          ggplot2::aes(frame = index, color = col) #shape = pch, 
+      ) #if shape and col are col then inside aes(), else outside of aes().
     ) + 
     ggplot2::ylab("") + ggplot2::xlab("") + ggplot2::coord_fixed() 
-
+  
   # basis text and axes
   gg2 <- suppressWarnings(# suppress to ignore unused aes "frame"
     gg1 +
@@ -79,9 +79,9 @@ slideshow <- function(proj_list, col = "black", pch = "a") {
                        size = .3,
                        ggplot2::aes(x, y)
     )
-
+  
   gg3$layers <- rev(gg3$layers)
-  slideshow <- plotly::ggplotly(gg3, yaxis())
+  slideshow <- plotly::ggplotly(gg3) #, yaxis())
   # layout(slideshow)
   # ,
   #   title = "fixed-ratio axes",

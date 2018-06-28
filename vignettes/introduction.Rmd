@@ -109,7 +109,7 @@ proj <-
     n_slides = 20
   )
 slideshow(proj, col = col)
-export()
+#export()
 ```
 
 

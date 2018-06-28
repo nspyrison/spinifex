@@ -1,9 +1,7 @@
 ### Testing and scratchpad:
-#library(devtools)
-#library(roxygen2)
+devtools::document()
+devtools::build()
 devtools::load_all()
-#library(ggplot2)
-#library(plotly)
 
 #### load
 #devtools::install_github("nspyrison/spinifex")
@@ -11,7 +9,7 @@ devtools::load_all()
 #?proj_data #test documentation
 
 ###
-data <- flea[, 1:3]
+data <- flea[, 1:6]
 p <- ncol(data)
 r_basis <- create_random_basis(p = p)
 #i_basis <- create_identity_basis(p = p)
@@ -32,9 +30,30 @@ proj <-
     phi_to = 2*pi,
     n_slides = 20
   )
-slideshow(proj, col = col, pch = flea$species)
+slideshow(proj, col = col)
 
 
 is_orthornormal(r_basis)
 stop()
 stop()
+
+load("data/PhysDat_6PC.rda")
+load("data/fGT_6d.rda")
+phys.end <- matrix(as.numeric(fGT_6d[,,dim(fGT_6d)[3]]),ncol=2)
+
+pal <- rainbow(length(levels(PhysDat$disID)))
+col <- pal[as.numeric(PhysDat$disID)]
+pch <- as.character(PhysDat$disID)
+
+proj <-
+  proj_data(
+    data = PhysDat[, 1:6],
+    basis = phys.end,
+    manip_var = 1, 
+    manip_type = "rad",
+    phi_from = 0,
+    phi_to = 2*pi,
+    n_slides = 20
+  )
+slideshow(proj)#, col = col)#, pch=pch)#, pch = pch)
+

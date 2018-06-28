@@ -20,5 +20,8 @@ data <- flea[, 1:5]
 proj <- proj_data(data, manip_var=2)
 slideshow(proj)
 
-slideshow(proj, col=flea$species)
+pal <- rainbow(length(levels(flea$species)))
+col <- pal[as.numeric(flea$species)]
+proj <- proj_data(data, manip_var="head")
+slideshow(proj, col=col)
 }
