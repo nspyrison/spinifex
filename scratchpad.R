@@ -11,7 +11,7 @@ devtools::load_all()
 #?proj_data #test documentation
 
 ###
-data <- flea[, 1:3]
+data <- flea[, 1:6]
 p <- ncol(data)
 r_basis <- create_random_basis(p = p)
 #i_basis <- create_identity_basis(p = p)

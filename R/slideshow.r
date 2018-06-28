@@ -81,7 +81,7 @@ slideshow <- function(proj_list, col = "black", pch = "a") {
     )
 
   gg3$layers <- rev(gg3$layers)
-  slideshow <- plotly::ggplotly(gg3, yaxis())
+  slideshow <- plotly::ggplotly(gg3) #, yaxis())
   # layout(slideshow)
   # ,
   #   title = "fixed-ratio axes",

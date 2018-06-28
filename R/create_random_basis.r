@@ -11,6 +11,7 @@ create_random_basis <- function(p, d = 2) {
   mvn <- matrix(rnorm(p * d), ncol = d)
   basis <- qr.Q(qr(mvn)) #orthonormalize
   
-  stopifnot(dim(basis) == c(p, d))
+  stopifnot(ncol(basis) == d)
+  stopifnot(nrow(basis) == p)
   return(basis)
 }
