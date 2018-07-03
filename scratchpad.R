@@ -28,7 +28,8 @@ proj <-
     manip_type = "horizontal",
     phi_from = 0,
     phi_to = 2*pi,
-    n_slides = 20
+    n_slides = 20,
+    center=T
   )
 slideshow(proj, col = col)
 

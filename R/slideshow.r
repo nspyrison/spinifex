@@ -18,19 +18,33 @@
 #' proj <- proj_data(data, manip_var="head")
 #' slideshow(proj, col=col)
 
-slideshow <- function(proj_list, col = "black") { #, pch = "a"
+slideshow <- function(proj_list, col = "black", pch = "") {
   stopifnot(is.list(proj_list))
   stopifnot(length(proj_list) == 2)
-  if (length(col) != 1 & nrow(proj_list$proj_data) %% length(col) == 0)
-  {col <- rep(col, nrow(proj_list$proj_data) / length(col))}
-  stopifnot(length(col) == 1 | length(col) == nrow(proj_list$proj_data))
-  #if (length(pch) != 1 & nrow(proj_list$proj_data) %% length(pch) == 0)
-  #{pch <- rep(pch, nrow(proj_list$proj_data) / length(pch))}
-  #stopifnot(length(pch) == 1 | length(pch) == nrow(proj_list$proj_data))
+  
+  ### COL AND PCH HANDLING
+  nrow_data <- sum(proj[[1]][4]==1)
+  len_col <- length(col)
+  if (!(len_col == 1 | len_col == nrow_data | 
+      len_col == nrow(proj_list$proj_data) 
+  ) )
+    stop("length(col) expected of length 1, nrow(data) or nrow(proj_data)")
+  if (len_col == 1 | len_col == nrow_data)
+    {col <- rep(col, nrow(proj_list$proj_data) %/% len_col)}
+  
+  len_pch <- length(pch)
+  if (!(len_pch == 1 | len_pch == nrow_data | 
+      len_pch == nrow(proj_list$proj_data) 
+  ) )
+    stop("length(pch) expected of length 1, nrow(data) or nrow(proj_data)")
+  if (len_pch == 1 | len_pch == nrow_data)
+    pch <- rep(pch, nrow(proj_list$proj_data) %/% len_pch)
+  if (!is.character(pch) & length(unique(pch)) < 30) pch <- as.character(pch)
   
   ### INITIALIZE
-  proj_data <- proj_list$proj_data
-  proj_data <- as.data.frame(proj_data)
+  proj_data  <- proj_list$proj_data
+  proj_data  <- cbind(proj_data, col, pch)
+  proj_data  <- as.data.frame(proj_data)
   proj_basis <- proj_list$proj_basis
   proj_basis <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
   proj_basis <- as.data.frame(proj_basis)
@@ -48,8 +62,8 @@ slideshow <- function(proj_list, col = "black") { #, pch = "a"
   ) +
     suppressWarnings( # suppress to ignore unused aes "frame"
       ggplot2::geom_point(size = .7,
-                          ggplot2::aes(frame = index, color = col) #shape = pch, 
-      ) #if shape and col are col then inside aes(), else outside of aes().
+                          ggplot2::aes(frame = index, color = col, shape = pch) 
+      )
     ) + 
     ggplot2::ylab("") + ggplot2::xlab("") + ggplot2::coord_fixed() 
   
@@ -58,17 +72,17 @@ slideshow <- function(proj_list, col = "black") { #, pch = "a"
     gg1 +
       ggplot2::geom_text(data = proj_basis,
                          phi = proj_basis$phi,
-                         color = "grey50",
                          size = 4, 
                          hjust = 0, 
                          vjust = 0,
-                         ggplot2::aes(x = x, y = y, frame = index, label = label)
+                         ggplot2::aes(x = x, y = y, frame = index, 
+                                      label = label, color = "color")
       ) +
       ggplot2::geom_segment(data = proj_basis,
-                            color = "grey70",
+                            color = "grey50",
                             size = .3,
                             ggplot2::aes(x = x, y = y, xend = 0, yend = 0, 
-                                         frame = index)
+                                         frame = index, color = "color")
       )
   )
   
@@ -87,7 +101,6 @@ slideshow <- function(proj_list, col = "black") { #, pch = "a"
   #   title = "fixed-ratio axes",
   #   yaxis = list(scaleanchor = "x")
   #   )
-  
   
   stopifnot(is.list(slideshow))
   stopifnot(length(slideshow) == 8)

@@ -31,7 +31,7 @@
 
 proj_data <-
   function(data,
-           manip_var,
+           manip_var = 1,
            basis = basis_identity(p = ncol(data)),
            manip_type = NULL,
            theta = NULL,
@@ -43,17 +43,18 @@ proj_data <-
            ) {
     stopifnot(ncol(data) == nrow(basis))
     stopifnot(is.matrix(data)|is.data.frame(data))
+    
     ### SORTING MANIP_TYPE AND THETA
-    manip_type3 <- tolower(substr(manip_type, 1, 3))
-    if (!is.null(theta) & manip_type3 %in% c("rad", "hor", "ver")) {
-      message(
-        "Non null theta used with valid manip_type.
-        Theta set from the manip_type."
-      )
-    }
     if (is.null(theta) & is.null(manip_type)) {
       manip_type3 <- "rad"
       message("manip_type and theta not set. Using radial manipulation.")
+    }
+    if (!is.null(manip_type)) manip_type3 <- tolower(substr(manip_type, 1, 3))
+    if (!is.null(theta) & !is.null(manip_type) ) {
+      message(
+        "Non null theta used with manip_type.
+        Theta overrides manip_type."
+      )
     }
     if (!manip_type3 %in% c("rad", "hor", "ver")) {
       manip_type3 <- "rad"
@@ -66,12 +67,13 @@ proj_data <-
     if (is.character(manip_var))
       manip_var <- match(manip_var, names(data)) #char to num
     if (!is.matrix(data)) data <- as.matrix(data)
-    if (center) data <- scale(data, center = T, scale = F)
-    if (scale) data <- scale(data, center = F, scale = T)
-    if (manip_type3 == "hor") theta <- 0
-    if (manip_type3 == "ver") theta <- pi / 2
-    if (manip_type3 == "rad")
-      theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+
+    if (is.null(theta)) {
+      if (manip_type3 == "hor") theta <- 0
+      if (manip_type3 == "ver") theta <- pi / 2
+      if (manip_type3 == "rad")
+        theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+    }
     
     ### PROJ_DATA
     index <- 0
@@ -87,6 +89,23 @@ proj_data <-
       
       proj_data <- rbind(proj_data, delta)
     }
+    # if (center) proj_data <- scale(proj_data, center = T, scale = F)
+    # if (scale) proj_data <- 
+    #   apply(proj_data, 2, function(x) (x - min(x)) / diff(range(x)))
+    proj_data <- as.data.frame(proj_data)
+    if (center) 
+      for (i in 1:n_slides) {
+        proj_data[index==i, 1:3] <- 
+        scale(proj_data[index==i, 1:3], center = T, scale = F)
+      }
+    if (scale) {
+      for (i in 1:n_slides) {
+        proj_data[index==i, 1:3] <- 
+          scale(proj_data[index==i, 1:2], center = F, scale = T)
+        proj_data[index==i, 1:3] <- 
+          apply(proj_data[index==i, 1:3], 2, function(x) (x / max(abs(x) ) ) )
+      }
+    }
     proj_data <- as.data.frame(proj_data)
     
     ### PROJ_BASIS
@@ -95,17 +114,18 @@ proj_data <-
     for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
       index <- index + 1
       delta <- cbind(rotate_manip_space(manip_space, theta, phi), index, phi)
-    
       proj_basis <- rbind(proj_basis, delta)
     }
     proj_basis <- as.data.frame(proj_basis)
-    
-    n_index <- max(proj_basis[, 4])
     var_name <- colnames(data)
-    var_num <-1:ncol(data)
-    proj_basis <- cbind(proj_basis, manip_var, theta, var_num, var_name)
+    var_num <- 1:ncol(data)
+    color <- "grey50"
+    color[var_num == proj_basis$manip_var] <-"black"
+    proj_basis <- cbind(proj_basis, manip_var, theta, var_num, var_name, color)
+    
     proj_list <- list("proj_data" = proj_data,
                       "proj_basis" = proj_basis )
+    
     stopifnot(nrow(proj_data) == nrow(data) * n_slides)
     stopifnot(nrow(proj_basis) == nrow(basis) * n_slides)
     stopifnot(length(unique(proj_data$index)) == n_slides)
