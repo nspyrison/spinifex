@@ -23,19 +23,19 @@
 #'     data = data,
 #'     basis = r_basis,
 #'     manip_var = 1, 
-#'     manip_type = "horizontal",
+#'     manip_type = "hor",
 #'     phi_from = 0,
 #'     phi_to = 1.5*pi,
 #'     n_slides = 10
 #'   )
 proj_data <-
   function(data,
-           manip_var = 1,
+           manip_var = 3,
            basis = create_identity_basis(p = ncol(data)),
            manip_type = NULL,
            theta = NULL,
-           center = TRUE,
-           scale = TRUE,
+           center = FALSE,
+           scale = FALSE,
            phi_from = 0,
            phi_to = 2*pi,
            n_slides = 15 
@@ -91,16 +91,19 @@ proj_data <-
     # if (center) proj_data <- scale(proj_data, center = T, scale = F)
     # if (scale) proj_data <- 
     #   apply(proj_data, 2, function(x) (x - min(x)) / diff(range(x)))
+    # Probably these should be off by default
+    # We have to assume that the data is standardised when it comes into 
+    # the manipulation routine
     proj_data <- as.data.frame(proj_data)
     if (center) 
       for (i in 1:n_slides) {
         proj_data[index==i, 1:3] <- 
-          scale(proj_data[index==i, 1:3], center = T, scale = F)
+          apply(proj_data[index==i, 1:3], 2, scale, center = T, scale = F)
       }
     if (scale) {
       for (i in 1:n_slides) {
         proj_data[index==i, 1:3] <- 
-          scale(proj_data[index==i, 1:2], center = F, scale = T)
+          apply(proj_data[index==i, 1:2], 2, scale, center = F, scale = T)
         proj_data[index==i, 1:3] <- 
           apply(proj_data[index==i, 1:3], 2, function(x) (x / max(abs(x) ) ) )
       }
