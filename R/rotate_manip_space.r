@@ -1,10 +1,13 @@
 #' Rotate and return the manipulation space
 #'
-#' Primarily for internal use. Rotates [p, 3] manipulation space by [3, 3] rotation, Returns [p, 3] orthonormal matrix, XYZ components after roation
+#' This function does the manual rotation work.
+#' Rotates [p, 3] basis matrix manipulation space by [3, 3] rotation, 
+#' returning [p, 3] orthonormal matrix, XYZ components after rotation.
+#' This matrix is used to make the data projection. 
 #'
 #' @param manip_space [p, 3] manipulation space to be rotated
 #' @param theta angle of rotation w.r.t. the x-y projection. Typically set from manip_type in proj_data()
-#' @param phi angle corisponding to the magnitude of manipulation
+#' @param phi angle in radians corresponding to the magnitude of manipulation
 #' @export
 rotate_manip_space <- function(manip_space, theta, phi){
   stopifnot(ncol(manip_space) == 3)
@@ -14,7 +17,7 @@ rotate_manip_space <- function(manip_space, theta, phi){
   s_phi   <- sin(phi)
   c_phi   <- cos(phi)
   
-  #3-d rotation matrix, as a function of theta and phi, [3,3]
+  # 3-d rotation matrix, as a function of theta and phi, [3,3]
   R <- matrix(c(c_theta^2 * c_phi + s_theta^2,
                 -c_theta * s_theta * (1 - c_phi),
                 -c_theta * s_phi,                      # 3 of 9

@@ -28,11 +28,10 @@
 #'     phi_to = 1.5*pi,
 #'     n_slides = 10
 #'   )
-
 proj_data <-
   function(data,
            manip_var = 1,
-           basis = basis_identity(p = ncol(data)),
+           basis = create_identity_basis(p = ncol(data)),
            manip_type = NULL,
            theta = NULL,
            center = TRUE,
@@ -60,7 +59,7 @@ proj_data <-
       manip_type3 <- "rad"
       message(manip_type, " manipulation type not found. Defaulting to 
         radial manipulation."
-              )
+      )
     }
 
     ### OTHER PARAM
@@ -96,7 +95,7 @@ proj_data <-
     if (center) 
       for (i in 1:n_slides) {
         proj_data[index==i, 1:3] <- 
-        scale(proj_data[index==i, 1:3], center = T, scale = F)
+          scale(proj_data[index==i, 1:3], center = T, scale = F)
       }
     if (scale) {
       for (i in 1:n_slides) {
