@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-inst/doc
 .pdf
 /ignore
 vignettes/introduction_files
