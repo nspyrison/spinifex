@@ -5,18 +5,20 @@
 #' @param proj_list the output of data_proj(), list of projected data and basis by index.
 #' @param col color of the data, 1 color or length of the data
 #' @import ggplot2
+#' @import ggthemes
 #' @import plotly
 #' @export
 #' @examples
 #' 
 #' data <- flea[, 1:5]
-#' proj <- proj_data(data, manip_var=2)
-#' slideshow(proj)
+#' proj1 <- proj_data(data, manip_var=2)
+#' slideshow(proj1)
 #' 
 #' pal <- rainbow(length(levels(flea$species)))
 #' col <- pal[as.numeric(flea$species)]
-#' proj <- proj_data(data, manip_var="head")
-#' slideshow(proj, col=col)
+#' p <- ncol(data)
+#' proj2 <- proj_data(data, manip_type="radial", manip_var="head", basis=create_random_basis(p), center=T, scale=T)
+#' slideshow(proj2, col=col)
 
 slideshow <- function(proj_list, col = "black", pch = "") {
   stopifnot(is.list(proj_list))
@@ -57,42 +59,39 @@ slideshow <- function(proj_list, col = "black", pch = "") {
   
   ### PLOTTING #frame needs to be in a geom_(aes()).
   # data
-  gg1 <- ggplot2::ggplot(data = proj_data, 
-                         ggplot2::aes(x = x, y = y)
-  ) +
+  gg1 <- ggplot2::ggplot(data = proj_data, ggplot2::aes(x = x, y = y) ) +
     suppressWarnings( # suppress to ignore unused aes "frame"
       ggplot2::geom_point(size = .7,
                           ggplot2::aes(frame = index, color = col, shape = pch) 
       )
-    ) + 
-    ggplot2::ylab("") + ggplot2::xlab("") + ggplot2::coord_fixed() 
+    ) + ggplot2::ylab("") + ggplot2::xlab("") + ggplot2::coord_fixed() +
+    ggplot2::theme(aspect.ratio=1, legend.position="none") +
+    ggthemes::theme_solid()
   
   # basis text and axes
-  gg2 <- suppressWarnings(# suppress to ignore unused aes "frame"
-    gg1 +
-      ggplot2::geom_text(data = proj_basis,
+  gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
+    gg1 + ggplot2::geom_text(data = proj_basis,
                          phi = proj_basis$phi,
                          size = 4, 
                          hjust = 0, 
                          vjust = 0,
+                         color = I(proj_basis$color),
                          ggplot2::aes(x = x, y = y, frame = index, 
-                                      label = label, color = "color")
-      ) +
+                                      label = label)
+                         ) +
       ggplot2::geom_segment(data = proj_basis,
                             color = "grey50",
                             size = .3,
+                            color = I(proj_basis$color),
                             ggplot2::aes(x = x, y = y, xend = 0, yend = 0, 
-                                         frame = index, color = "color")
-      )
-  )
+                                         frame = index)
+                            )
+    )
   
   # axes circle
-  gg3 <- gg2 +
-    ggplot2::geom_path(data = circ,
-                       color = "grey80",
-                       size = .3,
+  gg3 <- gg2 + ggplot2::geom_path(data = circ, color = "grey80", size = .3,
                        ggplot2::aes(x, y)
-    )
+                       )
   
   gg3$layers <- rev(gg3$layers)
   slideshow <- plotly::ggplotly(gg3) #, yaxis())
