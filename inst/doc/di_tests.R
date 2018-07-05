@@ -1,6 +1,7 @@
 library(spinifex)
 library(tidyverse)
 library(ggthemes)
+library(GGally)
 
 scale01 <- function(x) {
   x <- (x-min(x))/(max(x)-min(x))
@@ -35,7 +36,7 @@ ggplot(nasa_sub_rot, aes(x=x, y=y)) + geom_point(size=0.3)
 # one projected data, and then a separate function to string a bunch of
 # projections together
 data(flea)
-flea_std <- apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+flea_std <- apply(flea[,2:7], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
 
 basis <- create_random_basis(p = ncol(flea_std))
 flea_std_proj1 <- data.frame(as.matrix(flea_std) %*% basis)
