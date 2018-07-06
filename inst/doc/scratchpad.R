@@ -16,6 +16,20 @@ r_basis <- create_random_basis(p = p)
 #basis <- matrix(c(0.707, 0, 0.707, 0, 1, 0), ncol=2, byrow=FALSE)
 #view_basis(r_basis, data)
 
+flea_std <- apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+
+data <- flea_std
+proj1 <- proj_data(data, manip_var=3)
+
+slideshow(proj1)
+
+pal <- rainbow(length(levels(flea$species)))
+col <- pal[as.numeric(flea$species)]
+proj <- proj_data(data, manip_var="head")
+slideshow(proj, col=col)
+
+
+
 pal <- rainbow(length(levels(flea$species)))
 col <- pal[as.numeric(flea$species)]
 pch <- flea$species

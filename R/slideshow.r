@@ -10,46 +10,53 @@
 #' @export
 #' @examples
 #' 
-#' data <- flea[, 1:5]
+#' data <- flea[, 1:6]
 #' proj1 <- proj_data(data, manip_var=2)
 #' slideshow(proj1)
 #' 
-#' pal <- rainbow(length(levels(flea$species)))
-#' col <- pal[as.numeric(flea$species)]
+#' #pal <- rainbow(length(levels(flea$species)))
+#' #col <- pal[as.numeric(flea$species)]
+#' col <- flea[, 7]
 #' p <- ncol(data)
-#' proj2 <- proj_data(data, manip_type="radial", manip_var="head", basis=create_random_basis(p), center=T, scale=T)
+#' r_basis <- create_random_basis(p)
+#' proj2 <- proj_data(data, manip_type="radial", manip_var="head", basis=r_basis, center=T, scale=T)
 #' slideshow(proj2, col=col)
 
+  # data=flea[1:6];manip_var=3;basis=create_random_basis(p=ncol(data));
+  # theta=NULL;manip_type=NULL;manip_var=2; center=T; scale=T;
+  # phi_from=0;phi_to=pi;n_slides=15;col="black"; pch="";
+  # proj_list <- proj_data(data,manip_var,basis,center,scale);
+  # slideshow(proj_list,col=flea[,7])
 slideshow <- function(proj_list, col = "black", pch = "") {
   stopifnot(is.list(proj_list))
   stopifnot(length(proj_list) == 2)
   
   ### COL AND PCH HANDLING
-  nrow_data <- sum(proj[[1]][4]==1)
+  nrow_data <- sum(proj_list[[1]][4]==1)
   len_col <- length(col)
   if (!(len_col == 1 | len_col == nrow_data | 
       len_col == nrow(proj_list$proj_data) 
   ) )
-    stop("length(col) expected of length 1, nrow(data) or nrow(proj_data)")
+    stop("length(col) expected as 1, nrow(data), or nrow(proj_data)")
   if (len_col == 1 | len_col == nrow_data)
     {col <- rep(col, nrow(proj_list$proj_data) %/% len_col)}
   
   len_pch <- length(pch)
   if (!(len_pch == 1 | len_pch == nrow_data | 
-      len_pch == nrow(proj_list$proj_data) 
-  ) )
-    stop("length(pch) expected of length 1, nrow(data) or nrow(proj_data)")
+        len_pch == nrow(proj_list$proj_data) 
+        ) 
+      )
+    stop("length(pch) expected as 1, nrow(data), or nrow(proj_data)")
   if (len_pch == 1 | len_pch == nrow_data)
     pch <- rep(pch, nrow(proj_list$proj_data) %/% len_pch)
   if (!is.character(pch) & length(unique(pch)) < 30) pch <- as.character(pch)
   
   ### INITIALIZE
-  proj_data  <- proj_list$proj_data
-  proj_data  <- cbind(proj_data, col, pch)
-  proj_data  <- as.data.frame(proj_data)
-  proj_basis <- proj_list$proj_basis
+  proj_data  <- as.data.frame(proj_list$proj_data)
+  proj_data$col <- col
+  proj_data$pch <- pch
+  proj_basis <- as.data.frame(proj_list$proj_basis)
   proj_basis <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
-  proj_basis <- as.data.frame(proj_basis)
   
   angle <- seq(0, 2 * pi, length = 150)
   circ <- as.data.frame(cbind("x" = cos(angle), "y" = sin(angle) ) )
@@ -94,7 +101,7 @@ slideshow <- function(proj_list, col = "black", pch = "") {
                        )
   
   gg3$layers <- rev(gg3$layers)
-  slideshow <- plotly::ggplotly(gg3) #, yaxis())
+  slideshow <- suppressMessages( plotly::ggplotly(gg3) ) #, yaxis())
   # layout(slideshow)
   # ,
   #   title = "fixed-ratio axes",
