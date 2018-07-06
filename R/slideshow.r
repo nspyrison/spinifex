@@ -11,8 +11,18 @@
 #' @examples
 #' 
 #' data <- flea[, 1:6]
-#' proj1 <- proj_data(data, manip_var=2)
-#' slideshow(proj1)
+#' p <- ncol(data) 
+#' r_basis <- create_random_basis(p = p)
+#' proj <-
+#'   proj_data(
+#'     data = data,
+#'     basis = r_basis,
+#'     manip_var = 3, 
+#'     manip_type = "radial",
+#'     phi_from = 0,
+#'     phi_to = 1.5*pi,
+#'     n_slides = 10
+#'   )
 #' 
 #' #pal <- rainbow(length(levels(flea$species)))
 #' #col <- pal[as.numeric(flea$species)]

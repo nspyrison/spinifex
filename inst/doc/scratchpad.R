@@ -12,23 +12,14 @@ devtools::load_all()
 data <- flea[, 1:6]
 p <- ncol(data)
 r_basis <- create_random_basis(p = p)
-#i_basis <- create_identity_basis(p = p)
+#i_basis <- create_identity_basis(p = p) #NEED TO CHECK IF BASIS IS IDEN_MAT or not
 #basis <- matrix(c(0.707, 0, 0.707, 0, 1, 0), ncol=2, byrow=FALSE)
 #view_basis(r_basis, data)
 
 flea_std <- apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
-
 data <- flea_std
-proj1 <- proj_data(data, manip_var=3)
-
+proj1 <- proj_data(data, basis=r_basis, manip_var=3, scale=T,center=T)
 slideshow(proj1)
-
-pal <- rainbow(length(levels(flea$species)))
-col <- pal[as.numeric(flea$species)]
-proj <- proj_data(data, manip_var="head")
-slideshow(proj, col=col)
-
-
 
 pal <- rainbow(length(levels(flea$species)))
 col <- pal[as.numeric(flea$species)]
@@ -48,7 +39,6 @@ proj <-
 slideshow(proj, col = col)
 
 
-is_orthornormal(r_basis)
 stop()
 stop()
 

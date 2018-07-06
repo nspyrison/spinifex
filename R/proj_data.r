@@ -12,18 +12,16 @@
 #' @return list of $proj_data[n*n_slides, 7], $proj_basis[p*n_slides, 9]
 #' @export
 #' @examples
-#' 
-#' data <- flea[, 1:5]
-#' proj1 <- proj_data(data, manip_var=2)
 #'
+#' data <- flea[, 1:6]
 #' p <- ncol(data) 
 #' r_basis <- create_random_basis(p = p)
-#' proj2 <-
+#' proj <-
 #'   proj_data(
 #'     data = data,
 #'     basis = r_basis,
-#'     manip_var = 1, 
-#'     manip_type = "horizontal",
+#'     manip_var = 3, 
+#'     manip_type = "radial",
 #'     phi_from = 0,
 #'     phi_to = 1.5*pi,
 #'     n_slides = 10
