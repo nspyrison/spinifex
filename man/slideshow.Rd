@@ -4,7 +4,7 @@
 \alias{slideshow}
 \title{Slide show of the projected data and basis.}
 \usage{
-slideshow(proj_list, col = "black")
+slideshow(proj_list, col = "black", pch = "")
 }
 \arguments{
 \item{proj_list}{the output of data_proj(), list of projected data and basis by index.}
@@ -16,12 +16,27 @@ Takes the result of data_proj() and uses base graphics to view each index with d
 }
 \examples{
 
-data <- flea[, 1:5]
-proj <- proj_data(data, manip_var=2)
-slideshow(proj)
+flea_std <- 
+  apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+data <- flea_std
 
-pal <- rainbow(length(levels(flea$species)))
-col <- pal[as.numeric(flea$species)]
-proj <- proj_data(data, manip_var="head")
-slideshow(proj, col=col)
+proj1 <- proj_data(data, manip_var=3)
+slideshow(proj1)
+
+p <- ncol(data)
+r_basis <- create_random_basis(p = p)
+pch <- flea$species
+col <- flea$species
+
+proj2 <-
+  proj_data(
+    data = data,
+    basis = r_basis,
+    manip_var = 4,
+    manip_type = "radial",
+    phi_from = 0,
+    phi_to = pi,
+    n_slides = 20
+  )
+slideshow(proj2, col = col, pch = pch)
 }

@@ -11,8 +11,11 @@ rotate_manip_space(manip_space, theta, phi)
 
 \item{theta}{angle of rotation w.r.t. the x-y projection. Typically set from manip_type in proj_data()}
 
-\item{phi}{angle corisponding to the magnitude of manipulation}
+\item{phi}{angle in radians corresponding to the magnitude of manipulation}
 }
 \description{
-Primarily for internal use. Rotates [p, 3] manipulation space by [3, 3] rotation, Returns [p, 3] orthonormal matrix, XYZ components after roation
+This function does the manual rotation work.
+Rotates [p, 3] basis matrix manipulation space by [3, 3] rotation, 
+returning [p, 3] orthonormal matrix, XYZ components after rotation.
+This matrix is used to make the data projection.
 }

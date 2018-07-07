@@ -4,8 +4,8 @@
 \alias{proj_data}
 \title{Project data by the rotated space. Return a list of projected data and basis.}
 \usage{
-proj_data(data, manip_var, basis = basis_identity(p = ncol(data)),
-  manip_type = NULL, theta = NULL, center = TRUE, scale = TRUE,
+proj_data(data, manip_var, basis = create_random_basis(p = ncol(data)),
+  manip_type = NULL, theta = NULL, center = FALSE, scale = FALSE,
   phi_from = 0, phi_to = 2 * pi, n_slides = 15)
 }
 \arguments{
@@ -31,19 +31,25 @@ Project [n, p] data by [p, 3] rotated manipulation space, includes some parmeter
 }
 \examples{
 
-data <- flea[, 1:5]
-proj1 <- proj_data(data, manip_var=2)
+flea_std <- 
+  apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+data <- flea_std
 
-p <- ncol(data) 
+proj1 <- proj_data(data, manip_var=3)
+
+p <- ncol(data)
 r_basis <- create_random_basis(p = p)
+pch <- flea$species
+col <- flea$species
+
 proj2 <-
   proj_data(
     data = data,
     basis = r_basis,
-    manip_var = 1, 
-    manip_type = "horizontal",
+    manip_var = 4,
+    manip_type = "radial",
     phi_from = 0,
-    phi_to = 1.5*pi,
-    n_slides = 10
+    phi_to = pi,
+    n_slides = 20
   )
 }
