@@ -10,33 +10,31 @@
 #' @export
 #' @examples
 #' 
-#' data <- flea[, 1:6]
-#' p <- ncol(data) 
+#' flea_std <- 
+#'   apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+#' data <- flea_std
+#' 
+#' proj1 <- proj_data(data, manip_var=3)
+#' slideshow(proj1)
+#' 
+#' p <- ncol(data)
 #' r_basis <- create_random_basis(p = p)
-#' proj <-
+#' pch <- flea$species
+#' col <- flea$species
+#' 
+#' proj2 <-
 #'   proj_data(
 #'     data = data,
 #'     basis = r_basis,
-#'     manip_var = 3, 
+#'     manip_var = 4,
 #'     manip_type = "radial",
 #'     phi_from = 0,
-#'     phi_to = 1.5*pi,
-#'     n_slides = 10
+#'     phi_to = pi,
+#'     n_slides = 20
 #'   )
-#' 
-#' #pal <- rainbow(length(levels(flea$species)))
-#' #col <- pal[as.numeric(flea$species)]
-#' col <- flea[, 7]
-#' p <- ncol(data)
-#' r_basis <- create_random_basis(p)
-#' proj2 <- proj_data(data, manip_type="radial", manip_var="head", basis=r_basis, center=T, scale=T)
-#' slideshow(proj2, col=col)
+#' slideshow(proj2, col = col, pch = pch)
 
-  # data=flea[1:6];manip_var=3;basis=create_random_basis(p=ncol(data));
-  # theta=NULL;manip_type=NULL;manip_var=2; center=T; scale=T;
-  # phi_from=0;phi_to=pi;n_slides=15;col="black"; pch="";
-  # proj_list <- proj_data(data,manip_var,basis,center,scale);
-  # slideshow(proj_list,col=flea[,7])
+
 slideshow <- function(proj_list, col = "black", pch = "") {
   stopifnot(is.list(proj_list))
   stopifnot(length(proj_list) == 2)
@@ -81,9 +79,10 @@ slideshow <- function(proj_list, col = "black", pch = "") {
       ggplot2::geom_point(size = .7,
                           ggplot2::aes(frame = index, color = col, shape = pch) 
       )
-    ) + ggplot2::ylab("") + ggplot2::xlab("") + ggplot2::coord_fixed() +
-    ggplot2::theme(aspect.ratio=1, legend.position="none") +
-    ggthemes::theme_solid()
+    ) + theme_void() + 
+    ggplot2::coord_fixed() + ggplot2::scale_color_brewer(palette = "Dark2") +
+    ggplot2::theme(legend.position = "none") 
+  #+ ggplot2::theme(aspect.ratio = 1) #ggplot a.ratio doesn't work in plotly
   
   # basis text and axes
   gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
@@ -97,7 +96,6 @@ slideshow <- function(proj_list, col = "black", pch = "") {
                                       label = label)
                          ) +
       ggplot2::geom_segment(data = proj_basis,
-                            color = "grey50",
                             size = .3,
                             color = I(proj_basis$color),
                             ggplot2::aes(x = x, y = y, xend = 0, yend = 0, 
@@ -109,15 +107,18 @@ slideshow <- function(proj_list, col = "black", pch = "") {
   gg3 <- gg2 + ggplot2::geom_path(data = circ, color = "grey80", size = .3,
                        ggplot2::aes(x, y)
                        )
-  
   gg3$layers <- rev(gg3$layers)
-  slideshow <- suppressMessages( plotly::ggplotly(gg3) ) #, yaxis())
-  # layout(slideshow)
-  # ,
-  #   title = "fixed-ratio axes",
-  #   yaxis = list(scaleanchor = "x")
-  #   )
   
+  pgg4 <- suppressMessages( 
+    plotly::ggplotly(gg3)
+    ) 
+  slideshow <- 
+    layout(pgg4, showlegend = F, #tooltip = F, hoverinfo = "none",
+           yaxis = list(showgrid = F, showline = F),
+           xaxis = 
+             list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F)
+         )
+
   stopifnot(is.list(slideshow))
   stopifnot(length(slideshow) == 8)
   return(slideshow)

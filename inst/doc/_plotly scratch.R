@@ -32,6 +32,29 @@ plot_ly(flea[,1:6], x = ~flea[,1], y = ~flea[,2], type="scatter",
         mode = "markers" , color = I("green") ,  
         marker=list( size=20 , opacity=0.5) )
 
+### plotly:: EXPORT
+
+library("ggplot2")
+library("plotly")
+#p <- plot_ly(z = ~volcano) %>% add_surface()
+
+?export
+#export(plot_ly(economics, x = ~date, y = ~pce), file="plotly_out_test.png")
+
+df1 <- data.frame(
+  x = c(1,2,3,4), 
+  y = c(1,2,3,4), 
+  f = c(1,2)
+)
+g1 <- ggplot(df1, aes(x=x, y=y)) + geom_point(aes(frame=f))
+gly1 <- ggplotly(g1)
+
+export(gly1, file="plotly_out_test1.svg") 
+  # .png, .pdf static, .gif not supported. ".html" not supported
+export(gly1) #gpes to .png
+?export
+print("basically, use .rmd to go to html.")
+
 ###GAPMINDER NOT WORKING
 library(ggplot2)
 library(plotly)
