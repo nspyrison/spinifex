@@ -12,6 +12,7 @@
 #' @return list of $proj_data[n*n_slides, 7], $proj_basis[p*n_slides, 9]
 #' @export
 #' @examples
+<<<<<<< HEAD
 #'
 #' data <- flea[, 1:6]
 #' p <- ncol(data) 
@@ -21,21 +22,36 @@
 #'     data = data,
 #'     basis = r_basis,
 #'     manip_var = 3, 
+=======
+#' 
+#' flea_std <- 
+#'   apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+#' data <- flea_std
+#' 
+#' proj1 <- proj_data(data, manip_var=3)
+#' 
+#' p <- ncol(data)
+#' r_basis <- create_random_basis(p = p)
+#' pch <- flea$species
+#' col <- flea$species
+#' 
+#' proj2 <-
+#'   proj_data(
+#'     data = data,
+#'     basis = r_basis,
+#'     manip_var = 4,
+>>>>>>> c20b254ebd19dc7824cdd6729d1bc6bf3a7db8d3
 #'     manip_type = "radial",
 #'     phi_from = 0,
-#'     phi_to = 1.5*pi,
-#'     n_slides = 10
+#'     phi_to = pi,
+#'     n_slides = 20
 #'   )
 
-  # data=flea[1:6];manip_var=3;basis=create_random_basis(p=ncol(data));
-  # theta=NULL;manip_type=NULL;manip_var=2; center=F; scale=F;
-  # phi_from=0;phi_to=pi;n_slides=15;
-  # proj <- proj_data(data,manip_var,basis,center=T,scale=T);
-  # slideshow(proj,col=flea[,7]);
+
 proj_data <-
   function(data,
            manip_var,
-           basis = create_identity_basis(p = ncol(data)),
+           basis = create_random_basis(p = ncol(data)),
            manip_type = NULL,
            theta = NULL,
            center = FALSE,
@@ -66,8 +82,11 @@ proj_data <-
     }
     
     ### OTHER PARAM
-    if (is.character(manip_var))
-      manip_var <- match(manip_var, names(data)) #char to num
+    if (is.character(manip_var)) {
+      manip_var <- match(manip_var, colnames(data)) #char to num
+      if (!is.numeric(manip_var)) 
+        stop("manip_var not found. Try column number.")
+    }
     if (!is.matrix(data)) data <- as.matrix(data)
     if (is.null(theta)) {
       if (manip_type3 == "hor") theta <- 0

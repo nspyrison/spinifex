@@ -1,13 +1,14 @@
 ### Testing and scratchpad:
-devtools::document()
-devtools::build()
+# devtools::document()
+# devtools::build()
 devtools::load_all()
 
-#### load
-#devtools::install_github("nspyrison/spinifex")
-#library(spinifex)
-#?proj_data #test documentation
+# ### load
+# devtools::install_github("nspyrison/spinifex")
+# library(spinifex)
+# ?proj_data #test documentation
 
+<<<<<<< HEAD
 ###
 data <- flea[, 1:6]
 p <- ncol(data)
@@ -23,20 +24,37 @@ slideshow(proj1)
 
 pal <- rainbow(length(levels(flea$species)))
 col <- pal[as.numeric(flea$species)]
-pch <- flea$species
+=======
+# ###
+# i_basis <- create_identity_basis(p = p)
+# basis <- matrix(c(0.707, 0, 0.707, 0, 1, 0), ncol=2, byrow=FALSE)
+# view_basis(r_basis, data)
+# is_orthornormal(r_basis)
 
-proj <-
+flea_std <- 
+  apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+data <- flea_std
+
+proj1 <- proj_data(data, manip_var=3)
+slideshow(proj1)
+
+p <- ncol(data)
+r_basis <- create_random_basis(p = p)
+>>>>>>> c20b254ebd19dc7824cdd6729d1bc6bf3a7db8d3
+pch <- flea$species
+col <- flea$species
+
+proj2 <-
   proj_data(
     data = data,
     basis = r_basis,
-    manip_var = 1, 
-    manip_type = "horizontal",
+    manip_var = 4,
+    manip_type = "radial",
     phi_from = 0,
-    phi_to = 2*pi,
-    n_slides = 20,
-    center=T
+    phi_to = pi,
+    n_slides = 20
   )
-slideshow(proj, col = col)
+slideshow(proj2, col = col, pch = pch)
 
 
 stop()
@@ -46,9 +64,8 @@ load("data/PhysDat_6PC.rda")
 load("data/fGT_6d.rda")
 phys.end <- matrix(as.numeric(fGT_6d[,,dim(fGT_6d)[3]]),ncol=2)
 
-pal <- rainbow(length(levels(PhysDat$disID)))
-col <- pal[as.numeric(PhysDat$disID)]
-pch <- as.character(PhysDat$disID)
+col <- PhysDat$disID
+pch <- PhysDat$disID
 
 proj <-
   proj_data(
@@ -60,5 +77,5 @@ proj <-
     phi_to = 2*pi,
     n_slides = 20
   )
-slideshow(proj)#, col = col)#, pch=pch)#, pch = pch)
+slideshow(proj,col = col, pch = pch)
 
