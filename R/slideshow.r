@@ -17,7 +17,7 @@
 #' proj1 <- proj_data(data, manip_var=3)
 #' slideshow(proj1)
 #' 
-#' p <- ncol(data)
+#' p <- ncol(data) 
 #' r_basis <- create_random_basis(p = p)
 #' pch <- flea$species
 #' col <- flea$species
@@ -26,7 +26,7 @@
 #'   proj_data(
 #'     data = data,
 #'     basis = r_basis,
-#'     manip_var = 4,
+#'     manip_var = 3,
 #'     manip_type = "radial",
 #'     phi_from = 0,
 #'     phi_to = pi,
@@ -113,7 +113,7 @@ slideshow <- function(proj_list, col = "black", pch = "") {
     plotly::ggplotly(gg3)
     ) 
   slideshow <- 
-    layout(pgg4, showlegend = F, #tooltip = F, hoverinfo = "none",
+    layout(pgg4, showlegend = F, tooltip = F, hoverinfo = "none",
            yaxis = list(showgrid = F, showline = F),
            xaxis = 
              list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F)
