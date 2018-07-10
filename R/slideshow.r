@@ -64,7 +64,7 @@ slideshow <- function(proj_list, col = "black", pch = "") {
   proj_data$col <- col
   proj_data$pch <- pch
   proj_basis <- as.data.frame(proj_list$proj_basis)
-  proj_basis <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
+  #proj_basis <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
   
   angle <- seq(0, 2 * pi, length = 150)
   circ <- as.data.frame(cbind("x" = cos(angle), "y" = sin(angle) ) )
