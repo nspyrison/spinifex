@@ -2,7 +2,10 @@ library(spinifex)
 library(tidyverse)
 library(ggthemes)
 library(GGally)
+library(plotly)
 
+# This code does a spatio-temporal example, making small time series at 
+# a grid of spatial locations
 scale01 <- function(x) {
   x <- (x-min(x))/(max(x)-min(x))
 }
@@ -31,7 +34,7 @@ nasa_sub_rot <- bind_cols(nasa_sub_rot_x, nasa_sub_rot_y) %>%
 
 ggplot(nasa_sub_rot, aes(x=x, y=y)) + geom_point(size=0.3)
 
-# Creating an animation
+# Creating an animation from a manual tour
 # I think that it would be better to split up the proj_data into making
 # one projected data, and then a separate function to string a bunch of
 # projections together
@@ -69,7 +72,8 @@ ggplot(flea_proj_step1, aes(x=x, y=y, colour=species)) + geom_point() +
   geom_segment(data=flea_basis_step1, aes(x=xstart, y=ystart, xend=x, yend=y), colour=I(flea_basis_step1$color)) +
   geom_text(data=flea_basis_step1, aes(x=x, y=y, label=var_name), colour=I(flea_basis_step1$color)) +
   geom_path(data=circle, aes(x=x, y=y), colour="black") +
-  theme_solid() + xlim(c(-3,3)) + ylim(c(-3,3)) +
+  #theme_solid() + 
+  xlim(c(-3,3)) + ylim(c(-3,3)) +
   theme(aspect.ratio=1, legend.position="none")
 
 fl <- "inst/doc/img/plot"
@@ -91,3 +95,15 @@ for (i in 1:max(flea_std_proj$proj_basis$index)) {
     theme(aspect.ratio=1, legend.position="none")
   ggsave(fln, p, "png")
 }
+
+# To make animation
+proj_data <- flea_std_proj$proj_data
+gg1 <- ggplot(data = proj_data, 
+                       ggplot2::aes(x = x, y = y)) +
+  suppressWarnings( # suppress to ignore unused aes "frame"
+    ggplot2::geom_point(size = .7,
+                        ggplot2::aes(frame = index) 
+    )
+  ) + 
+  ggplot2::ylab("") + ggplot2::xlab("") + ggplot2::coord_fixed() 
+ggplotly(gg1)
