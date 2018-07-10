@@ -17,7 +17,7 @@
 #' proj1 <- proj_data(data, manip_var=3)
 #' slideshow(proj1)
 #' 
-#' p <- ncol(data)
+#' p <- ncol(data) 
 #' r_basis <- create_random_basis(p = p)
 #' pch <- flea$species
 #' col <- flea$species
@@ -26,7 +26,7 @@
 #'   proj_data(
 #'     data = data,
 #'     basis = r_basis,
-#'     manip_var = 4,
+#'     manip_var = 3,
 #'     manip_type = "radial",
 #'     phi_from = 0,
 #'     phi_to = pi,
@@ -80,9 +80,15 @@ slideshow <- function(proj_list, col = "black", pch = "") {
                           ggplot2::aes(frame = index, color = col, shape = pch) 
       )
     ) + theme_void() + 
+<<<<<<< HEAD
     ggplot2::coord_fixed() + ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme(legend.position = "none") 
   #+ ggplot2::theme(aspect.ratio = 1) #ggplot a.ratio doesn't work in plotly
+=======
+    ggplot2::coord_fixed() + ggplot2::scale_fill_brewer(palette="Dark2") +
+    ggplot2::theme(legend.position="none") 
+  #+ ggplot2::theme(aspect.ratio=1) #ggplot a.ratio doesn't work in plotly
+>>>>>>> 08c6ad5ee37565db2ed43ba5c35426f5844bae14
   
   # basis text and axes
   gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
@@ -111,9 +117,16 @@ slideshow <- function(proj_list, col = "black", pch = "") {
   
   pgg4 <- suppressMessages( 
     plotly::ggplotly(gg3)
+<<<<<<< HEAD
     ) 
   slideshow <- 
     layout(pgg4, showlegend = F, #tooltip = F, hoverinfo = "none",
+=======
+    #, tooltip = F, colors = "Dark2", color = ~proj_data$col) #done in ggplot
+    ) 
+  slideshow <- 
+    layout(pgg4, showlegend = F, 
+>>>>>>> 08c6ad5ee37565db2ed43ba5c35426f5844bae14
            yaxis = list(showgrid = F, showline = F),
            xaxis = 
              list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F)
