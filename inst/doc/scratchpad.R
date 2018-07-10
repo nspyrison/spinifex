@@ -4,7 +4,7 @@
 devtools::load_all()
 
 
-# ### load
+# ### installation
 # devtools::install_local(.)
 # devtools::install_github("nspyrison/spinifex")
 # library(spinifex)
@@ -15,6 +15,7 @@ devtools::load_all()
 # basis <- matrix(c(0.707, 0, 0.707, 0, 1, 0), ncol=2, byrow=FALSE)
 # view_basis(r_basis, data)
 # is_orthornormal(r_basis)
+
 
 flea_std <- 
   apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
@@ -42,7 +43,6 @@ slideshow(proj2, col = col, pch = pch)
 
 
 stop()
-
 
 ### Phys Example
 load("data/PhysDat_6PC.rda")

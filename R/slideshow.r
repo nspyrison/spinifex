@@ -111,9 +111,22 @@ slideshow <- function(proj_list, col = "black", pch = "") {
   
   pgg4 <- suppressMessages( 
     plotly::ggplotly(gg3)
+<<<<<<< HEAD
     ) 
   slideshow <- 
     layout(pgg4, showlegend = F, tooltip = F, hoverinfo = "none",
+=======
+<<<<<<< HEAD
+    ) 
+  slideshow <- 
+    layout(pgg4, showlegend = F, #tooltip = F, hoverinfo = "none",
+=======
+    #, tooltip = F, colors = "Dark2", color = ~proj_data$col) #done in ggplot
+    ) 
+  slideshow <- 
+    layout(pgg4, showlegend = F, 
+>>>>>>> 08c6ad5ee37565db2ed43ba5c35426f5844bae14
+>>>>>>> 539529f3c5b36e3d663a51e988819740487c9f45
            yaxis = list(showgrid = F, showline = F),
            xaxis = 
              list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F)
