@@ -13,8 +13,9 @@ devtools::load_all()
 # ###
 # i_basis <- create_identity_basis(p = p)
 # basis <- matrix(c(0.707, 0, 0.707, 0, 1, 0), ncol=2, byrow=FALSE)
-# view_basis(r_basis, data)
-# is_orthornormal(r_basis)
+# is_orthornormal(basis)
+# view_basis(basis, data)
+
 
 
 flea_std <- 
