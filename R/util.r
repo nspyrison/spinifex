@@ -11,16 +11,17 @@
 # basis <- matrix(c(0.707, 0, 0.707, 0, 1, 0), ncol=2, byrow=FALSE)
 # is_orthornormal(basis)
 is_orthornormal <- function(basis) {
+  stopifnot(class(basis) %in% c("matrix", "data.frame"))
+  
   mat <- as.matrix(basis)
   mat_t <- t(mat)
   ans <- all.equal(mat_t %*% mat, diag(ncol(basis)), tol=1e-3)
   if (ans != "TRUE") {
-    message("False, at tol=1e-3. Transpose of the basis %*% basis is =")
+    message("FALSE, at tol=1e-3. Transpose of the basis %*% basis is =")
     return(mat_t %*% mat)
     } 
   else {
-    message("True at tol=1e-3.")
-    return(ans)
+    return(TRUE)
     }
 }
 
@@ -63,12 +64,13 @@ create_random_basis <- function(p, d = 2) {
 #' 
 #' #@ export
 view_basis <- function(basis, data = NULL) {
+  stopifnot(class(basis) %in% c("matrix", "data.frame"))
   
   tmp <- as.data.frame(basis)
   tmp <- cbind(tmp, sqrt(tmp[,1]^2 + tmp[,2]^2), atan(tmp[,2]/tmp[,1]))
   colnames(tmp) <- c("X", "Y", "H_xy", "theta")
   rownames(tmp) <- colnames(data)
-  view_basis <- tmp
+  output <- tmp
   
   plot(0,type='n',axes=FALSE,ann=FALSE,xlim=c(-1, 1), ylim=c(-1, 1),asp=1)
   segments(0,0, basis[, 1], basis[, 2], col="grey50")
@@ -76,5 +78,25 @@ view_basis <- function(basis, data = NULL) {
   lines(cos(theta), sin(theta), col = "grey50")
   text(basis[, 1], basis[, 2], label = colnames(data), col = "grey50")
   
-  return(view_basis)
+  return(output)
 }
+
+
+
+### new break out, orthonormalize:
+#' Orthonormalize a basis
+#' 
+#' For internal use mainly 
+#' 
+#' #@ export
+orthornormalize <- function(basis) {
+  stopifnot(class(basis) %in% c("matrix", "data.frame"))
+  
+  if (!is_othonormal(basis)) return(qr.Q(qr(mat))) #orthonormalize
+  else {
+    message("basis is already orthonormal.")
+    return(as.matrix(basis) )
+  }
+  
+}
+

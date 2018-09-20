@@ -9,8 +9,9 @@
 create_manip_space <- function(basis, manip_var){
   z <- rep(0, len = nrow(basis))
   z[manip_var] <- 1
-  manip_space <- qr.Q(qr(cbind(basis, z))) #orthonormalize
-  if (ncol(manip_space)==3) {colnames(manip_space) <- c("x","y","z")}
+  manip_space <- orthornormalize(cbind(basis, z) )
+  if (ncol(manip_space) == 3) {colnames(manip_space) <- c("x","y","z")}
+  if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
   rownames(manip_space) <- colnames(basis)
   
   stopifnot(dim(manip_space) == dim(basis) + c(0, 1))
