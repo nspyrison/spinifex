@@ -1,3 +1,23 @@
+#' Create a manipulation space
+#'
+#' Primarily internal use. Create an [p, d+1=3] orthonormal manipulation space from the given basis concatonated with a zero vector, with manip_var set to 1.
+#'
+#' @param basis [p, d=2] orthonormal basis
+#' @param manip_var number of the variable to rotate
+#' @return manip_space, a [p, d+1=3] orthonormal manipulation space
+#' @export
+create_manip_space <- function(basis, manip_var){
+  z <- rep(0, len = nrow(basis))
+  z[manip_var] <- 1
+  manip_space <- orthornormalize(cbind(basis, z) )
+  if (ncol(manip_space) == 3) {colnames(manip_space) <- c("x","y","z")}
+  if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
+  rownames(manip_space) <- colnames(basis)
+  
+  stopifnot(dim(manip_space) == dim(basis) + c(0, 1))
+  return(manip_space)
+}
+
 #' Project data by the rotated space. Return a list of projected data and basis.
 #'
 #' Project [n, p] data by [p, 3] rotated manipulation space, includes some parmeter information. Rotates the manipulation space accross phi. Returns both as a list.
@@ -12,31 +32,17 @@
 #' @return list of $proj_data[n*n_slides, 7], $proj_basis[p*n_slides, 9]
 #' @export
 #' @examples
-#'
-#' data <- flea[, 1:6]
+#' data(flea)
+#' flea_std <- 
+#'   apply(flea[,1:6], 2, function(x) 
+#'           ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+#' data <- flea_std
 #' p <- ncol(data) 
 #' r_basis <- create_random_basis(p = p)
 #' pch <- flea$species
 #' col <- flea$species
 #' 
-#' proj2 <-
-#'   proj_data(
-#'     data = data,
-#'     basis = r_basis,
-#'     manip_var = 3, 
-#' 
-#' flea_std <- 
-#'   apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
-#' data <- flea_std
-#' 
-#' proj1 <- proj_data(data, manip_var=3)
-#' 
-#' p <- ncol(data)
-#' r_basis <- create_random_basis(p = p)
-#' pch <- flea$species
-#' col <- flea$species
-#' 
-#' proj2 <-
+#' proj <-
 #'   proj_data(
 #'     data = data,
 #'     basis = r_basis,
@@ -46,8 +52,6 @@
 #'     phi_to = pi,
 #'     n_slides = 20
 #'   )
-
-
 proj_data <-
   function(data,
            manip_var,
@@ -60,6 +64,7 @@ proj_data <-
            phi_to = 2*pi,
            n_slides = 15
            ) {
+    # Lots of checks
     stopifnot(ncol(data) == nrow(basis))
     stopifnot(is.matrix(data) | is.data.frame(data))
     stopifnot(is.matrix(basis))
@@ -94,21 +99,23 @@ proj_data <-
       if (manip_type3 == "rad")
         theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
     }
-    if (center) {
-      for (i in 1:n_slides) {
-        data <- apply(data, 2, function(x) (x-mean(x, na.rm=TRUE)) )
-      }
-    }
-    if (scale) {
-      for (i in 1:n_slides) {
-        data <- apply(data, 2, function(x) (x/sd(x, na.rm=TRUE)) )
-      }
-    }
+#    if (center) {
+#      for (i in 1:n_slides) {
+#        data <- apply(data, 2, function(x) (x-mean(x, na.rm=TRUE)) )
+#      }
+#    }
+#    if (scale) {
+#      for (i in 1:n_slides) {
+#        data <- apply(data, 2, function(x) (x/sd(x, na.rm=TRUE)) )
+#      }
+#    }
     
-    ### PROJ_DATA
+    # Initialise rotation sapce
     index <- 0
     proj_data <- NULL
     manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
+
+    ### Creating sequence of projected data
     for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
       index <- index + 1
       delta <- data %*% rotate_manip_space(manip_space, theta, phi)
@@ -118,7 +125,7 @@ proj_data <-
     }
     proj_data <- as.data.frame(proj_data)
     
-    ### PROJ_BASIS
+    ### Creating sequence of projected axes
     index <- 0
     proj_basis <- NULL
     for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
