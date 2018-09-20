@@ -107,3 +107,44 @@ gg1 <- ggplot(data = proj_data,
   ) + 
   ggplot2::ylab("") + ggplot2::xlab("") + ggplot2::coord_fixed() 
 ggplotly(gg1)
+
+# Testing re-structured code
+#devtools::install()
+#devtools::document()
+library(spinifex)
+data <- flea[, 1:6]
+p <- ncol(data) 
+r_basis <- create_random_basis(p = p)
+view_basis(r_basis)
+is_orthornormal(r_basis)
+
+pch <- flea$species
+col <- flea$species
+ 
+proj2 <- proj_data(
+     data = data,
+     basis = r_basis,
+     manip_var = 3, 
+ 
+ flea_std <- 
+   apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+ data <- flea_std
+ 
+ proj1 <- proj_data(data, manip_var=3)
+ 
+ p <- ncol(data)
+ r_basis <- create_random_basis(p = p)
+ pch <- flea$species
+ col <- flea$species
+ 
+ proj2 <-
+   proj_data(
+     data = data,
+     basis = r_basis,
+     manip_var = 4,
+     manip_type = "radial",
+     phi_from = 0,
+     phi_to = pi,
+     n_slides = 20
+   )
+

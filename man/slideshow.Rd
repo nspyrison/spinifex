@@ -23,7 +23,7 @@ data <- flea_std
 proj1 <- proj_data(data, manip_var=3)
 slideshow(proj1)
 
-p <- ncol(data)
+p <- ncol(data) 
 r_basis <- create_random_basis(p = p)
 pch <- flea$species
 col <- flea$species
@@ -32,7 +32,7 @@ proj2 <-
   proj_data(
     data = data,
     basis = r_basis,
-    manip_var = 4,
+    manip_var = 3,
     manip_type = "radial",
     phi_from = 0,
     phi_to = pi,
