@@ -81,8 +81,8 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' Rotates the manipulation space accross n_slides increments from phi_from to 
 #' phi_to. Returns both as a list.
 #'
-#' @param data [n, p] dim data to project, consisting of only numeric variables 
-#' (for coercion into matrix)
+#' @param data [n, p] dim data to project, consisting of 
+#' only numeric variables (for coercion into matrix.)
 #' @param basis A [p, 2] dim orthonormal starting basis. 
 #' Defaults to the identity basis.
 #' @param manip_var Integer column or column name of the variable 
@@ -90,47 +90,42 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' @param manip_type Character string of the type of manipulation to use. 
 #' Defaults to "radial". Alternatively use "horizontal" or "vertical".
 #' supersedes theta if set.
-#' @param theta Optional parameter. Angle in radians between the axes on the
-#' reference frame the positive side of the x-axis.
+#' @param theta Optional parameter, yields to manip_type. Angle in radians 
+#' between the axes on the reference frame the positive side of the x-axis.
 #' @param phi_from Angle in radians of phi to start the projection. Defaults to 0.
 #' @param phi_to Angle in radians of phi to end the projection. Defaults to 0.
 #' @param n_slides Number of slides to create for slideshow(). Defaults to 15.
 #' @return proj_list, a list containing $proj_data[n, p, n_slides] dim list and
 #' $proj_axes[n, p, n_slides] dim list containing information about projected 
 #' data and axes respectively.
-#' @export
-#' @examples #TODO: CONTINUE REWRITE FROM HERE!!!
-#' data(flea)
-#' flea_std <-
-#'   apply(flea[,1:6], 2, function(x)
-#'           ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
-#' data <- flea_std
-#' p <- ncol(data)
-#' r_basis <- create_random_basis(p = p)
-#' pch <- flea$species
-#' col <- flea$species
 #' 
-#' proj <-
+#' @examples
+#' data(flea)
+#' data <- spinifex::rescale01(flea[, 1:6]) # standardize flea data.
+#' p <- ncol(data)
+#' ThisBasis <- create_random_basis(p = p)
+#' 
+#' ThisProj <-
 #'   proj_data(
 #'     data = data,
-#'     basis = r_basis,
+#'     basis = ThisBasis,
 #'     manip_var = 4,
 #'     manip_type = "radial",
 #'     phi_from = 0,
 #'     phi_to = pi,
 #'     n_slides = 20
 #'   )
+#' @export
 proj_data <-
   function(data,
            manip_var,
            basis = create_random_basis(p = ncol(data)),
            manip_type = c("radial", "horizontal", "vertical"),
-           theta = NULL, # [in radians]
-           center = FALSE,
-           scale = FALSE,
-           phi_from = 0, # [in radians]
+           theta = NULL,  # [in radians]
+           phi_from = 0,  # [in radians]
            phi_to = 2*pi, # [in radians]
-           n_slides = 15
+           n_slides = 15,
+           rescale01 = FALSE
            ) {
     # Assertions
     stopifnot(ncol(data) == nrow(basis))
@@ -152,60 +147,43 @@ proj_data <-
         stop("manip_var string not matched to a column name, try a column number.")
     }
     if (!is.matrix(data)) {data <- as.matrix(data)}
-    if (is.null(theta)) {
-      if (tolower(manip_type) == "horizontal") theta <- 0
-      if (tolower(manip_type) == "vertical") theta <- pi / 2
-      if (tolower(manip_type) == "radial")
-        theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
-    }
-#    if (center) {
-#      for (i in 1:n_slides) {
-#        data <- apply(data, 2, function(x) (x-mean(x, na.rm=TRUE)) )
-#      }
-#    }
-#    if (scale) {
-#      for (i in 1:n_slides) {
-#        data <- apply(data, 2, function(x) (x/sd(x, na.rm=TRUE)) )
-#      }
-#    }
+    if (manip_type == "horizontal") theta <- 0
+    if (manip_type == "vertical") theta <- pi / 2
+    if (manip_type == "radial")
+      theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+    if (rescale01) {data <- rescale01(data)}
     
     # Initialise rotation sapce
-    index <- 0
-    proj_data <- NULL
     manip_space <- 
       create_manip_space(basis = as.matrix(basis), manip_var = manip_var)
-    
-    ### Creating sequence of projected data
+    index <- 0
+    proj_data <- NULL
+    ### Create sequence of projected data
     for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
       index <- index + 1
       delta <- data %*% rotate_manip_space(manip_space, theta, phi)
       delta <- cbind(delta, index, manip_var, phi, theta)
-      proj_data <- rbind(proj_data, delta)
+      proj_data[, , index] <- delta
     }
     proj_data <- tibble::as_tibble(proj_data)
     
-    ### Creating sequence of projected axes
+    ### Create sequence of projected axes
     index <- 0
     proj_axes <- NULL
     for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
       index <- index + 1
       delta <- rotate_manip_space(manip_space, theta, phi)
-      delta <- cbind(delta, index, phi)
-      
-      proj_axes <- rbind(proj_axes, delta)
+      delta <- cbind(delta, phi)
+      proj_axes[, , index] <- delta
     }
     proj_axes <- tibble::as_tibble(proj_axes)
-    proj_axes$manip_var <- manip_var
-    proj_axes$theta <- theta
-    proj_axes$var_num <- rep(1:ncol(data), n_slides)
-    proj_axes$var_name <- rep(colnames(data), n_slides)
     
     proj_list <- list("proj_data" = proj_data,
                       "proj_axes" = proj_axes )
     
     # Output assertions
-    stopifnot(length(unique(proj_data$index)) == n_slides)
-    stopifnot(length(unique(proj_axes$index)) == n_slides)
+    stopifnot(dim(proj_data$index)[3] == n_slides)
+    stopifnot(dim(proj_axes$index)[3] == n_slides)
     stopifnot(is.data.frame(proj_data))
     stopifnot(is.data.frame(proj_axes))
     stopifnot(is.list(proj_list))
