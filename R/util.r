@@ -1,3 +1,43 @@
+#' Rescale a matrix or data frame
+#'
+#' Standardise each column to have range [0, 1].
+#'
+#' @param df data frame or matrix
+#' @return df rescaled to [0,1]
+#' @examples 
+#' data(flea)
+#' flea[, 1:6] -> ThisDf
+#' rescale01(ThisDf)
+#' @export
+rescale01 <- function(df) {
+  apply(df, 2, function(x) {(x - min(x)) / diff(range(x))} )
+}
+
+#' Orthonormalise a basis
+#' 
+#' This function checks if a basis is orthonormal, and if not it
+#' does the orthonormalisation there of.
+#' 
+#' @param basis A [p, d=2] basis, containing the xy contributions of each dimension (numeric variable). 
+#' 
+#' @examples 
+#'  matrix(c(runif(6)), ncol=2, byrow=FALSE) -> ThisBasis
+#' is_orthornormal(ThisBasis) # message and returns basis^t <dot product> basis.
+#' orthornormalize(ThisBasis)
+#' @export
+orthornormalise <- function(basis) {
+  stopifnot(class(basis) %in% c("matrix", "data.frame"))
+  
+  if (class(basis) != "matrix") {basis <- as.matrix(basis)}
+  if (!is_orthonormal(basis)) {
+    return(qr.Q(qr(mat))) #orthonormalize
+    else {
+      message("basis is already orthonormal.")
+      return(basis)
+    }
+  }
+}
+
 #' Check for orthonormality of a basis (or matrix)
 #' 
 #' Checks if basis^t <dot product> basis is close to the [d, d] identity matrix.
@@ -114,29 +154,4 @@ view_basis <- function(basis, data = NULL) {
   stopifnot(class(axes) == "tibble")
   stopifnot(dim(axes) == (dim(basis) + c(0,2)) )
   return(axes)
-}
-
-#' Orthonormalize a basis
-#' 
-#' This function checks if a basis is orthonormal, and if not it
-#' does the orthonormalisation there of.
-#' 
-#' @param basis A [p, d=2] basis, containing the xy contributions of each dimension (numeric variable). 
-#' 
-#' @examples 
-#'  matrix(c(runif(6)), ncol=2, byrow=FALSE) -> ThisBasis
-#' is_orthornormal(ThisBasis) # message and returns basis^t <dot product> basis.
-#' orthornormalize(ThisBasis)
-#' @export
-orthornormalize <- function(basis) {
-  stopifnot(class(basis) %in% c("matrix", "data.frame"))
-  
-  if (class(basis) != "matrix") {basis <- as.matrix(basis)}
-  if (!is_orthonormal(basis)) {
-    return(qr.Q(qr(mat))) #orthonormalize
-    else {
-      message("basis is already orthonormal.")
-      return(basis)
-    }
-  }
 }
