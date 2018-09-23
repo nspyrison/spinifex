@@ -1,15 +1,17 @@
-### c+p from 'is_orthonormal.r':
-#' Check for orthonormality of a matrix (or basis)
+#' Check for orthonormality of a basis (or matrix)
 #' 
-#' For internal use mainly. returns TRUE or basis transposed %*% basis, would be identity matrix if basis is orthernormal
+#' Checks if basis^t <dot product> basis is close to the [d, d] identity matrix.
+#' Returns TRUE if each element is withing e-3 of the identity, otherwise throws
+#' a message and returns basis^t <dot product> basis.
 #' 
-#' @param basis a matrix or data.frame to check for orthonormality
+#' @param basis A matrix or data.frame to check for orthonormality.
+#' @return TRUE, or prints a message and returns basis^t <dot product> basis.
 #' 
 #' @examples 
-#' basis <- create_random_basis(p=6)
-#' is_orthonormal(basis)
-#' basis <- matrix(c(runif(6)), ncol=2, byrow=FALSE)
-#' is_orthornormal(basis)
+#' create_random_basis(p=6) -> ThisBasis
+#' is_orthonormal(ThisBasis) # TRUE
+#' ThisBasis <- matrix(c(runif(6)), ncol=2, byrow=FALSE)
+#' is_orthornormal(ThisBasis) # message and returns basis^t <dot product> basis.
 #' @export
 is_orthonormal <- function(basis) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
@@ -17,8 +19,8 @@ is_orthonormal <- function(basis) {
   mat <- as.matrix(basis)
   mat_t <- t(mat)
   ans <- all.equal(mat_t %*% mat, diag(ncol(basis)), tol=1e-3)
-  if (ans != "TRUE") {
-    message("FALSE, at tol=1e-3. Transpose of the basis %*% basis is =")
+  if (ans != TRUE) {
+    message("FALSE, at tol=1e-3. basis^t %*% basis is:")
     return(mat_t %*% mat)
   } 
   else {
@@ -26,18 +28,17 @@ is_orthonormal <- function(basis) {
   }
 }
 
-#' Create and return an orthonormalized random basis
+#' Create and return a random, then orthonormalized basis
 #'
-#' Creates a [p, d=2] basis of random values then orthonormalize it
+#' Creates a [p, d=2] dim basis of random values, orthonormalize it, and returns it.
 #'
-#' @param p number of dimensions of the data
-#' @param d number of dimensions of the basis.Defaults to 2.
-#' @return orthonormalized basis [p, d=2]
+#' @param p Number of dimensions (numeric variables) of the data.
+#' @param d Number of dimensions of the basis. Defaults to 2.
+#' @return Orthonormalized basis of dim [p, d=2] made from random values.
 #' 
 #' @examples 
-#' create_random_basis()
+#' create_random_basis(6)
 #' @export
-#' 
 create_random_basis <- function(p, d = 2) {
   stopifnot(class(p) %in% c("integer", "numeric"))
   stopifnot(class(d) %in% c("integer", "numeric"))
@@ -55,14 +56,22 @@ create_random_basis <- function(p, d = 2) {
 
 #' Creates and returns an identity basis
 #'
-#' Creates a [p, d=2] identity basis; identity matrix followed by 0s
+#' Creates a [p, d=2] dim identity basis; identity matrix followed by rows 0s.
 #'
-#' @param p number of dimensions of the data
-#' @param d number of dimensions of the basis. Defaults to 2
-#' @return [p, d=2] identity matrix followed by rows of 0s
-#' @export
+#' @param p number of dimensions of the data. p must be equal to or greater than d.
+#' @param d number of dimensions of the basis. Defaults to 2.
+#' @return A [p, d=2] dim identity matrix followed by rows of 0s.
 #' 
+#' @examples 
+#' create_identity_basis(6)
+#' @export
 create_identity_basis <- function(p, d = 2){
+  stopifnot(class(as.integer(p) == "integer"))
+  stopifnot(class(as.integer(d) == "integer"))
+  stopifnot(length(p) == 1)
+  stopifnot(length(d) == 1)
+  stopifnot(p >= d)
+  
   basis <- matrix(0, nrow = p, ncol = d)
   diag(basis) <- 1
   
@@ -70,48 +79,64 @@ create_identity_basis <- function(p, d = 2){
   return(basis)
 }
 
-#' View basis axes and table
+#' Plot projection frame and return the axes table.
 #' 
-#' This function can be used to draw the circle with axes 
-#' representing the projection frame. Mainly for internal use. 
+#' Uses base graphics to plot the circle with axes representing
+#' the projection frame. Returns the corrisponding table.
 #' 
-#' @param basis [p, d=2] basis, xy contributions of the var. 
-#' @param data optional, [n, p], applies colnames to the rows of the basis.
+#' @param basis A [p, d=2] basis, xy contributions of each dimension (numeric variable). 
+#' @param data Optional, of [n, p] dim, applies colnames to the rows of the basis.
 #' 
+#' @examples 
+#' create_identity_basis(6) -> ThisBasis
+#' view_basis(ThisBasis)
 #' @export
 view_basis <- function(basis, data = NULL) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   
-  tmp <- as.data.frame(basis)
+  tmp <- basis
   tmp <- cbind(tmp, sqrt(tmp[,1]^2 + tmp[,2]^2), atan(tmp[,2]/tmp[,1]))
-  colnames(tmp) <- c("X", "Y", "H_xy", "theta")
-  rownames(tmp) <- colnames(data)
-  output <- tmp
+  colnames(tmp) <- c("X", "Y", "norm_xy", "theta")
+  axes <- tibble::as_tibble(tmp)
+  
+  lab = NULL
+  if (!is.null(data)) {
+    rownames(tmp) <- colnames(data)
+    this_label = colnames(data)
+    }
   
   plot(0,type='n',axes=FALSE,ann=FALSE,xlim=c(-1, 1), ylim=c(-1, 1),asp=1)
   segments(0,0, basis[, 1], basis[, 2], col="grey50")
   theta <- seq(0, 2 * pi, length = 50)
   lines(cos(theta), sin(theta), col = "grey50")
-  text(basis[, 1], basis[, 2], label = colnames(data), col = "grey50")
+  text(basis[, 1], basis[, 2], label = this_label, col = "grey50")
   
-  return(output)
+  stopifnot(class(axes) == "tibble")
+  stopifnot(dim(axes) == (dim(basis) + c(0,2)) )
+  return(axes)
 }
 
 #' Orthonormalize a basis
 #' 
 #' This function checks if a basis is orthonormal, and if not it
-#' does the orthonormalisation. Mostly for internal use.
+#' does the orthonormalisation there of.
 #' 
+#' @param basis A [p, d=2] basis, containing the xy contributions of each dimension (numeric variable). 
+#' 
+#' @examples 
+#'  matrix(c(runif(6)), ncol=2, byrow=FALSE) -> ThisBasis
+#' is_orthornormal(ThisBasis) # message and returns basis^t <dot product> basis.
+#' orthornormalize(ThisBasis)
 #' @export
 orthornormalize <- function(basis) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   
-  if (!is_orthonormal(basis)) 
+  if (class(basis) != "matrix") {basis <- as.matrix(basis)}
+  if (!is_orthonormal(basis)) {
     return(qr.Q(qr(mat))) #orthonormalize
-  else {
-    message("basis is already orthonormal.")
-    return(as.matrix(basis))
+    else {
+      message("basis is already orthonormal.")
+      return(basis)
+    }
   }
-  
 }
-
