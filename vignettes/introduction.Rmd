@@ -1,17 +1,15 @@
 ---
-title: "spinifex Vignette"
-author: "Nicholas Spyrison"
+title: ""
+author: "Nicholas S Spyrison"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
-#EXAMPLE: https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  
 ---
-
+<!-- #EXAMPLE: https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   echo       = TRUE,   #code
@@ -33,25 +31,25 @@ knitr::opts_chunk$set(
 
 ## Motivation
 
-Datasets commonly contain many (p>3) variables/dimensions. Numeric aggregation and modeling is scalable as the number of dimensions increase. Visualization of model and estimate-space (think residual or parallel coordinate plots) scale relatively well with dimension. Yet, visuals in data-space often fall by the wayside, especially when trying to illustrate more than 3 dimensions. If not all together abandanded, suboptimal techniques are commonly employed.
+Data sets commonly contain many (p>3) variables/dimensions. Numeric aggregation and modeling is scalable as the number of dimensions increase. Visualization of model and estimate-space (think residual or parallel coordinate plots) scale relatively well with dimension. Yet, visuals in data-space often fall by the wayside, especially when trying to illustrate more than 3 dimensions. If not all together abandoned, sub-optimal techniques are commonly employed.
 
 ## Alternateives
 
-Traditionally, component analysis (PCA), correspondence analysis (CCA), or other single value decomposistion (SVD) techniques have been used to approximate high dim spaces in 2 or 3-d. However doing so requires the loss of information of the discarded, transformed dimensions.
+Traditionally, component analysis (PCA), correspondence analysis (CCA), or other single value decomposition (SVD) techniques have been used to approximate high dim spaces in 2 or 3-d. However doing so requires the loss of information of the discarded, transformed dimensions.
 
-More recently stochastic neighbor embedding (t-SNE), Sammon mapping, and other non-linear transformations have seen a rise in popularity. These techniques can make astounding graphs showing distinctions and likeness across groups, but can suffer from over-fitting (potentially resulting in flase groupings) and lose interprebility back to the original dimensions.
+More recently stochastic neighbor embedding (t-SNE), Sammon mapping, and other non-linear transformations have seen a rise in popularity. These techniques can make astounding graphs showing distinctions and likeness across groups, but can suffer from over-fitting (potentially resulting in false groupings) and lose interoperability back to the original dimensions.
 
 ## Tourr and methodology
 
-The R package tourr [@Cook&Wickham] provides open source tools for exploring high dim spaces that doesn't lose information and maintains dimension-interprebility. Orthonormal linear combinations of p-dimensions can be projected onto a 2-d surface and viewed as a xy scatter plot for instance. By changing the (constrained) linear combinations slightly, the 2-d projection changes in time as data are rotated in p-dimensions. Randomly selecting a dimension and direction of change is essentially the projection-pursuit method, "grand tour", orginally purposed by Asimov [@Asimov et. al. 1985]. Other tours and gradient-descent indexs are discussed in the tourr package documentation hosted on CRAN, [here](https://cran.r-project.org/web/packages/tourr/tourr.pdf).
+The R package tourr [@Cook&Wickham] provides open source tools for exploring high dim spaces that doesn't lose information and maintains dimension-interoperability. Orthonormal linear combinations of p-dimensions can be projected onto a 2-d surface and viewed as a XY scatter plot for instance. By changing the (constrained) linear combinations slightly, the 2-d projection changes in time as data are rotated in p-dimensions. Randomly selecting a dimension and direction of change is essentially the projection-pursuit method, "grand tour", originally purposed by Asimov [@Asimov et. al. 1985]. Other tours and gradient-descent indexes are discussed in the tourr package documentation hosted on CRAN, [here](https://cran.r-project.org/web/packages/tourr/tourr.pdf).
 
-This concept can be illustrated susinctly by example. A 3-d object blocks a light source that casts a shadow onto a screen. If the object is a four-legged chair some orientations look like a black square, this conveys  little information about the shape of the object. However if the chair is rotated side or front view is seen. With continued rotation the 3-d shape can be distinguished from a 2-d animation. In the same way, information and interesting profiles describing high dimensional data can be found by watching projections of the data as it rotates.
+This concept can be illustrated succinctly by example. A 3-d object blocks a light source that casts a shadow onto a screen. If the object is a four-legged chair some orientations look like a black square, this conveys  little information about the shape of the object. However if the chair is rotated side or front view is seen. With continued rotation the 3-d shape can be distinguished from a 2-d animation. In the same way, information and interesting profiles describing high dimensional data can be found by watching projections of the data as it rotates.
 
 # Code examples
 
 ## Example 1 - Rotate arbitrary basis
 
-We'll use the flea dataset. The data consists of 74 observations of 6 physical disance measurements of a flea-beatle belonging to 1 of 3 speices. This is analogous to the iris dataset.
+We'll use the flea data set. The data consists of 74 observations of 6 physical distance measurements of a flea-beetle belonging to 1 of 3 spices. This is analogous to the iris data set.
 
 Suppose we want to perform a rotation on one dimensions of the 6-dimensional data.  
 
@@ -83,11 +81,11 @@ view_basis(basis = b_rand, data = data)
 
 <!-- In order to rotate the data object we effectively rotate this map. Imagine gluing the bottome of pen to the (0, 0) origin of the paper. By rotating the pen about the origin we rotate the whole paper.  -->
 
-Use `proj_data()` to rotate `data` at the current orientation `basis`, by manipulating `manip_var` of the `manip` type, for a sequence of 'phi' `from` thru `to` by an increment `by`.
+Use `proj_data()` to rotate `data` at the current orientation `basis`, by manipulating `manip_var` of the `manip` type, for a sequence of 'phi' `from` through `to` by an increment `by`.
 
 Optionally we can specify:
 
-* `manip_type`, "horizontal", "vertical", or "radial", controling the the angle w.r.t. the basis' plane to rotate the variable.
+* `manip_type`, "horizontal", "vertical", or "radial", controlling the the angle w.r.t. the basis' plane to rotate the variable.
 * `phi_from`, the start angle to rotate the variable from, in the z direction of the basis plane.
 * `Phi_to`, the end angle to rotate the variable to, in the z direction of the basis plane.
 * `n_slides`, the number of increments to calculate phi between the from and to values.
@@ -292,9 +290,9 @@ The tools in `naniar` help us identify where missingness is, while maintaining a
 The name 'spinifex' comes from the [spinifex hopping mouse](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, in the words of Di "it spins, it hops and needs a 'mouse'."
 
 
-## Thank you
+## Acknowledgement
 
-Thanks to Dianne Cook for direction, namesake, and the ground work underpinning this work. Thanks to Ursla Laa for use cases and prompts to keep me focused.
+Thanks to Prof. Dianne Cook for focus, namesake, and the ground work underpinning this work. Thanks to Dr. Ursula Laa for use-cases and application.
 
 ## References
 <!-- Monash prefers APA -->
