@@ -3,14 +3,15 @@
 #' 
 #' For internal use mainly. returns TRUE or basis transposed %*% basis, would be identity matrix if basis is orthernormal
 #' 
-#' @param basis a matrix to check for orthonormality
+#' @param basis a matrix or data.frame to check for orthonormality
 #' 
-#' #@ export
-#' 
-
-# basis <- matrix(c(0.707, 0, 0.707, 0, 1, 0), ncol=2, byrow=FALSE)
-# is_orthornormal(basis)
-is_orthornormal <- function(basis) {
+#' @examples 
+#' basis <- create_random_basis(p=6)
+#' is_orthonormal(basis)
+#' basis <- matrix(c(runif(6)), ncol=2, byrow=FALSE)
+#' is_orthornormal(basis)
+#' @export
+is_orthonormal <- function(basis) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   
   mat <- as.matrix(basis)
@@ -19,15 +20,12 @@ is_orthornormal <- function(basis) {
   if (ans != "TRUE") {
     message("FALSE, at tol=1e-3. Transpose of the basis %*% basis is =")
     return(mat_t %*% mat)
-    } 
+  } 
   else {
     return(TRUE)
-    }
+  }
 }
 
-
-
-### c+p from 'create_ranom_basis.r':
 #' Create and return an orthonormalized random basis
 #'
 #' Creates a [p, d=2] basis of random values then orthonormalize it
@@ -35,11 +33,14 @@ is_orthornormal <- function(basis) {
 #' @param p number of dimensions of the data
 #' @param d number of dimensions of the basis.Defaults to 2.
 #' @return orthonormalized basis [p, d=2]
-#' #@ export
+#' 
+#' @examples 
+#' create_random_basis()
+#' @export
 #' 
 create_random_basis <- function(p, d = 2) {
-  stopifnot(class(p) == "numeric")
-  stopifnot(class(d) == "numeric")
+  stopifnot(class(p) %in% c("integer", "numeric"))
+  stopifnot(class(d) %in% c("integer", "numeric"))
   stopifnot(length(p) == 1)
   stopifnot(length(d) == 1)
   
@@ -52,17 +53,32 @@ create_random_basis <- function(p, d = 2) {
   return(basis)
 }
 
+#' Creates and returns an identity basis
+#'
+#' Creates a [p, d=2] identity basis; identity matrix followed by 0s
+#'
+#' @param p number of dimensions of the data
+#' @param d number of dimensions of the basis. Defaults to 2
+#' @return [p, d=2] identity matrix followed by rows of 0s
+#' @export
+#' 
+create_identity_basis <- function(p, d = 2){
+  basis <- matrix(0, nrow = p, ncol = d)
+  diag(basis) <- 1
+  
+  stopifnot(dim(basis) == c(p,d))
+  return(basis)
+}
 
-
-### c+p from 'view_basis':
 #' View basis axes and table
 #' 
-#' For internal use mainly 
+#' This function can be used to draw the circle with axes 
+#' representing the projection frame. Mainly for internal use. 
 #' 
 #' @param basis [p, d=2] basis, xy contributions of the var. 
 #' @param data optional, [n, p], applies colnames to the rows of the basis.
 #' 
-#' #@ export
+#' @export
 view_basis <- function(basis, data = NULL) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   
@@ -81,21 +97,20 @@ view_basis <- function(basis, data = NULL) {
   return(output)
 }
 
-
-
-### new break out, orthonormalize:
 #' Orthonormalize a basis
 #' 
-#' For internal use mainly 
+#' This function checks if a basis is orthonormal, and if not it
+#' does the orthonormalisation. Mostly for internal use.
 #' 
-#' #@ export
+#' @export
 orthornormalize <- function(basis) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   
-  if (!is_othonormal(basis)) return(qr.Q(qr(mat))) #orthonormalize
+  if (!is_orthonormal(basis)) 
+    return(qr.Q(qr(mat))) #orthonormalize
   else {
     message("basis is already orthonormal.")
-    return(as.matrix(basis) )
+    return(as.matrix(basis))
   }
   
 }

@@ -30,19 +30,17 @@ list of $proj_data[n*n_slides, 7], $proj_basis[p*n_slides, 9]
 Project [n, p] data by [p, 3] rotated manipulation space, includes some parmeter information. Rotates the manipulation space accross phi. Returns both as a list.
 }
 \examples{
-
+data(flea)
 flea_std <- 
-  apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+  apply(flea[,1:6], 2, function(x) 
+          ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
 data <- flea_std
-
-proj1 <- proj_data(data, manip_var=3)
-
-p <- ncol(data)
+p <- ncol(data) 
 r_basis <- create_random_basis(p = p)
 pch <- flea$species
 col <- flea$species
 
-proj2 <-
+proj <-
   proj_data(
     data = data,
     basis = r_basis,
