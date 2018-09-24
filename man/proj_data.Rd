@@ -4,14 +4,11 @@
 \alias{proj_data}
 \title{Project data by the rotated space across incremental changes}
 \usage{
-proj_data(data, manip_var, basis = create_random_basis(p = ncol(data)),
+proj_data(manip_var = 3, basis = basis_random(n = ncol(data)),
   manip_type = c("radial", "horizontal", "vertical"), theta = NULL,
-  phi_from = 0, phi_to = 2 * pi, n_slides = 15, rescale01 = FALSE)
+  phi_from = 0, phi_to = 2 * pi, n_slides = 15)
 }
 \arguments{
-\item{data}{[n, p] dim data to project, consisting of 
-only numeric variables (for coercion into matrix.)}
-
 \item{manip_var}{Integer column or column name of the variable 
 to manipulate. Required, does not default.}
 
@@ -30,6 +27,9 @@ between the axes on the reference frame the positive side of the x-axis.}
 \item{phi_to}{Angle in radians of phi to end the projection. Defaults to 0.}
 
 \item{n_slides}{Number of slides to create for slideshow(). Defaults to 15.}
+
+\item{data}{[n, p] dim data to project, consisting of 
+only numeric variables (for coercion into matrix.)}
 }
 \value{
 proj_list, a list containing $proj_data[n, p, n_slides] dim list and
@@ -51,7 +51,6 @@ rb <- basis_random(n = ncol(data), d=2)
 
 prj <-
   proj_data(
-    data = data,
     basis = rb,
     manip_var = 4,
     manip_type = "radial",

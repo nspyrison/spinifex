@@ -18,12 +18,12 @@ create_manip_space <- function(basis, manip_var) {
   
   z <- rep(0, len = nrow(basis))
   z[manip_var] <- 1
-  manip_space <- tourr::orthonormalise(cbind(basis, z) )
+  manip_space <- tourr::orthonormalise(cbind(basis, z))
   if (ncol(manip_space) == 3) {colnames(manip_space) <- c("x","y","z")}
-  if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
+  #if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
   rownames(manip_space) <- colnames(basis)
   
-  stopifnot(dim(manip_space) == dim(basis) + c(0, 1))
+  #stopifnot(dim(manip_space) == dim(basis) + c(0, 1))
   return(manip_space)
 }
 
@@ -109,8 +109,7 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' rb <- basis_random(n = ncol(data), d=2)
 #' 
 #' prj <-
-#'   proj_data(
-#'     data = data,
+#'   manual_tour(
 #'     basis = rb,
 #'     manip_var = 4,
 #'     manip_type = "radial",
@@ -119,76 +118,81 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #'     n_slides = 20
 #'   )
 #' @export
-proj_data <-
-  function(data,
-           manip_var,
-           basis = create_random_basis(p = ncol(data)),
+manual_tour <-
+  function(manip_var = 3,
+           basis = basis_random(n = ncol(data)),
            manip_type = c("radial", "horizontal", "vertical"),
            theta = NULL,  # [in radians]
            phi_from = 0,  # [in radians]
            phi_to = 2*pi, # [in radians]
-           n_slides = 15,
-           rescale01 = FALSE
+           n_slides = 15
            ) {
     # Assertions
-    stopifnot(ncol(data) == nrow(basis))
-    stopifnot(is.matrix(data) | is.data.frame(data))
-    stopifnot(is.matrix(as.matrix(basis)) )
+    #stopifnot(ncol(data) == nrow(basis))
+    #stopifnot(is.matrix(data) | is.data.frame(data))
+    stopifnot(is.matrix(basis))
+    stopifnot(nrow(basis) > 2)
     stopifnot(manip_type %in% c("radial", "horizontal", "vertical"))
     
-    ### Handle args
+    # Set dimensions
+    p <- nrow(basis)
+    d <- ncol(basis)
+    
+    # Handle args
     # manip_type and theta
-    if (!is.null(manip_type)) {manip_type <- tolower(manip_type)}
+    if (!is.null(manip_type)) {
+      manip_type <- tolower(manip_type)
+    }
     if (!is.null(theta) & !is.null(manip_type) ) {
       message(
         "Non null theta used with manip_type. Using theta over manip_type.")
     }
     # other parameters
-    if (is.character(manip_var)) {
-      manip_var <- match(manip_var, colnames(data)) # char to num
+    #if (is.character(manip_var)) {
+    #  manip_var <- match(manip_var, colnames(data)) # char to num
       if (!is.numeric(manip_var)) 
         stop("manip_var string not matched to a column name, try a column number.")
-    }
-    if (!is.matrix(data)) {data <- as.matrix(data)}
+    #}
+    #if (!is.matrix(data)) {data <- as.matrix(data)}
     if (manip_type == "horizontal") theta <- 0
     if (manip_type == "vertical") theta <- pi / 2
     if (manip_type == "radial")
       theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
-    if (rescale01) {data <- tourr::rescale(data)}
+    #if (rescale01) {data <- tourr::rescale(data)}
     
     # Initialise rotation sapce
     manip_space <- 
-      create_manip_space(basis = as.matrix(basis), manip_var = manip_var)
-    index <- 0
-    proj_data <- NULL
+      create_manip_space(basis = basis, manip_var = manip_var)
+    #index <- 0
+    #proj_data <- NULL
     ### Create sequence of projected data
-    for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
-      index <- index + 1
-      delta <- data %*% rotate_manip_space(manip_space, theta, phi)
-      delta <- cbind(delta, index, manip_var, phi, theta)
-      proj_data[, , index] <- delta
-    }
-    proj_data <- tibble::as_tibble(proj_data)
+    #for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
+    #  index <- index + 1
+    #  delta <- data %*% rotate_manip_space(manip_space, theta, phi)
+    #  delta <- cbind(delta, index, manip_var, phi, theta)
+    #  proj_data[, , index] <- delta
+    #}
+    #proj_data <- tibble::as_tibble(proj_data)
     
     ### Create sequence of projected axes
     index <- 0
-    proj_axes <- NULL
+    proj_axes <- array(dim=c(p, d, n_slides))
     for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
       index <- index + 1
       delta <- rotate_manip_space(manip_space, theta, phi)
-      delta <- cbind(delta, phi)
-      proj_axes[, , index] <- delta
+      #delta <- cbind(delta, phi)
+      proj_axes[, , index] <- delta[,1:2]
     }
-    proj_axes <- tibble::as_tibble(proj_axes)
+    #proj_axes <- tibble::as_tibble(proj_axes)
     
-    proj_list <- list("proj_data" = proj_data,
-                      "proj_axes" = proj_axes )
+    #proj_list <- list("proj_data" = proj_data,
+    #                  "proj_axes" = proj_axes )
     
     # Output assertions
-    stopifnot(dim(proj_data$index)[3] == n_slides)
-    stopifnot(dim(proj_axes$index)[3] == n_slides)
-    stopifnot(is.data.frame(proj_data))
-    stopifnot(is.data.frame(proj_axes))
-    stopifnot(is.list(proj_list))
-    return(proj_list)
+    #stopifnot(dim(proj_data$index)[3] == n_slides)
+    #stopifnot(dim(proj_axes$index)[3] == n_slides)
+    #stopifnot(is.data.frame(proj_data))
+    #stopifnot(is.data.frame(proj_axes))
+    #stopifnot(is.list(proj_list))
+    return(proj_axes)
   }
