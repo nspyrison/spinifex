@@ -22,10 +22,10 @@ rescale01 <- function(df) {
 #' 
 #' @examples 
 #'  matrix(c(runif(6)), ncol=2, byrow=FALSE) -> ThisBasis
-#' is_orthornormal(ThisBasis) # message and returns basis^t <dot product> basis.
-#' orthornormalize(ThisBasis)
+#' is_orthonormal(ThisBasis) # message and returns basis^t <dot product> basis.
+#' orthonormalize(ThisBasis)
 #' @export
-orthornormalise <- function(basis) {
+orthonormalise <- function(basis) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   
   if (class(basis) != "matrix") {
@@ -54,7 +54,7 @@ orthornormalise <- function(basis) {
 #' create_random_basis(p=6) -> ThisBasis
 #' is_orthonormal(ThisBasis) # TRUE
 #' ThisBasis <- matrix(c(runif(6)), ncol=2, byrow=FALSE)
-#' is_orthornormal(ThisBasis) # message and returns basis^t <dot product> basis.
+#' is_orthonormal(ThisBasis) # message and returns basis^t <dot product> basis.
 #' @export
 is_orthonormal <- function(basis) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
