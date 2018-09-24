@@ -2,7 +2,7 @@
 
 export(create_identity_basis)
 export(create_manip_space)
-export(proj_data)
+export(manual_tour)
 export(rotate_manip_space)
 export(slideshow)
 export(view_basis)

@@ -76,14 +76,12 @@ rotate_manip_space <- function(manip_space, theta, phi){
   return(r_space)
 }
 
-#' Project data by the rotated space across incremental changes
+#' Produce the series of porjection bases to rotate a variable into and out of a 
+#' projection
 #'
-#' Project [n, p] dim data by [p, 3] dim rotated manipulation space. 
-#' Rotates the manipulation space accross n_slides increments from phi_from to 
-#' phi_to. Returns both as a list.
+#' Rotates the manipulation space across n_slides increments from phi_from to 
+#' phi_to. Returns an array of bases.
 #'
-#' @param data [n, p] dim data to project, consisting of 
-#' only numeric variables (for coercion into matrix.)
 #' @param basis A [p, 2] dim orthonormal starting basis. 
 #' Defaults to the identity basis.
 #' @param manip_var Integer column or column name of the variable 
@@ -102,11 +100,7 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' 
 #' @examples
 #' require(tourr)
-#' data(flea)
-#' data <- # standardize flea data.
-#'   apply(flea[,1:6], 2, function(x) 
-#'    (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE) )
-#' rb <- basis_random(n = ncol(data), d=2)
+#' rb <- basis_random(n = 6, d = 2)
 #' 
 #' prj <-
 #'   manual_tour(
