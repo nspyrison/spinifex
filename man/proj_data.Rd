@@ -44,8 +44,8 @@ phi_to. Returns both as a list.
 \examples{
 data(flea)
 data <- # standardize flea data.
-  apply(flea[,1:6], 2, function(x) {
-  ( (x - mean(x, na.rm = TRUE) ) / sd(x, na.rm = TRUE) ) ) }
+  apply(flea[,1:6], 2, function(x) 
+   (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE) )
 p <- ncol(data)
 ThisBasis <- create_random_basis(p = p)
 

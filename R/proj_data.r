@@ -18,7 +18,7 @@ create_manip_space <- function(basis, manip_var) {
   
   z <- rep(0, len = nrow(basis))
   z[manip_var] <- 1
-  manip_space <- orthornormalize(cbind(basis, z) )
+  manip_space <- orthonormalise(cbind(basis, z) )
   if (ncol(manip_space) == 3) {colnames(manip_space) <- c("x","y","z")}
   if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
   rownames(manip_space) <- colnames(basis)
@@ -102,8 +102,8 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' @examples
 #' data(flea)
 #' data <- # standardize flea data.
-#'   apply(flea[,1:6], 2, function(x) {
-#'   ( (x - mean(x, na.rm = TRUE) ) / sd(x, na.rm = TRUE) ) ) }
+#'   apply(flea[,1:6], 2, function(x) 
+#'    (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE) )
 #' p <- ncol(data)
 #' ThisBasis <- create_random_basis(p = p)
 #' 
@@ -133,7 +133,7 @@ proj_data <-
     stopifnot(ncol(data) == nrow(basis))
     stopifnot(is.matrix(data) | is.data.frame(data))
     stopifnot(is.matrix(as.matrix(basis)) )
-    stopifnot(!(tolower(manip_type) %in% c("radial", "horizontal", "vertical")))
+    stopifnot(manip_type %in% c("radial", "horizontal", "vertical"))
     
     ### Handle args
     # manip_type and theta
