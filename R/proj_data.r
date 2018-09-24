@@ -18,7 +18,7 @@ create_manip_space <- function(basis, manip_var) {
   
   z <- rep(0, len = nrow(basis))
   z[manip_var] <- 1
-  manip_space <- orthonormalise(cbind(basis, z) )
+  manip_space <- tourr::orthonormalise(cbind(basis, z) )
   if (ncol(manip_space) == 3) {colnames(manip_space) <- c("x","y","z")}
   if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
   rownames(manip_space) <- colnames(basis)
@@ -41,9 +41,10 @@ create_manip_space <- function(basis, manip_var) {
 #' @return r_space, a [p, 3] dim rotated space.
 #' 
 #' @examples
-#' create_random_basis(6) -> ThisBasis
-#' create_manip_space(ThisBasis, 4) -> ThisManipSpace
-#' rotate_manip_space(ThisManipSpace, theta = 1.58, phi = 6.32) # .5pi,. 2pi.
+#' require(tourr)
+#' prj <- basis_random(6, 2) 
+#' msp <- create_manip_space(prj, 4) 
+#' rotate_manip_space(msp, theta = 1.58, phi = 6.32) # .5pi,. 2pi.
 #' @export
 rotate_manip_space <- function(manip_space, theta, phi){
   stopifnot(ncol(manip_space) == 3)
@@ -100,17 +101,17 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' data and axes respectively.
 #' 
 #' @examples
+#' require(tourr)
 #' data(flea)
 #' data <- # standardize flea data.
 #'   apply(flea[,1:6], 2, function(x) 
 #'    (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE) )
-#' p <- ncol(data)
-#' ThisBasis <- create_random_basis(p = p)
+#' rb <- basis_random(n = ncol(data), d=2)
 #' 
-#' ThisProj <-
+#' prj <-
 #'   proj_data(
 #'     data = data,
-#'     basis = ThisBasis,
+#'     basis = rb,
 #'     manip_var = 4,
 #'     manip_type = "radial",
 #'     phi_from = 0,
@@ -153,7 +154,7 @@ proj_data <-
     if (manip_type == "vertical") theta <- pi / 2
     if (manip_type == "radial")
       theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
-    if (rescale01) {data <- rescale01(data)}
+    if (rescale01) {data <- tourr::rescale(data)}
     
     # Initialise rotation sapce
     manip_space <- 

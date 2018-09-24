@@ -24,7 +24,8 @@ returning [p, 3] orthonormal matrix, XYZ components after rotation.
 This matrix is used to make the data projection.
 }
 \examples{
-create_random_basis(6) -> ThisBasis
-create_manip_space(ThisBasis, 4) -> ThisManipSpace
-rotate_manip_space(ThisManipSpace, theta = 1.58, phi = 6.32) # .5pi,. 2pi.
+require(tourr)
+prj <- basis_random(6, 2) 
+msp <- create_manip_space(prj, 4) 
+rotate_manip_space(msp, theta = 1.58, phi = 6.32) # .5pi,. 2pi.
 }

@@ -42,17 +42,17 @@ Rotates the manipulation space accross n_slides increments from phi_from to
 phi_to. Returns both as a list.
 }
 \examples{
+require(tourr)
 data(flea)
 data <- # standardize flea data.
   apply(flea[,1:6], 2, function(x) 
    (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE) )
-p <- ncol(data)
-ThisBasis <- create_random_basis(p = p)
+rb <- basis_random(n = ncol(data), d=2)
 
-ThisProj <-
+prj <-
   proj_data(
     data = data,
-    basis = ThisBasis,
+    basis = rb,
     manip_var = 4,
     manip_type = "radial",
     phi_from = 0,

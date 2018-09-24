@@ -2,11 +2,7 @@
 
 export(create_identity_basis)
 export(create_manip_space)
-export(create_random_basis)
-export(is_orthonormal)
-export(orthonormalise)
 export(proj_data)
-export(rescale01)
 export(rotate_manip_space)
 export(slideshow)
 export(view_basis)
