@@ -2,16 +2,20 @@
 % Please edit documentation in R/util.r
 \name{view_basis}
 \alias{view_basis}
-\title{View basis axes and table}
+\title{Plot projection frame and return the axes table.}
 \usage{
 view_basis(basis, data = NULL)
 }
 \arguments{
-\item{basis}{[p, d=2] basis, xy contributions of the var.}
+\item{basis}{A [p, d=2] basis, xy contributions of each dimension (numeric variable).}
 
-\item{data}{optional, [n, p], applies colnames to the rows of the basis.}
+\item{data}{Optional, of [n, p] dim, applies colnames to the rows of the basis.}
 }
 \description{
-This function can be used to draw the circle with axes 
-representing the projection frame. Mainly for internal use.
+Uses base graphics to plot the circle with axes representing
+the projection frame. Returns the corrisponding table.
+}
+\examples{
+create_identity_basis(6) -> ThisBasis
+view_basis(ThisBasis)
 }

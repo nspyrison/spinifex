@@ -2,48 +2,57 @@
 % Please edit documentation in R/proj_data.r
 \name{proj_data}
 \alias{proj_data}
-\title{Project data by the rotated space. Return a list of projected data and basis.}
+\title{Project data by the rotated space across incremental changes}
 \usage{
 proj_data(data, manip_var, basis = create_random_basis(p = ncol(data)),
-  manip_type = NULL, theta = NULL, center = FALSE, scale = FALSE,
-  phi_from = 0, phi_to = 2 * pi, n_slides = 15)
+  manip_type = c("radial", "horizontal", "vertical"), theta = NULL,
+  phi_from = 0, phi_to = 2 * pi, n_slides = 15, rescale01 = FALSE)
 }
 \arguments{
-\item{data}{[n, p] data to project, consisting of only numeric variables (for coercion into matrix)}
+\item{data}{[n, p] dim data to project, consisting of 
+only numeric variables (for coercion into matrix.)}
 
-\item{manip_var}{integer column or string name of the variable to manipulate. Required, does not default}
+\item{manip_var}{Integer column or column name of the variable 
+to manipulate. Required, does not default.}
 
-\item{basis}{the [p, 2] orthonormal starting basis. Default to the identity basis}
+\item{basis}{A [p, 2] dim orthonormal starting basis. 
+Defaults to the identity basis.}
 
-\item{manip_type}{character string of the type of manipulation to use. Defaults to "radial". Alternatively use "horizontal" or "vertical", superseds theta if set}
+\item{manip_type}{Character string of the type of manipulation to use. 
+Defaults to "radial". Alternatively use "horizontal" or "vertical".
+supersedes theta if set.}
 
-\item{phi_from}{value of phi to start the projection. Defaults to 0}
+\item{theta}{Optional parameter, yields to manip_type. Angle in radians 
+between the axes on the reference frame the positive side of the x-axis.}
 
-\item{phi_to}{value of phi to end the projection. Defaults to 0}
+\item{phi_from}{Angle in radians of phi to start the projection. Defaults to 0.}
 
-\item{n_slides}{number of slides to create for slideshow(). Defaults to 15}
+\item{phi_to}{Angle in radians of phi to end the projection. Defaults to 0.}
+
+\item{n_slides}{Number of slides to create for slideshow(). Defaults to 15.}
 }
 \value{
-list of $proj_data[n*n_slides, 7], $proj_basis[p*n_slides, 9]
+proj_list, a list containing $proj_data[n, p, n_slides] dim list and
+$proj_axes[n, p, n_slides] dim list containing information about projected 
+data and axes respectively.
 }
 \description{
-Project [n, p] data by [p, 3] rotated manipulation space, includes some parmeter information. Rotates the manipulation space accross phi. Returns both as a list.
+Project [n, p] dim data by [p, 3] dim rotated manipulation space. 
+Rotates the manipulation space accross n_slides increments from phi_from to 
+phi_to. Returns both as a list.
 }
 \examples{
 data(flea)
-flea_std <- 
-  apply(flea[,1:6], 2, function(x) 
-          ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
-data <- flea_std
-p <- ncol(data) 
-r_basis <- create_random_basis(p = p)
-pch <- flea$species
-col <- flea$species
+data <- # standardize flea data.
+  apply(flea[,1:6], 2, function(x) {
+  ( (x - mean(x, na.rm = TRUE) ) / sd(x, na.rm = TRUE) ) ) }
+p <- ncol(data)
+ThisBasis <- create_random_basis(p = p)
 
-proj <-
+ThisProj <-
   proj_data(
     data = data,
-    basis = r_basis,
+    basis = ThisBasis,
     manip_var = 4,
     manip_type = "radial",
     phi_from = 0,

@@ -28,14 +28,17 @@ rescale01 <- function(df) {
 orthornormalise <- function(basis) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   
-  if (class(basis) != "matrix") {basis <- as.matrix(basis)}
+  if (class(basis) != "matrix") {
+    basis <- as.matrix(basis)
+  }
   if (!is_orthonormal(basis)) {
     return(qr.Q(qr(mat))) #orthonormalize
-    else {
-      message("basis is already orthonormal.")
-      return(basis)
-    }
   }
+  else {
+    message("basis is already orthonormal.")
+    return(basis)
+  }
+
 }
 
 #' Check for orthonormality of a basis (or matrix)

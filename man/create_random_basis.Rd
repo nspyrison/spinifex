@@ -2,21 +2,21 @@
 % Please edit documentation in R/util.r
 \name{create_random_basis}
 \alias{create_random_basis}
-\title{Create and return an orthonormalized random basis}
+\title{Create and return a random, then orthonormalized basis}
 \usage{
 create_random_basis(p, d = 2)
 }
 \arguments{
-\item{p}{number of dimensions of the data}
+\item{p}{Number of dimensions (numeric variables) of the data.}
 
-\item{d}{number of dimensions of the basis.Defaults to 2.}
+\item{d}{Number of dimensions of the basis. Defaults to 2.}
 }
 \value{
-orthonormalized basis [p, d=2]
+Orthonormalized basis of dim [p, d=2] made from random values.
 }
 \description{
-Creates a [p, d=2] basis of random values then orthonormalize it
+Creates a [p, d=2] dim basis of random values, orthonormalize it, and returns it.
 }
 \examples{
-create_random_basis()
+create_random_basis(6)
 }
