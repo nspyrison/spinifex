@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #' Rescale a matrix or data frame
 #'
 #' Standardise each column to have range [0, 1].
@@ -23,6 +22,7 @@ rescale01 <- function(df) {
 #' 
 #' @examples 
 #'  matrix(c(runif(6)), ncol=2, byrow=FALSE) -> ThisBasis
+<<<<<<< HEAD
 #' is_orthornormal(ThisBasis) # message and returns basis^t <dot product> basis.
 #' orthornormalize(ThisBasis)
 #' @export
@@ -37,6 +37,25 @@ orthornormalise <- function(basis) {
       return(basis)
     }
   }
+=======
+#' is_orthonormal(ThisBasis) # message and returns basis^t <dot product> basis.
+#' orthonormalize(ThisBasis)
+#' @export
+orthonormalise <- function(basis) {
+  stopifnot(class(basis) %in% c("matrix", "data.frame"))
+  
+  if (class(basis) != "matrix") {
+    basis <- as.matrix(basis)
+  }
+  if (!is_orthonormal(basis)) {
+    return(qr.Q(qr(mat))) #orthonormalize
+  }
+  else {
+    message("basis is already orthonormal.")
+    return(basis)
+  }
+
+>>>>>>> 1a1a7d05825d446ff3f39ec809db14ae7c10d334
 }
 
 #' Check for orthonormality of a basis (or matrix)
@@ -52,7 +71,7 @@ orthornormalise <- function(basis) {
 #' create_random_basis(p=6) -> ThisBasis
 #' is_orthonormal(ThisBasis) # TRUE
 #' ThisBasis <- matrix(c(runif(6)), ncol=2, byrow=FALSE)
-#' is_orthornormal(ThisBasis) # message and returns basis^t <dot product> basis.
+#' is_orthonormal(ThisBasis) # message and returns basis^t <dot product> basis.
 #' @export
 is_orthonormal <- function(basis) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
@@ -95,8 +114,6 @@ create_random_basis <- function(p, d = 2) {
   return(basis)
 }
 
-=======
->>>>>>> 077501e197abf53116b3ce8640f12d79cc37e7fa
 #' Creates and returns an identity basis
 #'
 #' Creates a [p, d=2] dim identity basis; identity matrix followed by rows 0s.

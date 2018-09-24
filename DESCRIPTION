@@ -16,8 +16,9 @@ RoxygenNote: 6.0.1
 Imports:
   tourr,
   ggplot2,
-  plotly,
-  tibble
+  dplyr,
+  tibble,
+  plotly
 Suggests: 
   knitr,
   rmarkdown

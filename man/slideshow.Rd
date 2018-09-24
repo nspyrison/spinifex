@@ -4,39 +4,26 @@
 \alias{slideshow}
 \title{Slide show of the projected data and basis.}
 \usage{
-slideshow(proj_list, col = "black", pch = "")
+slideshow(data, bases, ...)
 }
 \arguments{
-\item{proj_list}{the output of data_proj(), list of projected data and basis by index.}
+\item{data}{[n, p] dim data to project, consisting of 
+only numeric variables (for coercion into matrix.)}
 
-\item{col}{color of the data, 1 color or length of the data}
+\item{bases}{the output of manual_tour(), list of projection bases by index.}
 }
 \description{
 Takes the result of data_proj() and uses base graphics to view each index with delay in base grahics
 }
 \examples{
 
-flea_std <- 
-  apply(flea[,1:6], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
-data <- flea_std
+require(tourr)
+data(flea)
+flea_std <- rescale(flea[,1:6])
 
-proj1 <- proj_data(data, manip_var=3)
-slideshow(proj1)
+rb <- basis_random(n = ncol(flea_std), d=2)
+prj <- manual_tour(rb, manip_var=4, manip_type = "radial",
+ phi_from = 0, phi_to = pi, n_slides = 20)
+slideshow(flea_std, prj)
 
-p <- ncol(data) 
-r_basis <- create_random_basis(p = p)
-pch <- flea$species
-col <- flea$species
-
-proj2 <-
-  proj_data(
-    data = data,
-    basis = r_basis,
-    manip_var = 3,
-    manip_type = "radial",
-    phi_from = 0,
-    phi_to = pi,
-    n_slides = 20
-  )
-slideshow(proj2, col = col, pch = pch)
 }
