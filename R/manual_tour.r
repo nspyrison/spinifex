@@ -82,11 +82,6 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' Rotates the manipulation space across n_slides increments from phi_from to 
 #' phi_to. Returns an array of bases.
 #'
-<<<<<<< HEAD:R/proj_data.r
-#' @param data [n, p] dim data to project, consisting of 
-#' only numeric variables (for coercion into matrix.)
-=======
->>>>>>> 077501e197abf53116b3ce8640f12d79cc37e7fa:R/manual_tour.r
 #' @param basis A [p, 2] dim orthonormal starting basis. 
 #' Defaults to the identity basis.
 #' @param manip_var Integer column or column name of the variable 
@@ -102,19 +97,6 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' @return proj_list, a list containing $proj_data[n, p, n_slides] dim list and
 #' $proj_axes[n, p, n_slides] dim list containing information about projected 
 #' data and axes respectively.
-<<<<<<< HEAD:R/proj_data.r
-#' 
-#' @examples
-#' data(flea)
-#' data <- spinifex::rescale01(flea[, 1:6]) # standardize flea data.
-#' p <- ncol(data)
-#' ThisBasis <- create_random_basis(p = p)
-#' 
-#' ThisProj <-
-#'   proj_data(
-#'     data = data,
-#'     basis = ThisBasis,
-=======
 #' 
 #' @examples
 #' require(tourr)
@@ -123,7 +105,6 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' prj <-
 #'   manual_tour(
 #'     basis = rb,
->>>>>>> 077501e197abf53116b3ce8640f12d79cc37e7fa:R/manual_tour.r
 #'     manip_var = 4,
 #'     manip_type = "radial",
 #'     phi_from = 0,
