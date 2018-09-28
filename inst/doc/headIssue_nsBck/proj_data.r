@@ -1,16 +1,16 @@
-#' Create a manipulation space
-#'
-#' Create a [p, d+1=3] dim orthonormal manipulation space from the given
-#' basis concatonated with a zero vector, with manip_var set to 1.
-#'
-#' @param basis A [p, d=2] dim orthonormal basis.
-#' @param manip_var Number of the dimension (numeric variable) to rotate.
-#' @return manip_space, a [p, d+1=3] orthonormal manipulation space
-#' 
-#' @examples
-#' create_random_basis(6) -> ThisBasis
-#' create_manip_space(ThisBasis, 4)
-#' @export
+# Create a manipulation space
+#
+# Create a [p, d+1=3] dim orthonormal manipulation space from the given
+# basis concatonated with a zero vector, with manip_var set to 1.
+#
+# @param basis A [p, d=2] dim orthonormal basis.
+# @param manip_var Number of the dimension (numeric variable) to rotate.
+# @return manip_space, a [p, d+1=3] orthonormal manipulation space
+# 
+# @examples
+# create_random_basis(6) -> ThisBasis
+# create_manip_space(ThisBasis, 4)
+# @export
 create_manip_space <- function(basis, manip_var) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   stopifnot(class(as.integer(manip_var)) != "integer" | 
@@ -27,24 +27,24 @@ create_manip_space <- function(basis, manip_var) {
   return(manip_space)
 }
 
-#' Rotate and return the manipulation space
-#'
-#' This function does the manual rotation work.
-#' Rotates a [p, 3] basis matrix manipulation space by [3, 3] rotation, 
-#' returning [p, 3] orthonormal matrix, XYZ components after rotation.
-#' This matrix is used to make the data projection.
-#'
-#' @param manip_space A [p, 3] dim manipulation space to be rotated.
-#' @param theta Angle in radians to rotation w.r.t. the XY reference frame. 
-#' Typically set from manip_type in proj_data().
-#' @param phi Angle in radians corresponding to the magnitude of rotation.
-#' @return r_space, a [p, 3] dim rotated space.
-#' 
-#' @examples
-#' create_random_basis(6) -> ThisBasis
-#' create_manip_space(ThisBasis, 4) -> ThisManipSpace
-#' rotate_manip_space(ThisManipSpace, theta = 1.58, phi = 6.32) # .5pi,. 2pi.
-#' @export
+# Rotate and return the manipulation space
+#
+# This function does the manual rotation work.
+# Rotates a [p, 3] basis matrix manipulation space by [3, 3] rotation, 
+# returning [p, 3] orthonormal matrix, XYZ components after rotation.
+# This matrix is used to make the data projection.
+#
+# @param manip_space A [p, 3] dim manipulation space to be rotated.
+# @param theta Angle in radians to rotation w.r.t. the XY reference frame. 
+# Typically set from manip_type in proj_data().
+# @param phi Angle in radians corresponding to the magnitude of rotation.
+# @return r_space, a [p, 3] dim rotated space.
+# 
+# @examples
+# create_random_basis(6) -> ThisBasis
+# create_manip_space(ThisBasis, 4) -> ThisManipSpace
+# rotate_manip_space(ThisManipSpace, theta = 1.58, phi = 6.32) # .5pi,. 2pi.
+# @export
 rotate_manip_space <- function(manip_space, theta, phi){
   stopifnot(ncol(manip_space) == 3)
   stopifnot(is.matrix(manip_space))
@@ -75,53 +75,53 @@ rotate_manip_space <- function(manip_space, theta, phi){
   return(r_space)
 }
 
-#' Project data by the rotated space across incremental changes
-#'
-#' Project [n, p] dim data by [p, 3] dim rotated manipulation space. 
-#' Rotates the manipulation space accross n_slides increments from phi_from to 
-#' phi_to. Returns both as a list.
-#'
-#' @param data [n, p] dim data to project, consisting of 
-#' only numeric variables (for coercion into matrix.)
-#' @param basis A [p, 2] dim orthonormal starting basis. 
-#' Defaults to the identity basis.
-#' @param manip_var Integer column or column name of the variable 
-#' to manipulate. Required, does not default.
-#' @param manip_type Character string of the type of manipulation to use. 
-#' Defaults to "radial". Alternatively use "horizontal" or "vertical".
-#' supersedes theta if set.
-#' @param theta Optional parameter, yields to manip_type. Angle in radians 
-#' between the axes on the reference frame the positive side of the x-axis.
-#' @param phi_from Angle in radians of phi to start the projection. Defaults to 0.
-#' @param phi_to Angle in radians of phi to end the projection. Defaults to 0.
-#' @param n_slides Number of slides to create for slideshow(). Defaults to 15.
-#' @return proj_list, a list containing $proj_data[n, p, n_slides] dim list and
-#' $proj_axes[n, p, n_slides] dim list containing information about projected 
-#' data and axes respectively.
-#' 
-#' @examples
-#' data(flea)
+# Project data by the rotated space across incremental changes
+#
+# Project [n, p] dim data by [p, 3] dim rotated manipulation space. 
+# Rotates the manipulation space accross n_slides increments from phi_from to 
+# phi_to. Returns both as a list.
+#
+# @param data [n, p] dim data to project, consisting of 
+# only numeric variables (for coercion into matrix.)
+# @param basis A [p, 2] dim orthonormal starting basis. 
+# Defaults to the identity basis.
+# @param manip_var Integer column or column name of the variable 
+# to manipulate. Required, does not default.
+# @param manip_type Character string of the type of manipulation to use. 
+# Defaults to "radial". Alternatively use "horizontal" or "vertical".
+# supersedes theta if set.
+# @param theta Optional parameter, yields to manip_type. Angle in radians 
+# between the axes on the reference frame the positive side of the x-axis.
+# @param phi_from Angle in radians of phi to start the projection. Defaults to 0.
+# @param phi_to Angle in radians of phi to end the projection. Defaults to 0.
+# @param n_slides Number of slides to create for slideshow(). Defaults to 15.
+# @return proj_list, a list containing $proj_data[n, p, n_slides] dim list and
+# $proj_axes[n, p, n_slides] dim list containing information about projected 
+# data and axes respectively.
+# 
+# @examples
+# data(flea)
 <<<<<<< HEAD
-#' data <- spinifex::rescale01(flea[, 1:6]) # standardize flea data.
+# data <- spinifex::rescale01(flea[, 1:6]) # standardize flea data.
 =======
-#' data <- # standardize flea data.
-#'   apply(flea[,1:6], 2, function(x) 
-#'    (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE) )
+# data <- # standardize flea data.
+#   apply(flea[,1:6], 2, function(x) 
+#    (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE) )
 >>>>>>> 1a1a7d05825d446ff3f39ec809db14ae7c10d334
-#' p <- ncol(data)
-#' ThisBasis <- create_random_basis(p = p)
-#' 
-#' ThisProj <-
-#'   proj_data(
-#'     data = data,
-#'     basis = ThisBasis,
-#'     manip_var = 4,
-#'     manip_type = "radial",
-#'     phi_from = 0,
-#'     phi_to = pi,
-#'     n_slides = 20
-#'   )
-#' @export
+# p <- ncol(data)
+# ThisBasis <- create_random_basis(p = p)
+# 
+# ThisProj <-
+#   proj_data(
+#     data = data,
+#     basis = ThisBasis,
+#     manip_var = 4,
+#     manip_type = "radial",
+#     phi_from = 0,
+#     phi_to = pi,
+#     n_slides = 20
+#   )
+# @export
 proj_data <-
   function(data,
            manip_var,

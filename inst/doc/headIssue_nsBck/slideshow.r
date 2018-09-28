@@ -1,40 +1,40 @@
-#' Display the projected data and basis
-#'
-#' Takes the result of data_proj() and plotly (default) or gganimate
-#' to display and manually controlled tour.
-#'
-#' @param proj_list The output of data_proj(), list of two arrays: 
-#' projected data and axes by index.
-#' @param col COLo(u)r of the data points, expects 1 color or a color vector 
-#' with the same length equal to the number of rows (observations) in the data.
-#' @param pch Point CHaracter of the data points.
-#' @param gganimate Use gganimate graphics as opposed plotly. Defaults to FALSE.
-#' @import ggplot2
-#' @import ggthemes
-#' @import plotly
-#' @import gganimate
-#' 
-#' @examples
-#' data(flea)
-#' data <- spinifex::rescale01(flea[, 1:6]) # standardize flea data.
-#' p <- ncol(data)
-#' ThisBasis <- create_random_basis(p = p)
-#' 
-#' ThisProj <-
-#'   proj_data(
-#'     data = data,
-#'     basis = ThisBasis,
-#'     manip_var = 4,
-#'     manip_type = "radial",
-#'     phi_from = 0,
-#'     phi_to = pi,
-#'     n_slides = 20
-#'   )
-#'   
-#' pch <- flea$species # Point CHaracter
-#' col <- flea$species # COLor, COLour
-#' slideshow(ThisProj, col = col, pch = pch)
-#' @export
+# Display the projected data and basis
+#
+# Takes the result of data_proj() and plotly (default) or gganimate
+# to display and manually controlled tour.
+#
+# @param proj_list The output of data_proj(), list of two arrays: 
+# projected data and axes by index.
+# @param col COLo(u)r of the data points, expects 1 color or a color vector 
+# with the same length equal to the number of rows (observations) in the data.
+# @param pch Point CHaracter of the data points.
+# @param gganimate Use gganimate graphics as opposed plotly. Defaults to FALSE.
+# @import ggplot2
+# @import ggthemes
+# @import plotly
+# @import gganimate
+# 
+# @examples
+# data(flea)
+# data <- spinifex::rescale01(flea[, 1:6]) # standardize flea data.
+# p <- ncol(data)
+# ThisBasis <- create_random_basis(p = p)
+# 
+# ThisProj <-
+#   proj_data(
+#     data = data,
+#     basis = ThisBasis,
+#     manip_var = 4,
+#     manip_type = "radial",
+#     phi_from = 0,
+#     phi_to = pi,
+#     n_slides = 20
+#   )
+#   
+# pch <- flea$species # Point CHaracter
+# col <- flea$species # COLor, COLour
+# slideshow(ThisProj, col = col, pch = pch)
+# @export
 
 
 slideshow <- function(proj_list, col = "black", pch = "", gganimate = FALSE) {
