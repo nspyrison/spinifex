@@ -93,7 +93,7 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' @param phi_from Angle in radians of phi to start the projection. Defaults to 0.
 #' @param phi_to Angle in radians of phi to end the projection. Defaults to 0.
 #' @param n_slides Number of slides to create for slideshow(). Defaults to 15.
-#' @return proj_bases of [p, d, index] dim array of projected bases by index.
+#' @return proj_bases of [p, d, n_slides] dim array of projected bases by slide.
 #' 
 #' @examples
 #' require(tourr)
@@ -109,78 +109,49 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #'   )
 #' @export
 manual_tour <- function(manip_var = 3,
-                        basis = basis_random(n = ncol(data)),
+                        basis = create_random_basis(p = ncol(data)),
                         manip_type = "radial",
                         theta = NULL,  # [radians]
                         phi_from = 0,  # [radians]
                         phi_to = 2*pi, # [radians]
                         n_slides = 15,
-                        rescale01 = FALSE
-) {
+                        rescale01 = FALSE) {
   # Assertions
   stopifnot(is.matrix(basis))
   stopifnot(nrow(basis) > 2)
-  stopifnot(manip_type %in% c("radial", "horizontal", "vertical"))
-  
-  # Set dimensions
-  p <- nrow(basis)
-  d <- ncol(basis)
+  stopifnot(manip_type %in% c("radial", "horizontal", "vertical") )
   
   # Handle manip_var
-  if (is.character(manip_var)) {
+  if (is.numeric(manip_var)) stopifnot(manip_var %% 1 == 0)
+  if (is.numeric(manip_var)) stopifnot(manip_var <= ncol(basis) )
+  if (is.character(manip_var)) 
     manip_var <- match(manip_var, colnames(data)) # char to num
   if (!is.numeric(manip_var)) 
     stop("manip_var string not matched to a column name, try a column number.")
-  }
-
-  # Handle manip_type and theta
-  if (!is.null(manip_type)) {
-    manip_type <- tolower(manip_type)
-  }
-  if (!is.null(theta) & !is.null(manip_type) ) {
-    message(
-      "Non null theta used with manip_type. Using theta over manip_type.")
-  }
   
+  # Handle manip_type and theta
+  if (!is.null(manip_type)) manip_type <- tolower(manip_type)
+  if (!is.null(theta) & !is.null(manip_type) )
+    message("Non-null theta used with non-null manip_type. Selecting theta over manip_type.")
   if (manip_type == "horizontal") theta <- 0
   if (manip_type == "vertical") theta <- pi / 2
   if (manip_type == "radial")
     theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   
-  # Initialise rotation sapce
-  manip_space <- 
-    create_manip_space(basis = basis, manip_var = manip_var)
-  #index <- 0
-  #proj_data <- NULL
-  ### Create sequence of projected data
-  #for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
-  #  index <- index + 1
-  #  delta <- data %*% rotate_manip_space(manip_space, theta, phi)
-  #  delta <- cbind(delta, index, manip_var, phi, theta)
-  #  proj_data[, , index] <- delta
-  #}
-  #proj_data <- tibble::as_tibble(proj_data)
+  # Initialise rotation sapce and dimensions
+  manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
+  #p <- nrow(basis) # uncomment if need to initialise proj_bases to an array.
+  #d <- ncol(basis) # uncomment if need to initialise proj_bases to an array.
   
   # Create a sequence of projected bases
-  index <- 0
-  proj_bases <- array(dim=c(p, d, n_slides))
+  slide <- 0
+  proj_bases <- NULL #array(dim=c(p, d, n_slides))
   for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
-    index <- index + 1
-    delta <- rotate_manip_space(manip_space, theta, phi)
+    slide <- slide + 1
+    new_slide <- rotate_manip_space(manip_space, theta, phi)
     
-    #delta <- cbind(delta, phi)
-    proj_bases[, , index] <- delta[,1:2]
+    proj_bases[, , slide] <- new_slide[, 1:2]
   }
-  #proj_bases <- tibble::as_tibble(proj_bases)
   
-  #proj_list <- list("proj_data" = proj_data,
-  #                  "proj_bases" = proj_bases )
-  
-  # Output assertions
-  #stopifnot(dim(proj_data$index)[3] == n_slides)
-  #stopifnot(dim(proj_bases$index)[3] == n_slides)
-  #stopifnot(is.data.frame(proj_data))
-  #stopifnot(is.data.frame(proj_bases))
-  #stopifnot(is.list(proj_list))
   return(proj_bases)
 }

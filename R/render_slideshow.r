@@ -1,6 +1,7 @@
-#' Play a slideshow of the projected data and basis.
+#' Render a slideshow of the toured data and bases
 #'
-#' Takes the result of data_proj() and uses base graphics to view each index with delay in base grahics
+#' Takes the result of create_slideshow() and renders them as a graph object of 
+#' the `disp_type`. 
 #'
 #' @param data [n, p] dim data to project, consisting of 
 #'    only numeric variables (for coercion into matrix.)
@@ -20,19 +21,20 @@
 #'  phi_from = 0, phi_to = pi, n_slides = 20)
 #' slideshow(flea_std, prj)
 #' 
-play_slideshow <- function(data, bases, group_by, disp_type = "plotly", ...) {
-  # Check that data dimensions equal projection dimensions
-  stopifnot(ncol(data) == nrow(bases[,,1]))
-  #TODO: assertion here.
+render_slideshow <- function(slide_deck, 
+                             group_by = NULL,
+                             col = NULL,
+                             pch = NULL,
+                             disp_type = "plotly", 
+                             ...) {
+  # Assertions
+  stopifnot(ncol(slide_deck[1]) == nrow(slide_deck[2]))
+  stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
   
-  # other parameters
-  #if (is.character(manip_var)) {
-  #  manip_var <- match(manip_var, colnames(data)) # char to num
-  if (!is.numeric(manip_var)) 
-    stop("manip_var string not matched to a column name, try a column number.")
-  #}
-  #if (!is.matrix(data)) {data <- as.matrix(data)}
+  data_slides <- slide_deck[1]
+  bases_slides <- slide_deck[2]
   
+  #TODO: Continue here, esp.
   ### Color and point character handling
   nrow_data <- sum(proj_list[[1]][4] == 1)
   len_col <- length(col)

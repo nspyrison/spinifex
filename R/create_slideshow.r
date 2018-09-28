@@ -1,6 +1,6 @@
-#' Create a slideshow of the projected data and basis.
+#' Create a slideshow array of the projected bases
 #'
-#' Takes the result of data_proj() and uses base graphics to view each index with delay in base grahics
+#' Takes the result of manual_tour() and uses base graphics to view each index with delay in base grahics
 #'
 #' @param data [n, p] dim data to project, consisting of 
 #'    only numeric variables (for coercion into matrix.)
@@ -10,38 +10,38 @@
 #' @import plotly
 #' @export
 #' @examples
-#' 
-#' require(tourr)
 #' data(flea)
-#' flea_std <- rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(flea[,1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std), d=2)
 #' prj <- manual_tour(rb, manip_var=4, manip_type = "radial",
-#'  phi_from = 0, phi_to = pi, n_slides = 20)
+#'   phi_from = 0, phi_to = pi, n_slides = 20)
 #' create_slideshow(flea_std, prj)
-#' 
 create_slideshow <- function(data, bases, ...) {
-  # Check that data dimensions equal projection dimensions
-  stopifnot(is.matrix(data))
+  # Assertions
+  stopifnot(is.matrix(as.matrix(data) ) )
   stopifnot(is.matrix(bases))
-  stopifnot(ncol(data) == nrow(bases[, , 1]))
+  stopifnot(ncol(data) == nrow(bases[, , 1]) )
+  if (!is.matrix(data)) data <- as.matrix(data)
   
-  #TODO: assertion here.
-  
-  #TODO: Consume and fill out the slideshow for bases only.
-  # Generate the projected data, indexed by frame
-  nframes <- dim(bases)[3]
-  proj_data <- NULL
-  proj_bases <- NULL
-  for (i in 1:nframes) {
-    pd <- tibble::as_tibble(data %*% bases[, , i])
-    pd$indx <- i
-    proj_data <- dplyr::bind_rows(proj_data, pd)
-    pb <- tibble::as_tibble(bases[, , i])
-    pb$indx <- i
-    pb$lab_abbr <- lab_abbr
-    proj_bases <- dplyr::bind_rows(proj_bases, pb)
+  # Generate the projected data by slide
+  n_slides <- dim(bases)[3]
+  data_slide <- NULL
+  data_slides <- NULL
+  basis_slide <- NULL
+  bases_slides <- NULL
+  lab_abbr = " TODO: " # need manip var from attr. # also capture theta, phi?
+  for (slide in n_slides) {
+    data_slide  <- tibble::as_tibble(data %*% bases[, , slide])
+    data_slide$slide <- slide
+    data_slides <-  dplyr::bind_rows(data_slides, data_slide)
+    basis_slide <- tibble::as_tibble(bases[, , slide])
+    basis_slide$slide <- slide
+    basis_slide$lab_abbr <- lab_abbr
+    bases_slides <- dplyr::bind_rows(bases_slides, basis_slide)
   }
   
-  return(slideshow)
+  slide_deck <- list(data_slides = data_slides,
+                     bases_slides = bases_slides)
+  return(slide_deck)
 }
