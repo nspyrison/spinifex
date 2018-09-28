@@ -20,10 +20,18 @@
 #'  phi_from = 0, phi_to = pi, n_slides = 20)
 #' slideshow(flea_std, prj)
 #' 
-slideshow <- function(data, bases, ...) {
+play_slideshow <- function(data, bases, group_by, disp_type = "plotly", ...) {
   # Check that data dimensions equal projection dimensions
   stopifnot(ncol(data) == nrow(bases[,,1]))
   #TODO: assertion here.
+  
+  # other parameters
+  #if (is.character(manip_var)) {
+  #  manip_var <- match(manip_var, colnames(data)) # char to num
+  if (!is.numeric(manip_var)) 
+    stop("manip_var string not matched to a column name, try a column number.")
+  #}
+  #if (!is.matrix(data)) {data <- as.matrix(data)}
   
   ### Color and point character handling
   nrow_data <- sum(proj_list[[1]][4] == 1)
@@ -52,7 +60,6 @@ slideshow <- function(data, bases, ...) {
   proj_basis <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
   
   ### Graphics #frame needs to be in a geom_(aes()).
-   data
   gg1 <- ggplot2::ggplot(data = proj_data, ggplot2::aes(x = x, y = y) ) +
     suppressWarnings( # suppress to ignore unused aes "frame"
       ggplot2::geom_point(size = .7,

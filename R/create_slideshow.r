@@ -18,11 +18,14 @@
 #' rb <- basis_random(n = ncol(flea_std), d=2)
 #' prj <- manual_tour(rb, manip_var=4, manip_type = "radial",
 #'  phi_from = 0, phi_to = pi, n_slides = 20)
-#' slideshow(flea_std, prj)
+#' create_slideshow(flea_std, prj)
 #' 
-slideshow <- function(data, bases, ...) {
+create_slideshow <- function(data, bases, ...) {
   # Check that data dimensions equal projection dimensions
-  stopifnot(ncol(data) == nrow(bases[,,1]))
+  stopifnot(is.matrix(data))
+  stopifnot(is.matrix(bases))
+  stopifnot(ncol(data) == nrow(bases[, , 1]))
+  
   #TODO: assertion here.
   
   #TODO: Consume and fill out the slideshow for bases only.
@@ -31,17 +34,14 @@ slideshow <- function(data, bases, ...) {
   proj_data <- NULL
   proj_bases <- NULL
   for (i in 1:nframes) {
-    pd <- tibble::as_tibble(data %*% bases[,,i])
+    pd <- tibble::as_tibble(data %*% bases[, , i])
     pd$indx <- i
     proj_data <- dplyr::bind_rows(proj_data, pd)
-    pb <- tibble::as_tibble(bases[,,i])
+    pb <- tibble::as_tibble(bases[, , i])
     pb$indx <- i
     pb$lab_abbr <- lab_abbr
     proj_bases <- dplyr::bind_rows(proj_bases, pb)
   }
   
-
   return(slideshow)
 }
-
-
