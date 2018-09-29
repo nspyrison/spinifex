@@ -6,11 +6,13 @@
 #' @param basis A [p, d=2] dim orthonormal basis.
 #' @param manip_var Number of the dimension (numeric variable) to rotate.
 #' @return manip_space, a [p, d+1=3] orthonormal manipulation space
-#' 
-#' @examples
-#' create_random_basis(6) -> ThisBasis
-#' create_manip_space(ThisBasis, 4)
 #' @export
+#' @examples
+#' data(flea)
+#' flea_std <- tourr::rescale(flea[,1:6])
+#' 
+#' rb <- create_random_basis(p = ncol(flea_std) )
+#' create_manip_space(basis = rb, manip_var = 4)
 create_manip_space <- function(basis, manip_var) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   stopifnot(class(as.integer(manip_var)) != "integer" | 
@@ -20,7 +22,7 @@ create_manip_space <- function(basis, manip_var) {
   z[manip_var] <- 1
   manip_space <- tourr::orthonormalise(cbind(basis, z))
   if (ncol(manip_space) == 3) {colnames(manip_space) <- c("x","y","z")}
-  #if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
+  if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
   rownames(manip_space) <- colnames(basis)
   
   return(manip_space)
@@ -38,13 +40,15 @@ create_manip_space <- function(basis, manip_var) {
 #' Typically set from manip_type in proj_data().
 #' @param phi Angle in radians corresponding to the magnitude of rotation.
 #' @return r_space, a [p, 3] dim rotated space.
-#' 
-#' @examples
-#' require(tourr)
-#' prj <- basis_random(6, 2) 
-#' msp <- create_manip_space(prj, 4) 
-#' rotate_manip_space(msp, theta = 1.58, phi = 6.32) # .5pi,. 2pi.
 #' @export
+#' @examples
+#' data(flea)
+#' flea_std <- tourr::rescale(flea[,1:6])
+#' 
+#' rb <- create_random_basis(p = ncol(flea_std) )
+#' msp <- create_manip_space(rb, 4) 
+#' rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
+#'                    phi = runif(1, max = 2 * pi) )
 rotate_manip_space <- function(manip_space, theta, phi){
   stopifnot(ncol(manip_space) == 3)
   stopifnot(is.matrix(manip_space))
@@ -54,7 +58,7 @@ rotate_manip_space <- function(manip_space, theta, phi){
   s_phi   <- sin(phi)
   c_phi   <- cos(phi)
   
-  # A [3, 3] dim rotation matrix, as a function of theta and phi.
+  # Rotation matrix, R dim of [3, 3], a function of theta and phi.
   R <- matrix(c(c_theta^2 * c_phi + s_theta^2,
                 -c_theta * s_theta * (1 - c_phi),
                 -c_theta * s_phi,                      # 3 of 9
@@ -63,16 +67,14 @@ rotate_manip_space <- function(manip_space, theta, phi){
                 -s_theta * s_phi,                      # 6 of 9
                 c_theta * s_phi,
                 s_theta * s_phi,
-                c_phi )                                # 9 of 9
+                c_phi)                                 # 9 of 9
               ,nrow = 3, ncol = 3, byrow = TRUE)
   
-  r_space <- manip_space %*% R
-  colnames(r_space) <- colnames(manip_space)
-  rownames(r_space) <- rownames(manip_space)
+  rotation_space <- manip_space %*% R
+  colnames(rotation_space) <- colnames(manip_space)
+  rownames(rotation_space) <- rownames(manip_space)
   
-  stopifnot(dim(r_space) == c(nrow(manip_space),3) )
-  stopifnot(is.matrix(r_space))
-  return(r_space)
+  return(rotation_space)
 }
 
 #' Produce the series of porjection bases to rotate a variable into and out of a 
@@ -94,20 +96,13 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' @param phi_to Angle in radians of phi to end the projection. Defaults to 0.
 #' @param n_slides Number of slides to create for slideshow(). Defaults to 15.
 #' @return proj_bases of [p, d, n_slides] dim array of projected bases by slide.
-#' 
-#' @examples
-#' require(tourr)
-#' rb <- create_random_basis(p = 6)
-#' 
-#' prj <-
-#'   manual_tour(
-#'     basis = rb,
-#'     manip_var = 4,
-#'     phi_from = 0, # [radians]
-#'     phi_to = pi,  # [radians]
-#'     n_slides = 20
-#'   )
 #' @export
+#' @examples
+#' data(flea)
+#' flea_std <- tourr::rescale(flea[,1:6])
+#' 
+#' rb <- create_random_basis(p = ncol(flea_std) )
+#' mtour <- manual_tour(basis = rb, manip_var = 4)
 manual_tour <- function(manip_var = 3,
                         basis = create_random_basis(p = ncol(data)),
                         manip_type = "radial",

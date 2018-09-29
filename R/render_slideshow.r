@@ -11,16 +11,14 @@
 #' @import plotly
 #' @export
 #' @examples
-#' 
-#' require(tourr)
 #' data(flea)
-#' flea_std <- rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- basis_random(n = ncol(flea_std), d=2)
-#' prj <- manual_tour(rb, manip_var=4, manip_type = "radial",
-#'  phi_from = 0, phi_to = pi, n_slides = 20)
-#' slideshow(flea_std, prj)
-#' 
+#' rb <- create_random_basis(p = ncol(flea_std) )
+#' mtour <- manual_tour(rb, manip_var = 4, manip_type = "radial",
+#'                      phi_from = 0, phi_to = pi, n_slides = 20)
+#' sshow <- create_slideshow(flea_std, mtour)
+#' render_slideshow(sshow, group_by = flea$species)
 render_slideshow <- function(slide_deck, 
                              group_by = NULL,
                              col = NULL,
