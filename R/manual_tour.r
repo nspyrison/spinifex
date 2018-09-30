@@ -80,22 +80,27 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' Produce the series of porjection bases to rotate a variable into and out of a 
 #' projection
 #'
-#' Rotates the manipulation space across n_slides increments from phi_from to 
-#' phi_to. Returns an array of bases.
+#' Rotates the manipulation space across `n_slides` increments to `phi_max` and
+#' back to `phi_min`.
 #'
-#' @param basis A [p, 2] dim orthonormal starting basis. 
-#' Defaults to the identity basis.
-#' @param manip_var Integer column or column name of the variable 
-#' to manipulate. Required, does not default.
-#' @param manip_type Character string of the type of manipulation to use. 
-#' Defaults to "radial". Alternatively use "horizontal" or "vertical".
-#' supersedes theta if set.
-#' @param theta Optional parameter, yields to manip_type. Angle in radians 
-#' between the bases reference frame the positive side of the x-axis.
-#' @param phi_from Angle in radians of phi to start the projection. Defaults to 0.
-#' @param phi_to Angle in radians of phi to end the projection. Defaults to 0.
+#' @param basis A [p, 2] dim orthonormal starting basis. Required no default.
+#' @param manip_var Integer column number or string exact column name of the.
+#' variable to manipulate. Required, no default.
+#' @param manip_type String of the type of manipulation to use. 
+#' Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
+#' Required, supersedes theta if set.
+#' @param theta Optional parameter, yielding to manip_type. Angle in radians 
+#' specifying the angle between the `manip_var` and 0 on bases reference frame. 
+#' Where the 0 is the positive side of the x-axis.
+#' @param phi_min Angle in radians specifying the minimum extent that 
+#' `manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
+#' Required, defaults to 0.
+#' @param phi_max Angle in radians specifying the maximum extent that 
+#' `manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
+#' Required, defaults to 2 * pi.
 #' @param n_slides Number of slides to create for slideshow(). Defaults to 15.
-#' @return proj_bases of [p, d, n_slides] dim array of projected bases by slide.
+#' @return `m_tour`, a [p, d, n_slides] dim array of the manual tour transistion
+#' in `n_slides``increments.
 #' @export
 #' @examples
 #' data(flea)
@@ -103,17 +108,20 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' 
 #' rb <- create_random_basis(p = ncol(flea_std) )
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-manual_tour <- function(manip_var = 3,
-                        basis = create_random_basis(p = ncol(data)),
+manual_tour <- function(basis = create_random_basis(p = ncol(data)),
+                        manip_var = NULL,
                         manip_type = "radial",
-                        theta = NULL,  # [radians]
-                        phi_from = 0,  # [radians]
-                        phi_to = 2*pi, # [radians]
+                        theta = NULL,   # [radians]
+                        phi_min = 0,    # [radians]
+                        phi_max = 2*pi, # [radians]
                         n_slides = 15,
-                        rescale01 = FALSE) {
+                        #rescale = FALSE,
+                        center = TRUE
+                        ) { 
   # Assertions
   stopifnot(is.matrix(basis))
   stopifnot(nrow(basis) > 2)
+  stopifnot(!is.null(manip_var))
   stopifnot(manip_type %in% c("radial", "horizontal", "vertical") )
   
   # Handle manip_var
@@ -133,20 +141,22 @@ manual_tour <- function(manip_var = 3,
   if (manip_type == "radial")
     theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   
-  # Initialise rotation sapce and dimensions
+  # Initalize and create a sequence of projected bases
   manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
   #p <- nrow(basis) # uncomment if need to initialise proj_bases to an array.
   #d <- ncol(basis) # uncomment if need to initialise proj_bases to an array.
-  
-  # Create a sequence of projected bases
+  m_tour <- NULL #array(dim=c(p, d, n_slides))
   slide <- 0
-  proj_bases <- NULL #array(dim=c(p, d, n_slides))
-  for (phi in seq(phi_from, phi_to, length.out = n_slides) ) {
+  for (phi in seq(phi_min, phi_max, length.out = n_slides) ) {
     slide <- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
     
-    proj_bases[, , slide] <- new_slide[, 1:2]
+    m_tour[, , slide] <- new_slide[, 1:2]
   }
   
-  return(proj_bases)
+  if (center) 
+    for (slide in 1:n_slides)
+      apply(m_tour, 2, function(col) (col - median(col)) )
+  
+  return(m_tour)
 }
