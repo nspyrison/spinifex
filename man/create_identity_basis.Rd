@@ -4,7 +4,7 @@
 \alias{create_identity_basis}
 \title{Creates and returns an identity basis}
 \usage{
-create_identity_basis(p, d = 2)
+create_identity_basis(p = 6, d = 2)
 }
 \arguments{
 \item{p}{number of dimensions of the data. p must be equal to or greater than d.}
@@ -18,5 +18,5 @@ A [p, d=2] dim identity matrix followed by rows of 0s.
 Creates a [p, d=2] dim identity basis; identity matrix followed by rows 0s.
 }
 \examples{
-create_identity_basis(6)
+create_identity_basis()
 }

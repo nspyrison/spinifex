@@ -24,8 +24,11 @@ returning [p, 3] orthonormal matrix, XYZ components after rotation.
 This matrix is used to make the data projection.
 }
 \examples{
-require(tourr)
-prj <- basis_random(6, 2) 
-msp <- create_manip_space(prj, 4) 
-rotate_manip_space(msp, theta = 1.58, phi = 6.32) # .5pi,. 2pi.
+data(flea)
+flea_std <- tourr::rescale(flea[,1:6])
+
+rb <- tourr::basis_random(n=ncol(flea_std))
+msp <- create_manip_space(rb, 4) 
+rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
+                   phi = runif(1, max = 2 * pi) )
 }

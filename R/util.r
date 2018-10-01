@@ -7,13 +7,9 @@
 #' @return A [p, d=2] dim identity matrix followed by rows of 0s.
 #' 
 #' @examples 
-#' create_identity_basis(6)
+#' create_identity_basis()
 #' @export
-create_identity_basis <- function(p, d = 2){
-  stopifnot(class(as.integer(p) == "integer"))
-  stopifnot(class(as.integer(d) == "integer"))
-  stopifnot(length(p) == 1)
-  stopifnot(length(d) == 1)
+create_identity_basis <- function(p = 6, d = 2){
   stopifnot(p >= d)
   
   basis <- matrix(0, nrow = p, ncol = d)
@@ -32,30 +28,23 @@ create_identity_basis <- function(p, d = 2){
 #' @param data Optional, of [n, p] dim, applies colnames to the rows of the basis.
 #' 
 #' @examples 
-#' create_identity_basis(6) -> ThisBasis
-#' view_basis(ThisBasis)
+#' ib <- tourr::basis_random(4, 2)
+#' view_basis(ib)
 #' @export
-view_basis <- function(basis, data = NULL) {
+view_basis <- function(basis = create_identity_basis(6), 
+                       labels = paste0("X", 1:nrow(basis)), 
+                       ...) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   
   tmp <- basis
   tmp <- cbind(tmp, sqrt(tmp[,1]^2 + tmp[,2]^2), atan(tmp[,2]/tmp[,1]))
   colnames(tmp) <- c("X", "Y", "norm_xy", "theta")
-  axes <- tibble::as_tibble(tmp)
-  
-  lab = NULL
-  if (!is.null(data)) {
-    rownames(tmp) <- colnames(data)
-    this_label = colnames(data)
-    }
-  
-  plot(0,type='n',axes=FALSE,ann=FALSE,xlim=c(-1, 1), ylim=c(-1, 1),asp=1)
-  segments(0,0, basis[, 1], basis[, 2], col="grey50")
+
+  plot(0, type='n', axes=FALSE, ann=FALSE, xlim=c(-1, 1), ylim=c(-1, 1), asp=1)
+  segments(0,0, basis[, 1], basis[, 2], ...)
   theta <- seq(0, 2 * pi, length = 50)
-  lines(cos(theta), sin(theta), col = "grey50")
-  text(basis[, 1], basis[, 2], label = this_label, col = "grey50")
+  lines(cos(theta), sin(theta), ...)
+  text(basis[, 1], basis[, 2], label = labels, ...)
   
-  stopifnot(class(axes) == "tibble")
-  stopifnot(dim(axes) == (dim(basis) + c(0,2)) )
-  return(axes)
+  NULL
 }

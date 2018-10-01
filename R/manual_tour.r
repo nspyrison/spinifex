@@ -11,7 +11,7 @@
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- create_random_basis(p = ncol(flea_std) )
+#' rb <- tourr::basis_random(n=ncol(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
 create_manip_space <- function(basis, manip_var) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
@@ -45,7 +45,7 @@ create_manip_space <- function(basis, manip_var) {
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- create_random_basis(p = ncol(flea_std) )
+#' rb <- tourr::basis_random(n=ncol(flea_std))
 #' msp <- create_manip_space(rb, 4) 
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
 #'                    phi = runif(1, max = 2 * pi) )
@@ -106,17 +106,15 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- create_random_basis(p = ncol(flea_std) )
+#' rb <- tourr::basis_random(n=ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-manual_tour <- function(basis = create_random_basis(p = ncol(data)),
+manual_tour <- function(basis = NULL,
                         manip_var = NULL,
                         manip_type = "radial",
                         theta = NULL,   # [radians]
                         phi_min = 0,    # [radians]
                         phi_max = 2*pi, # [radians]
-                        n_slides = 15,
-                        #rescale = FALSE,
-                        center = TRUE
+                        n_slides = 15
                         ) { 
   # Assertions
   stopifnot(is.matrix(basis))
@@ -126,7 +124,7 @@ manual_tour <- function(basis = create_random_basis(p = ncol(data)),
   
   # Handle manip_var
   if (is.numeric(manip_var)) stopifnot(manip_var %% 1 == 0)
-  if (is.numeric(manip_var)) stopifnot(manip_var <= ncol(basis) )
+  if (is.numeric(manip_var)) stopifnot(manip_var <= nrow(basis) )
   if (is.character(manip_var)) 
     manip_var <- match(manip_var, colnames(data)) # char to num
   if (!is.numeric(manip_var)) 
@@ -141,11 +139,11 @@ manual_tour <- function(basis = create_random_basis(p = ncol(data)),
   if (manip_type == "radial")
     theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   
-  # Initalize and create a sequence of projected bases
+  # Initalize and create a sequence of projection bases
   manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
-  #p <- nrow(basis) # uncomment if need to initialise proj_bases to an array.
-  #d <- ncol(basis) # uncomment if need to initialise proj_bases to an array.
-  m_tour <- NULL #array(dim=c(p, d, n_slides))
+  p <- nrow(basis) 
+  d <- ncol(basis) 
+  m_tour <- array(dim=c(p, d, n_slides))
   slide <- 0
   for (phi in seq(phi_min, phi_max, length.out = n_slides) ) {
     slide <- slide + 1
@@ -153,10 +151,6 @@ manual_tour <- function(basis = create_random_basis(p = ncol(data)),
     
     m_tour[, , slide] <- new_slide[, 1:2]
   }
-  
-  if (center) 
-    for (slide in 1:n_slides)
-      apply(m_tour, 2, function(col) (col - median(col)) )
   
   return(m_tour)
 }

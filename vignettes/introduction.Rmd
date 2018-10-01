@@ -37,11 +37,11 @@ Data sets commonly contain many (p>3) variables/dimensions. Numeric aggregation 
 
 Traditionally, component analysis (PCA), correspondence analysis (CCA), or other single value decomposition (SVD) techniques have been used to approximate high dim spaces in 2 or 3-d. However doing so requires the loss of information of the discarded, transformed dimensions.
 
-More recently stochastic neighbor embedding (t-SNE), Sammon mapping, and other non-linear transformations have seen a rise in popularity. These techniques can make astounding graphs showing distinctions and likeness across groups, but can suffer from over-fitting (potentially resulting in false groupings) and lose interoperability back to the original dimensions.
+More recently stochastic neighbor embedding (t-SNE), Sammon mapping, and other non-linear transformations have seen a rise in popularity. These techniques can make astounding graphs showing distinctions and likeness across groups, but can suffer from over-fitting (potentially resulting in false groupings) and lose inter-operability back to the original dimensions.
 
 ## Tourr and methodology
 
-The R package tourr [@Cook&Wickham] provides open source tools for exploring high dim spaces that doesn't lose information and maintains dimension-interoperability. Orthonormal linear combinations of p-dimensions can be projected onto a 2-d surface and viewed as a XY scatter plot for instance. By changing the (constrained) linear combinations slightly, the 2-d projection changes in time as data are rotated in p-dimensions. Randomly selecting a dimension and direction of change is essentially the projection-pursuit method, "grand tour", originally purposed by Asimov [@Asimov et. al. 1985]. Other tours and gradient-descent indexes are discussed in the tourr package documentation hosted on CRAN, [here](https://cran.r-project.org/web/packages/tourr/tourr.pdf).
+The R package tourr [@Cook&Wickham] provides open source tools for exploring high dim spaces that doesn't lose information and maintains dimension-inter-operability. Orthonormal linear combinations of p-dimensions can be projected onto a 2-d surface and viewed as a XY scatter plot for instance. By changing the (constrained) linear combinations slightly, the 2-d projection changes in time as data are rotated in p-dimensions. Randomly selecting a dimension and direction of change is essentially the projection-pursuit method, "grand tour", originally purposed by Asimov [@Asimov et. al. 1985]. Other tours and gradient-descent indexes are discussed in the tourr package documentation hosted on CRAN, [here](https://cran.r-project.org/web/packages/tourr/tourr.pdf).
 
 This concept can be illustrated succinctly by example. A 3-d object blocks a light source that casts a shadow onto a screen. If the object is a four-legged chair some orientations look like a black square, this conveys  little information about the shape of the object. However if the chair is rotated side or front view is seen. With continued rotation the 3-d shape can be distinguished from a 2-d animation. In the same way, information and interesting profiles describing high dimensional data can be found by watching projections of the data as it rotates.
 
@@ -63,7 +63,7 @@ Flea is the data we want to rotate. We initialize a random basis and then view i
 
 Load the data and select a random basis with `basis_random(p)`. View the basis in p-space with `view_basis(basis, data)`, where data is optional, but adds the dimension names.
 
-```{r}
+```{r eval=FALSE}
 #devtools::install_github("nspyrison/spinifex")
 devtools::load_all()
 #library(spinifex) #WHEN USING library(), rmd can't find spinifex functions :(
@@ -92,7 +92,7 @@ Optionally we can specify:
 
 Watch the projection, via `slideshow()`, coloring observations by their species.
 
-```{r}
+```{r eval=FALSE}
 pal <- rainbow(length(levels(flea$species)))
 col <- pal[as.numeric(flea$species)]
 
@@ -203,7 +203,7 @@ slideshow(proj, col = col)
 
 ## Example 3 - Rotation after holes guided tour
 
-```{r, results='hide'}
+```{r, results='hide', eval=FALSE}
 library(tourr)
 data <- flea[, 1:6]
 p <- ncol(data)
@@ -216,7 +216,7 @@ holes_basis <-
 ```
 
 
-```{r}
+```{r eval=FALSE}
 tars1 <-
   proj_data(
     data = data,
@@ -268,7 +268,7 @@ aede3 <-
 ```
 
 
-```{r}
+```{r eval=FALSE}
 slideshow(tars1, col = col) # groups overlap when removed
 slideshow(aede2, col = col) # groups overlap when removed
 slideshow(tars2, col = col) # 2 groups overlap when removed

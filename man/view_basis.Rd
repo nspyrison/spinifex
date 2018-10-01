@@ -4,7 +4,8 @@
 \alias{view_basis}
 \title{Plot projection frame and return the axes table.}
 \usage{
-view_basis(basis, data = NULL)
+view_basis(basis = create_identity_basis(6), labels = paste0("X",
+  1:nrow(basis)), ...)
 }
 \arguments{
 \item{basis}{A [p, d=2] basis, xy contributions of each dimension (numeric variable).}
@@ -16,6 +17,6 @@ Uses base graphics to plot the circle with axes representing
 the projection frame. Returns the corrisponding table.
 }
 \examples{
-create_identity_basis(6) -> ThisBasis
-view_basis(ThisBasis)
+ib <- tourr::basis_random(4, 2)
+view_basis(ib)
 }

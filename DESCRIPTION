@@ -17,9 +17,9 @@ Imports:
   tourr,
   ggplot2,
   dplyr,
-  tibble,
-  plotly
+  tibble
 Suggests: 
   knitr,
-  rmarkdown
+  rmarkdown,
+  plotly
 VignetteBuilder: knitr

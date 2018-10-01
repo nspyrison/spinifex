@@ -19,6 +19,9 @@ Create a [p, d+1=3] dim orthonormal manipulation space from the given
 basis concatonated with a zero vector, with manip_var set to 1.
 }
 \examples{
-create_random_basis(6) -> ThisBasis
-create_manip_space(ThisBasis, 4)
+data(flea)
+flea_std <- tourr::rescale(flea[,1:6])
+
+rb <- tourr::basis_random(n=ncol(flea_std))
+create_manip_space(basis = rb, manip_var = 4)
 }
