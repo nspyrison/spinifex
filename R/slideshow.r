@@ -27,9 +27,10 @@ create_slideshow <- function(data, bases, center=TRUE, scale=FALSE) {
   
   # Generate the projected data by slide
   n_slides <- dim(bases)[3]
+  manip_var <- attr(bases, "mvar")
+  lab_abbr = abbreviate(colnames(data), 3)
   data_slides <- NULL
   bases_slides <- NULL
-  lab_abbr = abbreviate(colnames(data), 3)
   for (i in 1:n_slides) {
     d <- tibble::as_tibble(data %*% bases[, , i])
     d$slide <- i

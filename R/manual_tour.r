@@ -151,6 +151,7 @@ manual_tour <- function(basis = NULL,
     
     m_tour[, , slide] <- new_slide[, 1:2]
   }
+  attr(m_tour, "mvar") <- manip_var
   
   return(m_tour)
 }
