@@ -149,9 +149,12 @@ manual_tour <- function(basis = NULL,
     slide <- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
     
-    m_tour[, , slide] <- new_slide[, 1:2]
+    m_tour[,,slide] <- new_slide[, 1:2]
+    attr(m_tour[,,1], "phi") <- phi
   }
-  attr(m_tour, "mvar") <- manip_var
+  attr(m_tour, "theta") <- theta
+  attr(m_tour, "manip_var") <- manip_var
+  attr(m_tour, "manip_type") <- manip_type
   
   return(m_tour)
 }
