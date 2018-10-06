@@ -20,7 +20,7 @@ create_manip_space <- function(basis, manip_var) {
   
   z <- rep(0, len = nrow(basis))
   z[manip_var] <- 1
-  manip_space <- tourr::orthonormalise(cbind(basis, z))
+  manip_space  <- tourr::orthonormalise(cbind(basis, z))
   if (ncol(manip_space) == 3) {colnames(manip_space) <- c("x","y","z")}
   if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
   rownames(manip_space) <- colnames(basis)
@@ -145,13 +145,31 @@ manual_tour <- function(basis = NULL,
   d <- ncol(basis) 
   m_tour <- array(dim=c(p, d, n_slides))
   slide <- 0
-  for (phi in seq(phi_min, phi_max, length.out = n_slides) ) {
+  phi_start <- theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  phi_inc = pi / n_slides
+  ## walk 1: from phi=phi_start to phi=0
+  for (phi in seq(phi_start, 0, by = phi_inc) ) {
     slide <- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
-    
     m_tour[,,slide] <- new_slide[, 1:2]
     attr(m_tour[,,1], "phi") <- phi
   }
+  ## walk 2: from phi=0 to phi=pi/2
+  for (phi in seq(phi_start, pi / 2, by = phi_inc) ) {
+    slide <- slide + 1
+    new_slide <- rotate_manip_space(manip_space, theta, phi)
+    m_tour[,,slide] <- new_slide[, 1:2]
+    attr(m_tour[,,1], "phi") <- phi
+  }
+  ## walk 3: from phi=pi/2 to phi=phi_start
+  for (phi in seq(phi_start, 0, by = phi_inc) ) {
+    slide <- slide + 1
+    new_slide <- rotate_manip_space(manip_space, theta, phi)
+    m_tour[,,slide] <- new_slide[, 1:2]
+    attr(m_tour[,,1], "phi") <- phi
+  }
+  
+  # Add tour attributes
   attr(m_tour, "theta") <- theta
   attr(m_tour, "manip_var") <- manip_var
   attr(m_tour, "manip_type") <- manip_type
