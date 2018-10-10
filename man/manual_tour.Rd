@@ -6,7 +6,7 @@
 projection}
 \usage{
 manual_tour(basis = NULL, manip_var = NULL, manip_type = "radial",
-  theta = NULL, phi_min = 0, phi_max = 2 * pi, n_slides = 15)
+  theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 15)
 }
 \arguments{
 \item{basis}{A [p, 2] dim orthonormal starting basis. Required no default.}

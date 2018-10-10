@@ -111,9 +111,9 @@ rotate_manip_space <- function(manip_space, theta, phi){
 manual_tour <- function(basis = NULL,
                         manip_var = NULL,
                         manip_type = "radial",
-                        theta = NULL,   # [radians]
-                        phi_min = 0,    # [radians]
-                        phi_max = 2*pi, # [radians]
+                        theta = NULL,      # [radians]
+                        phi_min = 0,       # [radians]
+                        phi_max = .5 * pi, # [radians]
                         n_slides = 15
                         ) { 
   # Assertions
@@ -147,32 +147,34 @@ manual_tour <- function(basis = NULL,
   slide <- 0
   phi_start <- theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   phi_inc = pi / n_slides
+  phi_col = NULL
   ## walk 1: from phi=phi_start to phi=0
-  for (phi in seq(phi_start, 0, by = phi_inc) ) {
+  for (phi in seq(phi_start, 0, by = -1 * phi_inc) ) {
     slide <- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
     m_tour[,,slide] <- new_slide[, 1:2]
-    attr(m_tour[,,1], "phi") <- phi
+    phi_col <- rbind(phi_col, phi)
   }
   ## walk 2: from phi=0 to phi=pi/2
   for (phi in seq(phi_start, pi / 2, by = phi_inc) ) {
     slide <- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
     m_tour[,,slide] <- new_slide[, 1:2]
-    attr(m_tour[,,1], "phi") <- phi
+    phi_col <- rbind(phi_col, phi)
   }
   ## walk 3: from phi=pi/2 to phi=phi_start
-  for (phi in seq(phi_start, 0, by = phi_inc) ) {
+  for (phi in seq(phi_start, 0, by = -1 * phi_inc) ) {
     slide <- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
     m_tour[,,slide] <- new_slide[, 1:2]
-    attr(m_tour[,,1], "phi") <- phi
+    phi_col <- rbind(phi_col, phi)
   }
   
   # Add tour attributes
-  attr(m_tour, "theta") <- theta
-  attr(m_tour, "manip_var") <- manip_var
+  attr(m_tour, "manip_var")  <- manip_var
   attr(m_tour, "manip_type") <- manip_type
+  attr(m_tour, "theta")      <- theta
+  attr(m_tour, "phi")        <- phi_col
   
   return(m_tour)
 }

@@ -26,10 +26,10 @@ create_slideshow <- function(data, m_tour, center=TRUE, scale=FALSE) {
   if (!is.matrix(data)) data <- as.matrix(data)
   
   # Generate the projected data by slide
-  n_slides <- dim(m_tour)[3]
-  manip_var <- attributes(m_tour, "manip_var")
-  lab_abbr = abbreviate(colnames(data), 3)
-  data_slides <- NULL
+  n_slides      <- dim(m_tour)[3]
+  manip_var     <- attributes(m_tour)$manip_var
+  lab_abbr      <- abbreviate(colnames(data), 3)
+  data_slides   <- NULL
   m_tour_slides <- NULL
   for (i in 1:n_slides) {
     d <- tibble::as_tibble(data %*% m_tour[, , i])
@@ -58,9 +58,8 @@ create_slideshow <- function(data, m_tour, center=TRUE, scale=FALSE) {
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- create_random_basis(p = ncol(flea_std) )
-#' mtour <- manual_tour(rb, manip_var = 4, manip_type = "radial",
-#'                      phi_from = 0, phi_to = pi, n_slides = 20)
+#' rb <- tourr::basis_random(n = ncol(flea_std) )
+#' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- create_slideshow(flea_std, mtour)
 #' render_slideshow(sshow, group_by = flea$species)
 render_slideshow <- function(slide_deck,
@@ -72,42 +71,51 @@ render_slideshow <- function(slide_deck,
   # Assertions
   stopifnot(ncol(slide_deck[1]) == nrow(slide_deck[2]))
   stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
+
   if (!is.null(group_by) )
     stopifnot(length(unique(group_by)) <= ncol(slide_deck[1]) / 10)
+
   if (is.null(group_by) & !is.null(col) )
     stopifnot(length(unique(col)) <= ncol(slide_deck[1]) / 10)
   if (is.null(group_by) & !is.null(pch) )
     stopifnot(length(unique(pch)) <= ncol(slide_deck[1]) / 10)
   
-  data_slides <- slide_deck[1]
-  bases_slides <- slide_deck[2]
-  nrow_data <- nrow(data_slides[data_slides$slide == 1])
+  data_slides      <- slide_deck[1]
+  bases_slides     <- slide_deck[2]
+  nrow_data        <- nrow(data_slides[data_slides$slide == 1])
   nrow_data_slides <- nrow(data_slides)
   
-  # Handling col and pch (colo(u)r and point character)
+  # Handling group_by, col, and pch (colo(u)r and point character respectively)
+  if (!is.null(group_by)) {
+    col <- group_by
+    pch <- group_by
+  }
   if (!is.null(group_by) & (!is.null(col) | !is.null(pch) ) )
     message("Non-null group_by used with non-null col or  non-null pch. Using group_by over col and pch.")
   
   len_col <- length(col)
-  if (!(len_col == 1 | len_col == nrow_data | len_col == nrow_data_slides) )
+  if (!is.null(group_by) & 
+      !(len_col == 1 | len_col == nrow_data | len_col == nrow_data_slides) )
     stop("length(col) expected as 1, nrow(data), or nrow(data_slides)")
   if (len_col != nrow_data_slides)
     col <- rep(col, nrow_data_slides / len_col)
   
   len_pch <- length(pch)
-  if (!(len_pch == 1 | len_pch == nrow_data | len_pch == nrow_data_slides) )
+  if (!is.null(group_by) & 
+      !(len_pch == 1 | len_pch == nrow_data | len_pch == nrow_data_slides) )
     stop("length(pch) expected as 1, nrow(data), or nrow(data_slides)")
   if (len_pch != nrow_data_slides)
     pch <- rep(pch, nrow_data_slides / len_pch)
   if (!is.character(pch) ) pch <- as.character(pch)
   
-  ### Initialise color and point character
-  proj_data  <- as.data.frame(proj_list$proj_data)
-  proj_data$col <- col
-  proj_data$pch <- pch
-  proj_basis$phi <- attributes(m_tour, "phi")
-  proj_basis <- as.data.frame(proj_list$proj_basis)
-  proj_basis <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
+  ### Initialise proj_data and proj_basis
+  proj_data        <- as.data.frame(proj_list$proj_data)
+  proj_data$col    <- col
+  proj_data$pch    <- pch
+  proj_basis$phi   <- attributes(m_tour)$phi
+  proj_basis$theta <- attributes(m_tour)$theta
+  proj_basis       <- as.data.frame(proj_list$proj_basis)
+  proj_basis       <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
   
   ### Graphics #frame needs to be in a geom_(aes()).
   gg1 <- ggplot2::ggplot(data = proj_data, ggplot2::aes(x = x, y = y) ) +
@@ -125,7 +133,7 @@ render_slideshow <- function(slide_deck,
       gg1 + ggplot2::geom_text(
         data = bases,
         ggplot2::geom_text(data = proj_bases,
-                           phi = phi
+                           phi = phi,
                            size = 4,
                            hjust = 0,
                            vjust = 0,
@@ -143,9 +151,9 @@ render_slideshow <- function(slide_deck,
     )
     
     # Create a full circle to bound the axes representation
-    angle <- seq(0, 2 * pi, length = 150)
-    circ <- tibble::tibble(x = cos(angle), y = sin(angle))
-    lab <- colnames(data)
+    angle    <- seq(0, 2 * pi, length = 150)
+    circ     <- tibble::tibble(x = cos(angle), y = sin(angle))
+    lab      <- colnames(data)
     lab_abbr <- paste0(substr(lab, 1, 2), substr(lab, nchar(lab), nchar(lab)))
     
     # axes circle

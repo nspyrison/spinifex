@@ -4,13 +4,13 @@
 \alias{create_slideshow}
 \title{Create a slideshow array of the projected bases}
 \usage{
-create_slideshow(data, bases, center = TRUE, scale = FALSE)
+create_slideshow(data, m_tour, center = TRUE, scale = FALSE)
 }
 \arguments{
 \item{data}{[n, p] dim data to project, consisting of 
 only numeric variables (for coercion into matrix.)}
 
-\item{bases}{the output of manual_tour(), list of projection bases by index.}
+\item{m_tour}{the output of manual_tour(), list of projection bases by index.}
 
 \item{center}{set the mean of the projected data to be a vector of zeros. 
 This stops the data from wandering around the display window. Default=TRUE.}
