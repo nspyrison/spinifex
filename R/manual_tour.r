@@ -145,7 +145,9 @@ manual_tour <- function(basis = NULL,
   d <- ncol(basis) 
   m_tour <- array(dim=c(p, d, n_slides))
   slide <- 0
-  phi_start <- theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  new_slide <- NULL
+  theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
   phi_inc = pi / n_slides
   phi_col = NULL
   ## walk 1: from phi=phi_start to phi=0

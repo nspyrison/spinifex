@@ -20,7 +20,7 @@ data(flea)
 flea_std <- tourr::rescale(flea[,1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std) )
-mtour <- manual_tour(rb, manip_var = 4)
+mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- create_slideshow(flea_std, mtour)
 render_slideshow(sshow, group_by = flea$species)
 }

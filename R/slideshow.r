@@ -71,10 +71,10 @@ render_slideshow <- function(slide_deck,
   # Assertions
   stopifnot(ncol(slide_deck[1]) == nrow(slide_deck[2]))
   stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
-
+  
   if (!is.null(group_by) )
     stopifnot(length(unique(group_by)) <= ncol(slide_deck[1]) / 10)
-
+  
   if (is.null(group_by) & !is.null(col) )
     stopifnot(length(unique(col)) <= ncol(slide_deck[1]) / 10)
   if (is.null(group_by) & !is.null(pch) )
@@ -86,12 +86,12 @@ render_slideshow <- function(slide_deck,
   nrow_data_slides <- nrow(data_slides)
   
   # Handling group_by, col, and pch (colo(u)r and point character respectively)
+  if (!is.null(group_by) & (!is.null(col) | !is.null(pch) ) )
+    message("Non-null group_by used with non-null col or  non-null pch. Using group_by over col and pch.")
   if (!is.null(group_by)) {
     col <- group_by
     pch <- group_by
   }
-  if (!is.null(group_by) & (!is.null(col) | !is.null(pch) ) )
-    message("Non-null group_by used with non-null col or  non-null pch. Using group_by over col and pch.")
   
   len_col <- length(col)
   if (!is.null(group_by) & 
@@ -117,6 +117,11 @@ render_slideshow <- function(slide_deck,
   proj_basis       <- as.data.frame(proj_list$proj_basis)
   proj_basis       <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
   
+  # Initialize circle for the axes reference frame.
+  angle    <- seq(0, 2 * pi, length = 360)
+  circ     <- as.data.frame(x = cos(angle), y = sin(angle))
+  lab_abbr <- abbreviate(colnames(proj_data), 3)
+  
   ### Graphics #frame needs to be in a geom_(aes()).
   gg1 <- ggplot2::ggplot(data = proj_data, ggplot2::aes(x = x, y = y) ) +
     suppressWarnings( # suppress to ignore unused aes "frame"
@@ -126,7 +131,7 @@ render_slideshow <- function(slide_deck,
     ) +
     ggplot2::coord_fixed() + ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme(legend.position = "none") + ggplot2::theme_void()
-    #ggplot a.ratio doesn't work in plotly
+      # ggplot2 a.ratio doesn't work in plotly
     
     # basis text and axes
     gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
@@ -137,24 +142,17 @@ render_slideshow <- function(slide_deck,
                            size = 4,
                            hjust = 0,
                            vjust = 0,
-                           #color = I(proj_basis$color),
                            ggplot2::aes(x = V1, y = V2, frame = indx,
                                         label = lab_abbr)
         ) +
           ggplot2::geom_segment(
             data = proj_bases,
             size = .3,
-            color = col,
+            color = proj_bases$col, #I(proj_bases$col),
             ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = indx)
           )
       )
     )
-    
-    # Create a full circle to bound the axes representation
-    angle    <- seq(0, 2 * pi, length = 150)
-    circ     <- tibble::tibble(x = cos(angle), y = sin(angle))
-    lab      <- colnames(data)
-    lab_abbr <- paste0(substr(lab, 1, 2), substr(lab, nchar(lab), nchar(lab)))
     
     # axes circle
     gg3 <- gg2 + ggplot2::geom_path(
@@ -168,8 +166,8 @@ render_slideshow <- function(slide_deck,
     )
     slideshow <-
       layout(pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
-             xaxis = 
-               list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F)
+             xaxis = list(scaleanchor = "y", scaleratio = 1, 
+                          showgrid = F, showline = F)
       )
     
     return(slideshow)
