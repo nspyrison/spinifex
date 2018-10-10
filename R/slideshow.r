@@ -4,7 +4,7 @@
 #'
 #' @param data [n, p] dim data to project, consisting of 
 #'    only numeric variables (for coercion into matrix.)
-#' @param bases the output of manual_tour(), list of projection bases by index.
+#' @param m_tour the output of manual_tour(), list of projection bases by index.
 #' @param center set the mean of the projected data to be a vector of zeros. 
 #' This stops the data from wandering around the display window. Default=TRUE.
 #' @param scale set the scale of the projected data to be in a standard range 
@@ -18,31 +18,31 @@
 #' rb <- tourr::basis_random(n=ncol(flea_std))
 #' mtour <- manual_tour(rb, manip_var = 4)
 #' create_slideshow(flea_std, mtour)
-create_slideshow <- function(data, bases, center=TRUE, scale=FALSE) {
+create_slideshow <- function(data, m_tour, center=TRUE, scale=FALSE) {
   # Assertions
   stopifnot(is.matrix(as.matrix(data)))
-  stopifnot(is.array(bases))
-  stopifnot(ncol(data) == nrow(bases[, , 1]) )
+  stopifnot(is.array(m_tour))
+  stopifnot(ncol(data) == nrow(m_tour[, , 1]) )
   if (!is.matrix(data)) data <- as.matrix(data)
   
   # Generate the projected data by slide
-  n_slides <- dim(bases)[3]
-  manip_var <- attr(bases, "mvar")
+  n_slides <- dim(m_tour)[3]
+  manip_var <- attributes(m_tour, "manip_var")
   lab_abbr = abbreviate(colnames(data), 3)
   data_slides <- NULL
-  bases_slides <- NULL
+  m_tour_slides <- NULL
   for (i in 1:n_slides) {
-    d <- tibble::as_tibble(data %*% bases[, , i])
+    d <- tibble::as_tibble(data %*% m_tour[, , i])
     d$slide <- i
     data_slides <-  dplyr::bind_rows(data_slides, d)
-    b <- tibble::as_tibble(bases[, , i])
+    b <- tibble::as_tibble(m_tour[, , i])
     b$slide <- i
     b$lab_abbr <- lab_abbr
-    bases_slides <- dplyr::bind_rows(bases_slides, b)
+    m_tour_slides <- dplyr::bind_rows(m_tour_slides, b)
   }
   
   slide_deck <- list(data_slides = data_slides,
-                     bases_slides = bases_slides)
+                     m_tour_slides = m_tour_slides)
   return(slide_deck)
 }
 
@@ -53,7 +53,6 @@ create_slideshow <- function(data, bases, center=TRUE, scale=FALSE) {
 #'
 #' @param data [n, p] dim data to project, consisting of 
 #'    only numeric variables (for coercion into matrix.)
-#' @param bases the output of manual_tour(), list of projection bases by index.
 #' @export
 #' @examples
 #' data(flea)
@@ -102,19 +101,20 @@ render_slideshow <- function(slide_deck,
     pch <- rep(pch, nrow_data_slides / len_pch)
   if (!is.character(pch) ) pch <- as.character(pch)
   
-  #TODO: Continue here
   ### Initialise color and point character
   proj_data  <- as.data.frame(proj_list$proj_data)
   proj_data$col <- col
   proj_data$pch <- pch
+  proj_basis$phi <- attributes(m_tour, "phi")
   proj_basis <- as.data.frame(proj_list$proj_basis)
   proj_basis <- proj_basis[order(row.names(proj_basis), proj_basis[, 4]),]
   
   ### Graphics #frame needs to be in a geom_(aes()).
   gg1 <- ggplot2::ggplot(data = proj_data, ggplot2::aes(x = x, y = y) ) +
     suppressWarnings( # suppress to ignore unused aes "frame"
-      ggplot2::geom_point(size = .7,
-                          ggplot2::aes(frame = index, color = col, shape = pch))
+      ggplot2::geom_point(
+        size = .7, ggplot2::aes(frame = index, color = col, shape = pch)
+      )
     ) +
     ggplot2::coord_fixed() + ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme(legend.position = "none") + ggplot2::theme_void()
@@ -125,7 +125,7 @@ render_slideshow <- function(slide_deck,
       gg1 + ggplot2::geom_text(
         data = bases,
         ggplot2::geom_text(data = proj_bases,
-                           #phi = proj_basis$phi,
+                           phi = phi
                            size = 4,
                            hjust = 0,
                            vjust = 0,
@@ -137,8 +137,7 @@ render_slideshow <- function(slide_deck,
             data = proj_bases,
             size = .3,
             color = col,
-            ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0,
-                         frame = indx)
+            ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = indx)
           )
       )
     )
@@ -157,7 +156,7 @@ render_slideshow <- function(slide_deck,
     
     pgg4 <- suppressMessages(
       plotly::ggplotly(gg3)
-      #, tooltip = F, colors = "Dark2", color = ~proj_data$col) #done in ggplot
+      #done in ggplot #, tooltip = F, colors = "Dark2", color = ~proj_data$col)
     )
     slideshow <-
       layout(pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
