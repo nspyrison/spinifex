@@ -15,7 +15,6 @@ create_identity_basis <- function(p = 6, d = 2){
   basis <- matrix(0, nrow = p, ncol = d)
   diag(basis) <- 1
   
-  stopifnot(dim(basis) == c(p,d))
   return(basis)
 }
 

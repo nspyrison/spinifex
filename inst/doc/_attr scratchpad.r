@@ -12,6 +12,7 @@ attr(x, exact = "class")
 food = as.data.frame(c(apple=2, grape=3))
 attr(food[, ], "foodType") <- "fruit"
 food
+
 mt <- tibble::as.tibble(mtcars)
 mt
 

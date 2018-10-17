@@ -4,6 +4,23 @@ library(plotly)
 library(ggplot2)
 packageVersion('plotly')
 
+# Sandbox ggplot2 behaviours
+### theme_void() doesn't remove legend.
+### frame should be in aes(). it will not message in ggplot(), but
+###   it will message if frame is within geom_point()
+dat <- as_tibble(mtcars)
+
+g1 <-
+  ggplot(dat, 
+         aes(x = disp, y = hp, col = as.factor(cyl), 
+             blah1="hi", blah2 = am, drats = drat, frame = vs) ) +
+  # suppressWarnings(geom_point(aes(blahblah = vs)) ) + 
+  geom_point(aes(blahblah = vs)) + 
+  theme_void()
+
+ggplotly(g1)
+
+# Dummy plotly animation.
 df1 <- data.frame(
   x = c(1,2,3,4), 
   y = c(1,2,3,4), 
@@ -32,8 +49,7 @@ plot_ly(flea[,1:6], x = ~flea[,1], y = ~flea[,2], type="scatter",
         mode = "markers" , color = I("green") ,  
         marker=list( size=20 , opacity=0.5) )
 
-### plotly:: EXPORT
-
+### Exporting with plotly::export()
 library("ggplot2")
 library("plotly")
 #p <- plot_ly(z = ~volcano) %>% add_surface()
@@ -82,7 +98,6 @@ p
 
 
 ###### GGANIMATE
-
 # NOTE: gganimate is heavy: 
 # devtools::install_github("dgrtwo/gganimate")
 # install.packages("installr")
@@ -108,4 +123,3 @@ p2 <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop)) +
   scale_x_log10()
 
 gganimate(p2)
-
