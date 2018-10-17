@@ -28,5 +28,5 @@ flea_std <- tourr::rescale(flea[,1:6])
 
 rb <- tourr::basis_random(n=ncol(flea_std))
 mtour <- manual_tour(rb, manip_var = 4)
-create_slideshow(flea_std, mtour)
+create_slideshow(data = flea_std, m_tour = mtour)
 }
