@@ -43,13 +43,15 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE) {
   
   # Conserve tour attributes
   manip_var  <- attributes(m_tour)$manip_var
-  manip_type <- attributes(m_tour)$manip_type
-  phi        <- attributes(m_tour)$phi
-  theta      <- attributes(m_tour)$theta
+  # manip_type <- attributes(m_tour)$manip_type
+  # phi        <- attributes(m_tour)$phi
+  # theta      <- attributes(m_tour)$theta
   data_slides$manip_var  <- manip_var
-  data_slides$manip_type <- manip_type
-  data_slides$phi        <- phi
-  data_slides$theta      <- theta
+  # data_slides$manip_type <- manip_type
+  # data_slides$theta      <- theta
+  # data_slides$phi        <- phi[rep(seq_len(length(phi)), each=nrow(data))]
+    #error here, does rep, but falls short. of data slides, 
+    ##why are there nulls after 11? look at the create on the steps..
   
   slide_deck <- list(data_slides, bases_slides)
   return(slide_deck)

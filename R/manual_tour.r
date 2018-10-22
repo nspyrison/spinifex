@@ -148,24 +148,24 @@ manual_tour <- function(basis = NULL,
   new_slide <- NULL
   theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-  phi_inc = pi / n_slides
+  phi_inc = 2 * abs(phi_max - phi_min) / n_slides
   phi_vect = NULL
   ## walk 1: from phi=phi_start to phi=0
-  for (phi in seq(phi_start, 0, by = -1 * phi_inc) ) {
+  for (phi in seq(phi_start, phi_min, by = -1 * phi_inc) ) {
     slide <- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
     m_tour[,,slide] <- new_slide[, 1:2]
     phi_vect <- rbind(phi_vect, phi)
   }
   ## walk 2: from phi=0 to phi=pi/2
-  for (phi in seq(phi_start, pi / 2, by = phi_inc) ) {
+  for (phi in seq(phi_min, phi_max, by = phi_inc) ) {
     slide <- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
     m_tour[,,slide] <- new_slide[, 1:2]
     phi_vect <- rbind(phi_vect, phi)
   }
   ## walk 3: from phi=pi/2 to phi=phi_start
-  for (phi in seq(phi_start, 0, by = -1 * phi_inc) ) {
+  for (phi in seq(phi_max, phi_start, by = -1 * phi_inc) ) {
     slide <- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
     m_tour[,,slide] <- new_slide[, 1:2]
@@ -174,9 +174,9 @@ manual_tour <- function(basis = NULL,
   
   # Add tour attributes
   attr(m_tour, "manip_var")  <- manip_var
-  attr(m_tour, "manip_type") <- manip_type
-  attr(m_tour, "phi")        <- phi_vect
-  attr(m_tour, "theta")      <- theta
+  # attr(m_tour, "manip_type") <- manip_type
+  # attr(m_tour, "phi")        <- phi_vect
+  # attr(m_tour, "theta")      <- theta
   
   return(m_tour)
 }
