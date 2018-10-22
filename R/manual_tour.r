@@ -98,7 +98,7 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' @param phi_max Angle in radians specifying the maximum extent that 
 #' `manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
 #' Required, defaults to 2 * pi.
-#' @param n_slides Number of slides to create for slideshow(). Defaults to 15.
+#' @param n_slides Number of slides to create for slideshow(). Defaults to 20.
 #' @return `m_tour`, a [p, d, n_slides] dim array of the manual tour transistion
 #' in `n_slides``increments.
 #' @export
@@ -114,7 +114,7 @@ manual_tour <- function(basis = NULL,
                         theta = NULL,      # [radians]
                         phi_min = 0,       # [radians]
                         phi_max = .5 * pi, # [radians]
-                        n_slides = 15
+                        n_slides = 20
                         ) { 
   # Assertions
   stopifnot(is.matrix(basis))
@@ -138,6 +138,7 @@ manual_tour <- function(basis = NULL,
   if (manip_type == "vertical") theta <- pi / 2
   if (manip_type == "radial")
     theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
   
   # Initalize and create a sequence of projection bases
   manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
@@ -146,37 +147,35 @@ manual_tour <- function(basis = NULL,
   m_tour <- array(dim=c(p, d, n_slides))
   slide <- 0
   new_slide <- NULL
-  theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
-  phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-  phi_inc = 2 * abs(phi_max - phi_min) / n_slides
+  phi_inc = 2 * abs(phi_max - phi_min) / (n_slides-3)
   phi_vect = NULL
+  
+  interpolate_slide <- function(phi){
+    slide <<- slide + 1
+    new_slide <<- rotate_manip_space(manip_space, theta, phi)
+    m_tour[,,slide] <<- new_slide[, 1:2]
+    phi_vect <<- rbind(phi_vect, phi)
+  }
+  
   ## walk 1: from phi=phi_start to phi=0
   for (phi in seq(phi_start, phi_min, by = -1 * phi_inc) ) {
-    slide <- slide + 1
-    new_slide <- rotate_manip_space(manip_space, theta, phi)
-    m_tour[,,slide] <- new_slide[, 1:2]
-    phi_vect <- rbind(phi_vect, phi)
+    interpolate_slide(phi)
   }
   ## walk 2: from phi=0 to phi=pi/2
   for (phi in seq(phi_min, phi_max, by = phi_inc) ) {
-    slide <- slide + 1
-    new_slide <- rotate_manip_space(manip_space, theta, phi)
-    m_tour[,,slide] <- new_slide[, 1:2]
-    phi_vect <- rbind(phi_vect, phi)
+    interpolate_slide(phi)
   }
   ## walk 3: from phi=pi/2 to phi=phi_start
   for (phi in seq(phi_max, phi_start, by = -1 * phi_inc) ) {
-    slide <- slide + 1
-    new_slide <- rotate_manip_space(manip_space, theta, phi)
-    m_tour[,,slide] <- new_slide[, 1:2]
-    phi_vect <- rbind(phi_vect, phi)
+    interpolate_slide(phi)
   }
+  interpolate_slide(phi_start)
   
   # Add tour attributes
   attr(m_tour, "manip_var")  <- manip_var
-  # attr(m_tour, "manip_type") <- manip_type
-  # attr(m_tour, "phi")        <- phi_vect
-  # attr(m_tour, "theta")      <- theta
+  # attr(m_tour, "manip_type") <- manip_type # Uncomment later for tooltips
+  # attr(m_tour, "phi")        <- phi_vect   # Uncomment later for tooltips
+  # attr(m_tour, "theta")      <- theta      # Uncomment later for tooltips
   
   return(m_tour)
 }
