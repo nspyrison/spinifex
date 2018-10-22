@@ -111,11 +111,6 @@ render_slideshow <- function(slide_deck,
     pgg4 <- suppressMessages(
       plotly::ggplotly(gg3)
     )
-    slideshow <-
-      layout(
-        pgg4)#, showlegend = F, yaxis = list(showgrid = F, showline = F),
-        #xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
-      #)
   } else stop("disp_types other than `plotly` not yet implemented.")
   
   return(slideshow)
