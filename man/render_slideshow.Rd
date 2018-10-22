@@ -4,8 +4,7 @@
 \alias{render_slideshow}
 \title{Render a slideshow of the toured data and bases}
 \usage{
-render_slideshow(slide_deck, group_by = NULL, col = NULL, pch = NULL,
-  disp_type = "plotly")
+render_slideshow(slide_deck, group_by = NULL, disp_type = "plotly")
 }
 \arguments{
 \item{data}{[n, p] dim data to project, consisting of 
@@ -22,5 +21,5 @@ flea_std <- tourr::rescale(flea[,1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- create_slideshow(flea_std, mtour)
-render_slideshow(slide_deck = sshow, group_by = flea$species)
+render_slideshow(slide_deck = sshow)
 }
