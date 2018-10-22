@@ -152,8 +152,10 @@ manual_tour <- function(basis = NULL,
   
   interpolate_slide <- function(phi){
     slide <<- slide + 1
-    new_slide <<- rotate_manip_space(manip_space, theta, phi)
-    m_tour[,,slide] <<- new_slide[, 1:2]
+    new_slide <- rotate_manip_space(manip_space, theta, phi)
+    new_slide[,1] <- new_slide[,1] - mean(new_slide[,1])
+    new_slide[,2] <- new_slide[,2] - mean(new_slide[,2])
+    m_tour[,,slide] <<- new_slide[,1:2]
     phi_vect <<- rbind(phi_vect, phi)
   }
   
