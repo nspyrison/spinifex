@@ -6,7 +6,7 @@
 projection}
 \usage{
 manual_tour(basis = NULL, manip_var = NULL, manip_type = "radial",
-  theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 15)
+  theta = NULL, phi_min = 0, phi_max = pi, n_slides = 20)
 }
 \arguments{
 \item{basis}{A [p, 2] dim orthonormal starting basis. Required no default.}
@@ -30,7 +30,7 @@ Required, defaults to 0.}
 `manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
 Required, defaults to 2 * pi.}
 
-\item{n_slides}{Number of slides to create for slideshow(). Defaults to 15.}
+\item{n_slides}{Number of slides to create for slideshow(). Defaults to 20.}
 }
 \value{
 `m_tour`, a [p, d, n_slides] dim array of the manual tour transistion

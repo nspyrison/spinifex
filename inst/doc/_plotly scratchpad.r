@@ -2,7 +2,6 @@
 #https://plot.ly/r/animations/
 library(plotly)
 library(ggplot2)
-packageVersion('plotly')
 
 # Sandbox ggplot2 behaviours
 ### theme_void() doesn't remove legend.
@@ -15,7 +14,7 @@ g1 <-
          aes(x = disp, y = hp, col = as.factor(cyl), 
              blah1="hi", blah2 = am, drats = drat, frame = vs) ) +
   # suppressWarnings(geom_point(aes(blahblah = vs)) ) + 
-  geom_point(aes(blahblah = vs)) + 
+  geom_point(aes(blahblah = vs, frame = vs)) + 
   theme_void()
 
 ggplotly(g1)

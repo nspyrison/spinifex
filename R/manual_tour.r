@@ -110,10 +110,10 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 manual_tour <- function(basis = NULL,
                         manip_var = NULL,
-                        manip_type = "radial",
+                        manip_type = "radial", #alt: "horizontal" and "vertical"
                         theta = NULL,      # [radians]
                         phi_min = 0,       # [radians]
-                        phi_max = .5 * pi, # [radians]
+                        phi_max = pi,      # [radians]
                         n_slides = 20
                         ) { 
   # Assertions
@@ -123,15 +123,9 @@ manual_tour <- function(basis = NULL,
   stopifnot(manip_type %in% c("radial", "horizontal", "vertical") )
   
   # Handle manip_var
-  if (is.numeric(manip_var)) stopifnot(manip_var %% 1 == 0)
   if (is.numeric(manip_var)) stopifnot(manip_var <= nrow(basis) )
-  if (is.character(manip_var)) 
-    manip_var <- match(manip_var, colnames(data)) # char to num
-  if (!is.numeric(manip_var)) 
-    stop("manip_var string not matched to a column name, try a column number.")
   
   # Handle manip_type and theta
-  
   if (!is.null(manip_type)) manip_type <- tolower(manip_type)
   if (!is.null(theta) & !is.null(manip_type) )
     message("Non-null theta used with non-null manip_type. Selecting theta over manip_type.")
@@ -175,9 +169,6 @@ manual_tour <- function(basis = NULL,
   
   # Add tour attributes
   attr(m_tour, "manip_var")  <- manip_var
-  # attr(m_tour, "manip_type") <- manip_type # Uncomment later for tooltips
-  # attr(m_tour, "phi")        <- phi_vect   # Uncomment later for tooltips
-  # attr(m_tour, "theta")      <- theta      # Uncomment later for tooltips
   
   return(m_tour)
 }
