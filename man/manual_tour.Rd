@@ -2,8 +2,8 @@
 % Please edit documentation in R/manual_tour.r
 \name{manual_tour}
 \alias{manual_tour}
-\title{Produce the series of porjection bases to rotate a variable into and out of a 
-projection}
+\title{Produce the series of porjection bases to rotate a variable into and out 
+  of a projection}
 \usage{
 manual_tour(basis = NULL, manip_var = NULL, manip_type = "radial",
   theta = NULL, phi_min = 0, phi_max = pi, n_slides = 20)
@@ -28,17 +28,17 @@ Required, defaults to 0.}
 
 \item{phi_max}{Angle in radians specifying the maximum extent that 
 `manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
-Required, defaults to 2 * pi.}
+Required, defaults to .5 * pi.}
 
 \item{n_slides}{Number of slides to create for slideshow(). Defaults to 20.}
 }
 \value{
-`m_tour`, a [p, d, n_slides] dim array of the manual tour transistion
-in `n_slides``increments.
+`m_tour`, a [p, d, n_slides] dim array of the manual tour
+  transistion in `n_slides``increments.
 }
 \description{
-Rotates the manipulation space across `n_slides` increments to `phi_max` and
-back to `phi_min`.
+Rotates the manipulation space across `n_slides` increments to `phi_max`
+and back to `phi_min`.
 }
 \examples{
 data(flea)

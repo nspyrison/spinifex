@@ -12,12 +12,12 @@ vignette: >
 <!-- #EXAMPLE: https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  echo       = TRUE,   #code
-  include    = TRUE,   #plots
-  results    = "hide", #text
-  message    = FALSE,  #messages
-  warning    = FALSE,  #warnings
-  error      = FALSE,  #errors
+  echo       = TRUE,   # code
+  include    = TRUE,   # plots
+  results    = "hide", # text
+  message    = FALSE,  # messages
+  warning    = FALSE,  # warnings
+  error      = FALSE,  # errors
   collapse   = TRUE,
   comment    = "#>",
   fig.height = 6,
@@ -63,18 +63,15 @@ Flea is the data we want to rotate. We initialize a random basis and then view i
 
 Load the data and select a random basis with `basis_random(p)`. View the basis in p-space with `view_basis(basis, data)`, where data is optional, but adds the dimension names.
 
-```{r eval=FALSE}
-#devtools::install_github("nspyrison/spinifex")
-devtools::load_all()
-#library(spinifex) #WHEN USING library(), rmd can't find spinifex functions :(
-#imports ggplot2, and plotly
+```{r}
+library(spinifex)
 set.seed(123)
 
-data <- flea[, 1:6]
-p <- ncol(data)
-b_rand <- create_random_basis(p = p)
+data(flea)
+flea_std <- tourr::rescale(flea[,1:6])
 
-view_basis(basis = b_rand, data = data)
+rb <- tourr::basis_random(n = ncol(flea_std))
+view_basis(basis = rb, labels = colnames(flea_std))
 ```
 
 <!-- I like to think of the basis as piece of paper that maps p dimension down to 2. The manipulation type (alternatively theta) is the angle of the on this basis plane between (1, 0) and the manipulation variable's vector in, our case we select 'head'. -->
@@ -92,22 +89,10 @@ Optionally we can specify:
 
 Watch the projection, via `slideshow()`, coloring observations by their species.
 
-```{r eval=FALSE}
-pal <- rainbow(length(levels(flea$species)))
-col <- pal[as.numeric(flea$species)]
-
-proj <-
-  proj_data(
-    data = data,
-    basis = b_rand,
-    manip_var = 3, # or "head"
-    manip_type = "radial",
-    phi_from = 0,
-    phi_to = pi,
-    n_slides = 20
-  )
-slideshow(proj, col = col)
-#export()
+```{r}
+mtour <- manual_tour(basis = rb, manip_var = 4)
+sshow <- create_slideshow(data = flea_std, m_tour = mtour)
+render_slideshow(slide_deck = sshow)
 ```
 
 
@@ -203,78 +188,46 @@ slideshow(proj, col = col)
 
 ## Example 3 - Rotation after holes guided tour
 
-```{r, results='hide', eval=FALSE}
-library(tourr)
-data <- flea[, 1:6]
-p <- ncol(data)
+```{r, results='hide'}
+data(flea)
+flea_std <- tourr::rescale(flea[,1:6])
 
-# holes is unsupervised gradient descent maximizing whitespace in the middle.
-holes_tour <- 
-  save_history(data, guided_tour(index = holes), max_bases = 25) 
-holes_basis <-
-  matrix(as.numeric(holes_tour[, , dim(holes_tour)[3]]), ncol = 2)
+# Holes is unsupervised stochastic gradient descent maximizing whitespace 
+#   in the middle of the projection.
+h_tour<- tourr::save_history(
+  flea_std, tourr::guided_tour(index = tourr::holes), max_bases = 25) 
+h_basis <- matrix(as.numeric(h_tour[,, dim(h_tour)[3]]), ncol = 2)
+
+h_mtour <- manual_tour(basis = h_basis, manip_var = 4)
+sshow <- create_slideshow(data = flea_std, m_tour = mtour)
+render_slideshow(slide_deck = sshow)
+```
+
+```{r}
+abbreviate(colnames(flea_std),3)
+
+tr1_tour <- manual_tour(basis = h_basis, manip_var = 1)
+tr1_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+tr2_tour <- manual_tour(basis = h_basis, manip_var = 2)
+tr2_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+hed_tour <- manual_tour(basis = h_basis, manip_var = 3)
+hed_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+ad1_tour <- manual_tour(basis = h_basis, manip_var = 4)
+ad1_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+ad2_tour <- manual_tour(basis = h_basis, manip_var = 5)
+ad2_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+ad3_tour <- manual_tour(basis = h_basis, manip_var = 6)
+ad3_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
 ```
 
 
-```{r eval=FALSE}
-tars1 <-
-  proj_data(
-    data = data,
-    basis = holes_basis,
-    manip_var = "tars1",
-    manip = "radial",
-    phi_to = 1.57
-  )
-tars2 <-
-  proj_data(
-    data = data,
-    basis = holes_basis,
-    manip_var = "tars2",
-    manip = "radial",
-    phi_to = 1.41
-  )
-head <-
-  proj_data(
-    data = data,
-    basis = holes_basis,
-    manip_var = "head",
-    manip = "radial",
-    phi_to = 1.26
-  )
-aede1 <-
-  proj_data(
-    data = data,
-    basis = holes_basis,
-    manip_var = "aede1",
-    manip = "radial",
-    phi_to = 1.41
-  )
-aede2 <-
-  proj_data(
-    data = data,
-    basis = holes_basis,
-    manip_var = "aede2",
-    manip = "radial",
-    phi_to = 1.41
-  )
-aede3 <-
-  proj_data(
-    data = data,
-    basis = holes_basis,
-    manip_var = "aede3",
-    manip = "radial",
-    phi_to = 1.73
-  )
-```
-
-
-```{r eval=FALSE}
-slideshow(tars1, col = col) # groups overlap when removed
-slideshow(aede2, col = col) # groups overlap when removed
-slideshow(tars2, col = col) # 2 groups overlap when removed
-slideshow(head,  col = col) # groups still separate when removed
-slideshow(aede1, col = col) # groups still separate when removed
-slideshow(aede3, col = col) # groups still separate when removed
+```{r}
+render_slideshow(tr1_sshow)
+render_slideshow(tr2_sshow)
+render_slideshow(hed_sshow)
+render_slideshow(ad1_sshow)
+render_slideshow(ad2_sshow)
+render_slideshow(ad3_sshow)
 ```
 
 

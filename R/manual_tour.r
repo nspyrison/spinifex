@@ -77,30 +77,30 @@ rotate_manip_space <- function(manip_space, theta, phi){
   return(rotation_space)
 }
 
-#' Produce the series of porjection bases to rotate a variable into and out of a 
-#' projection
+#' Produce the series of porjection bases to rotate a variable into and out 
+#'   of a projection
 #'
-#' Rotates the manipulation space across `n_slides` increments to `phi_max` and
-#' back to `phi_min`.
+#' Rotates the manipulation space across `n_slides` increments to `phi_max`
+#' and back to `phi_min`.
 #'
 #' @param basis A [p, 2] dim orthonormal starting basis. Required no default.
 #' @param manip_var Integer column number or string exact column name of the.
-#' variable to manipulate. Required, no default.
+#'   variable to manipulate. Required, no default.
 #' @param manip_type String of the type of manipulation to use. 
-#' Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
-#' Required, supersedes theta if set.
+#'   Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
+#'   Required, supersedes theta if set.
 #' @param theta Optional parameter, yielding to manip_type. Angle in radians 
-#' specifying the angle between the `manip_var` and 0 on bases reference frame. 
-#' Where the 0 is the positive side of the x-axis.
+#'   specifying the angle between the `manip_var` and 0 on bases reference frame. 
+#'   Where the 0 is the positive side of the x-axis.
 #' @param phi_min Angle in radians specifying the minimum extent that 
 #' `manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
 #' Required, defaults to 0.
 #' @param phi_max Angle in radians specifying the maximum extent that 
-#' `manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
-#' Required, defaults to 2 * pi.
+#'   `manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
+#'   Required, defaults to .5 * pi.
 #' @param n_slides Number of slides to create for slideshow(). Defaults to 20.
-#' @return `m_tour`, a [p, d, n_slides] dim array of the manual tour transistion
-#' in `n_slides``increments.
+#' @return `m_tour`, a [p, d, n_slides] dim array of the manual tour
+#'   transistion in `n_slides``increments.
 #' @export
 #' @examples
 #' data(flea)

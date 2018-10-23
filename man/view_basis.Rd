@@ -4,13 +4,15 @@
 \alias{view_basis}
 \title{Plot projection frame and return the axes table.}
 \usage{
-view_basis(basis = create_identity_basis(6), labels = paste0("X",
+view_basis(basis = create_identity_basis(6), labels = paste0("V",
   1:nrow(basis)), ...)
 }
 \arguments{
-\item{basis}{A [p, d=2] basis, xy contributions of each dimension (numeric variable).}
+\item{basis}{A [p, d=2] basis, xy contributions of each dimension 
+(numeric variable).}
 
-\item{data}{Optional, of [n, p] dim, applies colnames to the rows of the basis.}
+\item{data}{Optional, of [n, p] dim, applies colnames to the rows of the 
+basis.}
 }
 \description{
 Uses base graphics to plot the circle with axes representing

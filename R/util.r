@@ -2,8 +2,9 @@
 #'
 #' Creates a [p, d=2] dim identity basis; identity matrix followed by rows 0s.
 #'
-#' @param p number of dimensions of the data. p must be equal to or greater than d.
-#' @param d number of dimensions of the basis. Defaults to 2.
+#' @param p number of dimensions of the data.
+#' @param d number of dimensions of the basis (ie. the dimensionality of the 
+#'   graphic.) Defaults to 2.
 #' @return A [p, d=2] dim identity matrix followed by rows of 0s.
 #' 
 #' @examples 
@@ -23,15 +24,17 @@ create_identity_basis <- function(p = 6, d = 2){
 #' Uses base graphics to plot the circle with axes representing
 #' the projection frame. Returns the corrisponding table.
 #' 
-#' @param basis A [p, d=2] basis, xy contributions of each dimension (numeric variable). 
-#' @param data Optional, of [n, p] dim, applies colnames to the rows of the basis.
+#' @param basis A [p, d=2] basis, xy contributions of each dimension 
+#'   (numeric variable). 
+#' @param data Optional, of [n, p] dim, applies colnames to the rows of the 
+#'   basis.
 #' 
 #' @examples 
 #' ib <- tourr::basis_random(4, 2)
 #' view_basis(ib)
 #' @export
 view_basis <- function(basis = create_identity_basis(6), 
-                       labels = paste0("X", 1:nrow(basis)), 
+                       labels = paste0("V", 1:nrow(basis)), 
                        ...) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
   

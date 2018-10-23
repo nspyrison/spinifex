@@ -1,6 +1,7 @@
 #' Create a slideshow array of the projected bases
 #'
-#' Takes the result of manual_tour() and uses base graphics to view each index with delay in base grahics
+#' Takes the result of manual_tour() and interpolated the data over the 
+#' the tour path of the reference frame.
 #'
 #' @param data [n, p] dim data to project, consisting of 
 #'    only numeric variables (for coercion into matrix.)
@@ -49,8 +50,8 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
 #' Takes the result of create_slideshow() and renders them as a graph object of 
 #' the `disp_type`. 
 #'
-#' @param data [n, p] dim data to project, consisting of 
-#'    only numeric variables (for coercion into matrix.)
+#' @param data [n, p] dim data to project, consisting of only numeric 
+#'   variables (for coercion into matrix.)
 #' @export
 #' @examples
 #' data(flea)
@@ -58,7 +59,7 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- create_slideshow(flea_std, mtour)
+#' sshow <- create_slideshow(data = flea_std, m_tour = mtour)
 #' render_slideshow(slide_deck = sshow)
 render_slideshow <- function(slide_deck,
                              disp_type = "plotly" # alt: "gganimate", "animate"

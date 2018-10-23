@@ -20,7 +20,8 @@ for all projections. Typically not useful, but occasionally we are only
 interested in the shape of projected data not the magnitude. Default=FALSE.}
 }
 \description{
-Takes the result of manual_tour() and uses base graphics to view each index with delay in base grahics
+Takes the result of manual_tour() and interpolated the data over the 
+the tour path of the reference frame.
 }
 \examples{
 data(flea)

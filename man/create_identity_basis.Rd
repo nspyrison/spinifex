@@ -7,9 +7,10 @@
 create_identity_basis(p = 6, d = 2)
 }
 \arguments{
-\item{p}{number of dimensions of the data. p must be equal to or greater than d.}
+\item{p}{number of dimensions of the data.}
 
-\item{d}{number of dimensions of the basis. Defaults to 2.}
+\item{d}{number of dimensions of the basis (ie. the dimensionality of the 
+graphic.) Defaults to 2.}
 }
 \value{
 A [p, d=2] dim identity matrix followed by rows of 0s.

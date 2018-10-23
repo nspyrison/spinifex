@@ -7,8 +7,8 @@
 render_slideshow(slide_deck, disp_type = "plotly")
 }
 \arguments{
-\item{data}{[n, p] dim data to project, consisting of 
-only numeric variables (for coercion into matrix.)}
+\item{data}{[n, p] dim data to project, consisting of only numeric 
+variables (for coercion into matrix.)}
 }
 \description{
 Takes the result of create_slideshow() and renders them as a graph object of 
@@ -20,6 +20,6 @@ flea_std <- tourr::rescale(flea[,1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- create_slideshow(flea_std, mtour)
+sshow <- create_slideshow(data = flea_std, m_tour = mtour)
 render_slideshow(slide_deck = sshow)
 }
