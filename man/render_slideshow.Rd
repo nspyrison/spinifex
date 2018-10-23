@@ -4,7 +4,7 @@
 \alias{render_slideshow}
 \title{Render a slideshow of the toured data and bases}
 \usage{
-render_slideshow(slide_deck, group_by = NULL, disp_type = "plotly")
+render_slideshow(slide_deck, disp_type = "plotly")
 }
 \arguments{
 \item{data}{[n, p] dim data to project, consisting of 

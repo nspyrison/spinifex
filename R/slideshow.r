@@ -61,7 +61,6 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
 #' sshow <- create_slideshow(flea_std, mtour)
 #' render_slideshow(slide_deck = sshow)
 render_slideshow <- function(slide_deck,
-                             group_by = NULL,
                              disp_type = "plotly" # alt: "gganimate", "animate"
 ) {
   # Assertions
@@ -77,21 +76,21 @@ render_slideshow <- function(slide_deck,
   circ     <- data.frame(x = cos(angle), y = sin(angle))
   lab_abbr <- abbreviate(colnames(data_slides), 3)
   
-  ### Graphics #frame needs to be in a geom_(aes()) for plotly.
+  ### Graphics
   gg1 <- 
-    ggplot2::ggplot(data_slides, ggplot2::aes(x = V1, y = V2,frame = slide) ) +
+    ggplot2::ggplot(data_slides, ggplot2::aes(x = V1, y = V2, frame = slide) ) +
     ggplot2::geom_point(size = .7) +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
     ggplot2::coord_fixed(ratio = 1)
   
-  # basis text and axes
+  # Reference frame text and axes
   gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
     gg1 + 
       ggplot2::geom_text(
         data = bases_slides, size = 4, hjust = 0, vjust = 0,
-        ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr)
+        ggplot2::aes(x = V1, y = V2, label = lab_abbr, frame = slide)
       ) +
       ggplot2::geom_segment(
         data = bases_slides, size = .3,
@@ -99,14 +98,15 @@ render_slideshow <- function(slide_deck,
       )
   )
   
-  # axes circle
+  # Reference frame circle
   gg3 <- gg2 + ggplot2::geom_path(
-    data = circ, color = "grey80", size = .3, ggplot2::aes(x, y)
+    data = circ, color = "grey80", size = .3, inherit.aes = FALSE, 
+    ggplot2::aes(x = x, y = y)
   )
   gg3$layers <- rev(gg3$layers) # Reverse layers for correct overlaping.
   
   if (disp_type == "plotly") {
-    pgg4 <- suppressMessages(plotly::ggplotly(gg3) )
+    pgg4 <- plotly::ggplotly(gg3)
     slideshow <- pgg4
   } else stop("disp_types other than `plotly` not yet implemented.")
   
