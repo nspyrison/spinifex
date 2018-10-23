@@ -131,6 +131,7 @@ manual_tour <- function(basis = NULL,
     stop("manip_var string not matched to a column name, try a column number.")
   
   # Handle manip_type and theta
+  
   if (!is.null(manip_type)) manip_type <- tolower(manip_type)
   if (!is.null(theta) & !is.null(manip_type) )
     message("Non-null theta used with non-null manip_type. Selecting theta over manip_type.")
@@ -141,7 +142,6 @@ manual_tour <- function(basis = NULL,
   phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
   
   # Initalize and create a sequence of projection bases
-  manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
   p <- nrow(basis) 
   d <- ncol(basis) 
   m_tour <- array(dim=c(p, d, n_slides))
