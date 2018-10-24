@@ -15,6 +15,7 @@ cbind(rb,as.matrix(colnames(flea_std), ncol=1)) #good
 manip_var = 4
 (theta <- atan(rb[manip_var, 2] / rb[manip_var, 1]) * (360/(2*pi)) )
 
+plot.new()
 segments(x1=rb[manip_var, 1], y1=rb[manip_var, 2], x0=0, y0=0)
 
 

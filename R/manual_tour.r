@@ -113,7 +113,7 @@ manual_tour <- function(basis = NULL,
                         manip_type = "radial", #alt: "horizontal" and "vertical"
                         theta = NULL,      # [radians]
                         phi_min = 0,       # [radians]
-                        phi_max = pi,      # [radians]
+                        phi_max = .5 * pi, # [radians]
                         n_slides = 20
                         ) { 
   # Assertions
@@ -142,7 +142,7 @@ manual_tour <- function(basis = NULL,
   m_tour <- array(dim=c(p, d, n_slides))
   slide <- 0
   new_slide <- NULL
-  phi_inc = 2 * abs(phi_max - phi_min) / (n_slides-3)
+  phi_inc = 2 * abs(phi_max - phi_min) / (n_slides - 3)
   phi_vect = NULL
   
   interpolate_slide <- function(phi){

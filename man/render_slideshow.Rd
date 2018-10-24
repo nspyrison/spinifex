@@ -7,8 +7,9 @@
 render_slideshow(slide_deck, disp_type = "plotly")
 }
 \arguments{
-\item{data}{[n, p] dim data to project, consisting of only numeric 
-variables (for coercion into matrix.)}
+\item{slide_deck}{The result of create_slideshow().}
+
+\item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
 }
 \description{
 Takes the result of create_slideshow() and renders them as a graph object of 

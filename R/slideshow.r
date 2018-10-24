@@ -26,6 +26,8 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
   stopifnot(ncol(data) == nrow(m_tour[,,1]))
   
   # Generate the projected data by slide
+  n            <- nrow(data)
+  p            <- ncol(data)
   n_slides     <- dim(m_tour)[3]
   manip_var    <- attributes(m_tour)$manip_var
   lab_abbr     <- abbreviate(colnames(data), 3)
@@ -34,12 +36,17 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
   for (i in 1:n_slides) {
     d <- tibble::as_tibble(data %*% m_tour[,,i])
     d$slide <- i
-    data_slides <-  dplyr::bind_rows(data_slides, d)
+    data_slides <- dplyr::bind_rows(data_slides, d)
     b <- tibble::as_tibble(m_tour[,,i])
     b$slide <- i
     b$lab_abbr <- lab_abbr
     bases_slides <- dplyr::bind_rows(bases_slides, b)
   }
+  
+  bases_slides$norm <- sqrt(bases_slides[1]^2 + bases_slides[2]^2)
+  #max_norm          <- max(bases_slides$norm) # moving to render_slideshow()
+  #max_mvar_norm     <- max(bases_slides$norm[ # moving to render_slideshow()
+    #seq(manip_var, manip_var + p * (n_slides - 1), by = p),])
   
   slide_deck <- list(data_slides, bases_slides)
   return(slide_deck)
@@ -50,8 +57,8 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
 #' Takes the result of create_slideshow() and renders them as a graph object of 
 #' the `disp_type`. 
 #'
-#' @param data [n, p] dim data to project, consisting of only numeric 
-#'   variables (for coercion into matrix.)
+#' @param slide_deck The result of create_slideshow().
+#' @param disp_type The graphics system to use. Defaults to 'plotly'.
 #' @export
 #' @examples
 #' data(flea)
@@ -67,10 +74,11 @@ render_slideshow <- function(slide_deck,
   # Assertions
   stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
   
-  data_slides      <- slide_deck[[1]]
-  bases_slides     <- slide_deck[[2]]
-  nrow_data        <- nrow(data_slides[data_slides$slide == 1,])
-  nrow_data_slides <- nrow(data_slides)
+  data_slides       <- slide_deck[[1]]
+  bases_slides      <- slide_deck[[2]]
+  nrow_data         <- nrow(data_slides[data_slides$slide == 1,])
+  nrow_data_slides  <- nrow(data_slides)
+  max_norm          <- max(bases_slides$norm)
   
   # Initialize circle for the axes reference frame.
   angle    <- seq(0, 2 * pi, length = 360)
@@ -78,37 +86,39 @@ render_slideshow <- function(slide_deck,
   lab_abbr <- abbreviate(colnames(data_slides), 3)
   
   ### Graphics
-  gg1 <- 
-    ggplot2::ggplot(data_slides, ggplot2::aes(x = V1, y = V2, frame = slide) ) +
-    ggplot2::geom_point(size = .7) +
+  # Reference frame circle
+  gg1 <- ggplot2::ggplot() + ggplot2::geom_path(
+    data = circ, color = "grey80", size = .3, inherit.aes = FALSE, 
+    ggplot2::aes(x = x, y = y)
+  ) + ggplot2::geom_path(
+    data = circ * max_norm, color = "grey80", size = .3, inherit.aes = FALSE, 
+    ggplot2::aes(x = x, y = y)
+  )
+  
+  # Reference frame text and axes
+  gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
+    gg1 + ggplot2::geom_text(
+      data = bases_slides, size = 4, hjust = 0, vjust = 0,
+      ggplot2::aes(x = V1, y = V2, label = lab_abbr, frame = slide)
+    ) +
+      ggplot2::geom_segment(
+        data = bases_slides, size = .3,
+        ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
+      )
+  ) +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
     ggplot2::coord_fixed(ratio = 1)
   
-  # Reference frame text and axes
-  gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
-    gg1 + 
-      ggplot2::geom_text(
-        data = bases_slides, size = 4, hjust = 0, vjust = 0,
-        ggplot2::aes(x = V1, y = V2, label = lab_abbr, frame = slide)
-      ) +
-      ggplot2::geom_segment(
-        data = bases_slides, size = .3,
-        ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
-      )
-  )
-  
-  # Reference frame circle
-  gg3 <- gg2 + ggplot2::geom_path(
-    data = circ, color = "grey80", size = .3, inherit.aes = FALSE, 
-    ggplot2::aes(x = x, y = y)
-  )
-  gg3$layers <- rev(gg3$layers) # Reverse layers for correct overlaping.
+  # data scatterplot
+  gg3 <- gg2 + suppressWarnings( # suppress to ignore unused aes "frame"
+    ggplot2::geom_point(data_slides, size = .7,
+                        ggplot2::aes(x = V1, y = V2, frame = slide) )
+    )
   
   if (disp_type == "plotly") {
-    pgg4 <- plotly::ggplotly(gg3)
-    slideshow <- pgg4
+    slideshow <- plotly::ggplotly(gg3)
   } else stop("disp_types other than `plotly` not yet implemented.")
   
   return(slideshow)
