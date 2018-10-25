@@ -91,8 +91,8 @@ render_slideshow <- function(slide_deck,
     data = circ, color = "grey80", size = .3, inherit.aes = FALSE, 
     ggplot2::aes(x = x, y = y)
   ) + ggplot2::geom_path(
-    data = circ * max_norm, color = "grey80", size = .3, inherit.aes = FALSE, 
-    ggplot2::aes(x = x, y = y)
+    data = circ, color = "grey80", size = .3, inherit.aes = FALSE, 
+    ggplot2::aes(x = x* max_norm, y = y* max_norm)
   )
   
   # Reference frame text and axes
@@ -113,7 +113,7 @@ render_slideshow <- function(slide_deck,
   
   # data scatterplot
   gg3 <- gg2 + suppressWarnings( # suppress to ignore unused aes "frame"
-    ggplot2::geom_point(data_slides, size = .7,
+    ggplot2::geom_point(data=data_slides, size = .7,
                         ggplot2::aes(x = V1, y = V2, frame = slide) )
     )
   
