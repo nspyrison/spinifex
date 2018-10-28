@@ -23,7 +23,7 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
   # Assertions
   if (!is.matrix(data)) data <- as.matrix(data)
   stopifnot(is.array(m_tour))
-  stopifnot(ncol(data) == nrow(m_tour[,,1]))
+  stopifnot(ncol(data) == nrow(m_tour[,, 1]))
   
   # Generate the projected data by slide
   n            <- nrow(data)
@@ -34,19 +34,14 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
   data_slides  <- NULL
   bases_slides <- NULL
   for (i in 1:n_slides) {
-    d <- tibble::as_tibble(data %*% m_tour[,,i])
+    d <- tibble::as_tibble(data %*% m_tour[,, i])
     d$slide <- i
     data_slides <- dplyr::bind_rows(data_slides, d)
-    b <- tibble::as_tibble(m_tour[,,i])
+    b <- tibble::as_tibble(m_tour[,, i])
     b$slide <- i
     b$lab_abbr <- lab_abbr
     bases_slides <- dplyr::bind_rows(bases_slides, b)
   }
-  
-  bases_slides$norm <- sqrt(bases_slides[1]^2 + bases_slides[2]^2)
-  #max_norm          <- max(bases_slides$norm) # moving to render_slideshow()
-  #max_mvar_norm     <- max(bases_slides$norm[ # moving to render_slideshow()
-    #seq(manip_var, manip_var + p * (n_slides - 1), by = p),])
   
   slide_deck <- list(data_slides, bases_slides)
   return(slide_deck)
@@ -78,7 +73,6 @@ render_slideshow <- function(slide_deck,
   bases_slides      <- slide_deck[[2]]
   nrow_data         <- nrow(data_slides[data_slides$slide == 1,])
   nrow_data_slides  <- nrow(data_slides)
-  max_norm          <- max(bases_slides$norm)
   
   # Initialize circle for the axes reference frame.
   angle    <- seq(0, 2 * pi, length = 360)
@@ -90,9 +84,6 @@ render_slideshow <- function(slide_deck,
   gg1 <- ggplot2::ggplot() + ggplot2::geom_path(
     data = circ, color = "grey80", size = .3, inherit.aes = FALSE, 
     ggplot2::aes(x = x, y = y)
-  ) + ggplot2::geom_path(
-    data = circ, color = "grey80", size = .3, inherit.aes = FALSE, 
-    ggplot2::aes(x = x* max_norm, y = y* max_norm)
   )
   
   # Reference frame text and axes
@@ -113,7 +104,7 @@ render_slideshow <- function(slide_deck,
   
   # data scatterplot
   gg3 <- gg2 + suppressWarnings( # suppress to ignore unused aes "frame"
-    ggplot2::geom_point(data=data_slides, size = .7,
+    ggplot2::geom_point(data = data_slides, size = .7,
                         ggplot2::aes(x = V1, y = V2, frame = slide) )
     )
   
