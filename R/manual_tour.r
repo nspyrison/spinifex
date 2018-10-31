@@ -142,7 +142,9 @@ manual_tour <- function(basis = NULL,
   m_tour <- array(dim=c(p, d, n_slides))
   slide <- 0
   new_slide <- NULL
-  phi_inc = 2 * abs(phi_max - phi_min) / (n_slides - 3)
+  w_max <- max(phi_min, phi_max, phi_start)
+  w_min <- min(phi_min, phi_max, phi_start)
+  phi_inc = 2 * abs(w_max - w_min) / (n_slides - 3)
   phi_vect = NULL
   
   interpolate_slide <- function(phi){
@@ -155,15 +157,18 @@ manual_tour <- function(basis = NULL,
   }
   
   ## walk 1: from phi=phi_start to phi=0
-  for (phi in seq(phi_start, phi_min, by = -1 * phi_inc) ) {
+  for (phi in seq(phi_start, phi_min, 
+                  by = ifelse(phi_start > phi_min, -1, 1) * phi_inc) ) {
     interpolate_slide(phi)
   }
   ## walk 2: from phi=0 to phi=pi/2
-  for (phi in seq(phi_min, phi_max, by = phi_inc) ) {
+  for (phi in seq(phi_min, phi_max, 
+                  by = ifelse(phi_min > phi_max, -1, 1) * phi_inc)   ) {
     interpolate_slide(phi)
   }
   ## walk 3: from phi=pi/2 to phi=phi_start
-  for (phi in seq(phi_max, phi_start, by = -1 * phi_inc) ) {
+  for (phi in seq(phi_max, phi_start, 
+                  by = ifelse(phi_max > phi_start, -1, 1) * phi_inc) ) {
     interpolate_slide(phi)
   }
   interpolate_slide(phi_start)
