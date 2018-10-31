@@ -7,7 +7,6 @@ install.packages('digest',     dependencies = TRUE)
 install.packages('rlang',      dependencies = TRUE)
 install.packages('data.table', dependencies = TRUE)
 devtools::install_github("ropensci/plotly", dependancies = TRUE)
-  #dl  24/20/2018
 
 # spinifex repex
 library(spinifex)
@@ -16,6 +15,15 @@ flea_std <- tourr::rescale(flea[,1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- create_slideshow(data = flea_std, m_tour = mtour)
+ans <-  render_slideshow(slide_deck = sshow)
+ans
+
+# Maybe a network dependant issue, see:
+#browseURL("https://community.plot.ly/t/rstudio-viewer-shows-blank-plots-the-browser-can-show-them-though/3359")
+viewer <- getOption("viewer")
+# 'Show in new window opens Chrome@ http://localhost:30659/session/viewhtml315479c73e/index.html
+#replacing 'localhost' with '127.0.0.1' give the same issue:
+viewer("http://127.0.0.1:30659/session/viewhtml315479c73e/index.html")
 
 # dive into render_slideshow(). # render_slideshow(slide_deck = sshow)
 slide_deck = sshow
@@ -24,11 +32,18 @@ data_slides      <- slide_deck[[1]]
 bases_slides     <- slide_deck[[2]]
 nrow_data        <- nrow(data_slides[data_slides$slide == 1,])
 nrow_data_slides <- nrow(data_slides)
-visdat::vis_dat(data_slides) # Well, this is a an issue...
+visdat::vis_dat(data_slides) # Well, this is a an issue... slide 20/20 contains NAs.
 
 DS_NAs <- as.data.frame(data_slides[is.na(data_slides),])
   # 74 NAs in slide 20, and 74 NAs in slide NA.
 
+#working here.
+complete_sshow <- array(dims = dim(sshow[[1]]))
+complete_sshow1 <- sshow[[1]][complete.cases(sshow[[1]]), ]
+complete_sshow2 <- sshow[[2]][complete.cases(sshow[[2]]), ]
+
+complete_sshow1 <- sshow[[1]] %>% tidyr::drop_na()
+complete_sshow2 <- sshow[[2]] %>% tidyr::drop_na()
 
 # Initialize circle for the axes reference frame.
 angle    <- seq(0, 2 * pi, length = 360)
