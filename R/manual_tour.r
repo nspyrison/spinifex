@@ -142,31 +142,31 @@ manual_tour <- function(basis = NULL,
   m_tour <- array(dim=c(p, d, n_slides))
   slide <- 0
   new_slide <- NULL
-  phi_inc = 2 * abs(phi_max - phi_min) / (n_slides - 3)
+  #phi_inc = 2 * abs(phi_max - phi_min) / (n_slides - 3)
+  phi_inc = pi / (n_slides - 3)
   phi_vect = NULL
   
   interpolate_slide <- function(phi){
     slide <<- slide + 1
     new_slide <- rotate_manip_space(manip_space, theta, phi)
-    new_slide[,1] <- new_slide[,1] - mean(new_slide[,1])
-    new_slide[,2] <- new_slide[,2] - mean(new_slide[,2])
     m_tour[,,slide] <<- new_slide[,1:2]
     phi_vect <<- rbind(phi_vect, phi)
   }
   
   ## walk 1: from phi=phi_start to phi=0
-  for (phi in seq(phi_start, phi_min, by = -1 * phi_inc) ) {
-    interpolate_slide(phi)
+  #for (phi in seq(phi_start, phi_min, by = -1 * phi_inc) ) {
+  for (phi in seq(0, -phi_start, by = -1 * phi_inc) ) {
+      interpolate_slide(phi)
   }
   ## walk 2: from phi=0 to phi=pi/2
-  for (phi in seq(phi_min, phi_max, by = phi_inc) ) {
+  for (phi in seq(-phi_start, pi/2-phi_start, by = phi_inc) ) {
     interpolate_slide(phi)
   }
   ## walk 3: from phi=pi/2 to phi=phi_start
-  for (phi in seq(phi_max, phi_start, by = -1 * phi_inc) ) {
+  for (phi in seq(pi/2-phi_start, 0, by = -1 * phi_inc) ) {
     interpolate_slide(phi)
   }
-  interpolate_slide(phi_start)
+  interpolate_slide(0)
   
   # Add tour attributes
   attr(m_tour, "manip_var")  <- manip_var
