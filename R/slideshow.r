@@ -90,7 +90,7 @@ render_slideshow <- function(slide_deck,
   gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
     gg1 + ggplot2::geom_text(
       data = bases_slides, size = 4, hjust = 0, vjust = 0,
-      ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
+      mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
     ) +
       ggplot2::geom_segment(
         data = bases_slides, size = .3,

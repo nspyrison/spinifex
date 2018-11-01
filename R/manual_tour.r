@@ -115,17 +115,16 @@ manual_tour <- function(basis = NULL,
                         phi_min = 0,       # [radians]
                         phi_max = .5 * pi, # [radians]
                         n_slides = 20
-                        ) { 
+                        )
+{ 
   # Assertions
   stopifnot(is.matrix(basis))
   stopifnot(nrow(basis) > 2)
   stopifnot(!is.null(manip_var))
   stopifnot(manip_type %in% c("radial", "horizontal", "vertical") )
   
-  # Handle manip_var
+  # Handle args
   if (is.numeric(manip_var)) stopifnot(manip_var <= nrow(basis) )
-  
-  # Handle manip_type and theta
   if (!is.null(manip_type)) manip_type <- tolower(manip_type)
   if (!is.null(theta) & !is.null(manip_type) )
     message("Non-null theta used with non-null manip_type. Selecting theta over manip_type.")
@@ -133,43 +132,45 @@ manual_tour <- function(basis = NULL,
   if (manip_type == "vertical") theta <- pi / 2
   if (manip_type == "radial")
     theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  
+  # Initalize
   phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-  
-  # Initalize and create a sequence of projection bases
+  w_min <- min(phi_min, phi_max, phi_start)
+  w_max <- max(phi_min, phi_max, phi_start)
+  phi_inc <- 2 * abs(w_max - w_min) / (n_slides - 3)
   manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
-  p <- nrow(basis) 
-  d <- ncol(basis) 
-  m_tour <- array(dim=c(p, d, n_slides))
-  slide <- 0
-  new_slide <- NULL
-  #phi_inc = 2 * abs(phi_max - phi_min) / (n_slides - 3)
-  phi_inc = pi / (n_slides - 3)
-  phi_vect = NULL
+  p <- nrow(basis)
+  d <- ncol(basis)
   
-  interpolate_slide <- function(phi){
-    slide <<- slide + 1
-    new_slide <- rotate_manip_space(manip_space, theta, phi)
-    m_tour[,,slide] <<- new_slide[,1:2]
-    phi_vect <<- rbind(phi_vect, phi)
+  interpolate_slides <- function(seq_start, seq_end){
+    # Initalize for interpolate_slides()
+    slide <- 0
+    new_slide <- NULL
+    seq_by_sign <- ifelse(seq_end > seq_start, 1, -1)
+    len <- length(seq(seq_start, seq_end, seq_by_sign * phi_inc))
+    interpolation <- array(dim = c(p, d, len))
+    
+    for (phi in seq(seq_start, seq_end, by = seq_by_sign * phi_inc)) {
+      slide <- slide + 1
+      new_slide <- rotate_manip_space(manip_space, theta, phi)
+      interpolation[,, slide] <- new_slide[, 1:2]
+    }
+    return(interpolation)
   }
   
-  ## walk 1: from phi=phi_start to phi=0
-  #for (phi in seq(phi_start, phi_min, by = -1 * phi_inc) ) {
-  for (phi in seq(0, -phi_start, by = -1 * phi_inc) ) {
-      interpolate_slide(phi)
-  }
-  ## walk 2: from phi=0 to phi=pi/2
-  for (phi in seq(-phi_start, pi/2-phi_start, by = phi_inc) ) {
-    interpolate_slide(phi)
-  }
-  ## walk 3: from phi=pi/2 to phi=phi_start
-  for (phi in seq(pi/2-phi_start, 0, by = -1 * phi_inc) ) {
-    interpolate_slide(phi)
-  }
-  interpolate_slide(0)
+  ## walk 1: start to near 0
+  interp1 <- interpolate_slides(0, -phi_start)
+  ## walk 2: 0 to near 1
+  interp2 <- interpolate_slides(-phi_start, pi/2-phi_start)
+  ## walk 3: 1 to near start
+  interp3 <- interpolate_slides(pi/2-phi_start, 0)
+  ## Add slide at start
+  interp4 <- interpolate_slides(0, 0)
   
-  # Add tour attributes
-  attr(m_tour, "manip_var")  <- manip_var
+  m_tour <- array(c(interp1, interp2, interp3, interp4),
+                  dim = c(p, d, n_slides)
+  )
+  attr(m_tour, "manip_var") <- manip_var
   
   return(m_tour)
 }
