@@ -69,32 +69,32 @@ render_slideshow <- function(slide_deck,
   # Assertions
   stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
   
-  data_slides       <- slide_deck[[1]]
-  bases_slides      <- slide_deck[[2]]
-  nrow_data         <- nrow(data_slides[data_slides$slide == 1,])
-  nrow_data_slides  <- nrow(data_slides)
-  
+  # Initiliaze
+  data_slides      <- slide_deck[[1]]
+  bases_slides     <- slide_deck[[2]]
+  nrow_data        <- nrow(data_slides[data_slides$slide == 1,])
+  nrow_data_slides <- nrow(data_slides)
+  lab_abbr         <- abbreviate(colnames(data_slides), 3)
   # Initialize circle for the axes reference frame.
-  angle    <- seq(0, 2 * pi, length = 360)
-  circ     <- data.frame(x = cos(angle), y = sin(angle))
-  lab_abbr <- abbreviate(colnames(data_slides), 3)
+  angle <- seq(0, 2 * pi, length = 360)
+  circ  <- data.frame(x = cos(angle), y = sin(angle))
   
   ### Graphics
   # Reference frame circle
-  gg1 <- ggplot2::ggplot() + ggplot2::geom_path(
-    data = circ, color = "grey80", size = .3, inherit.aes = FALSE, 
-    ggplot2::aes(x = x, y = y)
-  )
+  gg1 <- ggplot2::ggplot() + 
+    ggplot2::geom_path(data = circ, color = "grey80", size = .3,
+    mapping = ggplot2::aes(x = x, y = y), inherit.aes = FALSE
+    )
   
   # Reference frame text and axes
   gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
     gg1 + ggplot2::geom_text(
       data = bases_slides, size = 4, hjust = 0, vjust = 0,
-      ggplot2::aes(x = V1, y = V2, label = lab_abbr, frame = slide)
+      ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
     ) +
       ggplot2::geom_segment(
         data = bases_slides, size = .3,
-        ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
+        mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame =slide)
       )
   ) +
     ggplot2::scale_color_brewer(palette = "Dark2") +
@@ -105,8 +105,8 @@ render_slideshow <- function(slide_deck,
   # data scatterplot
   gg3 <- gg2 + suppressWarnings( # suppress to ignore unused aes "frame"
     ggplot2::geom_point(data = data_slides, size = .7,
-                        ggplot2::aes(x = V1, y = V2, frame = slide) )
-    )
+                        mapping = ggplot2::aes(x = V1, y = V2, frame = slide) )
+  )
   
   if (disp_type == "plotly") {
     slideshow <- plotly::ggplotly(gg3)

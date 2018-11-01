@@ -1,4 +1,4 @@
-devtools::install_github("nspyrison/spinifex")
+#devtools::install_github("nspyrison/spinifex")
 
 # spinifex repex
 library(spinifex)
@@ -9,23 +9,6 @@ mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- create_slideshow(data = flea_std, m_tour = mtour)
 as.is <- render_slideshow(slide_deck = sshow)
 as.is
-
-# #see: https://github.com/ropensci/plotly/issues/717
-# #try::
-# #update Rstudio # using newest ver as of 24/10/2018.
-# #update R       # using newest ver as of 24/10/2018.
-# #restart R then:
-# install.packages('digest',     dependencies = TRUE)
-# install.packages('rlang',      dependencies = TRUE)
-# install.packages('data.table', dependencies = TRUE)
-# devtools::install_github("ropensci/plotly", dependancies = TRUE)
-############
-# # Maybe a network dependant issue, see:
-# #browseURL("https://community.plot.ly/t/rstudio-viewer-shows-blank-plots-the-browser-can-show-them-though/3359")
-# viewer <- getOption("viewer")
-# # 'Show in new window opens Chrome@ http://localhost:30659/session/viewhtml315479c73e/index.html
-# #replacing 'localhost' with '127.0.0.1' give the same issue:
-# viewer("http://127.0.0.1:30659/session/viewhtml315479c73e/index.html")
 
 # dive into render_slideshow(). # render_slideshow(slide_deck = sshow)
 slide_deck <- sshow
@@ -43,15 +26,16 @@ render_slideshow(slide_deck = na.rm_sshow)
 render_slideshow(slide_deck = sshow)
 #doesn't seem to be related to the other display issues.
 
+lab_abbr <- abbreviate(colnames(data_slides), 3)
 # Initialize circle for the axes reference frame.
 angle    <- seq(0, 2 * pi, length = 360)
 circ     <- data.frame(x = cos(angle), y = sin(angle))
-lab_abbr <- abbreviate(colnames(data_slides), 3)
 
 ### Graphics
 (gg1 <- 
-  ggplot2::ggplot(data_slides, ggplot2::aes(x = V1, y = V2, frame = slide) ) +
-  ggplot2::geom_point(size = .7) +
+  ggplot2::ggplot() +
+  ggplot2::geom_point(data_slides, size = .7,
+                      mapping = ggplot2::aes(x = V1, y = V2, frame = slide) ) +
   ggplot2::scale_color_brewer(palette = "Dark2") +
   ggplot2::theme_void() +
   ggplot2::theme(legend.position = "none") +
@@ -62,11 +46,11 @@ lab_abbr <- abbreviate(colnames(data_slides), 3)
   gg1 +
     ggplot2::geom_text(
       data = bases_slides, size = 4, hjust = 0, vjust = 0,
-      ggplot2::aes(x = V1, y = V2, label = lab_abbr, frame = slide)
+      mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr)
     ) +
     ggplot2::geom_segment(
       data = bases_slides, size = .3,
-      ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
+      mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
     )
 ))
 
@@ -83,3 +67,19 @@ pgg1
 pgg2
 (pgg3 <- plotly::ggplotly(gg2)) #before circ, after  rev(layers) # segements disapear.
 
+# #see: https://github.com/ropensci/plotly/issues/717
+# #try::
+# #update Rstudio # using newest ver as of 24/10/2018.
+# #update R       # using newest ver as of 24/10/2018.
+# #restart R then:
+# install.packages('digest',     dependencies = TRUE)
+# install.packages('rlang',      dependencies = TRUE)
+# install.packages('data.table', dependencies = TRUE)
+# devtools::install_github("ropensci/plotly", dependancies = TRUE)
+############
+# # Maybe a network dependant issue, see:
+# #browseURL("https://community.plot.ly/t/rstudio-viewer-shows-blank-plots-the-browser-can-show-them-though/3359")
+# viewer <- getOption("viewer")
+# # 'Show in new window opens Chrome@ http://localhost:30659/session/viewhtml315479c73e/index.html
+# #replacing 'localhost' with '127.0.0.1' give the same issue:
+# viewer("http://127.0.0.1:30659/session/viewhtml315479c73e/index.html")
