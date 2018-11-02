@@ -43,7 +43,9 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
     bases_slides <- dplyr::bind_rows(bases_slides, b)
   }
   
+  attr(bases_slides, "manip_var") <- manip_var
   slide_deck <- list(data_slides, bases_slides)
+  
   return(slide_deck)
 }
 
@@ -62,7 +64,7 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- create_slideshow(data = flea_std, m_tour = mtour)
-#' render_slideshow(slide_deck = sshow)
+#' (pss <- render_slideshow(slide_deck = sshow))
 render_slideshow <- function(slide_deck,
                              disp_type = "plotly" # alt: "gganimate", "animate"
 ) {
@@ -72,8 +74,6 @@ render_slideshow <- function(slide_deck,
   # Initiliaze
   data_slides      <- slide_deck[[1]]
   bases_slides     <- slide_deck[[2]]
-  nrow_data        <- nrow(data_slides[data_slides$slide == 1,])
-  nrow_data_slides <- nrow(data_slides)
   lab_abbr         <- abbreviate(colnames(data_slides), 3)
   # Initialize circle for the axes reference frame.
   angle <- seq(0, 2 * pi, length = 360)
@@ -81,35 +81,48 @@ render_slideshow <- function(slide_deck,
   
   ### Graphics
   # Reference frame circle
-  gg1 <- ggplot2::ggplot() + 
-    ggplot2::geom_path(data = circ, color = "grey80", size = .3,
-    mapping = ggplot2::aes(x = x, y = y), inherit.aes = FALSE
-    )
-  
-  # Reference frame text and axes
-  gg2 <- suppressWarnings( # suppress to ignore unused aes "frame"
-    gg1 + ggplot2::geom_text(
-      data = bases_slides, size = 4, hjust = 0, vjust = 0,
-      mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
-    ) +
-      ggplot2::geom_segment(
-        data = bases_slides, size = .3,
-        mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame =slide)
-      )
+  gg1 <- ggplot2::ggplot() + ggplot2::geom_path(
+    data = circ, color = "grey80", size = .3, inherit.aes = F,
+    mapping = ggplot2::aes(x = x, y = y)
   ) +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none") +
-    ggplot2::coord_fixed(ratio = 1)
+    ggplot2::theme(legend.position = "none")
   
-  # data scatterplot
-  gg3 <- gg2 + suppressWarnings( # suppress to ignore unused aes "frame"
-    ggplot2::geom_point(data = data_slides, size = .7,
-                        mapping = ggplot2::aes(x = V1, y = V2, frame = slide) )
+  # Initialize for color in Reference frame text and axes
+  manip_var        <- attributes(slide_deck[[2]])$manip_var
+  n_slides         <- length(unique(bases_slides$slide))
+  nrow_bases       <- nrow(bases_slides)
+  p                <- nrow_bases / n_slides
+  col <- rep("black", p)
+  col[manip_var] <- "blue"
+  col <- rep(col, n_slides)
+  table(col)
+  head(col)
+
+  # Refrence frame axes
+  gg2 <- gg1 + ggplot2::geom_segment(
+    data = bases_slides, size = .3, #colour = I(col),
+    mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
+  )
+  # Refrence frame text
+  gg3 <- gg2 + ggplot2::geom_text(
+    data = bases_slides, size = 4, hjust = 0, vjust = 0, #colour = I(col),
+    mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
+  )
+  
+  # Data projection scatterplot
+  gg4 <- gg3 + ggplot2::geom_point( # for unused aes "frame".
+    data = data_slides, size = .7,
+    mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
   )
   
   if (disp_type == "plotly") {
-    slideshow <- plotly::ggplotly(gg3)
+    pgg4 <- plotly::ggplotly(gg4)
+    slideshow <- plotly::layout(
+      pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
+      xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
+    )
   } else stop("disp_types other than `plotly` not yet implemented.")
   
   return(slideshow)
