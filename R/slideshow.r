@@ -97,17 +97,18 @@ render_slideshow <- function(slide_deck,
   col <- rep("black", p)
   col[manip_var] <- "blue"
   col <- rep(col, n_slides)
-  table(col)
-  head(col)
+  siz <- rep(0.3, p)
+  siz[manip_var] <- 1
+  siz <- rep(siz, n_slides)
 
   # Refrence frame axes
   gg2 <- gg1 + ggplot2::geom_segment(
-    data = bases_slides, size = .3, #colour = I(col),
+    data = bases_slides, size = siz, colour = col,
     mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
   )
   # Refrence frame text
   gg3 <- gg2 + ggplot2::geom_text(
-    data = bases_slides, size = 4, hjust = 0, vjust = 0, #colour = I(col),
+    data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",#"col"
     mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
   )
   
