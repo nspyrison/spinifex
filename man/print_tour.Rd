@@ -4,7 +4,7 @@
 \alias{print_tour}
 \title{Render display of a provided tour path and data}
 \usage{
-print_tour(tour_path = NULL, data = NULL)
+print_tour(tour_path, data = NULL)
 }
 \arguments{
 \item{tour_path}{The result of tourr::save_history}

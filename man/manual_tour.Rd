@@ -44,6 +44,6 @@ and back to `phi_min`.
 data(flea)
 flea_std <- tourr::rescale(flea[,1:6])
 
-rb <- tourr::basis_random(n=ncol(flea_std))
+rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 }

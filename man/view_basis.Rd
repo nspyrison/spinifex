@@ -14,11 +14,14 @@ view_basis(basis = create_identity_basis(6), labels = paste0("V",
 \item{data}{Optional, of [n, p] dim, applies colnames to the rows of the 
 basis.}
 }
+\value{
+Nothing, but cretes a plot of the reference frame in base graphics.
+}
 \description{
 Uses base graphics to plot the circle with axes representing
 the projection frame. Returns the corrisponding table.
 }
 \examples{
-ib <- tourr::basis_random(4, 2)
-view_basis(ib)
+rb <- tourr::basis_random(4, 2)
+view_basis(rb)
 }

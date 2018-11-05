@@ -16,35 +16,56 @@
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- tourr::basis_random(n=ncol(flea_std))
+#' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(rb, manip_var = 4)
-#' sshow <- create_slideshow(data = flea_std, m_tour = mtour)
-create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
+#' sshow <- create_slideshow(data = flea_std, tour = mtour)
+create_slideshow <- function(tour,
+                             data = NULL) {
   # Assertions
-  if (!is.matrix(data)) data <- as.matrix(data)
-  stopifnot(is.array(m_tour))
-  stopifnot(ncol(data) == nrow(m_tour[,, 1]))
+  p <- nrow(tour[,, 1])
+  if (!is.null(data)) stopifnot(ncol(data) == p)
+  if (!is.null(data) & !is.matrix(data)) data <- as.matrix(data)
+  stopifnot(is.array(tour))
   
-  # Generate the projected data by slide
-  n            <- nrow(data)
-  p            <- ncol(data)
-  n_slides     <- dim(m_tour)[3]
-  manip_var    <- attributes(m_tour)$manip_var
-  lab_abbr     <- abbreviate(colnames(data), 3)
-  data_slides  <- NULL
+  # Initialize
+  n_slides     <- dim(tour)[3]
   bases_slides <- NULL
-  for (i in 1:n_slides) {
-    d <- tibble::as_tibble(data %*% m_tour[,, i])
-    d$slide <- i
-    data_slides <- dplyr::bind_rows(data_slides, d)
-    b <- tibble::as_tibble(m_tour[,, i])
-    b$slide <- i
-    b$lab_abbr <- lab_abbr
-    bases_slides <- dplyr::bind_rows(bases_slides, b)
+  if(!is.null(data)) { # IF data exsits THEN:
+    data_slides <- NULL
+    for (slide in 1:n_slides) {
+      # make bases slides, and
+      curr_slide <- tibble::as_tibble(tour[,, slide])
+      curr_slide$slide <- slide
+      bases_slides <- dplyr::bind_rows(bases_slides, curr_slide)
+      # make data slides
+      curr_slide <- tibble::as_tibble(data %*% tour[,, slide])
+      curr_slide$slide <- slide
+      data_slides <- dplyr::bind_rows(data_slides, curr_slide)
+    }
+  } else {# ELSE, (if data is NULL), just:
+    # make bases slides
+    for (slide in 1:n_slides) {
+      curr_slide <- tibble::as_tibble(tour[,, slide])
+      curr_slide$slide <- slide
+      bases_slides <- dplyr::bind_rows(bases_slides, curr_slide)
+    }
   }
   
-  attr(bases_slides, "manip_var") <- manip_var
-  slide_deck <- list(data_slides, bases_slides)
+  # Set abbreviated labels
+  lab_abbr <- if(!is.null(data)) {abbreviate(colnames(data), 3)
+  } else paste0("V", 1:p)
+  lab_abbr <- rep(lab_abbr, n_slides)
+  bases_slides$lab_abbr <- lab_abbr
+  
+  # Keep manip_var if it's not NULL
+  if (!is.null(attributes(tour)$manip_var)) {
+    manip_var <- attributes(tour)$manip_var
+    attr(bases_slides, "manip_var") <- manip_var
+  }
+  
+  slide_deck <- if(!is.null(data)) {
+    list(bases_slides = bases_slides, data_slides = data_slides)
+  } else list(bases_slides = bases_slides)
   
   return(slide_deck)
 }
@@ -63,61 +84,68 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- create_slideshow(data = flea_std, m_tour = mtour)
+#' sshow <- create_slideshow(data = flea_std, tour = mtour)
 #' (pss <- render_slideshow(slide_deck = sshow))
 render_slideshow <- function(slide_deck,
                              disp_type = "plotly" # alt: "gganimate", "animate"
 ) {
   # Assertions
-  stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
+  stopifnot(tolower(disp_type) %in% c("plotly", "gganimate", "animate") )
   
   # Initiliaze
-  data_slides      <- slide_deck[[1]]
-  bases_slides     <- slide_deck[[2]]
-  lab_abbr         <- abbreviate(colnames(data_slides), 3)
-  # Initialize circle for the axes reference frame.
-  angle <- seq(0, 2 * pi, length = 360)
-  circ  <- data.frame(x = cos(angle), y = sin(angle))
+  bases_slides <- slide_deck[[1]]
+  if (length(slide_deck) == 2) data_slides <- slide_deck[[2]]
+  angle        <- seq(0, 2 * pi, length = 360)
+  circ         <- data.frame(x = cos(angle), y = sin(angle))
   
   ### Graphics
-  # Reference frame circle
-  gg1 <- ggplot2::ggplot() + ggplot2::geom_path(
-    data = circ, color = "grey80", size = .3, inherit.aes = F,
-    mapping = ggplot2::aes(x = x, y = y)
-  ) +
+  # Plot reference frame circle
+  gg1 <- 
+    ggplot2::ggplot() + ggplot2::geom_path(
+      data = circ, color = "grey80", size = .3, inherit.aes = F,
+      mapping = ggplot2::aes(x = x, y = y)
+    ) +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")
   
-  # Initialize for color in Reference frame text and axes
-  manip_var        <- attributes(slide_deck[[2]])$manip_var
-  n_slides         <- length(unique(bases_slides$slide))
-  nrow_bases       <- nrow(bases_slides)
-  p                <- nrow_bases / n_slides
-  col <- rep("black", p)
-  col[manip_var] <- "blue"
-  col <- rep(col, n_slides)
-  siz <- rep(0.3, p)
-  siz[manip_var] <- 1
-  siz <- rep(siz, n_slides)
+  # If manip_var is not NULL, format reference frame accordingly
+  manip_var  <- if (!is.null(attributes(bases_slides)$manip_var)) {
+    attributes(bases_slides)$manip_var
+    } else NULL 
+  if(!is.null(manip_var)) {
+    n_slides   <- length(unique(bases_slides$slide))
+    nrow_bases <- nrow(bases_slides)
+    p          <- nrow_bases / n_slides
+    col <- rep("black", p)
+    col[manip_var] <- "blue"
+    col <- rep(col, n_slides)
+    siz <- rep(0.3, p)
+    siz[manip_var] <- 1
+    siz <- rep(siz, n_slides)
+  } else {
+    col <- "black"
+    siz <- 0.3
+  }
 
-  # Refrence frame axes
+  # Plot refrence frame axes
   gg2 <- gg1 + ggplot2::geom_segment(
     data = bases_slides, size = siz, colour = col,
     mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
   )
-  # Refrence frame text
+  # Plot refrence frame text
   gg3 <- gg2 + ggplot2::geom_text(
-    data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",#"col"
+    data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",
     mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
   )
   
-  # Data projection scatterplot
+  # Plot data projection scatterplot
   gg4 <- gg3 + ggplot2::geom_point( # for unused aes "frame".
     data = data_slides, size = .7,
     mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
   )
   
+  # Render as disp_type
   if (disp_type == "plotly") {
     pgg4 <- plotly::ggplotly(gg4)
     slideshow <- plotly::layout(

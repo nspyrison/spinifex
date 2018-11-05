@@ -1,4 +1,4 @@
----
+﻿---
 title: ""
 author: "Nicholas S Spyrison"
 date: "`r Sys.Date()`"
@@ -207,17 +207,17 @@ render_slideshow(slide_deck = sshow)
 abbreviate(colnames(flea_std),3)
 
 tr1_tour <- manual_tour(basis = h_basis, manip_var = 1)
-tr1_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+tr1_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
 tr2_tour <- manual_tour(basis = h_basis, manip_var = 2)
-tr2_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+tr2_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
 hed_tour <- manual_tour(basis = h_basis, manip_var = 3)
-hed_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+hed_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
 ad1_tour <- manual_tour(basis = h_basis, manip_var = 4)
-ad1_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+ad1_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
 ad2_tour <- manual_tour(basis = h_basis, manip_var = 5)
-ad2_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+ad2_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
 ad3_tour <- manual_tour(basis = h_basis, manip_var = 6)
-ad3_sshow <- create_slideshow(data = flea_std, m_tour = tr1_tour)
+ad3_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
 ```
 
 

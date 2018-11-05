@@ -4,7 +4,7 @@
 \alias{create_slideshow}
 \title{Create a slideshow array of the projected bases}
 \usage{
-create_slideshow(data, m_tour, center = TRUE, scale = FALSE)
+create_slideshow(tour, data = NULL)
 }
 \arguments{
 \item{data}{[n, p] dim data to project, consisting of 
@@ -27,7 +27,7 @@ the tour path of the reference frame.
 data(flea)
 flea_std <- tourr::rescale(flea[,1:6])
 
-rb <- tourr::basis_random(n=ncol(flea_std))
+rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(rb, manip_var = 4)
-sshow <- create_slideshow(data = flea_std, m_tour = mtour)
+sshow <- create_slideshow(data = flea_std, tour = mtour)
 }

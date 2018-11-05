@@ -28,10 +28,11 @@ create_identity_basis <- function(p = 6, d = 2){
 #'   (numeric variable). 
 #' @param data Optional, of [n, p] dim, applies colnames to the rows of the 
 #'   basis.
+#' @return Nothing, but cretes a plot of the reference frame in base graphics.
 #' 
 #' @examples 
-#' ib <- tourr::basis_random(4, 2)
-#' view_basis(ib)
+#' rb <- tourr::basis_random(4, 2)
+#' view_basis(rb)
 #' @export
 view_basis <- function(basis = create_identity_basis(6), 
                        labels = paste0("V", 1:nrow(basis)), 

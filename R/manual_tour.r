@@ -11,7 +11,7 @@
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- tourr::basis_random(n=ncol(flea_std))
+#' rb <- tourr::basis_random(n =n col(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
 create_manip_space <- function(basis, manip_var) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
@@ -45,8 +45,8 @@ create_manip_space <- function(basis, manip_var) {
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- tourr::basis_random(n=ncol(flea_std))
-#' msp <- create_manip_space(rb, 4) 
+#' rb <- tourr::basis_random(n = ncol(flea_std))
+#' msp <- create_manip_space(basis = rb, manip_var = 4) 
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
 #'                    phi = runif(1, max = 2 * pi) )
 rotate_manip_space <- function(manip_space, theta, phi){
@@ -106,7 +106,7 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- tourr::basis_random(n=ncol(flea_std))
+#' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 manual_tour <- function(basis = NULL,
                         manip_var = NULL,

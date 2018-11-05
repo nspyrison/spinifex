@@ -27,8 +27,8 @@ This matrix is used to make the data projection.
 data(flea)
 flea_std <- tourr::rescale(flea[,1:6])
 
-rb <- tourr::basis_random(n=ncol(flea_std))
-msp <- create_manip_space(rb, 4) 
+rb <- tourr::basis_random(n = ncol(flea_std))
+msp <- create_manip_space(basis = rb, manip_var = 4) 
 rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
                    phi = runif(1, max = 2 * pi) )
 }
