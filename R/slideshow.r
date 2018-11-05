@@ -35,6 +35,7 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
   bases_slides <- NULL
   for (i in 1:n_slides) {
     d <- tibble::as_tibble(data %*% m_tour[,, i])
+    d <- d %>% mutate(V1 = V1 - mean(V1), V2 = V2 - mean(V2))
     d$slide <- i
     data_slides <- dplyr::bind_rows(data_slides, d)
     b <- tibble::as_tibble(m_tour[,, i])
@@ -44,7 +45,7 @@ create_slideshow <- function(data, m_tour, center = TRUE, scale = FALSE){
   }
   
   attr(bases_slides, "manip_var") <- manip_var
-  slide_deck <- list(data_slides, bases_slides)
+  slide_deck <- list(data_slides=data_slides, bases_slides=bases_slides)
   
   return(slide_deck)
 }
@@ -74,7 +75,7 @@ render_slideshow <- function(slide_deck,
   # Initiliaze
   data_slides      <- slide_deck[[1]]
   bases_slides     <- slide_deck[[2]]
-  lab_abbr         <- abbreviate(colnames(data_slides), 3)
+  lab_abbr         <- bases_slides$lab_abbr #abbreviate(colnames(data_slides), 3)
   # Initialize circle for the axes reference frame.
   angle <- seq(0, 2 * pi, length = 360)
   circ  <- data.frame(x = cos(angle), y = sin(angle))
@@ -107,10 +108,10 @@ render_slideshow <- function(slide_deck,
     mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
   )
   # Refrence frame text
-  gg3 <- gg2 + ggplot2::geom_text(
-    data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",#"col"
-    mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
-  )
+  gg3 <- gg2 #+ ggplot2::geom_text(
+    #data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",#"col"
+    #mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
+  #)
   
   # Data projection scatterplot
   gg4 <- gg3 + ggplot2::geom_point( # for unused aes "frame".
@@ -119,7 +120,9 @@ render_slideshow <- function(slide_deck,
   )
   
   if (disp_type == "plotly") {
-    pgg4 <- plotly::ggplotly(gg4)
+    pgg4 <- plotly::ggplotly(gg4) %>%
+      animation_opts(200, redraw = FALSE, 
+                     easing = "linear", transition=0)
     slideshow <- plotly::layout(
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
