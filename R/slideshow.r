@@ -30,6 +30,7 @@ create_slideshow <- function(tour,
   # Initialize
   n_slides     <- dim(tour)[3]
   bases_slides <- NULL
+
   if(!is.null(data)) { # IF data exsits THEN:
     data_slides <- NULL
     for (slide in 1:n_slides) {
@@ -133,11 +134,12 @@ render_slideshow <- function(slide_deck,
     data = bases_slides, size = siz, colour = col,
     mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
   )
-  # Plot refrence frame text
-  gg3 <- gg2 + ggplot2::geom_text(
-    data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",
-    mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
-  )
+
+  # Refrence frame text
+  gg3 <- gg2 #+ ggplot2::geom_text(
+    #data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",#"col"
+    #mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr) 
+  #)
   
   # Plot data projection scatterplot
   gg4 <- gg3 + ggplot2::geom_point( # for unused aes "frame".
@@ -147,7 +149,9 @@ render_slideshow <- function(slide_deck,
   
   # Render as disp_type
   if (disp_type == "plotly") {
-    pgg4 <- plotly::ggplotly(gg4)
+    pgg4 <- plotly::ggplotly(gg4) %>%
+      animation_opts(200, redraw = FALSE, 
+                     easing = "linear", transition=0)
     slideshow <- plotly::layout(
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
