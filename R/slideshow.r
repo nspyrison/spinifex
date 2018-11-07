@@ -129,21 +129,21 @@ render_slideshow <- function(slide_deck,
   }
 
   # Plot refrence frame axes
-  gg2 <- gg1 + suppressWarnings(ggplot2::geom_segment( # for unused aes "frame".
+  gg2 <- gg1 + ggplot2::geom_segment( # for unused aes "frame".
     data = bases_slides, size = siz, colour = col,
-    mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide))
+    mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
   )
 
   # Refrence frame text
-  gg3 <- gg2 #+ suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
+  gg3 <- gg2 #+ ggplot2::geom_text( # for unused aes "frame".
     #data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",#"col"
-    #mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr))
+    #mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr)
   #)
   
   # Plot data projection scatterplot
-  gg4 <- gg3 + suppressWarnings(ggplot2::geom_point( # for unused aes "frame".
+  gg4 <- gg3 + ggplot2::geom_point( # for unused aes "frame".
     data = data_slides, size = .7,
-    mapping = ggplot2::aes(x = V1, y = V2, frame = slide))
+    mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
   )
   
   # Render as disp_type
