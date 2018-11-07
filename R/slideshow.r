@@ -32,18 +32,20 @@ create_slideshow <- function(tour,
       # make bases slides, and
       curr_slide <- tibble::as_tibble(tour[,, slide])
       curr_slide$slide <- slide
-      bases_slides <- dplyr::bind_rows(bases_slides, curr_slide)
+      bases_slides <- rbind(bases_slides, curr_slide)
       # make data slides
       curr_slide <- tibble::as_tibble(data %*% tour[,, slide])
+      curr_slide$V1 <- curr_slide$V1 - mean(curr_slide$V1)
+      curr_slide$V2 <- curr_slide$V2 - mean(curr_slide$V2)
       curr_slide$slide <- slide
-      data_slides <- dplyr::bind_rows(data_slides, curr_slide)
+      data_slides <- rbind(data_slides, curr_slide)
     }
   } else {# ELSE, (if data is NULL), just:
     # make bases slides
     for (slide in 1:n_slides) {
       curr_slide <- tibble::as_tibble(tour[,, slide])
       curr_slide$slide <- slide
-      bases_slides <- dplyr::bind_rows(bases_slides, curr_slide)
+      bases_slides <- rbind(bases_slides, curr_slide)
     }
   }
   
