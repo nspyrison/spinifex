@@ -117,6 +117,7 @@ manual_tour <- function(basis = NULL,
                         n_slides = 20
                         )
 { 
+  manip_type <- tolower(manip_type)
   # Assertions
   stopifnot(is.matrix(basis))
   stopifnot(nrow(basis) > 2)
@@ -129,28 +130,29 @@ manual_tour <- function(basis = NULL,
   if (!is.null(theta) & !is.null(manip_type) )
     message("Non-null theta used with non-null manip_type. Selecting theta over manip_type.")
   if (manip_type == "horizontal") theta <- 0
-  if (manip_type == "vertical") theta <- pi / 2
+  if (manip_type == "vertical")   theta <- pi/2
   if (manip_type == "radial")
     theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   
   # Initalize
-  phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-  w_min <- min(phi_min, phi_max, phi_start)
-  w_max <- max(phi_min, phi_max, phi_start)
-  phi_inc <- 2 * abs(w_max - w_min) / (n_slides - 3)
+  phi_start   <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
+  w_min       <- min(phi_min, phi_max, phi_start)
+  w_max       <- max(phi_min, phi_max, phi_start)
+  phi_inc     <- 2 * abs(w_max - w_min) / (n_slides - 3)
   manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
-  p <- nrow(basis)
-  d <- ncol(basis)
+  p           <- nrow(basis)
+  d           <- ncol(basis)
   
   interpolate_slides <- function(seq_start, seq_end){
     # Initalize for interpolate_slides()
     slide <- 0
     new_slide <- NULL
     seq_by_sign <- ifelse(seq_end > seq_start, 1, -1)
-    len <- length(seq(seq_start, seq_end, seq_by_sign * phi_inc))
+    phi_inc.sign <- seq_by_sign * phi_inc
+    len <- length(seq(seq_start, seq_end, phi_inc.sign))
     interpolation <- array(dim = c(p, d, len))
     
-    for (phi in seq(seq_start, seq_end, by = seq_by_sign * phi_inc)) {
+    for (phi in seq(seq_start, seq_end, phi_inc.sign)) {
       slide <- slide + 1
       new_slide <- rotate_manip_space(manip_space, theta, phi)
       interpolation[,, slide] <- new_slide[, 1:2]
@@ -158,18 +160,18 @@ manual_tour <- function(basis = NULL,
     return(interpolation)
   }
   
+  x_mvar_sign <- sign(manip_space[manip_var, 1])
+  phi_start.sign <- x_mvar_sign * phi_start
   ## walk 1: start to near 0
-  interp1 <- interpolate_slides(0, -phi_start)
+  interp1 <- interpolate_slides(0, phi_start.sign)
   ## walk 2: 0 to near 1
-  interp2 <- interpolate_slides(-phi_start, pi/2-phi_start)
+  interp2 <- interpolate_slides(phi_start.sign, pi/2 + phi_start.sign)
   ## walk 3: 1 to near start
-  interp3 <- interpolate_slides(pi/2-phi_start, 0)
-  ## Add slide at start
+  interp3 <- interpolate_slides(pi/2 + phi_start.sign, 0)
+  ## Add last slide at start
   interp4 <- interpolate_slides(0, 0)
   
-  m_tour <- array(c(interp1, interp2, interp3, interp4),
-                  dim = c(p, d, n_slides)
-  )
+  m_tour <- array(c(interp1, interp2, interp3, interp4), dim =c(p, d, n_slides))
   attr(m_tour, "manip_var") <- manip_var
   
   return(m_tour)

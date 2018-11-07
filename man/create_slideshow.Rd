@@ -11,13 +11,6 @@ create_slideshow(tour, data = NULL)
 only numeric variables (for coercion into matrix.)}
 
 \item{m_tour}{the output of manual_tour(), list of projection bases by index.}
-
-\item{center}{set the mean of the projected data to be a vector of zeros. 
-This stops the data from wandering around the display window. Default=TRUE.}
-
-\item{scale}{set the scale of the projected data to be in a standard range 
-for all projections. Typically not useful, but occasionally we are only 
-interested in the shape of projected data not the magnitude. Default=FALSE.}
 }
 \description{
 Takes the result of manual_tour() and interpolated the data over the 
@@ -29,5 +22,5 @@ flea_std <- tourr::rescale(flea[,1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(rb, manip_var = 4)
-sshow <- create_slideshow(data = flea_std, tour = mtour)
+sshow <- create_slideshow(tour = mtour, data = flea_std)
 }

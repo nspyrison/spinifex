@@ -6,11 +6,6 @@
 #' @param data [n, p] dim data to project, consisting of 
 #'    only numeric variables (for coercion into matrix.)
 #' @param m_tour the output of manual_tour(), list of projection bases by index.
-#' @param center set the mean of the projected data to be a vector of zeros. 
-#' This stops the data from wandering around the display window. Default=TRUE.
-#' @param scale set the scale of the projected data to be in a standard range 
-#' for all projections. Typically not useful, but occasionally we are only 
-#' interested in the shape of projected data not the magnitude. Default=FALSE.
 #' @export
 #' @examples
 #' data(flea)
@@ -18,7 +13,7 @@
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(rb, manip_var = 4)
-#' sshow <- create_slideshow(data = flea_std, tour = mtour)
+#' sshow <- create_slideshow(tour = mtour, data = flea_std)
 create_slideshow <- function(tour,
                              data = NULL) {
   # Assertions
@@ -30,7 +25,7 @@ create_slideshow <- function(tour,
   # Initialize
   n_slides     <- dim(tour)[3]
   bases_slides <- NULL
-
+  
   if(!is.null(data)) { # IF data exsits THEN:
     data_slides <- NULL
     for (slide in 1:n_slides) {
@@ -85,19 +80,21 @@ create_slideshow <- function(tour,
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- create_slideshow(data = flea_std, tour = mtour)
+#' sshow <- create_slideshow(tour = mtour, data = flea_std)
 #' (pss <- render_slideshow(slide_deck = sshow))
 render_slideshow <- function(slide_deck,
                              disp_type = "plotly" # alt: "gganimate", "animate"
 ) {
+  disp_type <- tolower(disp_type)
   # Assertions
-  stopifnot(tolower(disp_type) %in% c("plotly", "gganimate", "animate") )
+  stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
   
   # Initiliaze
-  bases_slides <- slide_deck[[1]]
-  if (length(slide_deck) == 2) data_slides <- slide_deck[[2]]
-  angle        <- seq(0, 2 * pi, length = 360)
-  circ         <- data.frame(x = cos(angle), y = sin(angle))
+  if (length(slide_deck) == 2) 
+    data_slides <- slide_deck[[2]]
+  bases_slides  <- slide_deck[[1]]
+  angle         <- seq(0, 2 * pi, length = 360)
+  circ          <- data.frame(x = cos(angle), y = sin(angle))
   
   ### Graphics
   # Plot reference frame circle
@@ -150,8 +147,7 @@ render_slideshow <- function(slide_deck,
   # Render as disp_type
   if (disp_type == "plotly") {
     pgg4 <- plotly::ggplotly(gg4) %>%
-      animation_opts(200, redraw = FALSE, 
-                     easing = "linear", transition=0)
+      plotly::animation_opts(frame = 500, transition = 500, redraw = FALSE, )
     slideshow <- plotly::layout(
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
