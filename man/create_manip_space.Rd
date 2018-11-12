@@ -7,16 +7,17 @@
 create_manip_space(basis, manip_var)
 }
 \arguments{
-\item{basis}{A [p, d=2] dim orthonormal basis.}
+\item{basis}{A [p, d] dim orthonormal matrix.}
 
 \item{manip_var}{Number of the dimension (numeric variable) to rotate.}
 }
 \value{
-manip_space, a [p, d+1=3] orthonormal manipulation space
+A [p, d+1] orthonormal matrix, the manipulation space.
 }
 \description{
-Create a [p, d+1=3] dim orthonormal manipulation space from the given
-basis concatonated with a zero vector, with manip_var set to 1.
+Typically called by `manual_tour()`. Creates a [p, d] dim orthonormal matrix,
+the manipulation space from the given basis right concatonated with a zero 
+vector, with manip_var set to 1.
 }
 \examples{
 data(flea)

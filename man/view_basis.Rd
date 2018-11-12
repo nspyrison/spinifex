@@ -8,11 +8,11 @@ view_basis(basis = create_identity_basis(6), labels = paste0("V",
   1:nrow(basis)), ...)
 }
 \arguments{
-\item{basis}{A [p, d=2] basis, xy contributions of each dimension 
+\item{basis}{A [p, d] basis, XY linear combination of each dimension 
 (numeric variable).}
 
-\item{data}{Optional, of [n, p] dim, applies colnames to the rows of the 
-basis.}
+\item{labels}{Optional, character vector of `p`` length, applies colnames 
+to the rows of the basis.}
 }
 \value{
 Nothing, but cretes a plot of the reference frame in base graphics.

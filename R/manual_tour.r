@@ -1,11 +1,12 @@
 #' Create a manipulation space
 #'
-#' Create a [p, d+1] dim orthonormal matrix, the manipulation space from the 
-#' given basis concatonated with a zero vector, with manip_var set to 1.
+#' Typically called by `manual_tour()`. Creates a [p, d] dim orthonormal matrix,
+#' the manipulation space from the given basis right concatonated with a zero 
+#' vector, with manip_var set to 1.
 #'
-#' @param basis A [p, d=2] dim orthonormal basis.
+#' @param basis A [p, d] dim orthonormal matrix.
 #' @param manip_var Number of the dimension (numeric variable) to rotate.
-#' @return manip_space, a [p, d+1=3] orthonormal matrix.
+#' @return A [p, d+1] orthonormal matrix, the manipulation space.
 #' @export
 #' @examples
 #' data(flea)
@@ -21,7 +22,6 @@ create_manip_space <- function(basis, manip_var) {
   z[manip_var] <- 1
   manip_space  <- tourr::orthonormalise(cbind(basis, z))
   if (ncol(manip_space) == 3) {colnames(manip_space) <- c("x","y","z")}
-  if (ncol(manip_space) == 4) {colnames(manip_space) <- c("x","y","z","w")}
   rownames(manip_space) <- colnames(basis)
   
   return(manip_space)
@@ -40,7 +40,7 @@ create_manip_space <- function(basis, manip_var) {
 #' @param phi Angle in radians of rotation "out-of-plane", the z axis of the 
 #'   reference frame. Effectively changes the norm of XY contributions of the 
 #'   manip_var.
-#' @return rotation_space, a [p, d+1] orthonormal matrix.
+#' @return A [p, d+1] orthonormal matrix of the rotated (manipulation) space.
 #' @export
 #' @examples
 #' data(flea)
@@ -50,7 +50,7 @@ create_manip_space <- function(basis, manip_var) {
 #' msp <- create_manip_space(basis = rb, manip_var = 4) 
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
 #'                    phi = runif(1, max = 2 * pi) )
-rotate_manip_space <- function(manip_space, theta, phi){
+rotate_manip_space <- function(manip_space, theta, phi) {
   # Initialize
   s_theta <- sin(theta)
   c_theta <- cos(theta)
@@ -79,10 +79,11 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' Produce the series of porjection bases to rotate a variable into and out 
 #' of a projection
 #'
-#' A manual tour of the `manip_var`. Given a [p, d] orthonormal basis, creates 
-#' an array of `n_slides` bases extending the norm of `manip_var`, via cos(phi),
-#' from `phi_max`, to `phi_min`, then back to the starting position (from start,
-#'to 1, to 0, to start by default).
+#' Typically called by `create_slideshow()`. The manual tour of the `manip_var`.
+#' Given a [p, d] orthonormal basis, creates an array of `n_slides` bases 
+#' extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
+#' `phi_min`, then back to the starting position (by default: from start, to 0,
+#' to 1, to start).
 #'
 #' @param basis A [p, d] dim orthonormal basis. Required, no default.
 #' @param manip_var Integer column number or string exact column name of the.
@@ -90,13 +91,19 @@ rotate_manip_space <- function(manip_space, theta, phi){
 #' @param manip_type String of the type of manipulation to use. 
 #'   Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
 #'   Yields to `theta` if set. Must set either `manip_type` or `theta`.
-#' @param theta Angle in radians of rotation "in-plane", on the XY plane of the 
+#' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
 #'   reference frame. Typically set from manip_type in proj_data(). Supersedes 
 #'   `manip_type`. Must set either `manip_type` or `theta`.
+#' @param phi_min Minimun value phi should move to. Phi is angle in radians of 
+#'   the "out-of-plane" rotation, the z-axis of the referce frame. 
+#'   Required, defaults to 0.
+#' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
+#'   the "out-of-plane" rotation, the z-axis of the referce frame. 
+#'   Required, defaults to 2 * pi.
 #' @param n_slides Number of slides to create for slideshow(). Defaults to 20.
-#' @return `m_tour`, a [p, d, n_slides] dim array of the manual tour. Consisting
-#'   of `n_slides` interpolations varying phi from it's start to `phi_max`, to 
-#'   `phi_min`, and back to start.
+#' @return A [p, d, n_slides] dim array of the manual tour. Containing
+#'   `n_slides` interpolations varying phi from it's start to `phi_min`, to 
+#'   `phi_max`, and back to start.
 #' @export
 #' @examples
 #' data(flea)
@@ -110,10 +117,9 @@ manual_tour <- function(basis = NULL,
                         theta = NULL,      # [radians]
                         phi_min = 0,       # [radians]
                         phi_max = .5 * pi, # [radians]
-                        n_slides = 20
-                        )
-{ 
+                        n_slides = 20) { 
   manip_type <- tolower(manip_type)
+  if (!is.matrix(basis)) basis <- as.matrix(basis)
   # Assertions
   stopifnot(is.matrix(basis))
   stopifnot(nrow(basis) > 2)
@@ -136,14 +142,16 @@ manual_tour <- function(basis = NULL,
   
   # Initalize
   phi_start   <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-  walk_min    <- min(phi_min, phi_max, phi_start)
-  walk_max    <- max(phi_min, phi_max, phi_start)
+  phi_min_rel <- phi_min - phi_start # relative to phi_start
+  phi_max_rel <- phi_max - phi_start # relative to phi_start
+  walk_min    <- min(phi_min_rel, phi_max_rel, phi_start)
+  walk_max    <- max(phi_min_rel, phi_max_rel, phi_start)
   phi_inc     <- 2 * abs(walk_max - walk_min) / (n_slides - 3)
   manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
   p           <- nrow(basis)
   d           <- ncol(basis)
-  if (phi_start < phi_min) warning("phi_start less than phi_min, tour may look odd.")
-  if (phi_start > phi_max) warning("phi_start greater than phi_max, tour may look odd.")
+  if (phi_start < phi_min_rel) warning("phi_start less than phi_min, tour may look odd.")
+  if (phi_start > phi_max_rel) warning("phi_start greater than phi_max, tour may look odd.")
   
   interpolate_slides <- function(seq_start, seq_end){
     # Initalize for interpolate_slides()
@@ -165,13 +173,13 @@ manual_tour <- function(basis = NULL,
   x_mvar_sign    <- sign(manip_space[manip_var, 1])
   phi_start_sign <- x_mvar_sign * phi_start
   ## walk 1: start to near 0
-  walk1 <- interpolate_slides(0, phi_start_sign)
+  walk1 <- interpolate_slides(phi_start_sign, phi_min_rel)
   ## walk 2: 0 to near 1
-  walk2 <- interpolate_slides(phi_start_sign, pi/2 + phi_start_sign)
+  walk2 <- interpolate_slides(phi_min_rel, phi_max_rel)
   ## walk 3: 1 to near start
-  walk3 <- interpolate_slides(pi/2 + phi_start_sign, 0)
-  ## Add last slide at start
-  walk4 <- interpolate_slides(0, 0)
+  walk3 <- interpolate_slides(phi_max_rel, phi_start_sign)
+  ## Add 1 last slide at start
+  walk4 <- interpolate_slides(phi_start_sign, phi_start_sign)
   
   m_tour <- array(c(walk1, walk2, walk3, walk4), dim = c(p, d, n_slides))
   attr(m_tour, "manip_var") <- manip_var

@@ -1,11 +1,14 @@
 #' Create a slideshow array of the projected bases
 #'
-#' Takes the result of manual_tour() and interpolated the data over the 
-#' the tour path of the reference frame.
+#' Takes the result of manual_tour() and projects the data over the interpolated
+#' tour path of the reference frame.
 #'
-#' @param data [n, p] dim data to project, consisting of 
-#'    only numeric variables (for coercion into matrix.)
-#' @param m_tour the output of manual_tour(), list of projection bases by index.
+#' @param data A [n, p] dim data to project, consisting of 
+#'   only numeric variables (for coercion into matrix.)
+#' @param m_tour The output of manual_tour(), a [p, d, n_slides] dim array of 
+#'   the manual tour. Containing `n_slides` interpolations varying phi.
+#' @return A list containing the [p, d, n_slides] dim basis slides array, and
+#'   the [n, d, n_slides] dim data slides array.
 #' @export
 #' @examples
 #' data(flea)
@@ -77,6 +80,8 @@ create_slideshow <- function(tour,
 #'
 #' @param slide_deck The result of create_slideshow().
 #' @param disp_type The graphics system to use. Defaults to 'plotly'.
+#' @return An animation in `disp_type` graphics of the interpolated data and 
+#'   the corrisponding reference frame.
 #' @export
 #' @examples
 #' data(flea)

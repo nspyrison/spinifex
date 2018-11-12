@@ -11,6 +11,10 @@ render_slideshow(slide_deck, disp_type = "plotly")
 
 \item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
 }
+\value{
+An animation in `disp_type` graphics of the interpolated data and 
+  the corrisponding reference frame.
+}
 \description{
 Takes the result of create_slideshow() and renders them as a graph object of 
 the `disp_type`.

@@ -4,17 +4,22 @@
 \alias{create_slideshow}
 \title{Create a slideshow array of the projected bases}
 \usage{
-create_slideshow(tour, data = NULL)
+create_slideshow(tour, data = NULL, ...)
 }
 \arguments{
-\item{data}{[n, p] dim data to project, consisting of 
+\item{data}{A [n, p] dim data to project, consisting of 
 only numeric variables (for coercion into matrix.)}
 
-\item{m_tour}{the output of manual_tour(), list of projection bases by index.}
+\item{m_tour}{The output of manual_tour(), a [p, d, n_slides] dim array of 
+the manual tour. Containing `n_slides` interpolations varying phi.}
+}
+\value{
+A list containing the [p, d, n_slides] dim basis slides array, and
+  the [n, d, n_slides] dim data slides array.
 }
 \description{
-Takes the result of manual_tour() and interpolated the data over the 
-the tour path of the reference frame.
+Takes the result of manual_tour() and projects the data over the interpolated
+tour path of the reference frame.
 }
 \examples{
 data(flea)

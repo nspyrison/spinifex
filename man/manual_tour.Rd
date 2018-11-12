@@ -3,42 +3,46 @@
 \name{manual_tour}
 \alias{manual_tour}
 \title{Produce the series of porjection bases to rotate a variable into and out 
-  of a projection}
+of a projection}
 \usage{
 manual_tour(basis = NULL, manip_var = NULL, manip_type = "radial",
   theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 20)
 }
 \arguments{
-\item{basis}{A [p, 2] dim orthonormal starting basis. Required no default.}
+\item{basis}{A [p, d] dim orthonormal basis. Required, no default.}
 
 \item{manip_var}{Integer column number or string exact column name of the.
 variable to manipulate. Required, no default.}
 
 \item{manip_type}{String of the type of manipulation to use. 
 Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
-Required, supersedes theta if set.}
+Yields to `theta` if set. Must set either `manip_type` or `theta`.}
 
-\item{theta}{Optional parameter, yielding to manip_type. Angle in radians 
-specifying the angle between the `manip_var` and 0 on bases reference frame. 
-Where the 0 is the positive side of the x-axis.}
+\item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the 
+reference frame. Typically set from manip_type in proj_data(). Supersedes 
+`manip_type`. Must set either `manip_type` or `theta`.}
 
-\item{phi_min}{Angle in radians specifying the minimum extent that 
-`manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
+\item{phi_min}{Minimun value phi should move to. Phi is angle in radians of 
+the "out-of-plane" rotation, the z-axis of the referce frame. 
 Required, defaults to 0.}
 
-\item{phi_max}{Angle in radians specifying the maximum extent that 
-`manip_var` should extend in the z-axis w.r.t. the bases reference frame. 
-Required, defaults to .5 * pi.}
+\item{phi_max}{Maximum value phi should move to. Phi is angle in radians of 
+the "out-of-plane" rotation, the z-axis of the referce frame. 
+Required, defaults to 2 * pi.}
 
 \item{n_slides}{Number of slides to create for slideshow(). Defaults to 20.}
 }
 \value{
-`m_tour`, a [p, d, n_slides] dim array of the manual tour
-  transistion in `n_slides``increments.
+A [p, d, n_slides] dim array of the manual tour. Containing
+  `n_slides` interpolations varying phi from it's start to `phi_min`, to 
+  `phi_max`, and back to start.
 }
 \description{
-Rotates the manipulation space across `n_slides` increments to `phi_max`
-and back to `phi_min`.
+Typically called by `create_slideshow()`. The manual tour of the `manip_var`.
+Given a [p, d] orthonormal basis, creates an array of `n_slides` bases 
+extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
+`phi_min`, then back to the starting position (by default: from start, to 0,
+to 1, to start).
 }
 \examples{
 data(flea)
