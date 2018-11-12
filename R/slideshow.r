@@ -15,7 +15,9 @@
 #' mtour <- manual_tour(rb, manip_var = 4)
 #' sshow <- create_slideshow(tour = mtour, data = flea_std)
 create_slideshow <- function(tour,
-                             data = NULL) {
+                             data = NULL,
+                             ...) { 
+  # ... example) for plotly, transition = 200 (ms slide animation)
   # Assertions
   p <- nrow(tour[,, 1])
   if (!is.null(data)) stopifnot(ncol(data) == p)
@@ -149,7 +151,7 @@ render_slideshow <- function(slide_deck,
   # Render as disp_type
   if (disp_type == "plotly") {
     pgg4 <- plotly::ggplotly(gg4) %>%
-      plotly::animation_opts(frame = 500, transition = 500, redraw = FALSE)
+      plotly::animation_opts(frame = 200, transition = 0, redraw = FALSE)
     slideshow <- plotly::layout(
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
