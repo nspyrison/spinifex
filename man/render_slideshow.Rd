@@ -4,12 +4,14 @@
 \alias{render_slideshow}
 \title{Render a slideshow of the toured data and bases}
 \usage{
-render_slideshow(slide_deck, disp_type = "plotly")
+render_slideshow(slide_deck, disp_type = "plotly", col = "blue", ...)
 }
 \arguments{
 \item{slide_deck}{The result of create_slideshow().}
 
 \item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
+
+\item{col}{string of the colo(u)r to highlight the `manip_var`.}
 }
 \value{
 An animation in `disp_type` graphics of the interpolated data and 

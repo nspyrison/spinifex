@@ -12,11 +12,11 @@
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- tourr::basis_random(n =n col(flea_std))
+#' rb <- tourr::basis_random(n = n col(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
 create_manip_space <- function(basis, manip_var) {
   if (!is.matrix(basis)) as.matrix(basis)
-  stopifnot(!(class(as.integer(manip_var)) %in% c("integer", "character")) )
+  stopifnot(class(manip_var) == "numeric")
   
   z            <- rep(0, len = nrow(basis))
   z[manip_var] <- 1
@@ -128,30 +128,30 @@ manual_tour <- function(basis = NULL,
               !is.null(theta) )
   
   # Handle args
-  if (is.numeric(manip_var)) stopifnot(manip_var <= nrow(basis) )
   if (is.character(manip_var)) 
     manip_var <- match(manip_var, colnames(data)) # char to num
   if (!is.numeric(manip_var)) 
     stop("manip_var string not matched to a column name, try a column number.")
+  stopifnot(manip_var <= nrow(basis))
   if (!is.null(theta) & !is.null(manip_type) )
     message("Non-null theta used with non-null manip_type. Selecting theta over manip_type.")
-  if (manip_type == "horizontal") theta <- 0
-  if (manip_type == "vertical")   theta <- pi/2
-  if (manip_type == "radial")
+  if (is.null(theta) & manip_type == "horizontal") theta <- 0
+  if (is.null(theta) & manip_type == "vertical")   theta <- pi/2
+  if (is.null(theta) & manip_type == "radial")
     theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   
   # Initalize
   phi_start   <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
+  walk_min    <- min(phi_min, phi_max, phi_start)
+  walk_max    <- max(phi_min, phi_max, phi_start)
+  phi_inc     <- 2 * abs(walk_max - walk_min) / (n_slides - 3)
   phi_min_rel <- phi_min - phi_start # relative to phi_start
   phi_max_rel <- phi_max - phi_start # relative to phi_start
-  walk_min    <- min(phi_min_rel, phi_max_rel, phi_start)
-  walk_max    <- max(phi_min_rel, phi_max_rel, phi_start)
-  phi_inc     <- 2 * abs(walk_max - walk_min) / (n_slides - 3)
   manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
   p           <- nrow(basis)
   d           <- ncol(basis)
-  if (phi_start < phi_min_rel) warning("phi_start less than phi_min, tour may look odd.")
-  if (phi_start > phi_max_rel) warning("phi_start greater than phi_max, tour may look odd.")
+  if (phi_start < phi_min) warning("phi_start less than phi_min, tour may look odd.")
+  if (phi_start > phi_max) warning("phi_start greater than phi_max, tour may look odd.")
   
   interpolate_slides <- function(seq_start, seq_end){
     # Initalize for interpolate_slides()

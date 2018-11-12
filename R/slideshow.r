@@ -80,6 +80,7 @@ create_slideshow <- function(tour,
 #'
 #' @param slide_deck The result of create_slideshow().
 #' @param disp_type The graphics system to use. Defaults to 'plotly'.
+#' @param col string of the colo(u)r to highlight the `manip_var`.
 #' @return An animation in `disp_type` graphics of the interpolated data and 
 #'   the corrisponding reference frame.
 #' @export
@@ -92,8 +93,9 @@ create_slideshow <- function(tour,
 #' sshow <- create_slideshow(tour = mtour, data = flea_std)
 #' (pss <- render_slideshow(slide_deck = sshow))
 render_slideshow <- function(slide_deck,
-                             disp_type = "plotly" # alt: "gganimate", "animate"
-) {
+                             disp_type = "plotly", # alt: "gganimate", "animate"
+                             col = "blue",
+                             ...) {
   disp_type <- tolower(disp_type)
   # Assertions
   stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
@@ -124,12 +126,12 @@ render_slideshow <- function(slide_deck,
     n_slides   <- length(unique(bases_slides$slide))
     nrow_bases <- nrow(bases_slides)
     p          <- nrow_bases / n_slides
-    col <- rep("black", p)
-    col[manip_var] <- "blue"
-    col <- rep(col, n_slides)
-    siz <- rep(0.3, p)
-    siz[manip_var] <- 1
-    siz <- rep(siz, n_slides)
+    col_v <- rep("black", p) # color vector
+    col_v[manip_var] <- col
+    col_v <- rep(col_v, n_slides)
+    siz   <- rep(0.3, p)
+    siz[manip_var]   <- 1
+    siz   <- rep(siz, n_slides)
   } else {
     col <- "black"
     siz <- 0.3
@@ -155,8 +157,9 @@ render_slideshow <- function(slide_deck,
   
   # Render as disp_type
   if (disp_type == "plotly") {
-    pgg4 <- plotly::ggplotly(gg4) %>%
-      plotly::animation_opts(frame = 200, transition = 0, redraw = FALSE)
+    pgg4 <- plotly::ggplotly(gg4)
+    pgg4 <- plotly::animation_opts(p = pgg4, ...,
+                                   frame = 200, transition = 0, redraw = FALSE)
     slideshow <- plotly::layout(
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
