@@ -1,4 +1,4 @@
-﻿---
+---
 title: ""
 author: "Nicholas S Spyrison"
 date: "`r Sys.Date()`"
@@ -91,7 +91,7 @@ Watch the projection, via `slideshow()`, coloring observations by their species.
 
 ```{r}
 mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- create_slideshow(data = flea_std, m_tour = mtour)
+sshow <- create_slideshow(tour = mtour, data = flea_std)
 render_slideshow(slide_deck = sshow)
 ```
 
@@ -199,7 +199,7 @@ h_tour<- tourr::save_history(
 h_basis <- matrix(as.numeric(h_tour[,, dim(h_tour)[3]]), ncol = 2)
 
 h_mtour <- manual_tour(basis = h_basis, manip_var = 4)
-sshow <- create_slideshow(data = flea_std, m_tour = mtour)
+sshow <- create_slideshow(tour = mtour, data = flea_std)
 render_slideshow(slide_deck = sshow)
 ```
 
