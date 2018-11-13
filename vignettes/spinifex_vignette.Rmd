@@ -14,7 +14,8 @@ vignette: >
 knitr::opts_chunk$set(
   echo       = TRUE,   # code
   include    = TRUE,   # plots
-  results    = "hide", # text
+  results    = "hide", # text: "hide", "show"
+  eval       = TRUE,   # chunk
   message    = FALSE,  # messages
   warning    = FALSE,  # warnings
   error      = FALSE,  # errors
@@ -31,19 +32,27 @@ knitr::opts_chunk$set(
 
 ## Motivation
 
-Data sets commonly contain many (p>3) variables/dimensions. Numeric aggregation and modeling is scalable as the number of dimensions increase. Visualization of model and estimate-space (think residual or parallel coordinate plots) scale relatively well with dimension. Yet, visuals in data-space often fall by the wayside, especially when trying to illustrate more than 3 dimensions. If not all together abandoned, sub-optimal techniques are commonly employed.
+Datasets commonly contain many (p>3) dimensions (numeric variables). As pointed out by Wickham et. al.[@Wickham et. al. YYYYY] Numeric aggregation and parametric estimation is scalable as the number of dimensions increase. Meanwhile visualization tends to shift towards depiction of model spaces and parameter space (think residual or parallel coordinate plots) which can scale with some dimensionality. Yet, visuals in data-space often fall by the wayside, especially when trying to illustrate more than 3 dimensions. If not all together abandoned, sub-optimal techniques are commonly employed.
 
 ## Alternateives
 
-Traditionally, component analysis (PCA), correspondence analysis (CCA), or other single value decomposition (SVD) techniques have been used to approximate high dim spaces in 2 or 3-d. However doing so requires the loss of information of the discarded, transformed dimensions.
+Traditionally, component analysis (PCA), correspondence analysis (CCA), or other single value decomposition (SVD) techniques have been used to approximate high dim spaces in 2 or 3-d. However, doing so requires an unsatifactory loss of information of the discarded linear combinations.
 
-More recently stochastic neighbor embedding (t-SNE), Sammon mapping, and other non-linear transformations have seen a rise in popularity. These techniques can make astounding graphs showing distinctions and likeness across groups, but can suffer from over-fitting (potentially resulting in false groupings) and lose inter-operability back to the original dimensions.
+More recently, t-distributed stochastic neighbor embedding (t-SNE), Sammon mapping, and other non-linear transformations have seen a rise in popularity. These techniques can make for astonishing plots showing distinctions and likeness between groups, but can suffer from over-fitting (potentially resulting in false groupings) and lose inter-operability back to the original dimensions, a non-starter for many acemdemic persuits.
 
-## Tourr and methodology
+We suggest the use of linear methods that allow for the unique variation to be preserved and explorable as long as possible, namely, through the use of a method known as touring.
 
-The R package tourr [@Cook&Wickham] provides open source tools for exploring high dim spaces that doesn't lose information and maintains dimension-inter-operability. Orthonormal linear combinations of p-dimensions can be projected onto a 2-d surface and viewed as a XY scatter plot for instance. By changing the (constrained) linear combinations slightly, the 2-d projection changes in time as data are rotated in p-dimensions. Randomly selecting a dimension and direction of change is essentially the projection-pursuit method, "grand tour", originally purposed by Asimov [@Asimov et. al. 1985]. Other tours and gradient-descent indexes are discussed in the tourr package documentation hosted on CRAN, [here](https://cran.r-project.org/web/packages/tourr/tourr.pdf).
+## Tour methodology
 
-This concept can be illustrated succinctly by example. A 3-d object blocks a light source that casts a shadow onto a screen. If the object is a four-legged chair some orientations look like a black square, this conveys  little information about the shape of the object. However if the chair is rotated side or front view is seen. With continued rotation the 3-d shape can be distinguished from a 2-d animation. In the same way, information and interesting profiles describing high dimensional data can be found by watching projections of the data as it rotates.
+In short, touring projects a p-dimensional data object down to a lower d-dimensional embedding (2d in the case of standard computer monitors). The low dinemsonal projection is then observed as the p-dimensonal object is rotated in p-space. 
+
+This concept can be illustrated succinctly by aniqdote of shadow puppets. A 3-d object (hand) blocks a light source that casts a shadow (linear projection) onto a 2-d screen. Suppose a bar stool hinders a light source such that shadow is a circle. while the object is stationary the shadow circlular shade does not give conclusive inforamation about the shape of the object. However, rotation of the bar stool in 3-dimensions quickly and intuitively conveys this information. This is the premise behind touring. In the same way, information and interesting profiles describing high dimensional datasets can be observed by watching projections of linear combinations of higher dimensions as the data rotates.
+
+Touring was orginally suggested by Asimov et. al. in 1985[@Asimov et. al. 1985]. The Orginal suggestion was called a grand tour, escentially watching a 2-d projection of a random  walk in p-space.The method of rotating a data object is essentially four-fold[@Buja et. al. 2004]: 'grand tour' -- a random forest selection of dimension and direction, predifed path -- such as rotating through the full range of each variable in order, a 'little tour', data-defined path -- using stochastic gradient desenct on some objective function, and manual control -- the selection of a particular variable, degree, and manitude of change. 
+
+SITE TOURR AND EXPLAIN WHAT SPINIFEX DOES [here](https://cran.r-project.org/web/packages/tourr/tourr.pdf).
+
+
 
 # Code examples
 
