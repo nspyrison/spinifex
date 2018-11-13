@@ -99,9 +99,10 @@ Optionally we can specify:
 Watch the projection, via `slideshow()`, coloring observations by their species.
 
 ```{r}
-mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- create_slideshow(tour = mtour, data = flea_std)
-render_slideshow(slide_deck = sshow)
+# mtour <- manual_tour(basis = rb, manip_var = 4) 
+  # manual_tour calls tourr::orthonormalise() that travis CI complains about because it isn't in the tourr NAMESPACE. but it is for me. it this because Di made it public in the dev vers and Travis is grabbing the CRAN ver?
+# cslides <- create_slides(tour = mtour, data = flea_std)
+# render_slideshow(slides = cslides)
 ```
 
 
@@ -203,40 +204,40 @@ flea_std <- tourr::rescale(flea[,1:6])
 
 # Holes is unsupervised stochastic gradient descent maximizing whitespace 
 #   in the middle of the projection.
-h_tour<- tourr::save_history(
-  flea_std, tourr::guided_tour(index = tourr::holes), max_bases = 25) 
-h_basis <- matrix(as.numeric(h_tour[,, dim(h_tour)[3]]), ncol = 2)
-
-h_mtour <- manual_tour(basis = h_basis, manip_var = 4)
-sshow <- create_slideshow(tour = mtour, data = flea_std)
-render_slideshow(slide_deck = sshow)
+# h_tour<- tourr::save_history(
+#   flea_std, tourr::guided_tour(index = tourr::holes), max_bases = 25) 
+# h_basis <- matrix(as.numeric(h_tour[,, dim(h_tour)[3]]), ncol = 2)
+# 
+# h_mtour <- manual_tour(basis = h_basis, manip_var = 4)
+# cslides <- create_slides(tour = mtour, data = flea_std)
+# render_slideshow(slides = cslides)
 ```
 
 ```{r}
 abbreviate(colnames(flea_std),3)
 
-tr1_tour <- manual_tour(basis = h_basis, manip_var = 1)
-tr1_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
-tr2_tour <- manual_tour(basis = h_basis, manip_var = 2)
-tr2_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
-hed_tour <- manual_tour(basis = h_basis, manip_var = 3)
-hed_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
-ad1_tour <- manual_tour(basis = h_basis, manip_var = 4)
-ad1_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
-ad2_tour <- manual_tour(basis = h_basis, manip_var = 5)
-ad2_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
-ad3_tour <- manual_tour(basis = h_basis, manip_var = 6)
-ad3_sshow <- create_slideshow(data = flea_std, tour = tr1_tour)
+# tr1_tour <- manual_tour(basis = h_basis, manip_var = 1)
+# tr1_sshow <- create_slides(data = flea_std, tour = tr1_tour)
+# tr2_tour <- manual_tour(basis = h_basis, manip_var = 2)
+# tr2_sshow <- create_slides(data = flea_std, tour = tr1_tour)
+# hed_tour <- manual_tour(basis = h_basis, manip_var = 3)
+# hed_sshow <- create_slides(data = flea_std, tour = tr1_tour)
+# ad1_tour <- manual_tour(basis = h_basis, manip_var = 4)
+# ad1_sshow <- create_slides(data = flea_std, tour = tr1_tour)
+# ad2_tour <- manual_tour(basis = h_basis, manip_var = 5)
+# ad2_sshow <- create_slides(data = flea_std, tour = tr1_tour)
+# ad3_tour <- manual_tour(basis = h_basis, manip_var = 6)
+# ad3_sshow <- create_slides(data = flea_std, tour = tr1_tour)
 ```
 
 
 ```{r}
-render_slideshow(tr1_sshow)
-render_slideshow(tr2_sshow)
-render_slideshow(hed_sshow)
-render_slideshow(ad1_sshow)
-render_slideshow(ad2_sshow)
-render_slideshow(ad3_sshow)
+# render_slideshow(tr1_sshow)
+# render_slideshow(tr2_sshow)
+# render_slideshow(hed_sshow)
+# render_slideshow(ad1_sshow)
+# render_slideshow(ad2_sshow)
+# render_slideshow(ad3_sshow)
 ```
 
 

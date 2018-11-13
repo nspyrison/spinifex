@@ -79,13 +79,13 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' Produce the series of porjection bases to rotate a variable into and out 
 #' of a projection
 #'
-#' Typically called by `create_slideshow()`. The manual tour of the `manip_var`.
+#' Typically called by `create_slides()`. The manual tour of the `manip_var`.
 #' Given a [p, d] orthonormal basis, creates an array of `n_slides` bases 
 #' extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
 #' `phi_min`, then back to the starting position (by default: from start, to 0,
 #' to 1, to start).
 #'
-#' @param basis A [p, d] dim orthonormal basis. Required, no default.
+#' @param basis A [p, d] dim orthonormal matrix. Required, no default.
 #' @param manip_var Integer column number or string exact column name of the.
 #'   variable to manipulate. Required, no default.
 #' @param manip_type String of the type of manipulation to use. 

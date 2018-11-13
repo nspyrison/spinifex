@@ -9,7 +9,7 @@ manual_tour(basis = NULL, manip_var = NULL, manip_type = "radial",
   theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 20)
 }
 \arguments{
-\item{basis}{A [p, d] dim orthonormal basis. Required, no default.}
+\item{basis}{A [p, d] dim orthonormal matrix. Required, no default.}
 
 \item{manip_var}{Integer column number or string exact column name of the.
 variable to manipulate. Required, no default.}
@@ -38,7 +38,7 @@ A [p, d, n_slides] dim array of the manual tour. Containing
   `phi_max`, and back to start.
 }
 \description{
-Typically called by `create_slideshow()`. The manual tour of the `manip_var`.
+Typically called by `create_slides()`. The manual tour of the `manip_var`.
 Given a [p, d] orthonormal basis, creates an array of `n_slides` bases 
 extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
 `phi_min`, then back to the starting position (by default: from start, to 0,

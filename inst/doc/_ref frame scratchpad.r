@@ -5,7 +5,7 @@ flea_std <- tourr::rescale(flea[,1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4, phi_max = 1 * pi)
-sshow <- create_slideshow(tour = mtour, data = flea_std)
+sshow <- create_slides(tour = mtour, data = flea_std)
 render_slideshow(slide_deck = sshow)
 
 ## other checks
@@ -27,11 +27,11 @@ b_sldes
 
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4, phi_max = .5 * pi)
-sshow <- create_slideshow(data = flea_std, tour = mtour)
+sshow <- create_slides(data = flea_std, tour = mtour)
 render_slideshow(slide_deck = sshow)
 
 mtour <- manual_tour(basis = rb, manip_var = 4, phi_max = 2 * pi)
-sshow <- create_slideshow(data = flea_std, tour = mtour)
+sshow <- create_slides(data = flea_std, tour = mtour)
 render_slideshow(slide_deck = sshow)
 
 # ## old spinifex::is_orthonormal # returning TRUE on 23/10/2018.

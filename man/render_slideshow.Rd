@@ -4,22 +4,24 @@
 \alias{render_slideshow}
 \title{Render a slideshow of the toured data and bases}
 \usage{
-render_slideshow(slide_deck, disp_type = "plotly", col = "blue", ...)
+render_slideshow(slides, disp_type = "plotly", col = "blue", ...)
 }
 \arguments{
-\item{slide_deck}{The result of create_slideshow().}
+\item{slides}{The result of create_slides().}
 
 \item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
 
-\item{col}{string of the colo(u)r to highlight the `manip_var`.}
+\item{col}{String of the colo(u)r to highlight the `manip_var`.}
+
+\item{...}{Optional, pass addition arguments into `plotly::animation_opts()`.}
 }
 \value{
 An animation in `disp_type` graphics of the interpolated data and 
   the corrisponding reference frame.
 }
 \description{
-Takes the result of create_slideshow() and renders them as a graph object of 
-the `disp_type`.
+Takes `slides`, the result of create_slides(), and renders them as a graph 
+object of the `disp_type`.
 }
 \examples{
 data(flea)
@@ -27,6 +29,6 @@ flea_std <- tourr::rescale(flea[,1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- create_slideshow(tour = mtour, data = flea_std)
-(pss <- render_slideshow(slide_deck = sshow))
+sshow <- create_slides(tour = mtour, data = flea_std)
+(pss <- render_slideshow(slides = sshow))
 }

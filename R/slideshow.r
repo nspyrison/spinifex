@@ -3,8 +3,8 @@
 #' Takes the result of manual_tour() and projects the data over the interpolated
 #' tour path of the reference frame.
 #'
-#' @param data A [n, p] dim data to project, consisting of 
-#'   only numeric variables (for coercion into matrix.)
+#' @param data A [n, p] dim data to project, consisting of only numeric 
+#'   variables (for coercion into matrix).
 #' @param m_tour The output of manual_tour(), a [p, d, n_slides] dim array of 
 #'   the manual tour. Containing `n_slides` interpolations varying phi.
 #' @return A list containing the [p, d, n_slides] dim basis slides array, and
@@ -16,11 +16,9 @@
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(rb, manip_var = 4)
-#' sshow <- create_slideshow(tour = mtour, data = flea_std)
-create_slideshow <- function(tour,
-                             data = NULL,
-                             ...) { 
-  # ... example) for plotly, transition = 200 (ms slide animation)
+#' sshow <- create_slides(tour = mtour, data = flea_std)
+create_slides <- function(tour,
+                          data = NULL) { 
   # Assertions
   p <- nrow(tour[,, 1])
   if (!is.null(data)) stopifnot(ncol(data) == p)
@@ -54,7 +52,7 @@ create_slideshow <- function(tour,
     }
   }
   
-  # Set abbreviated labels
+  # Set labels, abbreviated
   lab_abbr <- if(!is.null(data)) {abbreviate(colnames(data), 3)
   } else paste0("V", 1:p)
   lab_abbr <- rep(lab_abbr, n_slides)
@@ -66,21 +64,22 @@ create_slideshow <- function(tour,
     attr(bases_slides, "manip_var") <- manip_var
   }
   
-  slide_deck <- if(!is.null(data)) {
+  slides <- if(!is.null(data)) {
     list(bases_slides = bases_slides, data_slides = data_slides)
   } else list(bases_slides = bases_slides)
   
-  return(slide_deck)
+  return(slides)
 }
 
 #' Render a slideshow of the toured data and bases
 #'
-#' Takes the result of create_slideshow() and renders them as a graph object of 
-#' the `disp_type`. 
+#' Takes `slides`, the result of create_slides(), and renders them as a graph 
+#' object of the `disp_type`. 
 #'
-#' @param slide_deck The result of create_slideshow().
+#' @param slides The result of create_slides().
 #' @param disp_type The graphics system to use. Defaults to 'plotly'.
-#' @param col string of the colo(u)r to highlight the `manip_var`.
+#' @param col String of the colo(u)r to highlight the `manip_var`.
+#' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @return An animation in `disp_type` graphics of the interpolated data and 
 #'   the corrisponding reference frame.
 #' @export
@@ -90,9 +89,9 @@ create_slideshow <- function(tour,
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- create_slideshow(tour = mtour, data = flea_std)
-#' (pss <- render_slideshow(slide_deck = sshow))
-render_slideshow <- function(slide_deck,
+#' sshow <- create_slides(tour = mtour, data = flea_std)
+#' (pss <- render_slideshow(slides = sshow))
+render_slideshow <- function(slides,
                              disp_type = "plotly", # alt: "gganimate", "animate"
                              col = "blue",
                              ...) {
@@ -101,9 +100,9 @@ render_slideshow <- function(slide_deck,
   stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
   
   # Initiliaze
-  if (length(slide_deck) == 2) 
-    data_slides <- slide_deck[[2]]
-  bases_slides  <- slide_deck[[1]]
+  if (length(slides) == 2) 
+    data_slides <- slides[[2]]
+  bases_slides  <- slides[[1]]
   angle         <- seq(0, 2 * pi, length = 360)
   circ          <- data.frame(x = cos(angle), y = sin(angle))
   
@@ -126,34 +125,34 @@ render_slideshow <- function(slide_deck,
     n_slides   <- length(unique(bases_slides$slide))
     nrow_bases <- nrow(bases_slides)
     p          <- nrow_bases / n_slides
-    col_v <- rep("black", p) # color vector
+    col_v <- rep("black", p) # colo(u)r vector
     col_v[manip_var] <- col
     col_v <- rep(col_v, n_slides)
     siz   <- rep(0.3, p)
     siz[manip_var]   <- 1
     siz   <- rep(siz, n_slides)
   } else {
-    col <- "black"
-    siz <- 0.3
+    col_v <- "black"
+    siz   <- 0.3
   }
 
   # Plot refrence frame axes
-  gg2 <- gg1 + ggplot2::geom_segment( # for unused aes "frame".
-    data = bases_slides, size = siz, colour = col,
+  gg2 <- gg1 + suppressWarnings(ggplot2::geom_segment( # for unused aes "frame".
+    data = bases_slides, size = siz, colour = col_v,
     mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
-  )
+  ))
 
   # Refrence frame text
-  gg3 <- gg2 #+ ggplot2::geom_text( # for unused aes "frame".
+  gg3 <- gg2 #+ suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
     #data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",#"col"
     #mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr)
-  #)
+  #))
   
   # Plot data projection scatterplot
-  gg4 <- gg3 + ggplot2::geom_point( # for unused aes "frame".
+  gg4 <- gg3 + suppressWarnings(ggplot2::geom_point( # for unused aes "frame".
     data = data_slides, size = .7,
     mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
-  )
+  ))
   
   # Render as disp_type
   if (disp_type == "plotly") {
