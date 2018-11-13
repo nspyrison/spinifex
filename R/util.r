@@ -28,6 +28,8 @@ create_identity_basis <- function(p = 6, d = 2) {
 #'   (numeric variable).
 #' @param labels Optional, character vector of `p`` length, applies colnames 
 #'   to the rows of the basis.
+#' @param ... Optionally pass additional aruments to segments(), lines(), or 
+#'   text().
 #' @return Nothing, but cretes a plot of the reference frame in base graphics.
 #' 
 #' @examples 

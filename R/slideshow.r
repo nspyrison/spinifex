@@ -5,7 +5,7 @@
 #'
 #' @param data A [n, p] dim data to project, consisting of only numeric 
 #'   variables (for coercion into matrix).
-#' @param m_tour The output of manual_tour(), a [p, d, n_slides] dim array of 
+#' @param tour The output of manual_tour(), a [p, d, n_slides] dim array of 
 #'   the manual tour. Containing `n_slides` interpolations varying phi.
 #' @return A list containing the [p, d, n_slides] dim basis slides array, and
 #'   the [n, d, n_slides] dim data slides array.

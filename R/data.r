@@ -23,8 +23,6 @@
 #' @examples
 #'
 #' head(flea)
-#' animate_xy(flea[,-7])
-#' animate_xy(flea[,-7],col=flea[,7])
 #'
 NULL
 

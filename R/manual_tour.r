@@ -12,7 +12,7 @@
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- tourr::basis_random(n = n col(flea_std))
+#' rb <- tourr::basis_random(n = ncol(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
 create_manip_space <- function(basis, manip_var) {
   if (!is.matrix(basis)) as.matrix(basis)
