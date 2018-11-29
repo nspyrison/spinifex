@@ -111,7 +111,7 @@ render_slideshow <- function(slides,
   gg1 <- 
     ggplot2::ggplot() + ggplot2::geom_path(
       data = circ, color = "grey80", size = .3, inherit.aes = F,
-      mapping = ggplot2::aes(x = x, y = y)
+      mapping = ggplot2::aes(x = circ$x, y = circ$y)
     ) +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
@@ -129,7 +129,7 @@ render_slideshow <- function(slides,
     col_v[manip_var] <- col
     col_v <- rep(col_v, n_slides)
     siz   <- rep(0.3, p)
-    siz[manip_var]   <- 1
+    siz[manip_var] <- 1
     siz   <- rep(siz, n_slides)
   } else {
     col_v <- "black"
@@ -139,19 +139,22 @@ render_slideshow <- function(slides,
   # Plot refrence frame axes
   gg2 <- gg1 + suppressWarnings(ggplot2::geom_segment( # for unused aes "frame".
     data = bases_slides, size = siz, colour = col_v,
-    mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0, frame = slide)
+    mapping = ggplot2::aes(x = bases_slides$V1, y = bases_slides$V2, 
+                           xend = 0, yend = 0, frame = bases_slides$slide)
   ))
 
   # Refrence frame text
   gg3 <- gg2 #+ suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
     #data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",#"col"
-    #mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr)
+    #mapping = ggplot2::aes(x = bases_slides$V1, y = bases_slides$V2, 
+    #                       frame = bases_slides$slide, label = lab_abbr)
   #))
   
   # Plot data projection scatterplot
   gg4 <- gg3 + suppressWarnings(ggplot2::geom_point( # for unused aes "frame".
     data = data_slides, size = .7,
-    mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
+    mapping = ggplot2::aes(x = data_slides$V1, y = data_slides$V2, 
+                           frame = data_slides$slide)
   ))
   
   # Render as disp_type

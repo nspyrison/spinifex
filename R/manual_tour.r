@@ -128,8 +128,6 @@ manual_tour <- function(basis = NULL,
               !is.null(theta) )
   
   # Handle args
-  if (is.character(manip_var)) 
-    manip_var <- match(manip_var, colnames(data)) # char to num
   if (!is.numeric(manip_var)) 
     stop("manip_var string not matched to a column name, try a column number.")
   stopifnot(manip_var <= nrow(basis))
