@@ -2,4 +2,3 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\ignore
-^\inst\doc
