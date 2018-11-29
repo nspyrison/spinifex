@@ -14,7 +14,7 @@
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' tpath <- tourr::save_history(flea_std, tourr::guided_tour(tourr::cmass))
 #' 
-#' print_tour(tour_path = tpath, data = flea_std)
+#' play_tour(tour_path = tpath, data = flea_std)
 play_tour <- function(tour_path,
                       data = NULL,
                       ...) {
