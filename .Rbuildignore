@@ -1,6 +1,4 @@
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\ignore
-^\inst\doc
-^/inst/doc
+^\inst\doc\*

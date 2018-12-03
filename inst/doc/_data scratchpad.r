@@ -1,6 +1,6 @@
 #install.packages("mlbench")
-library("mlbench")
 #install.packages("rattle.data")
+library("mlbench")
 library("rattle.data")
 
 ### mlbench::BreastCancer
