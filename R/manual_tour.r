@@ -139,15 +139,15 @@ manual_tour <- function(basis = NULL,
     theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   
   # Initalize
-  phi_start   <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-  walk_min    <- min(phi_min, phi_max, phi_start)
-  walk_max    <- max(phi_min, phi_max, phi_start)
-  phi_inc     <- 2 * abs(walk_max - walk_min) / (n_slides - 3)
-  phi_min_rel <- phi_min - phi_start # relative to phi_start
-  phi_max_rel <- phi_max - phi_start # relative to phi_start
-  manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
-  p           <- nrow(basis)
-  d           <- ncol(basis)
+  phi_start      <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
+  walk_min       <- min(phi_min, phi_max, phi_start)
+  walk_max       <- max(phi_min, phi_max, phi_start)
+  phi_inc        <- 2 * abs(walk_max - walk_min) / (n_slides - 3)
+  manip_space    <- create_manip_space(basis = basis, manip_var = manip_var)
+  x_mvar_sign    <- sign(manip_space[manip_var, 1])
+  phi_start_sign <- x_mvar_sign * phi_start
+  p              <- nrow(basis)
+  d              <- ncol(basis)
   if (phi_start < phi_min) warning("phi_start less than phi_min, tour may look odd.")
   if (phi_start > phi_max) warning("phi_start greater than phi_max, tour may look odd.")
   
@@ -160,7 +160,8 @@ manual_tour <- function(basis = NULL,
     len           <- length(seq(seq_start, seq_end, phi_inc_sign))
     interpolation <- array(dim = c(p, d, len))
     
-    for (phi in seq(seq_start, seq_end, phi_inc_sign)) {
+    for (phi in 
+         seq(seq_start-phi_start_sign, seq_end-phi_start_sign, phi_inc_sign)) {
       slide     <- slide + 1
       new_slide <- rotate_manip_space(manip_space, theta, phi)
       interpolation[,, slide] <- new_slide[, 1:2]
@@ -168,15 +169,9 @@ manual_tour <- function(basis = NULL,
     return(interpolation)
   }
   
-  x_mvar_sign    <- sign(manip_space[manip_var, 1])
-  phi_start_sign <- x_mvar_sign * phi_start
-  ## walk 1: start to near 0
-  walk1 <- interpolate_slides(phi_start_sign, phi_min_rel)
-  ## walk 2: 0 to near 1
-  walk2 <- interpolate_slides(phi_min_rel, phi_max_rel)
-  ## walk 3: 1 to near start
-  walk3 <- interpolate_slides(phi_max_rel, phi_start_sign)
-  ## Add 1 last slide at start
+  walk1 <- interpolate_slides(phi_start_sign, phi_min)
+  walk2 <- interpolate_slides(phi_min, phi_max)
+  walk3 <- interpolate_slides(phi_max, phi_start_sign)
   walk4 <- interpolate_slides(phi_start_sign, phi_start_sign)
   
   m_tour <- array(c(walk1, walk2, walk3, walk4), dim = c(p, d, n_slides))
