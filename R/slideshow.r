@@ -93,14 +93,15 @@ create_slides <- function(tour,
 #' (pss <- render_slideshow(slides = sshow))
 render_slideshow <- function(slides,
                              disp_type = "plotly", # alt: "gganimate", "animate"
-                             col = "blue",
+                             manip_col = "blue", # string of color name
+                             cat_var = NULL, # cat var to color data and pch
                              ...) {
   disp_type <- tolower(disp_type)
   # Assertions
-  stopifnot(disp_type %in% c("plotly", "gganimate", "animate") )
+  stopifnot(disp_type %in% c("plotly", "gganimate", "animate"))
   
   # Initiliaze
-  if (length(slides) == 2) 
+  if (length(slides) == 2)
     data_slides <- slides[[2]]
   bases_slides  <- slides[[1]]
   angle         <- seq(0, 2 * pi, length = 360)
@@ -117,50 +118,57 @@ render_slideshow <- function(slides,
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")
   
-  # If manip_var is not NULL, format reference frame accordingly
-  manip_var  <- if (!is.null(attributes(bases_slides)$manip_var)) {
-    attributes(bases_slides)$manip_var
-    } else NULL 
+  # Given manip_var, format reference frame accordingly
+  # Initialize
+  n_slides  <- length(unique(bases_slides$slide))
+  p         <- nrow(bases_slides[,, 1]) / n_slides
+  manip_var <- attributes(bases_slides)$manip_var
+  
+  # Size and color of manip_var
   if(!is.null(manip_var)) {
-    n_slides   <- length(unique(bases_slides$slide))
-    nrow_bases <- nrow(bases_slides)
-    p          <- nrow_bases / n_slides
-    col_v <- rep("black", p) # colo(u)r vector
-    col_v[manip_var] <- col
-    col_v <- rep(col_v, n_slides)
-    siz   <- rep(0.3, p)
-    siz[manip_var] <- 1
-    siz   <- rep(siz, n_slides)
+    col_v            <- rep("black", p) # colo(u)r vector
+    col_v[manip_var] <- manip_col
+    col_v            <- rep(col_v, n_slides)
+    siz_v            <- rep(0.3, p)
+    siz_v[manip_var] <- 1
+    siz_v            <- rep(siz_v, n_slides)
   } else {
     col_v <- "black"
     siz   <- 0.3
   }
-
+  
   # Plot refrence frame axes
   gg2 <- gg1 + suppressWarnings(ggplot2::geom_segment( # for unused aes "frame".
-    data = bases_slides, size = siz, colour = col_v,
+    data = bases_slides, size = siz_v, colour = col_v,
     mapping = ggplot2::aes(x = bases_slides$V1, y = bases_slides$V2, 
                            xend = 0, yend = 0, frame = bases_slides$slide)
   ))
-
+  
   # Refrence frame text
-  gg3 <- gg2 #+ suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
-    #data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",#"col"
-    #mapping = ggplot2::aes(x = bases_slides$V1, y = bases_slides$V2, 
-    #                       frame = bases_slides$slide, label = lab_abbr)
-  #))
+  gg3 <- gg2 # + suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
+  # data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",
+  # mapping = ggplot2::aes(x = bases_slides$V1, y = bases_slides$V2, 
+  #                        frame = bases_slides$slide, label = lab_abbr)
+  # ))
+  
+  # Given cat_var, set group values for pch and color of data
+  if(!is.null(cat_var)) {
+    if (!is.numeric(cat_var)) cat_var <- as.numeric(as.factor(cat_var))
+    cat_var <- rep(cat_var, n_slides)
+  } else cat_var <- 1
   
   # Plot data projection scatterplot
   gg4 <- gg3 + suppressWarnings(ggplot2::geom_point( # for unused aes "frame".
-    data = data_slides, size = .7,
-    mapping = ggplot2::aes(x = data_slides$V1, y = data_slides$V2, 
+    data = data_slides, size = .7, 
+    color = cat_var, shape = cat_var + 15,
+    mapping = ggplot2::aes(x = data_slides$V1, y = data_slides$V2,
                            frame = data_slides$slide)
   ))
   
   # Render as disp_type
   if (disp_type == "plotly") {
     pgg4 <- plotly::ggplotly(gg4)
-    pgg4 <- plotly::animation_opts(p = pgg4, ...,
+    pgg4 <- plotly::animation_opts(p = pgg4,
                                    frame = 200, transition = 0, redraw = FALSE)
     slideshow <- plotly::layout(
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
