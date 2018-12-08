@@ -134,7 +134,7 @@ render_slideshow <- function(slides,
     siz_v            <- rep(siz_v, n_slides)
   } else {
     col_v <- "black"
-    siz   <- 0.3
+    siz_v   <- 0.3
   }
   
   # Plot refrence frame axes

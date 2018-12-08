@@ -32,7 +32,7 @@ play_tour <- function(tour_path,
   
   slides <- create_slides(tour = tour_path, data = data)
   plotly_slideshow <- render_slideshow(slides = slides, disp_type = "plotly",
-                                       ... = ...)
+                                       ...)
   
   return(plotly_slideshow)
 }

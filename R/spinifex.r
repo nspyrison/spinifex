@@ -69,7 +69,7 @@ spinifex <- function(data,
   slides <- create_slides(tour = manual_tour, data = data)
   
   slideshow <- render_slideshow(slides = slides, disp_type = disp_type, 
-                                col = col, ... = ...)
+                                col = col, ...)
   
   return(slideshow)
 }

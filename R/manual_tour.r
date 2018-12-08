@@ -151,6 +151,8 @@ manual_tour <- function(basis = NULL,
     # Initalize for interpolate_slides()
     slide         <- 0
     new_slide     <- NULL
+    seq_start     <- seq_start + phi_start_sign # so phi=0 is on plane.
+    seq_end       <- seq_end + phi_start_sign
     seq_by_sign   <- ifelse(seq_end > seq_start, 1, -1)
     phi_inc_sign  <- seq_by_sign * phi_inc
     len           <- length(seq(seq_start, seq_end, phi_inc_sign))
@@ -166,10 +168,10 @@ manual_tour <- function(basis = NULL,
   
   x_mvar_sign    <- sign(manip_space[manip_var, 1])
   phi_start_sign <- phi_start * x_mvar_sign
-  walk1 <- interpolate_slides(0, phi_min + phi_start_sign)
-  walk2 <- interpolate_slides(phi_min + phi_start_sign, phi_max + phi_start_sign)
-  walk3 <- interpolate_slides(phi_max + phi_start_sign, 0)
-  walk4 <- interpolate_slides(0, 0)
+  walk1 <- interpolate_slides(phi_start, phi_min)
+  walk2 <- interpolate_slides(phi_min, phi_max)
+  walk3 <- interpolate_slides(phi_max, phi_start)
+  walk4 <- interpolate_slides(phi_start, phi_start)
   
   m_tour <- array(c(walk1, walk2, walk3, walk4), dim = c(p, d, n_slides))
   attr(m_tour, "manip_var") <- manip_var
