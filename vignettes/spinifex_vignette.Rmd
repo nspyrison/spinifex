@@ -114,14 +114,9 @@ sshow <- create_slides(tour = mtour, data = wine_std)
 ## Example 2 - Rotating a glyph map
 
 ```{r}
-library(GGally)
+data("weatherAUS")
+str(weatherAUS)
 
-nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") &
-             nasa$lat >= 20 &
-             nasa$lat <= 40 &
-             nasa$long >= -80 &
-             nasa$long <= -60,
-             ] #36 months of climate data.
 
 temp.gly <-
   GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
@@ -137,23 +132,45 @@ glyph1
 ```
 
 
+
 ```{r}
+
+gg1<-ggplot(nasa_sub, aes(x=x+day/2, y=y+surftemp/2)) + geom_point(size=0.3)
+
 nasa_std <- cbind(nasa[c("x", "y")], 
                    tourr::rescale(nasa[c("day", "surftemp")])
 )
+b2 <- create_identity_basis(p = ncol(nasa_sub))
 
-# Perform a horizonal rotation on a glyphmap
-rb2 <- tourr::basis_random(n = ncol(nasa_std))
-mtour2 <- manual_tour(basis = rb2, manip_var = 3, manip_type = "horizontal")
-sshow2 <- create_slides(tour = mtour2, data = nasa2_std)
-(nasa_hss <- render_slideshow(slides = sshow2))
+# Horizontal component:
+m_sp = create_manip_space(basis = basis, manip_var = 3)
+rot_mat <- rotate_manip_space(manip_space = m_sp, theta = 0, phi = pi/6)
+nasa_std_rot_x <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat))
+
+# Vertical
+manip_space = create_manip_space(basis = basis, manip_var = 4)
+rot_mat <- rotate_manip_space(manip_space, pi/2, pi/6)
+nasa_sub_rot_y <- data.frame(as.matrix(nasa_sub) %*% as.matrix(rot_mat))
+nasa_sub_rot <- bind_cols(nasa_sub_rot_x, nasa_sub_rot_y) %>%
+  select(x, y1) %>%
+  rename(x=x, y=y1)
+
+gg2<-ggplot(nasa_sub_rot, aes(x=x, y=y)) + geom_point(size=0.3)
+
+# # Perform a horizonal rotation on a glyphmap
+# b2 = create_identity_basis(p = ncol(nasa_sub))
+# mtour2 <- manual_tour(basis = b2, manip_var = 3, manip_type = "horizontal")
+# sshow2 <- create_slides(tour = mtour2, data = nasa2_std)
+# (nasa_hss <- render_slideshow(slides = sshow2))
+# 
+# 
+# # Perform a Vertical rotation on a second variable of a glyphmap
+# rb3 <- tourr::basis_random(n = ncol(nasa_std))
+# mtour3 <- manual_tour(basis = rb3, manip_var = 4, manip_type = "vertical")
+# sshow3 <- create_slides(tour = mtour3, data = nasa_std)
+# (nasa_vss <- render_slideshow(slides = sshow3))
 
 
-# Perform a Vertical rotation on a second variable of a glyphmap
-rb3 <- tourr::basis_random(n = ncol(nasa_std))
-mtour3 <- manual_tour(basis = rb3, manip_var = 4, manip_type = "vertical")
-sshow3 <- create_slides(tour = mtour3, data = nasa_std)
-(nasa_vss <- render_slideshow(slides = sshow3))
 ```
 
 
