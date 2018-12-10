@@ -15,7 +15,7 @@ nasa_sub <- nasa %>% select(x, y, day, surftemp) %>%
   mutate(surftemp = scale01(surftemp)) %>%
   mutate(day = scale01(day))
 ggplot(nasa_sub, aes(x=x, y=y)) + geom_point()
-ggplot(nasa_sub, aes(x=x+day/2, y=y+surftemp/2)) + geom_point(size=0.3)
+gg1<-ggplot(nasa_sub, aes(x=x+day/2, y=y+surftemp/2)) + geom_point(size=0.3)
 
 basis = create_identity_basis(p = ncol(nasa_sub))
 
@@ -32,16 +32,17 @@ nasa_sub_rot <- bind_cols(nasa_sub_rot_x, nasa_sub_rot_y) %>%
   select(x, y1) %>%
   rename(x=x, y=y1)
 
-ggplot(nasa_sub_rot, aes(x=x, y=y)) + geom_point(size=0.3)
+gg2<-ggplot(nasa_sub_rot, aes(x=x, y=y)) + geom_point(size=0.3)
 
 # Creating an animation from a manual tour
 # I think that it would be better to split up the proj_data into making
 # one projected data, and then a separate function to string a bunch of
 # projections together
 data(flea)
-flea_std <- apply(flea[,2:7], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
+flea_std <- tourr::rescale(flea[,1:6])
+  #apply(flea[,2:7], 2, function(x) ((x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)))
 
-basis <- create_random_basis(p = ncol(flea_std))
+basis <- tourr::basis_random(n = ncol(flea_std))
 flea_std_proj1 <- data.frame(as.matrix(flea_std) %*% basis)
 flea_std_proj1$species <- flea$species
 ggplot(flea_std_proj1, aes(x=X1, y=X2, colour=species)) + geom_point() + theme(aspect.ratio=1)

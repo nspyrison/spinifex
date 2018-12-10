@@ -5,7 +5,7 @@
 \title{Render a slideshow of the toured data and bases}
 \usage{
 render_slideshow(slides, disp_type = "plotly", manip_col = "blue",
-  group_by = NULL, ...)
+  cat_var = NULL, ...)
 }
 \arguments{
 \item{slides}{The result of create_slides().}

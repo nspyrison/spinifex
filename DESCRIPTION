@@ -12,14 +12,12 @@ License: GPL-3
 BugReports: https://github.com/nspyrison/spinifex/issues
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Imports:
   tourr,
   ggplot2,
   dplyr,
-  tibble
-Suggests: 
-  knitr,
-  rmarkdown,
+  tibble,
   plotly
+Suggests: 
 VignetteBuilder: knitr

@@ -74,13 +74,16 @@ Load the data and select a random basis with `basis_random(p)`. View the basis i
 
 ```{r}
 library(spinifex)
-set.seed(123)
+devtools::install_github("ggobi/tourr", dependencies = TRUE) 
+  # dev version of tourr
+library(tourr)
+set.seed(123) # I don't think seed makes tourr reproducible, but can't hurt.
 
-data(flea)
-flea_std <- tourr::rescale(flea[,1:6])
-
-rb <- tourr::basis_random(n = ncol(flea_std))
-view_basis(basis = rb, labels = colnames(flea_std))
+data(wine)
+wine_std <- tourr::rescale(wine[,-14]) # Type of grape removed.
+ 
+rb <- tourr::basis_random(n = ncol(wine_std))
+view_basis(basis = rb, labels = colnames(wine_std))
 ```
 
 <!-- I like to think of the basis as piece of paper that maps p dimension down to 2. The manipulation type (alternatively theta) is the angle of the on this basis plane between (1, 0) and the manipulation variable's vector in, our case we select 'head'. -->
@@ -99,100 +102,84 @@ Optionally we can specify:
 Watch the projection, via `slideshow()`, coloring observations by their species.
 
 ```{r}
-# mtour <- manual_tour(basis = rb, manip_var = 4) 
-  # manual_tour calls tourr::orthonormalise() that travis CI complains about because it isn't in the tourr NAMESPACE. but it is for me. it this because Di made it public in the dev vers and Travis is grabbing the CRAN ver?
-# cslides <- create_slides(tour = mtour, data = flea_std)
-# render_slideshow(slides = cslides)
+mtour <- manual_tour(basis = rb, manip_var = 1) 
+  # manual_tour calls tourr::orthonormalise() that travis CI complains about because it isn't in the tourr NAMESPACE. but it is for me. it this because Di made it public in the dev vers and Travis is grabbing the CRAN ver? Added github version in vignette.
+sshow <- create_slides(tour = mtour, data = wine_std)
+(wine_rss <- render_slideshow(slides = sshow))
 ```
 
 
 
 
-<!-- ## Example 2 - Rotating a glyph map -->
+## Example 2 - Rotating a glyph map
 
-<!-- ```{r} -->
-<!-- #library(GGally) -->
-<!-- # -->
-<!-- #nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") & -->
-<!-- #             nasa$lat >= 20 & -->
-<!-- #             nasa$lat <= 40 & -->
-<!-- #             nasa$long >= -80 & -->
-<!-- #             nasa$long <= -60,  -->
-<!-- #             ] #36 months of climate data.  -->
-<!-- # -->
-<!-- #temp.gly <- -->
-<!-- #  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5) -->
-<!-- #glyph1 <- -->
-<!-- #  ggplot(temp.gly, aes(gx, gy, group = gid)) + -->
-<!-- #  GGally::add_ref_lines(temp.gly, color = "grey90") + -->
-<!-- #  GGally::add_ref_boxes(temp.gly, color = "grey90") + -->
-<!-- #  geom_path() + -->
-<!-- #  theme_bw() + -->
-<!-- #  labs(x = "", y = "") -->
-<!-- # -->
-<!-- #glyph1 -->
-<!-- ``` -->
+```{r}
+library(GGally)
+
+nasa <- nasa[nasa$date >= as.POSIXct("1998-01-01") &
+             nasa$lat >= 20 &
+             nasa$lat <= 40 &
+             nasa$long >= -80 &
+             nasa$long <= -60,
+             ] #36 months of climate data.
+
+temp.gly <-
+  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
+glyph1 <-
+  ggplot(temp.gly, aes(gx, gy, group = gid)) +
+  GGally::add_ref_lines(temp.gly, color = "grey90") +
+  GGally::add_ref_boxes(temp.gly, color = "grey90") +
+  geom_path() +
+  theme_bw() +
+  labs(x = "", y = "")
+
+glyph1
+```
 
 
-<!-- ```{r} -->
-<!-- #data <- nasa[c("long", "day")] -->
-<!-- #p <- ncol(data) -->
-<!-- #r_basis <- create_random_basis(p = p)  -->
-<!-- # -->
-<!-- ###p=2 isn't working as z, will always be a linear combination of a 2x2 basis; -->
-<!-- #create_manip_space goes back to 2x2 then can't perform manip_space %*%R -->
-<!-- #spinifex::create_manip_space removes the new z. -->
-<!-- #tourr::orthonormalise() does diag(2)||c(NaN, NaN) -->
-<!-- #tourr error for p=2: Error in segments(adj(0), adj(0), adj(proj[, 1]), adj(proj[, 2]), col = "grey50") : cannot mix zero-length and non-zero-length coordinates -->
+```{r}
+nasa_std <- cbind(nasa[c("x", "y")], 
+                   tourr::rescale(nasa[c("day", "surftemp")])
+)
 
-<!-- #### Do a horizontal rotation on day, changing a_2. -->
-<!-- #proj_rday <- -->
-<!-- #  proj_data( -->
-<!-- #    data = data, -->
-<!-- #    basis = r_basis, -->
-<!-- #    manip_var = "day", -->
-<!-- #    manip = "horizontal", -->
-<!-- #    phi_from = 0, -->
-<!-- #    phi_to = pi -->
-<!-- #  ) -->
-<!-- #slideshow(proj_rday) -->
-<!-- # -->
-<!-- #### Do a vertical rotation on surftemp, changing b_2. -->
-<!-- #proj_rsurftemp <- -->
-<!-- #  proj_data( -->
-<!-- #    data = data, -->
-<!-- #    basis = r_basis, -->
-<!-- #    manip_var = "surftemp", -->
-<!-- #    manip = "vertical", -->
-<!-- #    phi_from = 0, -->
-<!-- #    to = 1.88 -->
-<!-- #  ) -->
-<!-- #slideshow(proj_rsurftemp) -->
-<!-- ``` -->
+# Perform a horizonal rotation on a glyphmap
+rb2 <- tourr::basis_random(n = ncol(nasa_std))
+mtour2 <- manual_tour(basis = rb2, manip_var = 3, manip_type = "horizontal")
+sshow2 <- create_slides(tour = mtour2, data = nasa2_std)
+(nasa_hss <- render_slideshow(slides = sshow2))
+
+
+# Perform a Vertical rotation on a second variable of a glyphmap
+rb3 <- tourr::basis_random(n = ncol(nasa_std))
+mtour3 <- manual_tour(basis = rb3, manip_var = 4, manip_type = "vertical")
+sshow3 <- create_slides(tour = mtour3, data = nasa_std)
+(nasa_vss <- render_slideshow(slides = sshow3))
+```
 
 
 
-<!-- ```{r} -->
-<!-- #nasa2 <- cbind( -->
-<!-- #  nasa[c("long", "day", "lat", "surftemp")], -->
-<!-- #  adj_day <- #x, rotated day -->
-<!-- #    proj_rday$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ],  -->
-<!-- #  adj_surftemp <- #y, rotated surftemp -->
-<!-- #    proj_rsurftemp$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ]  -->
-<!-- #) -->
-<!-- # -->
-<!-- #temp.gly2 <- -->
-<!-- #  GGally::glyphs(nasa2, "long", "adj_day", "lat", "adj_surftemp", height = 2.5) -->
-<!-- #glyph2 <- -->
-<!-- #  ggplot(temp.gly2, ggplot2::aes(gx, gy, group = gid)) + -->
-<!-- #  GGally::add_ref_lines(temp.gly, color = "grey90") + -->
-<!-- #  GGally::add_ref_boxes(temp.gly, color = "grey90") + -->
-<!-- #  geom_path() + -->
-<!-- #  theme_bw() + -->
-<!-- #  labs(x = "", y = "") -->
-<!-- # -->
-<!-- #gridExtra::grid.arrange(glyph1, glyph2, ncol=2) -->
-<!-- ``` -->
+```{r}
+#TODO: RESUME HERE:
+nasa2 <- cbind(
+  nasa[c("long", "day", "lat", "surftemp")],
+  adj_day <- #x, rotated day
+    proj_rday$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ],
+  adj_surftemp <- #y, rotated surftemp
+    proj_rsurftemp$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ]
+)
+
+temp.gly2 <-
+  GGally::glyphs(nasa2, "long", "adj_day", "lat", "adj_surftemp", height = 2.5)
+glyph2 <-
+  ggplot(temp.gly2, ggplot2::aes(gx, gy, group = gid)) +
+  GGally::add_ref_lines(temp.gly, color = "grey90") +
+  GGally::add_ref_boxes(temp.gly, color = "grey90") +
+  geom_path() +
+  theme_bw() +
+  labs(x = "", y = "")
+
+gridExtra::grid.arrange(glyph1, glyph2, ncol=2)
+```
 
 
 
