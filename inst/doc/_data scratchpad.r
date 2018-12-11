@@ -3,35 +3,35 @@
 library("mlbench")
 library("rattle.data")
 
-### mlbench::BreastCancer
+### mlbench::BreastCancer\
+library("mlbench")
+?BreastCancer
 data("BreastCancer")
-d <- BreastCancer[ , 2:11]
+d <- BreastCancer
 d <- d[!duplicated(d), ]
 d <- d[complete.cases(d), ]
-labels <- d$Class
-d <- as.matrix(d[ , 1:9])
-d <- apply(d, 2, as.numeric)
+mat <- as.matrix(d[ , 2:9])
+mat <- apply(mat, 2, as.numeric)
 
-BreastCancer <- bind_cols(c(d, labels))
+BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))
 save(BreastCancer, file = "./data/BreastCancer.rda")
 
-### mlbench::Soybean
-data("Soybean")
-d <- Soybean
-d <- d[!duplicated(d[,2:36]), ]
-d <- d[complete.cases(d[,2:36]), ]
-labels <- d$Class
-d <- as.matrix(d[ , 2:36])
-d <- apply(d, 2, as.numeric)
-
-Soybean <- embed(labels, d)
-save(Soybean, file = "./data/Soybean")
-
 ### rattle.data::wine
+?wine
 data("wine")
-str(wine)
+wine <- as.tibble(wine)
 save(wine, file = "./data/wine.rda")
 
 ### rattle.data::weatherAUS
+?weather # Canberra airport, Nov 2007 - Nov 2008
+library("rattle.data")
 data("weather")
+weather <- as.tibble(weather[ , c(1,3:7,9,12:24)])
 save(weather, file = "./data/weather.rda")
+
+### tourr::flea
+?flea
+library("tourr")
+data("flea")
+flea <- as.tibble(flea)
+save(flea, file = "./data/flea.rda")
