@@ -19,5 +19,5 @@ Imports:
   dplyr,
   tibble,
   plotly
-Suggests: 
+Suggests: knitr
 VignetteBuilder: knitr

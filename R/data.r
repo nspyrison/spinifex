@@ -70,7 +70,7 @@ NULL
 #' `mat <- apply(mat, 2, as.numeric)`
 #' `BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))`
 #'
-#' @name BreastCancer cells
+#' @name BreastCancer
 #' @aliases breastcancer
 #' @docType data
 #' @format Data frame (tibble) with 675 observations on 10 variables: a factor 
