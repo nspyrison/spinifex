@@ -14,10 +14,12 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 Imports:
-  tourr,
-  ggplot2,
-  dplyr,
-  tibble,
-  plotly
+    tourr (>= 0.5.5.9000),
+    ggplot2,
+    dplyr,
+    tibble,
+    plotly
 Suggests: knitr
 VignetteBuilder: knitr
+Remotes:  
+    ggobi/tourr

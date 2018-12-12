@@ -7,6 +7,9 @@
 \title{Flea beatle measurements}
 \format{Data frame (tibble) 74 observations of 6 numeric variables, followed
 by target class, `spieces`}
+\usage{
+flea
+}
 \description{
 This data is from a paper by A. A. Lubischew, "On the Use of Discriminant
 Functions in Taxonomy", Biometrics, Dec 1962, pp.455-477.

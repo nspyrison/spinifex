@@ -1,8 +1,3 @@
-## file.edit("./inst/doc/_data scratchpad.r")
-## ?mlbench::BreastCancer
-## ?rattle.data::wine
-## ?rattle.data::weather
-
 #' Flea beatle measurements
 #'
 #' This data is from a paper by A. A. Lubischew, "On the Use of Discriminant
@@ -31,7 +26,7 @@
 #' @examples
 #'
 #' head(flea)
-NULL
+"flea"
 
 #' Wisconsin Breast Cancer Database
 #'
@@ -70,7 +65,7 @@ NULL
 #' `mat <- apply(mat, 2, as.numeric)`
 #' `BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))`
 #'
-#' @name BreastCancer
+#' @name BreastCancer cells
 #' @aliases breastcancer
 #' @docType data
 #' @format Data frame (tibble) with 675 observations on 10 variables: a factor 
@@ -79,8 +74,7 @@ NULL
 #' @examples
 #'
 #' head(BreastCancer)
-#'
-NULL
+"BreastCancer"
 
 #' The wine dataset from the UCI Machine Learning Repository.
 #' 
@@ -146,8 +140,7 @@ NULL
 #' @examples
 #'
 #' head(weather)
-#'
-NULL
+"weather"
 
 #' The wine dataset from the UCI Machine Learning Repository.
 #'
@@ -178,14 +171,12 @@ NULL
 #'   \item Dilution, D280/OD315 of diluted wines
 #'   \item Proline, Proline
 #'
-#' @name weather
-#' @aliases Weather
+#' @name wine
+#' @aliases Wine
 #' @docType data
 #' @format data frame (tibble) of 178 observations of 13 variables, target 
 #' class `Type` and 12 numeric variables.
 #' @examples
 #'
-#' head(weather)
-#'
-NULL
-
+#' head(wine)
+"wine"
