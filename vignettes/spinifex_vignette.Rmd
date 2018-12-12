@@ -74,16 +74,16 @@ Load the data and select a random basis with `basis_random(p)`. View the basis i
 
 ```{r}
 library(spinifex)
-devtools::install_github("ggobi/tourr", dependencies = TRUE) 
+#devtools::install_github("ggobi/tourr", dependencies = TRUE) 
   # dev version of tourr
 library(tourr)
 set.seed(123) # I don't think seed makes tourr reproducible, but can't hurt.
 
-data(wine)
-wine_std <- tourr::rescale(wine[,-14]) # Type of grape removed.
- 
-rb <- tourr::basis_random(n = ncol(wine_std))
-view_basis(basis = rb, labels = colnames(wine_std))
+# data("wine")
+# wine_std <- tourr::rescale(wine[,-14]) # Type of grape removed.
+#  
+# rb <- tourr::basis_random(n = ncol(wine_std))
+# view_basis(basis = rb, labels = colnames(wine_std))
 ```
 
 <!-- I like to think of the basis as piece of paper that maps p dimension down to 2. The manipulation type (alternatively theta) is the angle of the on this basis plane between (1, 0) and the manipulation variable's vector in, our case we select 'head'. -->
@@ -102,10 +102,10 @@ Optionally we can specify:
 Watch the projection, via `slideshow()`, coloring observations by their species.
 
 ```{r}
-mtour <- manual_tour(basis = rb, manip_var = 1) 
-  # manual_tour calls tourr::orthonormalise() that travis CI complains about because it isn't in the tourr NAMESPACE. but it is for me. it this because Di made it public in the dev vers and Travis is grabbing the CRAN ver? Added github version in vignette.
-sshow <- create_slides(tour = mtour, data = wine_std)
-(wine_rss <- render_slideshow(slides = sshow))
+# mtour <- manual_tour(basis = rb, manip_var = 1) 
+#   # manual_tour calls tourr::orthonormalise() that travis CI complains about because it isn't in the tourr NAMESPACE. but it is for me. it this because Di made it public in the dev vers and Travis is grabbing the CRAN ver? Added github version in vignette.
+# sshow <- create_slides(tour = mtour, data = wine_std)
+# (wine_rss <- render_slideshow(slides = sshow))
 ```
 
 
@@ -114,48 +114,47 @@ sshow <- create_slides(tour = mtour, data = wine_std)
 ## Example 2 - Rotating a glyph map
 
 ```{r}
-data("weatherAUS")
-str(weatherAUS)
-
-
-temp.gly <-
-  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
-glyph1 <-
-  ggplot(temp.gly, aes(gx, gy, group = gid)) +
-  GGally::add_ref_lines(temp.gly, color = "grey90") +
-  GGally::add_ref_boxes(temp.gly, color = "grey90") +
-  geom_path() +
-  theme_bw() +
-  labs(x = "", y = "")
-
-glyph1
+# data("weather")
+# str(weather)
+# 
+# temp.gly <-
+#   GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
+# glyph1 <-
+#   ggplot(temp.gly, aes(gx, gy, group = gid)) +
+#   GGally::add_ref_lines(temp.gly, color = "grey90") +
+#   GGally::add_ref_boxes(temp.gly, color = "grey90") +
+#   geom_path() +
+#   theme_bw() +
+#   labs(x = "", y = "")
+# 
+# glyph1
 ```
 
 
 
 ```{r}
-
-gg1<-ggplot(nasa_sub, aes(x=x+day/2, y=y+surftemp/2)) + geom_point(size=0.3)
-
-nasa_std <- cbind(nasa[c("x", "y")], 
-                   tourr::rescale(nasa[c("day", "surftemp")])
-)
-b2 <- create_identity_basis(p = ncol(nasa_sub))
-
-# Horizontal component:
-m_sp = create_manip_space(basis = basis, manip_var = 3)
-rot_mat <- rotate_manip_space(manip_space = m_sp, theta = 0, phi = pi/6)
-nasa_std_rot_x <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat))
-
-# Vertical
-manip_space = create_manip_space(basis = basis, manip_var = 4)
-rot_mat <- rotate_manip_space(manip_space, pi/2, pi/6)
-nasa_sub_rot_y <- data.frame(as.matrix(nasa_sub) %*% as.matrix(rot_mat))
-nasa_sub_rot <- bind_cols(nasa_sub_rot_x, nasa_sub_rot_y) %>%
-  select(x, y1) %>%
-  rename(x=x, y=y1)
-
-gg2<-ggplot(nasa_sub_rot, aes(x=x, y=y)) + geom_point(size=0.3)
+# 
+# gg1<-ggplot(nasa_sub, aes(x=x+day/2, y=y+surftemp/2)) + geom_point(size=0.3)
+# 
+# nasa_std <- cbind(nasa[c("x", "y")], 
+#                    tourr::rescale(nasa[c("day", "surftemp")])
+# )
+# b2 <- create_identity_basis(p = ncol(nasa_sub))
+# 
+# # Horizontal component:
+# m_sp = create_manip_space(basis = basis, manip_var = 3)
+# rot_mat <- rotate_manip_space(manip_space = m_sp, theta = 0, phi = pi/6)
+# nasa_std_rot_x <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat))
+# 
+# # Vertical
+# manip_space = create_manip_space(basis = basis, manip_var = 4)
+# rot_mat <- rotate_manip_space(manip_space, pi/2, pi/6)
+# nasa_sub_rot_y <- data.frame(as.matrix(nasa_sub) %*% as.matrix(rot_mat))
+# nasa_sub_rot <- bind_cols(nasa_sub_rot_x, nasa_sub_rot_y) %>%
+#   select(x, y1) %>%
+#   rename(x=x, y=y1)
+# 
+# gg2<-ggplot(nasa_sub_rot, aes(x=x, y=y)) + geom_point(size=0.3)
 
 # # Perform a horizonal rotation on a glyphmap
 # b2 = create_identity_basis(p = ncol(nasa_sub))
@@ -176,26 +175,25 @@ gg2<-ggplot(nasa_sub_rot, aes(x=x, y=y)) + geom_point(size=0.3)
 
 
 ```{r}
-#TODO: RESUME HERE:
-nasa2 <- cbind(
-  nasa[c("long", "day", "lat", "surftemp")],
-  adj_day <- #x, rotated day
-    proj_rday$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ],
-  adj_surftemp <- #y, rotated surftemp
-    proj_rsurftemp$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ]
-)
-
-temp.gly2 <-
-  GGally::glyphs(nasa2, "long", "adj_day", "lat", "adj_surftemp", height = 2.5)
-glyph2 <-
-  ggplot(temp.gly2, ggplot2::aes(gx, gy, group = gid)) +
-  GGally::add_ref_lines(temp.gly, color = "grey90") +
-  GGally::add_ref_boxes(temp.gly, color = "grey90") +
-  geom_path() +
-  theme_bw() +
-  labs(x = "", y = "")
-
-gridExtra::grid.arrange(glyph1, glyph2, ncol=2)
+# nasa2 <- cbind(
+#   nasa[c("long", "day", "lat", "surftemp")],
+#   adj_day <- #x, rotated day
+#     proj_rday$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ],
+#   adj_surftemp <- #y, rotated surftemp
+#     proj_rsurftemp$proj_data[which(proj$proj_data$index==max(proj$proj_data$index)), ]
+# )
+# 
+# temp.gly2 <-
+#   GGally::glyphs(nasa2, "long", "adj_day", "lat", "adj_surftemp", height = 2.5)
+# glyph2 <-
+#   ggplot(temp.gly2, ggplot2::aes(gx, gy, group = gid)) +
+#   GGally::add_ref_lines(temp.gly, color = "grey90") +
+#   GGally::add_ref_boxes(temp.gly, color = "grey90") +
+#   geom_path() +
+#   theme_bw() +
+#   labs(x = "", y = "")
+# 
+# gridExtra::grid.arrange(glyph1, glyph2, ncol=2)
 ```
 
 

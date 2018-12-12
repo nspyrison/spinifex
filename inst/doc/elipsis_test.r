@@ -1,18 +1,19 @@
 # FUNC-CEPTION
-a=1
-b=2
-c="three"
-d= as.Date("2018-01-18")
-func1 <- function (a, b, ...) {
-  bot=0
-  func11 <- function (c=a, d, ...){bot <- c+...
-    message(paste0("bot: bot = ",bot))
-    return(bot)}
-  message(paste0("top: a = ",a))
-  message(paste0("top: b = ",b))
-  message(paste0("top: bot = ",bot))
-  message("func11 is done, closing func 1 now.")  
-  NULL
+maths <- function (c=0, d=0, ...) {
+  add <- function (a,b,...){
+    sum <- a+b
+    return(sum)
+  }
+  sub <- function (a,b,...){
+    diff <- a-b
+    return(diff)
+  }
+  s<-add(a,b,...)
+  d<-sub(a,b,...)
+  math <- c(s, d)
+  return(math)
 }
 
-func1(b=b,a=a,c=3,d=4,7)
+a=1
+b=2
+maths(1,a=2,3,b=4)
