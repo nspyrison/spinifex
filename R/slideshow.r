@@ -1,12 +1,12 @@
 #' Create a slideshow array of the projected bases
 #'
-#' Takes the result of manual_tour() and projects the data over the interpolated
+#' Takes the result of `manual_tour`` and projects the data over the interpolated
 #' tour path of the reference frame.
 #'
 #' @param data A [n, p] dim data to project, consisting of only numeric 
 #'   variables (for coercion into matrix).
-#' @param tour The output of manual_tour(), a [p, d, n_slides] dim array of 
-#'   the manual tour. Containing `n_slides` interpolations varying phi.
+#' @param tour A [p, d, n_slides] dim array of a tour. Ie) The output of 
+#' `manual_tour`.
 #' @return A list containing the [p, d, n_slides] dim basis slides array, and
 #'   the [n, d, n_slides] dim data slides array.
 #' @export
@@ -73,13 +73,15 @@ create_slides <- function(tour,
 
 #' Render a slideshow of the toured data and bases
 #'
-#' Takes `slides`, the result of create_slides(), and renders them as a graph 
+#' Takes `slides`, the result of `create_slides`, and renders them as a graph 
 #' object of the `disp_type`. 
 #'
-#' @param slides The result of create_slides().
+#' @param slides The result of `create_slides`.
 #' @param disp_type The graphics system to use. Defaults to 'plotly'.
-#' @param col String of the colo(u)r to highlight the `manip_var`.
-#' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
+#' @param manip_col String of the color to highlight the `manip_var`.
+#' @param cat_var Categorical variable, optionally used to set the data point 
+#' color and shape.
+#' @param ... Optional, pass addition arguments into `plotly::animation_opts`.
 #' @return An animation in `disp_type` graphics of the interpolated data and 
 #'   the corrisponding reference frame.
 #' @export
@@ -124,9 +126,9 @@ render_slideshow <- function(slides,
   p         <- nrow(bases_slides[,, 1]) / n_slides
   manip_var <- attributes(bases_slides)$manip_var
   
-  # Size and color of manip_var
+  # Size and color of manip_var on the ref frame
   if(!is.null(manip_var)) {
-    col_v            <- rep("black", p) # colo(u)r vector
+    col_v            <- rep("black", p) 
     col_v[manip_var] <- manip_col
     col_v            <- rep(col_v, n_slides)
     siz_v            <- rep(0.3, p)
@@ -134,7 +136,7 @@ render_slideshow <- function(slides,
     siz_v            <- rep(siz_v, n_slides)
   } else {
     col_v <- "black"
-    siz_v   <- 0.3
+    siz_v <- 0.3
   }
   
   # Plot refrence frame axes
@@ -151,7 +153,7 @@ render_slideshow <- function(slides,
   #                        frame = bases_slides$slide, label = lab_abbr)
   # ))
   
-  # Given cat_var, set group values for pch and color of data
+  # Given cat_var, set dat point color and shape
   if(!is.null(cat_var)) {
     if (!is.numeric(cat_var)) cat_var <- as.numeric(as.factor(cat_var))
     cat_var <- rep(cat_var, n_slides)
@@ -168,8 +170,8 @@ render_slideshow <- function(slides,
   # Render as disp_type
   if (disp_type == "plotly") {
     pgg4 <- plotly::ggplotly(gg4)
-    pgg4 <- plotly::animation_opts(p = pgg4,
-                                   frame = 200, transition = 0, redraw = FALSE)
+    pgg4 <- plotly::animation_opts(p = pgg4, frame = 200, transition = 0, 
+                                   redraw = FALSE, ...)
     slideshow <- plotly::layout(
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)

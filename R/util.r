@@ -4,7 +4,7 @@
 #'
 #' @param p number of dimensions of the data.
 #' @param d number of dimensions of the basis (ie. the dimensionality of the 
-#'   graphic.) Defaults to 2.
+#' graphic.) Defaults to 2.
 #' @return A [p, d] dim identity matrix followed by rows of 0s.
 #' 
 #' @examples 
@@ -25,11 +25,11 @@ create_identity_basis <- function(p = 6, d = 2) {
 #' the projection frame. Returns the corrisponding table.
 #' 
 #' @param basis A [p, d] basis, XY linear combination of each dimension 
-#'   (numeric variable).
-#' @param labels Optional, character vector of `p`` length, applies colnames 
-#'   to the rows of the basis.
-#' @param ... Optionally pass additional aruments to segments(), lines(), or 
-#'   text().
+#' (numeric variable).
+#' @param labels Optional, character vector of `p` length, applies colnames 
+#' to the rows of the basis.
+#' @param ... Optionally pass additional aruments to `segments`, `lines`, or 
+#' `text`.
 #' @return Nothing, but cretes a plot of the reference frame in base graphics.
 #' 
 #' @examples 

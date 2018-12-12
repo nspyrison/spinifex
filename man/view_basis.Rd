@@ -11,11 +11,11 @@ view_basis(basis = create_identity_basis(6), labels = paste0("V",
 \item{basis}{A [p, d] basis, XY linear combination of each dimension 
 (numeric variable).}
 
-\item{labels}{Optional, character vector of `p`` length, applies colnames 
+\item{labels}{Optional, character vector of `p` length, applies colnames 
 to the rows of the basis.}
 
-\item{...}{Optionally pass additional aruments to segments(), lines(), or 
-text().}
+\item{...}{Optionally pass additional aruments to `segments`, `lines`, or 
+`text`.}
 }
 \value{
 Nothing, but cretes a plot of the reference frame in base graphics.

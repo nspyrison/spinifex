@@ -19,7 +19,7 @@ Defaults to "radial". Alternatively accepts "horizontal" or "vertical".
 Yields to `theta` if set. Must set either `manip_type` or `theta`.}
 
 \item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the 
-reference frame. Typically set from manip_type in proj_data(). Supersedes 
+reference frame. Typically set from manip_type in `proj_data`. Supersedes 
 `manip_type`. Must set either `manip_type` or `theta`.}
 
 \item{phi_min}{Minimun value phi should move to. Phi is angle in radians of 
@@ -30,7 +30,7 @@ Required, defaults to 0.}
 the "out-of-plane" rotation, the z-axis of the referce frame. 
 Required, defaults to 2 * pi.}
 
-\item{n_slides}{Number of slides to create for slideshow(). Defaults to 20.}
+\item{n_slides}{Number of slides to create. Defaults to 20.}
 }
 \value{
 A [p, d, n_slides] dim array of the manual tour. Containing
@@ -38,7 +38,7 @@ A [p, d, n_slides] dim array of the manual tour. Containing
   `phi_max`, and back to start.
 }
 \description{
-Typically called by `create_slides()`. The manual tour of the `manip_var`.
+Typically called by `create_slides`. The manual tour of the `manip_var`.
 Given a [p, d] orthonormal basis, creates an array of `n_slides` bases 
 extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
 `phi_min`, then back to the starting position (by default: from start, to 0,

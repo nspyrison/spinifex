@@ -7,8 +7,8 @@
 create_slides(tour, data = NULL)
 }
 \arguments{
-\item{tour}{The output of manual_tour(), a [p, d, n_slides] dim array of 
-the manual tour. Containing `n_slides` interpolations varying phi.}
+\item{tour}{A [p, d, n_slides] dim array of a tour. Ie) The output of 
+`manual_tour`.}
 
 \item{data}{A [n, p] dim data to project, consisting of only numeric 
 variables (for coercion into matrix).}
@@ -18,7 +18,7 @@ A list containing the [p, d, n_slides] dim basis slides array, and
   the [n, d, n_slides] dim data slides array.
 }
 \description{
-Takes the result of manual_tour() and projects the data over the interpolated
+Takes the result of `manual_tour`` and projects the data over the interpolated
 tour path of the reference frame.
 }
 \examples{

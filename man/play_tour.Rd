@@ -4,18 +4,17 @@
 \alias{play_tour}
 \title{Render display of a provided tour path and data}
 \usage{
-play_tour(tour_path, data = NULL, ...)
+play_tour(tour, data = NULL, ...)
 }
 \arguments{
-\item{tour_path}{The result of tourr::save_history}
+\item{tour}{The result of `tourr::save_history` or `manual_tour`.}
 
-\item{data}{Optional, tour::interpolate()'s the data. p must match the 
-tour_path.}
+\item{data}{Optional, number of columns must match that of `tour`.}
 
-\item{...}{Optionally pass addition arguments to plotly::animation_opts().}
+\item{...}{Optionally pass addition arguments to `plotly::animation_opts`.}
 }
 \description{
-Takes the result of tourr::save_history (or manual_tour()) and optionally 
+Takes the result of `tourr::save_history` (or `manual_tour` and optionally 
 data, renders the tour and passed data into a plotly animation object.
 }
 \examples{
@@ -23,5 +22,5 @@ data(flea)
 flea_std <- tourr::rescale(flea[,1:6])
 tpath <- tourr::save_history(flea_std, tourr::guided_tour(tourr::cmass))
 
-play_tour(tour_path = tpath, data = flea_std)
+play_tour(tour = tpath, data = flea_std)
 }

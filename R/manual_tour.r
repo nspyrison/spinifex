@@ -1,6 +1,6 @@
 #' Create a manipulation space
 #'
-#' Typically called by `manual_tour()`. Creates a [p, d] dim orthonormal matrix,
+#' Typically called by `manual_tour`. Creates a [p, d] dim orthonormal matrix,
 #' the manipulation space from the given basis right concatonated with a zero 
 #' vector, with manip_var set to 1.
 #'
@@ -21,7 +21,7 @@ create_manip_space <- function(basis, manip_var) {
   z            <- rep(0, len = nrow(basis))
   z[manip_var] <- 1
   manip_space  <- tourr::orthonormalise(cbind(basis, z))
-  if (ncol(manip_space) == 3) {colnames(manip_space) <- c("x","y","z")}
+  if (ncol(manip_space) == 3) colnames(manip_space) <- c("x","y","z")
   rownames(manip_space) <- colnames(basis)
   
   return(manip_space)
@@ -29,7 +29,7 @@ create_manip_space <- function(basis, manip_var) {
 
 #' Rotate and return the manipulation space
 #'
-#' Typically called by `manual_tour()`. Rotates a [p, d+1] manipulation space 
+#' Typically called by `manual_tour`. Rotates a [p, d+1] manipulation space 
 #' matrix  by [3, 3] rotation matrix, returning [p, d+1] orthonormal matrix; 
 #' the XYZ components of the rotation space. XY are the linear combination of
 #' the variables for a 2d projection.
@@ -79,7 +79,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' Produce the series of porjection bases to rotate a variable into and out 
 #' of a projection
 #'
-#' Typically called by `create_slides()`. The manual tour of the `manip_var`.
+#' Typically called by `create_slides`. The manual tour of the `manip_var`.
 #' Given a [p, d] orthonormal basis, creates an array of `n_slides` bases 
 #' extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
 #' `phi_min`, then back to the starting position (by default: from start, to 0,
@@ -92,7 +92,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #'   Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
 #'   Yields to `theta` if set. Must set either `manip_type` or `theta`.
 #' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
-#'   reference frame. Typically set from manip_type in proj_data(). Supersedes 
+#'   reference frame. Typically set from manip_type in `proj_data`. Supersedes 
 #'   `manip_type`. Must set either `manip_type` or `theta`.
 #' @param phi_min Minimun value phi should move to. Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the referce frame. 
@@ -100,7 +100,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the referce frame. 
 #'   Required, defaults to 2 * pi.
-#' @param n_slides Number of slides to create for slideshow(). Defaults to 20.
+#' @param n_slides Number of slides to create. Defaults to 20.
 #' @return A [p, d, n_slides] dim array of the manual tour. Containing
 #'   `n_slides` interpolations varying phi from it's start to `phi_min`, to 
 #'   `phi_max`, and back to start.

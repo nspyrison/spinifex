@@ -8,20 +8,23 @@ render_slideshow(slides, disp_type = "plotly", manip_col = "blue",
   cat_var = NULL, ...)
 }
 \arguments{
-\item{slides}{The result of create_slides().}
+\item{slides}{The result of `create_slides`.}
 
 \item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
 
-\item{...}{Optional, pass addition arguments into `plotly::animation_opts()`.}
+\item{manip_col}{String of the color to highlight the `manip_var`.}
 
-\item{col}{String of the colo(u)r to highlight the `manip_var`.}
+\item{cat_var}{Categorical variable, optionally used to set the data point 
+color and shape.}
+
+\item{...}{Optional, pass addition arguments into `plotly::animation_opts`.}
 }
 \value{
 An animation in `disp_type` graphics of the interpolated data and 
   the corrisponding reference frame.
 }
 \description{
-Takes `slides`, the result of create_slides(), and renders them as a graph 
+Takes `slides`, the result of `create_slides`, and renders them as a graph 
 object of the `disp_type`.
 }
 \examples{

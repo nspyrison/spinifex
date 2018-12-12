@@ -5,12 +5,15 @@
 \alias{Flea measurements}
 \alias{flea}
 \title{Flea beatle measurements}
-\format{A 74 x 7 numeric array}
+\format{Data frame (tibble) 74 observations of 6 numeric variables, followed
+by target class, `spieces`}
 \description{
 This data is from a paper by A. A. Lubischew, "On the Use of Discriminant
 Functions in Taxonomy", Biometrics, Dec 1962, pp.455-477.
 }
 \details{
+Data frame (tibble) 74 observations of 6 numeric variables, followed
+by target class, `spieces`:
 \itemize{
   \item tars1, width of the first joint of the first tarsus in microns
   (the sum of measurements for both tarsi)
@@ -26,6 +29,5 @@ Functions in Taxonomy", Biometrics, Dec 1962, pp.455-477.
 \examples{
 
 head(flea)
-
 }
 \keyword{datasets}
