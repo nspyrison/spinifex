@@ -77,10 +77,17 @@ spinifex <- function(data,
     basis <- tourr::basis_random(n = ncol(data))
   }
   
-  tour <- manual_tour(basis, manip_var, manip_type, theta,
-                      phi_min, phi_max, n_slides)
-  slides <- create_slides(tour, data)
-  slideshow <- render_slideshow(slides, disp_type, manip_col, ...)
+  #tour <- manual_tour(...)
+  
+  # tour <- manual_tour(basis, manip_var, manip_type, theta,
+  #                     phi_min, phi_max, n_slides)
+  
+  # tour <- manual_tour(basis=basis, manip_var = manip_var, manip_type, theta,
+  #                     phi_min, phi_max, n_slides)
+  
+  tour <- manual_tour(basis=basis, manip_var = manip_var, ...)
+  slides <- create_slides(..., data)
+  slideshow <- render_slideshow(...)
   
   return(slideshow)
 }
