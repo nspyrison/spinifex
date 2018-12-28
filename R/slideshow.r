@@ -81,9 +81,11 @@ create_slides <- function(tour,
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #' color and shape.
+#' @param slide_time Time to show each slide for in seconds. essentially 1/fps, 
+#' defaults to .3 seconds.
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts`.
 #' @return An animation in `disp_type` graphics of the interpolated data and 
-#'   the corrisponding reference frame.
+#' the corrisponding reference frame.
 #' @export
 #' @examples
 #' data(flea)
@@ -97,6 +99,7 @@ render_slideshow <- function(slides,
                              disp_type = "plotly", # alt: "gganimate", "animate"
                              manip_col = "blue", # string of color name
                              cat_var = NULL, # cat var to color data and pch
+                             slide_time = .3 # seconds to show each slide for.
                              ...) {
   disp_type <- tolower(disp_type)
   # Assertions
@@ -170,13 +173,22 @@ render_slideshow <- function(slides,
   # Render as disp_type
   if (disp_type == "plotly") {
     pgg4 <- plotly::ggplotly(gg4)
-    pgg4 <- plotly::animation_opts(p = pgg4, frame = 200, transition = 0, 
+    pgg4 <- plotly::animation_opts(p = pgg4, frame = slide_time, transition = 0, 
                                    redraw = FALSE, ...)
     slideshow <- plotly::layout(
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
     )
-  } else stop("disp_types other than `plotly` not yet implemented.")
+  } 
+  if (disp_type == "gganimate") {
+    gg4 +
+      transition_states(
+        slide,
+        transition_length = 0,
+        state_length = slide_time
+      )
+  }
+  else stop("disp_types other than 'plotly' and 'gganimate' not yet implemented.")
   
   return(slideshow)
 }
