@@ -18,7 +18,8 @@ Imports:
     ggplot2,
     dplyr,
     tibble,
-    plotly
+    plotly,
+    gganimate
 Suggests: knitr
 VignetteBuilder: knitr
 Remotes:  

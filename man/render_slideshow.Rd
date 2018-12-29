@@ -5,7 +5,7 @@
 \title{Render a slideshow of the toured data and bases}
 \usage{
 render_slideshow(slides, disp_type = "plotly", manip_col = "blue",
-  cat_var = NULL, ...)
+  cat_var = NULL, slide_time = 0.3, ...)
 }
 \arguments{
 \item{slides}{The result of `create_slides`.}
@@ -17,11 +17,14 @@ render_slideshow(slides, disp_type = "plotly", manip_col = "blue",
 \item{cat_var}{Categorical variable, optionally used to set the data point 
 color and shape.}
 
+\item{slide_time}{Time to show each slide for in seconds. essentially 1/fps, 
+defaults to .3 seconds.}
+
 \item{...}{Optional, pass addition arguments into `plotly::animation_opts`.}
 }
 \value{
 An animation in `disp_type` graphics of the interpolated data and 
-  the corrisponding reference frame.
+the corrisponding reference frame.
 }
 \description{
 Takes `slides`, the result of `create_slides`, and renders them as a graph 

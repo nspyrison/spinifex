@@ -96,10 +96,10 @@ create_slides <- function(tour,
 #' sshow <- create_slides(tour = mtour, data = flea_std)
 #' (pss <- render_slideshow(slides = sshow))
 render_slideshow <- function(slides,
-                             disp_type = "plotly", # alt: "gganimate", "animate"
+                             disp_type = "plotly", # alt: "gganimate". "animation not yet implemented.
                              manip_col = "blue", # string of color name
                              cat_var = NULL, # cat var to color data and pch
-                             slide_time = .3 # seconds to show each slide for.
+                             slide_time = .3, # seconds to show each slide for.
                              ...) {
   disp_type <- tolower(disp_type)
   # Assertions
@@ -179,16 +179,16 @@ render_slideshow <- function(slides,
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
     )
-  } 
+  } else
   if (disp_type == "gganimate") {
     gg4 +
-      transition_states(
-        slide,
+      gganimate::transition_states(
+        data_slides$slide,
         transition_length = 0,
         state_length = slide_time
       )
-  }
-  else stop("disp_types other than 'plotly' and 'gganimate' not yet implemented.")
+  } else 
+    stop("disp_types other than 'plotly' and 'gganimate' not yet implemented.")
   
   return(slideshow)
 }

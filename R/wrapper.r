@@ -85,7 +85,7 @@ spinifex <- function(data,
   # tour <- manual_tour(basis=basis, manip_var = manip_var, manip_type, theta,
   #                     phi_min, phi_max, n_slides)
   
-  tour <- manual_tour(basis=basis, manip_var = manip_var, ...)
+  tour <- manual_tour(basis = basis, manip_var = manip_var) #, ...)
   slides <- create_slides(..., data)
   slideshow <- render_slideshow(...)
   
