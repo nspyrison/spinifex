@@ -6,7 +6,10 @@
 \alias{spinifex-package}
 \title{spinifex}
 \usage{
-spinifex(data, basis = NULL, manip_var, init_rescale_data = FALSE, ...)
+spinifex(data, basis = NULL, manip_var, manip_type = "radial",
+  theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 20,
+  disp_type = "plotly", manip_col = "blue", cat_var = NULL,
+  slide_time = 0.3, init_rescale_data = FALSE)
 }
 \arguments{
 \item{data}{A [n, p] dim data to project, consisting of 
@@ -18,11 +21,38 @@ random basis will be created.}
 \item{manip_var}{Integer column number or string exact column name of the.
 variable to manipulate. Required, no default.}
 
-\item{init_rescale_data}{When TRUE will apply `tourr::rescale`` on the data.
+\item{manip_type}{String of the type of manipulation to use. 
+Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
+Yields to `theta` if set. Must set either `manip_type` or `theta`.}
+
+\item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the 
+reference frame. Typically set from manip_type in proj_data(). Supersedes 
+`manip_type`. Must set either `manip_type` or `theta`.}
+
+\item{phi_min}{Minimun value phi should move to. Phi is angle in radians of 
+the "out-of-plane" rotation, the z-axis of the referce frame. 
+Required, defaults to 0.}
+
+\item{phi_max}{Maximum value phi should move to. Phi is angle in radians of 
+the "out-of-plane" rotation, the z-axis of the referce frame. 
+Required, defaults to 2 * pi.}
+
+\item{n_slides}{The number of slide-interpolations to make for the tour.}
+
+\item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
+
+\item{manip_col}{String of the colo(u)r to highlight the `manip_var`.}
+
+\item{cat_var}{Categorical variable, optionally used to set the data point 
+color and shape.}
+
+\item{slide_time}{Time to show each slide for in seconds. essentially 1/fps, 
+defaults to .3 seconds.}
+
+\item{init_rescale_data}{When TRUE will apply tourr::rescale() on the data.
 Defaults to FALSE.}
 
-\item{...}{Optionally pass other arguments to `manual_tour`, `create_slides`,
-`render_slideshow`, or `plotly::animation_opts`.`}
+\item{...}{Optionally pass addition arguments to the `disp_type` options.}
 }
 \value{
 An animation in `disp_type` graphics of the interpolated data and 
@@ -35,9 +65,9 @@ dimensions. Manual tours manipulate one selected variable by a given ammount.
 spinifex can also consume tour paths generated in the tourr package and
 offers streamlined production of plotly graphics to animate the tour.
 
-A wrapper function for `manual_tour`, `create_slides`, and 
-`render_slideshow`. Allows the user to go from data to plotly object of 
-manual tour in one function. For use with other tour paths see `play_tour`.
+A wrapper function for manual_tour(), create_slides(), and 
+render_slideshow(). Allows the user to go from data to plotly object of 
+manual tour in one function. For use with other tour paths see play_tour().
 }
 \details{
 It's main functions are:
@@ -59,12 +89,10 @@ rb <- tourr::basis_random(n = ncol(flea_std))
 (pss <- spinifex(data = flea_std, basis = rb, manip_var = 4))
 
 (pss2 <- spinifex(data = flea[,1:6], manip_var = 4,
-                  init_rescale_data = TRUE, init_rand_basis = TRUE))
+                  init_rescale_data = TRUE))
 }
 \seealso{
 tourr (package)
-
-play_tour
 }
 \author{
 \strong{Maintainer}: Nicholas Spyrison \email{spyrison@gmail.com}

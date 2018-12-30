@@ -100,7 +100,8 @@ render_slideshow <- function(slides,
                              manip_col = "blue", # string of color name
                              cat_var = NULL, # cat var to color data and pch
                              slide_time = .3, # seconds to show each slide for.
-                             ...) {
+                             ...) 
+{
   disp_type <- tolower(disp_type)
   # Assertions
   stopifnot(disp_type %in% c("plotly", "gganimate", "animate"))
@@ -173,8 +174,8 @@ render_slideshow <- function(slides,
   # Render as disp_type
   if (disp_type == "plotly") {
     pgg4 <- plotly::ggplotly(gg4)
-    pgg4 <- plotly::animation_opts(p = pgg4, frame = slide_time, transition = 0, 
-                                   redraw = FALSE, ...)
+    pgg4 <- plotly::animation_opts(p = pgg4, frame = slide_time * 1000, 
+                                   transition = 0, redraw = FALSE, ...)
     slideshow <- plotly::layout(
       pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
