@@ -16,9 +16,9 @@ knitr::opts_chunk$set(
   include    = TRUE,   # plots
   results    = "hide", # text: "hide", "show"
   eval       = TRUE,   # chunk
-  message    = FALSE,  # messages
-  warning    = FALSE,  # warnings
-  error      = FALSE,  # errors
+  message    = FALSE,
+  warning    = FALSE,
+  error      = FALSE,
   collapse   = TRUE,
   comment    = "#>",
   fig.height = 6,
@@ -28,27 +28,29 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Overview
+<!-- # Overview -->
 
 ## Motivation
 
-Datasets commonly contain many (p>3) dimensions (numeric variables). As pointed out by Wickham et. al.[@Wickham et. al. YYYYY] Numeric aggregation and parametric estimation is scalable as the number of dimensions increase. Meanwhile visualization tends to shift towards depiction of model spaces and parameter space (think residual or parallel coordinate plots) which can scale with some dimensionality. Yet, visuals in data-space often fall by the wayside, especially when trying to illustrate more than 3 dimensions. If not all together abandoned, sub-optimal techniques are commonly employed.
+Data sets commonly contain many dimensions (numeric variables). What happens to the visualization of the data as we get above 3 or so dimensions? Adding aesthetics such as point size or color, can afford another dimension or two, but the extension is quite limited. Too often data-space visualizations are abandoned either for plotting in model and parameter-space ($ie.$ residual plots and parallel coordinate plots) or abandoned altogether for tabular statistics [@Wicham_removing_YYYY]. Yet looking at statistics alone can leave us with quite the wrong picture, which becomes obvious when plotting data-space [@anscobes_Q; @dino-data_yyyy]. It's clear that we should try to extend graphics in these spaces as far as possible. Dimensionality reduction techniques use sub-space embedding to project a $p$-dimensional object onto a $d$-dimensional subspace, typically with $d = 2$ and $p \gt d$.
 
-## Alternateives
+## Methodology
 
-Traditionally, component analysis (PCA), correspondence analysis (CCA), or other single value decomposition (SVD) techniques have been used to approximate high dim spaces in 2 or 3-d. However, doing so requires an unsatifactory loss of information of the discarded linear combinations.
+There are two major branches of dimensionality reduction techniques: linear and non-linear. Consider a simple XY coordinate grid. Linear transformations include rotation, shear, and scaling component, $eg.$ anything that allows parallel lines on the original grid to stay parallel. Any transformation that doesn't preserve parallel lines is non-linear including, warping, waving, folding etc.
 
-More recently, t-distributed stochastic neighbor embedding (t-SNE), Sammon mapping, and other non-linear transformations have seen a rise in popularity. These techniques can make for astonishing plots showing distinctions and likeness between groups, but can suffer from over-fitting (potentially resulting in false groupings) and lose inter-operability back to the original dimensions, a non-starter for many acemdemic persuits.
+Traditionally, linear techniques including principal component analysis (PCA), correspondence analysis (CCA), or other single value decomposition (SVD) techniques have been used to approximate high dim spaces down to 2 or 3-d. However, even when such techniques help to order dimension to describe the most variation in a given number of dimension, variation is necessarily lost in the $p - d$ components not plotted.
 
-We suggest the use of linear methods that allow for the unique variation to be preserved and explorable as long as possible, namely, through the use of a method known as touring.
+More recently, non-linear techniques such as t-distributed stochastic neighbor embedding (t-SNE) and Sammon mapping have seen a rise in popularity. These techniques can make for astonishing plots showing distinctions and likeness across groups, but can suffer from over-fitting and lose inter-operability back to the original dimensions. They make for stark graphics and can be nice litmus test for outlier identification, yet losing a map back to the original dimensions is a non-starter for most quantitative pursuits.
 
-## Tour methodology
+~~~ We suggest the use of linear methods that allow for the unique variation to be preserved and explorable as long as possible, namely, through the use of a method known as touring.
 
-In short, touring projects a p-dimensional data object down to a lower d-dimensional embedding (2d in the case of standard computer monitors). The low dinemsonal projection is then observed as the p-dimensonal object is rotated in p-space. 
+## Touring
 
-This concept can be illustrated succinctly by aniqdote of shadow puppets. A 3-d object (hand) blocks a light source that casts a shadow (linear projection) onto a 2-d screen. Suppose a bar stool hinders a light source such that shadow is a circle. while the object is stationary the shadow circlular shade does not give conclusive inforamation about the shape of the object. However, rotation of the bar stool in 3-dimensions quickly and intuitively conveys this information. This is the premise behind touring. In the same way, information and interesting profiles describing high dimensional datasets can be observed by watching projections of linear combinations of higher dimensions as the data rotates.
+In short, touring projects a $p$-dimensional data object down to a lower d-dimensional embedding (2d in the case of standard computer monitors). The low dimensional projection is then observed as the p-dimensional object is rotated in p-space. 
 
-Touring was orginally suggested by Asimov et. al. in 1985[@Asimov et. al. 1985]. The Orginal suggestion was called a grand tour, escentially watching a 2-d projection of a random  walk in p-space.The method of rotating a data object is essentially four-fold[@Buja et. al. 2004]: 'grand tour' -- a random forest selection of dimension and direction, predifed path -- such as rotating through the full range of each variable in order, a 'little tour', data-defined path -- using stochastic gradient desenct on some objective function, and manual control -- the selection of a particular variable, degree, and manitude of change. 
+This concept can be illustrated succinctly by anecdote of shadow puppets. A 3-d object (hand) blocks a light source that casts a shadow (linear projection) onto a 2-d screen. Suppose a bar stool hinders a light source such that shadow is a circle. while the object is stationary the shadow circular shade does not give conclusive information about the shape of the object. However, rotation of the bar stool in 3-dimensions quickly and intuitively conveys this information. This is the premise behind touring. In the same way, information and interesting profiles describing high dimensional datasets can be observed by watching projections of linear combinations of higher dimensions as the data rotates.
+
+Touring was originally suggested by Asimov et. al. in 1985[@Asimov et. al. 1985]. In which he purposed grand tour, essentially watching a 2-d projection of a random  walk in p-space.The method of rotating a data object is essentially four-fold[@Buja et. al. 2004]: 'grand tour' -- a random forest selection of dimension and direction, predefined path -- such as rotating through the full range of each variable in order, a 'little tour', data-defined path -- using stochastic gradient descent on some objective function, and manual control -- the selection of a particular variable, degree, and magnitude of change. 
 
 SITE TOURR AND EXPLAIN WHAT SPINIFEX DOES [here](https://cran.r-project.org/web/packages/tourr/tourr.pdf).
 
@@ -58,7 +60,7 @@ SITE TOURR AND EXPLAIN WHAT SPINIFEX DOES [here](https://cran.r-project.org/web/
 
 ## Example 1 - Rotate arbitrary basis
 
-We'll use the flea data set. The data consists of 74 observations of 6 physical distance measurements of a flea-beetle belonging to 1 of 3 spices. This is analogous to the iris data set.
+For this example we'll be using the wine data set. It consists of 178 observations of wine across 13 numeric variables and a categorical variable of type of grape (with 3 levels). 
 
 Suppose we want to perform a rotation on one dimensions of the 6-dimensional data.  
 
@@ -74,16 +76,14 @@ Load the data and select a random basis with `basis_random(p)`. View the basis i
 
 ```{r}
 library(spinifex)
-#devtools::install_github("ggobi/tourr", dependencies = TRUE) 
-  # dev version of tourr
 library(tourr)
-set.seed(123) # I don't think seed makes tourr reproducible, but can't hurt.
+# setting seed doens't make tourr reproducible.
 
-# data("wine")
-# wine_std <- tourr::rescale(wine[,-14]) # Type of grape removed.
-#  
-# rb <- tourr::basis_random(n = ncol(wine_std))
-# view_basis(basis = rb, labels = colnames(wine_std))
+data("wine") #dim(wine): 178x14
+wine_std <- tourr::rescale(wine[,-1]) # Type of grape removed.
+
+rb <- tourr::basis_random(n = ncol(wine_std))
+view_basis(basis = rb, labels = colnames(wine_std))
 ```
 
 <!-- I like to think of the basis as piece of paper that maps p dimension down to 2. The manipulation type (alternatively theta) is the angle of the on this basis plane between (1, 0) and the manipulation variable's vector in, our case we select 'head'. -->
@@ -102,32 +102,30 @@ Optionally we can specify:
 Watch the projection, via `slideshow()`, coloring observations by their species.
 
 ```{r}
-# mtour <- manual_tour(basis = rb, manip_var = 1) 
-#   # manual_tour calls tourr::orthonormalise() that travis CI complains about because it isn't in the tourr NAMESPACE. but it is for me. it this because Di made it public in the dev vers and Travis is grabbing the CRAN ver? Added github version in vignette.
-# sshow <- create_slides(tour = mtour, data = wine_std)
-# (wine_rss <- render_slideshow(slides = sshow))
+mtour <- manual_tour(basis = rb, manip_var = 1)
+  # manual_tour calls tourr::orthonormalise() that travis CI complains about as it isn't on the CRAN version. Added refrence to the GH version of tourr with Nick T.
+sshow <- create_slides(tour = mtour, data = wine_std)
+(wine_rss <- render_slideshow(slides = sshow))
 ```
-
-
 
 
 ## Example 2 - Rotating a glyph map
 
 ```{r}
-# data("weather")
-# str(weather)
-# 
-# temp.gly <-
-#   GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
-# glyph1 <-
-#   ggplot(temp.gly, aes(gx, gy, group = gid)) +
-#   GGally::add_ref_lines(temp.gly, color = "grey90") +
-#   GGally::add_ref_boxes(temp.gly, color = "grey90") +
-#   geom_path() +
-#   theme_bw() +
-#   labs(x = "", y = "")
-# 
-# glyph1
+library(GGally)
+nasa <- GGally::nasa
+
+temp.gly <-
+  GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
+glyph1 <-
+  ggplot(temp.gly, aes(gx, gy, group = gid)) +
+  GGally::add_ref_lines(temp.gly, color = "grey90") +
+  GGally::add_ref_boxes(temp.gly, color = "grey90") +
+  geom_path() +
+  theme_bw() +
+  labs(x = "", y = "")
+
+glyph1
 ```
 
 
@@ -200,19 +198,23 @@ Watch the projection, via `slideshow()`, coloring observations by their species.
 
 ## Example 3 - Rotation after holes guided tour
 
-```{r, results='hide'}
-data(flea)
-flea_std <- tourr::rescale(flea[,1:6])
+Manual tours are often employed after an interesting feature has been identified. The local area around PCA for example might be interesting to explore. Alternatively we can use (stochastic) gradient decent on some objective function and start from the resulting basis. Let's do just that, optimize a Holes tour using the packages `tourr`:
 
-# Holes is unsupervised stochastic gradient descent maximizing whitespace 
-#   in the middle of the projection.
-# h_tour<- tourr::save_history(
-#   flea_std, tourr::guided_tour(index = tourr::holes), max_bases = 25) 
-# h_basis <- matrix(as.numeric(h_tour[,, dim(h_tour)[3]]), ncol = 2)
-# 
-# h_mtour <- manual_tour(basis = h_basis, manip_var = 4)
-# cslides <- create_slides(tour = mtour, data = flea_std)
-# render_slideshow(slides = cslides)
+```{r}
+flea_std <- tourr::rescale(spinifex::flea[,1:6])
+fpath <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes))
+
+play_tour(tour = fpath, data = flea_std)
+```
+
+From there, we can explore the local structure one variable at a time.
+
+```{r}
+fbasis <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
+
+ftour <- manual_tour(basis = fbasis, manip_var = 4)
+fslides <- create_slides(tour = ftour, data = flea_std)
+render_slideshow(slides = fslides)
 ```
 
 ```{r}
@@ -265,7 +267,7 @@ Thanks to Prof. Dianne Cook for focus, namesake, and the ground work underpinnin
 <!-- citation(package = "GGally") -->
 - Cook, D., & Buja, A. (1997). Manual Controls for High-Dimensional Data Projections. Journal of Computational and Graphical Statistics, 6(4), 464–480. https://doi.org/10.2307/1390747
 - Wickham, H., Cook, D., & Hofmann, H. (2015). Visualizing statistical models: Removing the blindfold: Visualizing Statistical Models. Statistical Analysis and Data Mining: The ASA Data Science Journal, 8(4), 203–225. https://doi.org/10.1002/sam.11271
-- Dianne Cook and Hadley Wickham (NA). tourr: Implement Tour Methods in R Code. Rpackage version 0.5.5.9000. https://github.com/ggobi/tourr
+- Dianne Cook and Hadley Wickham (NA). tourr: Implement Tour Methods in R Code. R package version 0.5.5.9000. https://github.com/ggobi/tourr
 - Barret Schloerke, Jason Crowley, Di Cook, Francois Briatte, Moritz Marbach,
 Edwin Thoen, Amos Elberg and Joseph Larmarange (2017). GGally: Extension to
 'ggplot2'. R package version 1.3.2. https://CRAN.R-project.org/package=GGally
