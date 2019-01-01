@@ -42,7 +42,7 @@ Traditionally, linear techniques including principal component analysis (PCA), c
 
 More recently, non-linear techniques such as t-distributed stochastic neighbor embedding (t-SNE) and Sammon mapping have seen a rise in popularity. These techniques can make for astonishing plots showing distinctions and likeness across groups, but can suffer from over-fitting and lose inter-operability back to the original dimensions. They make for stark graphics and can be nice litmus test for outlier identification, yet losing a map back to the original dimensions is a non-starter for most quantitative pursuits.
 
-~~~ We suggest the use of linear methods that allow for the unique variation to be preserved and explorable as long as possible, namely, through the use of a method known as touring.
+We purpose the use of linear dimensionallity reduction techniques known as touring. With touring we maintain the operability to the original variable space, while not discarding any components to avoid losing information held within the data.
 
 ## Touring
 
