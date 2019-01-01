@@ -7,7 +7,7 @@ Authors@R: c(
     )
 Description: Allows manipulation of single variables in high dim spaces. Useful in 
 	conjunction with tours and projection persuit as implemented by the tourr package.
-Depends: R (>= 3.4.3)
+Depends: R (>= 3.4.0)
 License: GPL-3
 BugReports: https://github.com/nspyrison/spinifex/issues
 Encoding: UTF-8
