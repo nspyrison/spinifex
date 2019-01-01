@@ -23,4 +23,5 @@ Imports:
 Suggests: knitr
 VignetteBuilder: knitr
 Remotes:  
-    ggobi/tourr
+    ggobi/tourr,
+    thomasp85/gganimate
