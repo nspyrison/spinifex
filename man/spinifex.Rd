@@ -4,6 +4,8 @@
 \name{spinifex}
 \alias{spinifex}
 \alias{spinifex-package}
+\alias{spinifex-package}
+\alias{spinifex}
 \title{spinifex}
 \usage{
 spinifex(data, basis = NULL, manip_var, manip_type = "radial",

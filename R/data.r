@@ -4,7 +4,7 @@
 #' Functions in Taxonomy", Biometrics, Dec 1962, pp.455-477.
 #'
 #' Data frame (tibble) 74 observations of 6 numeric variables, followed
-#' by target class, `spieces`:
+#' by target class, `species`:
 #' \itemize{
 #'   \item tars1, width of the first joint of the first tarsus in microns
 #'   (the sum of measurements for both tarsi)
