@@ -2,7 +2,7 @@
 % Please edit documentation in R/manual_tour.r
 \name{manual_tour}
 \alias{manual_tour}
-\title{Produce the series of porjection bases to rotate a variable into and out 
+\title{Produce the series of projection bases to rotate a variable into and out 
 of a projection}
 \usage{
 manual_tour(basis = NULL, manip_var = NULL, manip_type = "radial",
@@ -22,12 +22,12 @@ Yields to `theta` if set. Must set either `manip_type` or `theta`.}
 reference frame. Typically set from manip_type in `proj_data`. Supersedes 
 `manip_type`. Must set either `manip_type` or `theta`.}
 
-\item{phi_min}{Minimun value phi should move to. Phi is angle in radians of 
-the "out-of-plane" rotation, the z-axis of the referce frame. 
+\item{phi_min}{Minimum value phi should move to. Phi is angle in radians of 
+the "out-of-plane" rotation, the z-axis of the reference frame. 
 Required, defaults to 0.}
 
 \item{phi_max}{Maximum value phi should move to. Phi is angle in radians of 
-the "out-of-plane" rotation, the z-axis of the referce frame. 
+the "out-of-plane" rotation, the z-axis of the reference frame. 
 Required, defaults to 2 * pi.}
 
 \item{n_slides}{Number of slides to create. Defaults to 20.}
@@ -49,5 +49,5 @@ data(flea)
 flea_std <- tourr::rescale(flea[,1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std))
-mtour <- manual_tour(basis = rb, manip_var = 4)
+manual_tour(basis = rb, manip_var = 4)
 }

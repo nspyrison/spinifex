@@ -23,7 +23,7 @@ play_tour <- function(tour,
     data <- attributes(tour)$data
   }
   
-  # if tour isn't a nomal array, make it an array.
+  # if tour isn't a normal array, make it an array.
   if(class(tour) != "array") {
     attr(tour, "class") <- NULL # remove history_array class attr.
     tour <- as.array(tour[,,]) # set array class attr.
@@ -54,34 +54,33 @@ play_tour <- function(tour,
 #' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
 #'   reference frame. Typically set from manip_type in proj_data(). Supersedes 
 #'   `manip_type`. Must set either `manip_type` or `theta`.
-#' @param phi_min Minimun value phi should move to. Phi is angle in radians of 
-#'   the "out-of-plane" rotation, the z-axis of the referce frame. 
+#' @param phi_min Minimum value phi should move to. Phi is angle in radians of 
+#'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to 0.
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
-#'   the "out-of-plane" rotation, the z-axis of the referce frame. 
+#'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to 2 * pi.
 #' @param n_slides The number of slide-interpolations to make for the tour.
 #' @param disp_type The graphics system to use. Defaults to 'plotly'.
-#' @param manip_col String of the colo(u)r to highlight the `manip_var`.
+#' @param manip_col String of the color to highlight the `manip_var`.
 #' @param init_rescale_data When TRUE will apply tourr::rescale() on the data.
 #'   Defaults to FALSE.
 #' @param cat_var Categorical variable, optionally used to set the data point 
-#' color and shape.
+#'   color and shape.
 #' @param slide_time Time to show each slide for in seconds. essentially 1/fps, 
-#' defaults to .3 seconds.
+#'   defaults to .3 seconds.
 #' @param ... Optionally pass addition arguments to the `disp_type` options.
 #' @return An animation in `disp_type` graphics of the interpolated data and 
-#'   the corrisponding reference frame.
+#'   the corresponding reference frame.
 #' @export
 #' @examples
 #' data(flea)
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' 
-#' (pss <- spinifex(data = flea_std, basis = rb, manip_var = 4))
+#' spinifex(data = flea_std, basis = rb, manip_var = 4)
 #' 
-#' (pss2 <- spinifex(data = flea[,1:6], manip_var = 4,
-#'                   init_rescale_data = TRUE))
+#' spinifex(data = flea[,1:6], manip_var = 4, init_rescale_data = TRUE)
 spinifex <- function(data,
                      basis      = NULL,
                      manip_var,
@@ -91,7 +90,7 @@ spinifex <- function(data,
                      phi_max    = .5 * pi,  # [radians]
                      n_slides   = 20,
                      disp_type  = "plotly",
-                     manip_col  = "blue",   # colo(u)r of manip_var
+                     manip_col  = "blue",   # color of manip_var
                      cat_var    = NULL,
                      slide_time = .3,
                      init_rescale_data = FALSE) 

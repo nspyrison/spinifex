@@ -1,7 +1,7 @@
 #' Create a manipulation space
 #'
 #' Typically called by `manual_tour`. Creates a [p, d] dim orthonormal matrix,
-#' the manipulation space from the given basis right concatonated with a zero 
+#' the manipulation space from the given basis right concatenated with a zero 
 #' vector, with manip_var set to 1.
 #'
 #' @param basis A [p, d] dim orthonormal matrix.
@@ -76,7 +76,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
   return(rotation_space)
 }
 
-#' Produce the series of porjection bases to rotate a variable into and out 
+#' Produce the series of projection bases to rotate a variable into and out 
 #' of a projection
 #'
 #' Typically called by `create_slides`. The manual tour of the `manip_var`.
@@ -94,11 +94,11 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
 #'   reference frame. Typically set from manip_type in `proj_data`. Supersedes 
 #'   `manip_type`. Must set either `manip_type` or `theta`.
-#' @param phi_min Minimun value phi should move to. Phi is angle in radians of 
-#'   the "out-of-plane" rotation, the z-axis of the referce frame. 
+#' @param phi_min Minimum value phi should move to. Phi is angle in radians of 
+#'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to 0.
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
-#'   the "out-of-plane" rotation, the z-axis of the referce frame. 
+#'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to 2 * pi.
 #' @param n_slides Number of slides to create. Defaults to 20.
 #' @return A [p, d, n_slides] dim array of the manual tour. Containing
@@ -110,7 +110,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' flea_std <- tourr::rescale(flea[,1:6])
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
-#' mtour <- manual_tour(basis = rb, manip_var = 4)
+#' manual_tour(basis = rb, manip_var = 4)
 manual_tour <- function(basis = NULL,
                         manip_var = NULL,  # column number
                         manip_type = "radial", #alt: "horizontal" and "vertical"
@@ -148,7 +148,7 @@ manual_tour <- function(basis = NULL,
   if (phi_start > phi_max) warning("phi_start greater than phi_max, tour may look odd.")
   
   interpolate_slides <- function(seq_start, seq_end){
-    # Initalize for interpolate_slides()
+    # Initialize for interpolate_slides()
     slide         <- 0
     new_slide     <- NULL
     seq_start     <- seq_start + phi_start_sign # so phi=0 is on plane.

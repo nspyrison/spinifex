@@ -16,7 +16,7 @@
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(rb, manip_var = 4)
-#' sshow <- create_slides(tour = mtour, data = flea_std)
+#' create_slides(tour = mtour, data = flea_std)
 create_slides <- function(tour,
                           data = NULL) { 
   # Assertions
@@ -29,7 +29,7 @@ create_slides <- function(tour,
   n_slides     <- dim(tour)[3]
   bases_slides <- NULL
   
-  if(!is.null(data)) { # IF data exsits THEN:
+  if(!is.null(data)) { # IF data exists THEN:
     data_slides <- NULL
     for (slide in 1:n_slides) {
       # make bases slides, and
@@ -94,7 +94,7 @@ create_slides <- function(tour,
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- create_slides(tour = mtour, data = flea_std)
-#' (pss <- render_slideshow(slides = sshow))
+#' render_slideshow(slides = sshow)
 render_slideshow <- function(slides,
                              disp_type = "plotly", # alt: "gganimate". "animation not yet implemented.
                              manip_col = "blue", # string of color name
@@ -106,7 +106,7 @@ render_slideshow <- function(slides,
   # Assertions
   stopifnot(disp_type %in% c("plotly", "gganimate", "animate"))
   
-  # Initiliaze
+  # Initialize
   if (length(slides) == 2)
     data_slides <- slides[[2]]
   bases_slides  <- slides[[1]]
@@ -150,7 +150,7 @@ render_slideshow <- function(slides,
                            xend = 0, yend = 0, frame = bases_slides$slide)
   ))
   
-  # Refrence frame text
+  # Reference frame text
   gg3 <- gg2 # + suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
   # data = bases_slides, size = 4, hjust = 0, vjust = 0, colour = "black",
   # mapping = ggplot2::aes(x = bases_slides$V1, y = bases_slides$V2, 
@@ -181,15 +181,15 @@ render_slideshow <- function(slides,
       xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
     )
   } else
-  if (disp_type == "gganimate") {
-    gg4 +
-      gganimate::transition_states(
-        data_slides$slide,
-        transition_length = 0,
-        state_length = slide_time
-      )
-  } else 
-    stop("disp_types other than 'plotly' and 'gganimate' not yet implemented.")
+    if (disp_type == "gganimate") {
+      gg4 +
+        gganimate::transition_states(
+          data_slides$slide,
+          transition_length = 0,
+          state_length = slide_time
+        )
+    } else 
+      stop("disp_types other than 'plotly' and 'gganimate' not yet implemented.")
   
   return(slideshow)
 }

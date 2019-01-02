@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "spinifex vignette"
 author: "Nicholas S Spyrison"
 date: "`r Sys.Date()`"
 output: 
@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-<!-- # Overview -->
+# Introduction
 
 ## Motivation
 
@@ -46,8 +46,9 @@ We purpose the use of linear dimensionallity reduction techniques known as touri
 
 ## Touring
 
-In short, touring projects a $p$-dimensional data object down to a lower d-dimensional embedding (2d in the case of standard computer monitors). The low dimensional projection is then observed as the p-dimensional object is rotated in p-space. 
+In short, touring involves orthagonally projection a $p$-dimensional data object down to $d$-dimensional embedding (2d in the case of standard computer monitors). Many of such interpolated embeddings can be made by making small local changes to the basis. When viewed in order the an observer can watch the change in the projection as the data object is rotated in $p$-space.
 
+~~~
 This concept can be illustrated succinctly by anecdote of shadow puppets. A 3-d object (hand) blocks a light source that casts a shadow (linear projection) onto a 2-d screen. Suppose a bar stool hinders a light source such that shadow is a circle. while the object is stationary the shadow circular shade does not give conclusive information about the shape of the object. However, rotation of the bar stool in 3-dimensions quickly and intuitively conveys this information. This is the premise behind touring. In the same way, information and interesting profiles describing high dimensional datasets can be observed by watching projections of linear combinations of higher dimensions as the data rotates.
 
 Touring was originally suggested by Asimov et. al. in 1985[@Asimov et. al. 1985]. In which he purposed grand tour, essentially watching a 2-d projection of a random  walk in p-space.The method of rotating a data object is essentially four-fold[@Buja et. al. 2004]: 'grand tour' -- a random forest selection of dimension and direction, predefined path -- such as rotating through the full range of each variable in order, a 'little tour', data-defined path -- using stochastic gradient descent on some objective function, and manual control -- the selection of a particular variable, degree, and magnitude of change. 
@@ -56,7 +57,7 @@ SITE TOURR AND EXPLAIN WHAT SPINIFEX DOES [here](https://cran.r-project.org/web/
 
 
 
-# Code examples
+# Usage
 
 ## Example 1 - Rotate arbitrary basis
 

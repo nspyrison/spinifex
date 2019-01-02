@@ -11,10 +11,10 @@ view_basis(basis = create_identity_basis(6), labels = paste0("V",
 \item{basis}{A [p, d] basis, XY linear combination of each dimension 
 (numeric variable).}
 
-\item{labels}{Optional, character vector of `p` length, applies colnames 
-to the rows of the basis.}
+\item{labels}{Optional, character vector of `p` length, add name to the axes 
+in the reference frame, typically the variable names.}
 
-\item{...}{Optionally pass additional aruments to `segments`, `lines`, or 
+\item{...}{Optionally pass additional arguments to `segments`, `lines`, or 
 `text`.}
 }
 \value{
@@ -22,7 +22,7 @@ Nothing, but cretes a plot of the reference frame in base graphics.
 }
 \description{
 Uses base graphics to plot the circle with axes representing
-the projection frame. Returns the corrisponding table.
+the projection frame. Returns the corresponding table.
 }
 \examples{
 rb <- tourr::basis_random(4, 2)

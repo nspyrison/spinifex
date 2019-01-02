@@ -29,19 +29,19 @@ Yields to `theta` if set. Must set either `manip_type` or `theta`.}
 reference frame. Typically set from manip_type in proj_data(). Supersedes 
 `manip_type`. Must set either `manip_type` or `theta`.}
 
-\item{phi_min}{Minimun value phi should move to. Phi is angle in radians of 
-the "out-of-plane" rotation, the z-axis of the referce frame. 
+\item{phi_min}{Minimum value phi should move to. Phi is angle in radians of 
+the "out-of-plane" rotation, the z-axis of the reference frame. 
 Required, defaults to 0.}
 
 \item{phi_max}{Maximum value phi should move to. Phi is angle in radians of 
-the "out-of-plane" rotation, the z-axis of the referce frame. 
+the "out-of-plane" rotation, the z-axis of the reference frame. 
 Required, defaults to 2 * pi.}
 
 \item{n_slides}{The number of slide-interpolations to make for the tour.}
 
 \item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
 
-\item{manip_col}{String of the colo(u)r to highlight the `manip_var`.}
+\item{manip_col}{String of the color to highlight the `manip_var`.}
 
 \item{cat_var}{Categorical variable, optionally used to set the data point 
 color and shape.}
@@ -56,12 +56,12 @@ Defaults to FALSE.}
 }
 \value{
 An animation in `disp_type` graphics of the interpolated data and 
-  the corrisponding reference frame.
+  the corresponding reference frame.
 }
 \description{
 spinifex is a package that allows for manual tours. Touring is a linear 
 dimensionality reducetion method that projects objects from `p` down to `d` 
-dimensions. Manual tours manipulate one selected variable by a given ammount.
+dimensions. Manual tours manipulate one selected variable by a given amount.
 spinifex can also consume tour paths generated in the tourr package and
 offers streamlined production of plotly graphics to animate the tour.
 
@@ -75,7 +75,7 @@ It's main functions are:
   \item [manual_tour()]
   \item [create_slides()]
   \item [render_slideshow()]
-  \item [spinifex()], A wrapper fucntion for the above.
+  \item [spinifex()], A wrapper function for the above.
   \item [play_tour()], A wrapper function which tourr tour paths can be used.
 }
 
@@ -86,10 +86,9 @@ data(flea)
 flea_std <- tourr::rescale(flea[,1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
 
-(pss <- spinifex(data = flea_std, basis = rb, manip_var = 4))
+spinifex(data = flea_std, basis = rb, manip_var = 4)
 
-(pss2 <- spinifex(data = flea[,1:6], manip_var = 4,
-                  init_rescale_data = TRUE))
+spinifex(data = flea[,1:6], manip_var = 4, init_rescale_data = TRUE)
 }
 \seealso{
 tourr (package)

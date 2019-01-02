@@ -1,33 +1,3 @@
-#' Flea beatle measurements
-#'
-#' This data is from a paper by A. A. Lubischew, "On the Use of Discriminant
-#' Functions in Taxonomy", Biometrics, Dec 1962, pp.455-477.
-#'
-#' Data frame (tibble) 74 observations of 6 numeric variables, followed
-#' by target class, `spieces`:
-#' \itemize{
-#'   \item tars1, width of the first joint of the first tarsus in microns
-#'   (the sum of measurements for both tarsi)
-#'   \item tars2, the same for the second joint
-#'   \item head, the maximal width of the head between the external edges of the
-#'   eyes in 0.01 mm
-#'   \item ade1, the maximal width of the aedeagus in the fore-part in microns
-#'   \item ade2, the front angle of the aedeagus ( 1 unit = 7.5 degrees)
-#'   \item ade3, the aedeagus width from the side in microns
-#'   \item species, which species is being examined - concinna, heptapotamica, heikertingeri
-#' }
-#'
-#' @name Flea measurements
-#' @aliases flea
-#' @docType data
-#' @format Data frame (tibble) 74 observations of 6 numeric variables, followed
-#' by target class, `spieces`
-#' @keywords datasets
-#' @examples
-#'
-#' head(flea)
-"flea"
-
 #' Wisconsin Breast Cancer Database
 #'
 #' Formatted subset of `mlbench::BreastCancer`. See `mlbench` for original data 
@@ -65,18 +35,17 @@
 #' `mat <- apply(mat, 2, as.numeric)`
 #' `BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))`
 #'
-#' @name BreastCancer cells
-#' @aliases breastcancer
+#' @name breastcancer
 #' @docType data
 #' @format Data frame (tibble) with 675 observations on 10 variables: a factor 
 #' Id, 9 numeric variables, and target class.
 #' @keywords datasets
 #' @examples
 #'
-#' head(BreastCancer)
-"BreastCancer"
+#' head(breastcancer)
+"breastcancer"
 
-#' The wine dataset from the UCI Machine Learning Repository.
+#' Sample dataset of daily weather observations from Canberra airport in Australia.
 #' 
 #' A subset from `rattle.data::weather`, instructions to reproduce below.
 #' 
@@ -87,7 +56,7 @@
 #' 
 #' The data has been processed to provide a target variable RainTomorrow 
 #' (whether there is rain on the following day - No/Yes) and a risk variable 
-#' `RISK_MM`` (how much rain recorded in millimetres). Various transformations 
+#' `RISK_MM`` (how much rain recorded in millimeters). Various transformations 
 #' were performed on the source data. The dataset is quite small and is useful 
 #' only for repeatable demonstration of various data science operations.
 #' 
@@ -99,8 +68,8 @@
 #' starting November 2007:
 #' \itemize{
 #'   \item Date, The date of observation (a Date object).
-#'   \item MinTemp, The minimum temperature in degrees celsius.
-#'   \item MaxTemp, The maximum temperature in degrees celsius.
+#'   \item MinTemp, The minimum temperature in degrees Celsius.
+#'   \item MaxTemp, The maximum temperature in degrees Celsius.
 #'   \item Rainfall, The amount of rainfall recorded for the day in mm.
 #'   \item Evaporation, The so-called Class A pan evaporation (mm) in the 24 hours to 9am.
 #'   \item Sunshine, The number of hours of bright sunshine in the day.
@@ -125,7 +94,6 @@
 #' `weather <- as.tibble(weather[ , c(1,3:7,9,12:24)])``
 #'
 #' @name weather
-#' @aliases Weather
 #' @docType data
 #' @format Data frame (tibble) of 366 observations of 20 variables, one year of 
 #' daily observations of weather variables at Canberra airport in Australia 
@@ -149,7 +117,7 @@
 #' samples, with the results of 13 chemical analyses recorded for each sample. 
 #' The Type variable has been transformed into a categoric variable.
 #' 
-#' The data contains no missing values and consits of only numeric data, with a 
+#' The data contains no missing values and consist of only numeric data, with a 
 #' three class target variable (Type) for classification.
 #'
 #' Data frame (tibble) of 178 observations of 13 variables, target 

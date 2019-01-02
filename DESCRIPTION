@@ -16,11 +16,9 @@ RoxygenNote: 6.1.1
 Imports:
     dplyr,
     GGally,
-    gganimate,
     ggplot2,
     plotly,
     tibble,
-    tourr (>= 0.5.5.9000),
     webshot
 Suggests: knitr
 VignetteBuilder: knitr

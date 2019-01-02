@@ -3,8 +3,7 @@
 \docType{data}
 \name{weather}
 \alias{weather}
-\alias{Weather}
-\title{The wine dataset from the UCI Machine Learning Repository.}
+\title{Sample dataset of daily weather observations from Canberra airport in Australia.}
 \format{Data frame (tibble) of 366 observations of 20 variables, one year of 
 daily observations of weather variables at Canberra airport in Australia 
 starting November 2007.}
@@ -29,7 +28,7 @@ data mining using R and Rattle.
 
 The data has been processed to provide a target variable RainTomorrow 
 (whether there is rain on the following day - No/Yes) and a risk variable 
-`RISK_MM`` (how much rain recorded in millimetres). Various transformations 
+`RISK_MM`` (how much rain recorded in millimeters). Various transformations 
 were performed on the source data. The dataset is quite small and is useful 
 only for repeatable demonstration of various data science operations.
 
@@ -41,8 +40,8 @@ daily observations of weather variables at Canberra airport in Australia
 starting November 2007:
 \itemize{
   \item Date, The date of observation (a Date object).
-  \item MinTemp, The minimum temperature in degrees celsius.
-  \item MaxTemp, The maximum temperature in degrees celsius.
+  \item MinTemp, The minimum temperature in degrees Celsius.
+  \item MaxTemp, The maximum temperature in degrees Celsius.
   \item Rainfall, The amount of rainfall recorded for the day in mm.
   \item Evaporation, The so-called Class A pan evaporation (mm) in the 24 hours to 9am.
   \item Sunshine, The number of hours of bright sunshine in the day.

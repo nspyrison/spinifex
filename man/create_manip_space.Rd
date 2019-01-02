@@ -16,7 +16,7 @@ A [p, d+1] orthonormal matrix, the manipulation space.
 }
 \description{
 Typically called by `manual_tour`. Creates a [p, d] dim orthonormal matrix,
-the manipulation space from the given basis right concatonated with a zero 
+the manipulation space from the given basis right concatenated with a zero 
 vector, with manip_var set to 1.
 }
 \examples{
