@@ -62,8 +62,8 @@ starting November 2007:
 }
 
 Reproducing this dataset:
-`library("rattle.data")``
-`weather <- as.tibble(weather[ , c(1,3:7,9,12:24)])``
+`library("rattle.data")`
+`weather <- as.tibble(weather[ , c(1,3:7,9,12:24)])`
 }
 \examples{
 
