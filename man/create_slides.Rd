@@ -18,12 +18,11 @@ A list containing the [p, d, n_slides] dim basis slides array, and
   the [n, d, n_slides] dim data slides array.
 }
 \description{
-Takes the result of `manual_tour`` and projects the data over the interpolated
-tour path of the reference frame.
+Takes the result of `manual_tour()` and projects the data over the 
+interpolated tour path of the reference frame.
 }
 \examples{
-data(flea)
-flea_std <- tourr::rescale(flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[,1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(rb, manip_var = 4)

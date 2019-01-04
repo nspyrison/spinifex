@@ -9,8 +9,7 @@
 #' @return A [p, d+1] orthonormal matrix, the manipulation space.
 #' @export
 #' @examples
-#' data(flea)
-#' flea_std <- tourr::rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
@@ -43,8 +42,7 @@ create_manip_space <- function(basis, manip_var) {
 #' @return A [p, d+1] orthonormal matrix of the rotated (manipulation) space.
 #' @export
 #' @examples
-#' data(flea)
-#' flea_std <- tourr::rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' msp <- create_manip_space(basis = rb, manip_var = 4) 
@@ -106,8 +104,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #'   `phi_max`, and back to start.
 #' @export
 #' @examples
-#' data(flea)
-#' flea_std <- tourr::rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' manual_tour(basis = rb, manip_var = 4)

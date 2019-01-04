@@ -9,8 +9,7 @@
 
 #' @export
 #' @examples
-#' data(flea)
-#' flea_std <- tourr::rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' tpath <- tourr::save_history(flea_std, tourr::guided_tour(tourr::cmass))
 #' 
 #' play_tour(tour = tpath, data = flea_std)
@@ -74,13 +73,12 @@ play_tour <- function(tour,
 #'   the corresponding reference frame.
 #' @export
 #' @examples
-#' data(flea)
-#' flea_std <- tourr::rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' 
 #' spinifex(data = flea_std, basis = rb, manip_var = 4)
 #' 
-#' spinifex(data = flea[,1:6], manip_var = 4, init_rescale_data = TRUE)
+#' spinifex(data = tourr::flea[,1:6], manip_var = 4, init_rescale_data = TRUE)
 spinifex <- function(data,
                      basis      = NULL,
                      manip_var,

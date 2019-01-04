@@ -82,13 +82,12 @@ It's main functions are:
 GitHub repo: \url{https://github.com/nspyrison/spinifex}
 }
 \examples{
-data(flea)
-flea_std <- tourr::rescale(flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[,1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
 
 spinifex(data = flea_std, basis = rb, manip_var = 4)
 
-spinifex(data = flea[,1:6], manip_var = 4, init_rescale_data = TRUE)
+spinifex(data = tourr::flea[,1:6], manip_var = 4, init_rescale_data = TRUE)
 }
 \seealso{
 tourr (package)

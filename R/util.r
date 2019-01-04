@@ -30,7 +30,8 @@ create_identity_basis <- function(p = 6, d = 2) {
 #' in the reference frame, typically the variable names.
 #' @param ... Optionally pass additional arguments to `segments`, `lines`, or 
 #' `text`.
-#' @return Nothing, but cretes a plot of the reference frame in base graphics.
+#' @return The basis, norm, and theta, also plots the reference frame in base 
+#' graphics.
 #' 
 #' @examples 
 #' rb <- tourr::basis_random(4, 2)

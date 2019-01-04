@@ -1,7 +1,7 @@
 #' Create a slideshow array of the projected bases
 #'
-#' Takes the result of `manual_tour`` and projects the data over the interpolated
-#' tour path of the reference frame.
+#' Takes the result of `manual_tour()` and projects the data over the 
+#' interpolated tour path of the reference frame.
 #'
 #' @param data A [n, p] dim data to project, consisting of only numeric 
 #'   variables (for coercion into matrix).
@@ -11,8 +11,7 @@
 #'   the [n, d, n_slides] dim data slides array.
 #' @export
 #' @examples
-#' data(flea)
-#' flea_std <- tourr::rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(rb, manip_var = 4)
@@ -71,41 +70,32 @@ create_slides <- function(tour,
   return(slides)
 }
 
-#' Render a slideshow of the toured data and bases
+#' Render the ggplot before the animation package
 #'
-#' Takes `slides`, the result of `create_slides`, and renders them as a graph 
-#' object of the `disp_type`. 
+#' Takes `slides`, the result of `create_slides()`, and renders them into a 
+#' ggplot object to be used by `render_plotly()` or `render_gganimate()`; 
+#' typically not called directly.
 #'
-#' @param slides The result of `create_slides`.
-#' @param disp_type The graphics system to use. Defaults to 'plotly'.
+#' @param slides The result of `create_slides()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #' color and shape.
-#' @param slide_time Time to show each slide for in seconds. essentially 1/fps, 
-#' defaults to .3 seconds.
-#' @param ... Optional, pass addition arguments into `plotly::animation_opts`.
+#' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @return An animation in `disp_type` graphics of the interpolated data and 
 #' the corrisponding reference frame.
 #' @export
 #' @examples
-#' data(flea)
-#' flea_std <- tourr::rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- create_slides(tour = mtour, data = flea_std)
-#' render_slideshow(slides = sshow)
-render_slideshow <- function(slides,
-                             disp_type = "plotly", # alt: "gganimate". "animation not yet implemented.
-                             manip_col = "blue", # string of color name
-                             cat_var = NULL, # cat var to color data and pch
-                             slide_time = .3, # seconds to show each slide for.
-                             ...) 
+#' render_gg(slides = sshow)
+render_gg <- function(slides,
+                      manip_col  = "blue", # string of color name
+                      cat_var    = NULL,   # cat var to color data and pch
+                      ...) 
 {
-  disp_type <- tolower(disp_type)
-  # Assertions
-  stopifnot(disp_type %in% c("plotly", "gganimate", "animate"))
-  
   # Initialize
   if (length(slides) == 2)
     data_slides <- slides[[2]]
@@ -171,25 +161,84 @@ render_slideshow <- function(slides,
                            frame = data_slides$slide)
   ))
   
-  # Render as disp_type
-  if (disp_type == "plotly") {
-    pgg4 <- plotly::ggplotly(gg4)
-    pgg4 <- plotly::animation_opts(p = pgg4, frame = slide_time * 1000, 
-                                   transition = 0, redraw = FALSE, ...)
-    slideshow <- plotly::layout(
-      pgg4, showlegend = F, yaxis = list(showgrid = F, showline = F),
-      xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline =F)
-    )
-  } else
-    if (disp_type == "gganimate") {
-      gg4 +
-        gganimate::transition_states(
-          data_slides$slide,
-          transition_length = 0,
-          state_length = slide_time
-        )
-    } else 
-      stop("disp_types other than 'plotly' and 'gganimate' not yet implemented.")
-  
-  return(slideshow)
+  return(gg4)
 }
+
+#' Render the slides as a *plotly* animation
+#'
+#' Takes `slides`, the result of `create_slides()`, and renders them into a 
+#' *plotly* animation.
+#'
+#' @param slides The result of `create_slides()`.
+#' @param manip_col String of the color to highlight the `manip_var`.
+#' @param cat_var Categorical variable, optionally used to set the data point 
+#' color and shape.
+#' @param slide_time Time to show each slide for in seconds. essentially 1/fps, 
+#' defaults to .3 seconds.
+#' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
+#' @export
+#' @examples
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' 
+#' rb <- tourr::basis_random(n = ncol(flea_std))
+#' mtour <- manual_tour(basis = rb, manip_var = 4)
+#' sshow <- create_slides(tour = mtour, data = flea_std)
+#' render_plotly(slides = sshow)
+render_plotly <- function(slides,
+                      manip_col  = "blue", # string of color name
+                      cat_var    = NULL,   # cat var to color data and pch
+                      slide_time = .3,     # seconds to show each slide for.
+                      ...) 
+{
+  # Initialize
+  gg <- render_gg(slides, manip_col, cat_var, ...)
+  
+  ggp <- plotly::ggplotly(gg)
+  ggp <- plotly::animation_opts(p = ggp, frame = slide_time * 1000, 
+                                transition = 0, redraw = FALSE, ...)
+  ggp <- plotly::layout(
+    ggp, showlegend = F, yaxis = list(showgrid = F, showline = F),
+    xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F)
+  )
+
+return(ggp)
+}
+
+  
+#' Render the slides as a *gganimate* animation
+#'
+#' Takes `slides`, the result of `create_slides()`, and renders them into a 
+#' *gganimate* animation.
+#'
+#' @param slides The result of `create_slides()`.
+#' @param manip_col String of the color to highlight the `manip_var`.
+#' @param cat_var Categorical variable, optionally used to set the data point 
+#' color and shape.
+#' @param slide_time Time to show each slide for in seconds. essentially 1/fps, 
+#' defaults to .3 seconds.
+#' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
+#' @export
+#' @examples
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' 
+#' rb <- tourr::basis_random(n = ncol(flea_std))
+#' mtour <- manual_tour(basis = rb, manip_var = 4)
+#' sshow <- create_slides(tour = mtour, data = flea_std)
+#' render_gganimate(slides = sshow)
+render_gganimate <- function(slides,
+                             manip_col  = "blue", # string of color name
+                             cat_var    = NULL,   # cat var to color data and pch
+                             slide_time = .3,     # seconds to show each slide for.
+                             ...) 
+{
+  # Initialize
+  gg <- render_gg(slides, manip_col, cat_var, ...)
+  
+  gganim <- gg + gganimate::transition_states(slide,
+                                              transition_length = 0,
+                                              state_length = slide_time
+  )
+  
+  return(gganim)
+}
+

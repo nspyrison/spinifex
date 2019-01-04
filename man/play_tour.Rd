@@ -18,8 +18,7 @@ Takes the result of `tourr::save_history` (or `manual_tour` and optionally
 data, renders the tour and passed data into a plotly animation object.
 }
 \examples{
-data(flea)
-flea_std <- tourr::rescale(flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[,1:6])
 tpath <- tourr::save_history(flea_std, tourr::guided_tour(tourr::cmass))
 
 play_tour(tour = tpath, data = flea_std)

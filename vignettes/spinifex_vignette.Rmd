@@ -106,7 +106,7 @@ Watch the projection, via `slideshow()`, coloring observations by their species.
 mtour <- manual_tour(basis = rb, manip_var = 1)
   # manual_tour calls tourr::orthonormalise() that travis CI complains about as it isn't on the CRAN version. Added refrence to the GH version of tourr with Nick T.
 sshow <- create_slides(tour = mtour, data = wine_std)
-(wine_rss <- render_slideshow(slides = sshow))
+render_slideshow(slides = sshow)
 ```
 
 
@@ -132,43 +132,38 @@ glyph1
 
 
 ```{r}
-# 
-# gg1<-ggplot(nasa_sub, aes(x=x+day/2, y=y+surftemp/2)) + geom_point(size=0.3)
-# 
-# nasa_std <- cbind(nasa[c("x", "y")], 
-#                    tourr::rescale(nasa[c("day", "surftemp")])
-# )
-# b2 <- create_identity_basis(p = ncol(nasa_sub))
-# 
-# # Horizontal component:
-# m_sp = create_manip_space(basis = basis, manip_var = 3)
-# rot_mat <- rotate_manip_space(manip_space = m_sp, theta = 0, phi = pi/6)
-# nasa_std_rot_x <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat))
-# 
-# # Vertical
-# manip_space = create_manip_space(basis = basis, manip_var = 4)
-# rot_mat <- rotate_manip_space(manip_space, pi/2, pi/6)
-# nasa_sub_rot_y <- data.frame(as.matrix(nasa_sub) %*% as.matrix(rot_mat))
-# nasa_sub_rot <- bind_cols(nasa_sub_rot_x, nasa_sub_rot_y) %>%
-#   select(x, y1) %>%
-#   rename(x=x, y=y1)
-# 
-# gg2<-ggplot(nasa_sub_rot, aes(x=x, y=y)) + geom_point(size=0.3)
+# Initialize
+nasa_std <- cbind(nasa[c("x", "y")], tourr::rescale(nasa[c("day", "surftemp")]))
+bas <- create_identity_basis(p = ncol(nasa_std))
 
-# # Perform a horizonal rotation on a glyphmap
-# b2 = create_identity_basis(p = ncol(nasa_sub))
-# mtour2 <- manual_tour(basis = b2, manip_var = 3, manip_type = "horizontal")
-# sshow2 <- create_slides(tour = mtour2, data = nasa2_std)
-# (nasa_hss <- render_slideshow(slides = sshow2))
-# 
-# 
-# # Perform a Vertical rotation on a second variable of a glyphmap
-# rb3 <- tourr::basis_random(n = ncol(nasa_std))
-# mtour3 <- manual_tour(basis = rb3, manip_var = 4, manip_type = "vertical")
-# sshow3 <- create_slides(tour = mtour3, data = nasa_std)
-# (nasa_vss <- render_slideshow(slides = sshow3))
+# Horizontal roation
+m_sp_x = create_manip_space(basis = bas, manip_var = 3)
+rot_mat_x <- rotate_manip_space(manip_space = m_sp_x, theta = 0, phi = pi/6)
+rot_x <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_x))
 
+# Vertical roation
+m_sp_y = create_manip_space(basis = bas, manip_var = 4)
+rot_mat_y <- rotate_manip_space(manip_space = m_sp_y, pi/2, pi/6)
+rot_y <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_y))
 
+library(dplyr)
+rot_xy <- bind_cols(rot_x, rot_y)
+rot_xy <- select(rot_xy, x, y1)
+rot_xy <- rename(rot_xy, x=x, y=y1)
+
+ggplot(rot_xy, aes(x=x, y=y)) + geom_point(size=0.3)
+```
+
+```{r}
+# Horizonal manual rotation
+tour_x <- manual_tour(basis = bas, manip_var = 3, manip_type = "horizontal")
+slides_x <- create_slides(tour = tour_x, data = nasa_std)
+render_slideshow(slides = slides_x)
+
+# Vertical manual rotation
+tour_y <- manual_tour(basis = bas, manip_var = 4, manip_type = "vertical")
+slides_y <- create_slides(tour = tour_y, data = nasa_std)
+render_slideshow(slides = slides_y)
 ```
 
 
@@ -195,14 +190,12 @@ glyph1
 # gridExtra::grid.arrange(glyph1, glyph2, ncol=2)
 ```
 
-
-
 ## Example 3 - Rotation after holes guided tour
 
 Manual tours are often employed after an interesting feature has been identified. The local area around PCA for example might be interesting to explore. Alternatively we can use (stochastic) gradient decent on some objective function and start from the resulting basis. Let's do just that, optimize a Holes tour using the packages `tourr`:
 
 ```{r}
-flea_std <- tourr::rescale(spinifex::flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[,1:6])
 fpath <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes))
 
 play_tour(tour = fpath, data = flea_std)

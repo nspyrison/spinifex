@@ -18,7 +18,8 @@ in the reference frame, typically the variable names.}
 `text`.}
 }
 \value{
-Nothing, but cretes a plot of the reference frame in base graphics.
+The basis, norm, and theta, also plots the reference frame in base 
+graphics.
 }
 \description{
 Uses base graphics to plot the circle with axes representing
