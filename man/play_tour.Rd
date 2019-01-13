@@ -7,14 +7,14 @@
 play_tour(tour, data = NULL, ...)
 }
 \arguments{
-\item{tour}{The result of `tourr::save_history` or `manual_tour`.}
+\item{tour}{The result of \code{tourr::save_history} or \code{manual_tour}.}
 
-\item{data}{Optional, number of columns must match that of `tour`.}
+\item{data}{Optional, number of columns must match that of \code{tour}.}
 
-\item{...}{Optionally pass addition arguments to `plotly::animation_opts`.}
+\item{...}{Optionally pass addition arguments to \code{plotly::animation_opts}.}
 }
 \description{
-Takes the result of `tourr::save_history` (or `manual_tour` and optionally 
+Takes the result of \code{tourr::save_history} (or \code{manual_tour} and optionally
 data, renders the tour and passed data into a plotly animation object.
 }
 \examples{

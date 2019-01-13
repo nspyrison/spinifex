@@ -2,46 +2,46 @@
 % Please edit documentation in R/manual_tour.r
 \name{manual_tour}
 \alias{manual_tour}
-\title{Produce the series of projection bases to rotate a variable into and out 
+\title{Produce the series of projection bases to rotate a variable into and out
 of a projection}
 \usage{
 manual_tour(basis = NULL, manip_var = NULL, manip_type = "radial",
   theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 20)
 }
 \arguments{
-\item{basis}{A [p, d] dim orthonormal matrix. Required, no default.}
+\item{basis}{A \link{p, d} dim orthonormal matrix. Required, no default.}
 
 \item{manip_var}{Integer column number or string exact column name of the.
 variable to manipulate. Required, no default.}
 
-\item{manip_type}{String of the type of manipulation to use. 
-Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
-Yields to `theta` if set. Must set either `manip_type` or `theta`.}
+\item{manip_type}{String of the type of manipulation to use.
+Defaults to "radial". Alternatively accepts "horizontal" or "vertical".
+Yields to \code{theta} if set. Must set either \code{manip_type} or \code{theta}.}
 
-\item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the 
-reference frame. Typically set from manip_type in `proj_data`. Supersedes 
-`manip_type`. Must set either `manip_type` or `theta`.}
+\item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the
+reference frame. Typically set from manip_type in \code{proj_data}. Supersedes
+\code{manip_type}. Must set either \code{manip_type} or \code{theta}.}
 
-\item{phi_min}{Minimum value phi should move to. Phi is angle in radians of 
-the "out-of-plane" rotation, the z-axis of the reference frame. 
+\item{phi_min}{Minimum value phi should move to. Phi is angle in radians of
+the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to 0.}
 
-\item{phi_max}{Maximum value phi should move to. Phi is angle in radians of 
-the "out-of-plane" rotation, the z-axis of the reference frame. 
+\item{phi_max}{Maximum value phi should move to. Phi is angle in radians of
+the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to 2 * pi.}
 
 \item{n_slides}{Number of slides to create. Defaults to 20.}
 }
 \value{
-A [p, d, n_slides] dim array of the manual tour. Containing
-  `n_slides` interpolations varying phi from it's start to `phi_min`, to 
-  `phi_max`, and back to start.
+A \link{p, d, n_slides} dim array of the manual tour. Containing
+\code{n_slides} interpolations varying phi from it's start to \code{phi_min}, to
+\code{phi_max}, and back to start.
 }
 \description{
-Typically called by `create_slides`. The manual tour of the `manip_var`.
-Given a [p, d] orthonormal basis, creates an array of `n_slides` bases 
-extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
-`phi_min`, then back to the starting position (by default: from start, to 0,
+Typically called by \code{create_slides}. The manual tour of the \code{manip_var}.
+Given a \link{p, d} orthonormal basis, creates an array of \code{n_slides} bases
+extending the norm of \code{manip_var}, via cos(phi), from \code{phi_max}, to
+\code{phi_min}, then back to the starting position (by default: from start, to 0,
 to 1, to start).
 }
 \examples{

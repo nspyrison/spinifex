@@ -20,7 +20,6 @@ create_manip_space <- function(basis, manip_var) {
   z            <- rep(0, len = nrow(basis))
   z[manip_var] <- 1
   manip_space  <- tourr::orthonormalise(cbind(basis, z))
-  if (ncol(manip_space) == 3) colnames(manip_space) <- c("x","y","z")
   rownames(manip_space) <- colnames(basis)
   
   return(manip_space)
@@ -68,7 +67,6 @@ rotate_manip_space <- function(manip_space, theta, phi) {
               ,nrow = 3, ncol = 3, byrow = TRUE)
   
   rotation_space <- manip_space %*% R
-  colnames(rotation_space) <- colnames(manip_space)
   rownames(rotation_space) <- rownames(manip_space)
   
   return(rotation_space)
@@ -111,22 +109,21 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 manual_tour <- function(basis = NULL,
                         manip_var = NULL,  # column number
                         manip_type = "radial", #alt: "horizontal" and "vertical"
-                        theta = NULL,      # [radians]
-                        phi_min = 0,       # [radians]
-                        phi_max = .5 * pi, # [radians]
+                        theta = NULL,      # (radians)
+                        phi_min = 0,       # (radians)
+                        phi_max = .5 * pi, # (radians)
                         n_slides = 20) { 
   manip_type <- tolower(manip_type)
   if (!is.matrix(basis)) basis <- as.matrix(basis)
   # Assertions
-  stopifnot(is.matrix(basis))
   stopifnot(nrow(basis) > 2)
   stopifnot(!is.null(manip_var))
   stopifnot(manip_var <= nrow(basis))
-  stopifnot(manip_type %in% c("radial", "horizontal", "vertical") |
-              !is.null(theta) )
+  stopifnot(manip_type %in% c("radial", "horizontal", "vertical") 
+            | !is.null(theta))
   
   # Handle args
-  if (!is.null(theta) & !is.null(manip_type) )
+  if (!is.null(theta) & !is.null(manip_type))
     message("Non-null theta used with non-null manip_type. Selecting theta over manip_type.")
   if (is.null(theta) & manip_type == "horizontal") theta <- 0
   if (is.null(theta) & manip_type == "vertical")   theta <- pi/2
@@ -143,32 +140,30 @@ manual_tour <- function(basis = NULL,
   d           <- ncol(basis)
   if (phi_start < phi_min) warning("phi_start less than phi_min, tour may look odd.")
   if (phi_start > phi_max) warning("phi_start greater than phi_max, tour may look odd.")
+  phi_start_sign <- phi_start * sign(manip_space[manip_var, 1])
   
-  interpolate_slides <- function(seq_start, seq_end){
+  interpolate_walk <- function(seq_start, seq_end){
     # Initialize for interpolate_slides()
-    slide         <- 0
-    new_slide     <- NULL
-    seq_start     <- seq_start + phi_start_sign # so phi=0 is on plane.
-    seq_end       <- seq_end + phi_start_sign
-    seq_by_sign   <- ifelse(seq_end > seq_start, 1, -1)
-    phi_inc_sign  <- seq_by_sign * phi_inc
-    len           <- length(seq(seq_start, seq_end, phi_inc_sign))
-    interpolation <- array(dim = c(p, d, len))
+    slide        <- 0
+    new_slide    <- NULL
+    seq_start    <- seq_start + phi_start_sign # Transform such that phi is relative to Z=0, rather than phi_start
+    seq_end      <- seq_end   + phi_start_sign
+    phi_inc_sign <- phi_inc * ifelse(seq_end > seq_start, 1, -1) 
+    phi_len      <- length(seq(seq_start, seq_end, phi_inc_sign))
+    interp       <- array(dim = c(p, d, phi_len))
     
     for (phi in seq(seq_start, seq_end, phi_inc_sign)) {
       slide     <- slide + 1
       new_slide <- rotate_manip_space(manip_space, theta, phi)
-      interpolation[,, slide] <- new_slide[, 1:2]
+      interp[,, slide] <- new_slide[, 1:2]
     }
-    return(interpolation)
+    return(interp)
   }
   
-  x_mvar_sign    <- sign(manip_space[manip_var, 1])
-  phi_start_sign <- phi_start * x_mvar_sign
-  walk1 <- interpolate_slides(phi_start, phi_min)
-  walk2 <- interpolate_slides(phi_min, phi_max)
-  walk3 <- interpolate_slides(phi_max, phi_start)
-  walk4 <- interpolate_slides(phi_start, phi_start)
+  walk1 <- interpolate_walk(phi_start, phi_min)
+  walk2 <- interpolate_walk(phi_min, phi_max)
+  walk3 <- interpolate_walk(phi_max, phi_start)
+  walk4 <- interpolate_walk(phi_start, phi_start)
   
   m_tour <- array(c(walk1, walk2, walk3, walk4), dim = c(p, d, n_slides))
   attr(m_tour, "manip_var") <- manip_var

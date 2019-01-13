@@ -8,17 +8,17 @@ view_basis(basis = create_identity_basis(6), labels = paste0("V",
   1:nrow(basis)), ...)
 }
 \arguments{
-\item{basis}{A [p, d] basis, XY linear combination of each dimension 
+\item{basis}{A \link{p, d} basis, XY linear combination of each dimension
 (numeric variable).}
 
-\item{labels}{Optional, character vector of `p` length, add name to the axes 
+\item{labels}{Optional, character vector of \code{p} length, add name to the axes
 in the reference frame, typically the variable names.}
 
-\item{...}{Optionally pass additional arguments to `segments`, `lines`, or 
-`text`.}
+\item{...}{Optionally pass additional arguments to \code{segments}, \code{lines}, or
+\code{text}.}
 }
 \value{
-The basis, norm, and theta, also plots the reference frame in base 
+The basis, norm, and theta, also plots the reference frame in base
 graphics.
 }
 \description{

@@ -7,22 +7,22 @@
 render_gg(slides, manip_col = "blue", cat_var = NULL, ...)
 }
 \arguments{
-\item{slides}{The result of `create_slides()`.}
+\item{slides}{The result of \code{create_slides()}.}
 
-\item{manip_col}{String of the color to highlight the `manip_var`.}
+\item{manip_col}{String of the color to highlight the \code{manip_var}.}
 
-\item{cat_var}{Categorical variable, optionally used to set the data point 
+\item{cat_var}{Categorical variable, optionally used to set the data point
 color and shape.}
 
-\item{...}{Optional, pass addition arguments into `plotly::animation_opts()`.}
+\item{...}{Optional, pass addition arguments into \code{plotly::animation_opts()}.}
 }
 \value{
-An animation in `disp_type` graphics of the interpolated data and 
+An animation in \code{disp_type} graphics of the interpolated data and
 the corrisponding reference frame.
 }
 \description{
-Takes `slides`, the result of `create_slides()`, and renders them into a 
-ggplot object to be used by `render_plotly()` or `render_gganimate()`; 
+Takes \code{slides}, the result of \code{create_slides()}, and renders them into a
+ggplot object to be used by \code{render_plotly()} or \code{render_gganimate()};
 typically not called directly.
 }
 \examples{

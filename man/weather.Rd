@@ -4,13 +4,13 @@
 \name{weather}
 \alias{weather}
 \title{Sample dataset of daily weather observations from Canberra airport in Australia.}
-\format{Data frame (tibble) of 366 observations of 20 variables, one year of 
-daily observations of weather variables at Canberra airport in Australia 
+\format{Data frame (tibble) of 366 observations of 20 variables, one year of
+daily observations of weather variables at Canberra airport in Australia
 starting November 2007.}
 \source{
-The daily observations are available from http://www.bom.gov.au/climate/data. 
+The daily observations are available from http://www.bom.gov.au/climate/data.
 Copyright Commonwealth of Australia 2010,
-Bureau of Meteorology. 
+Bureau of Meteorology.
 
 Definitions adapted from http://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml
 }
@@ -18,52 +18,52 @@ Definitions adapted from http://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml
 weather
 }
 \description{
-A subset from `rattle.data::weather`, instructions to reproduce below.
+A subset from \code{rattle.data::weather}, instructions to reproduce below.
 }
 \details{
-One year of daily weather observations collected from the Canberra airport 
-in Australia was obtained from the Australian Commonwealth Bureau of 
-Meteorology and processed to create this sample dataset for illustrating 
+One year of daily weather observations collected from the Canberra airport
+in Australia was obtained from the Australian Commonwealth Bureau of
+Meteorology and processed to create this sample dataset for illustrating
 data mining using R and Rattle.
 
-The data has been processed to provide a target variable RainTomorrow 
-(whether there is rain on the following day - No/Yes) and a risk variable 
-`RISK_MM`` (how much rain recorded in millimeters). Various transformations 
-were performed on the source data. The dataset is quite small and is useful 
+The data has been processed to provide a target variable RainTomorrow
+(whether there is rain on the following day - No/Yes) and a risk variable
+`RISK_MM`` (how much rain recorded in millimeters). Various transformations
+were performed on the source data. The dataset is quite small and is useful
 only for repeatable demonstration of various data science operations.
 
-The source dataset is Copyright by the Australian Commonwealth Bureau of 
+The source dataset is Copyright by the Australian Commonwealth Bureau of
 Meteorology and is provided as part of the rattle package with permission.
 
-Data frame (tibble) of 366 observations of 20 variables, one year of 
-daily observations of weather variables at Canberra airport in Australia 
+Data frame (tibble) of 366 observations of 20 variables, one year of
+daily observations of weather variables at Canberra airport in Australia
 starting November 2007:
 \itemize{
-  \item Date, The date of observation (a Date object).
-  \item MinTemp, The minimum temperature in degrees Celsius.
-  \item MaxTemp, The maximum temperature in degrees Celsius.
-  \item Rainfall, The amount of rainfall recorded for the day in mm.
-  \item Evaporation, The so-called Class A pan evaporation (mm) in the 24 hours to 9am.
-  \item Sunshine, The number of hours of bright sunshine in the day.
-  \item WindGustSpeed, The speed (km/h) of the strongest wind gust in the 24 hours to midnight.
-  \item WindSpeed9am, Wind speed (km/hr) averaged over 10 minutes prior to 9am.
-  \item WindSpeed3pm, Wind speed (km/hr) averaged over 10 minutes prior to 3pm.
-  \item Humid9am, Relative humidity (percent) at 9am.
-  \item Humid3pm, Relative humidity (percent) at 3pm.
-  \item Pressure9am, Atmospheric pressure (hpa) reduced to mean sea level at 9am.
-  \item Pressure3pm, Atmospheric pressure (hpa) reduced to mean sea level at 3pm.
-  \item Cloud9am, Fraction of sky obscured by cloud at 9am. This is measured in "oktas", which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.
-  \item Cloud3pm, Fraction of sky obscured by cloud (in "oktas": eighths) at 3pm. See Cload9am for a description of the values.
-  \item Temp9am, Temperature (degrees C) at 9am.
-  \item Temp3pm, Temperature (degrees C) at 3pm.
-  \item RainToday, Integer: 1 if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0.
-  \item RISK_MM, The amount of rain. A kind of measure of the "risk".
-  \item RainTomorrow, The target variable. Did it rain tomorrow?
+\item Date, The date of observation (a Date object).
+\item MinTemp, The minimum temperature in degrees Celsius.
+\item MaxTemp, The maximum temperature in degrees Celsius.
+\item Rainfall, The amount of rainfall recorded for the day in mm.
+\item Evaporation, The so-called Class A pan evaporation (mm) in the 24 hours to 9am.
+\item Sunshine, The number of hours of bright sunshine in the day.
+\item WindGustSpeed, The speed (km/h) of the strongest wind gust in the 24 hours to midnight.
+\item WindSpeed9am, Wind speed (km/hr) averaged over 10 minutes prior to 9am.
+\item WindSpeed3pm, Wind speed (km/hr) averaged over 10 minutes prior to 3pm.
+\item Humid9am, Relative humidity (percent) at 9am.
+\item Humid3pm, Relative humidity (percent) at 3pm.
+\item Pressure9am, Atmospheric pressure (hpa) reduced to mean sea level at 9am.
+\item Pressure3pm, Atmospheric pressure (hpa) reduced to mean sea level at 3pm.
+\item Cloud9am, Fraction of sky obscured by cloud at 9am. This is measured in "oktas", which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.
+\item Cloud3pm, Fraction of sky obscured by cloud (in "oktas": eighths) at 3pm. See Cload9am for a description of the values.
+\item Temp9am, Temperature (degrees C) at 9am.
+\item Temp3pm, Temperature (degrees C) at 3pm.
+\item RainToday, Integer: 1 if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0.
+\item RISK_MM, The amount of rain. A kind of measure of the "risk".
+\item RainTomorrow, The target variable. Did it rain tomorrow?
 }
 
 Reproducing this dataset:
-`library("rattle.data")`
-`weather <- as.tibble(weather[ , c(1,3:7,9,12:24)])`
+\code{library("rattle.data")}
+\code{weather <- as.tibble(weather[ , c(1,3:7,9,12:24)])}
 }
 \examples{
 

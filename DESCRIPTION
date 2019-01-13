@@ -22,6 +22,7 @@ Imports:
     webshot
 Suggests: knitr
 VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))
 Remotes:  
     ggobi/tourr,
     thomasp85/gganimate

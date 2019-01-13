@@ -9,14 +9,14 @@ create_identity_basis(p = 6, d = 2)
 \arguments{
 \item{p}{number of dimensions of the data.}
 
-\item{d}{number of dimensions of the basis (ie. the dimensionality of the 
+\item{d}{number of dimensions of the basis (ie. the dimensionality of the
 graphic.) Defaults to 2.}
 }
 \value{
-A [p, d] dim identity matrix followed by rows of 0s.
+A \link{p, d} dim identity matrix followed by rows of 0s.
 }
 \description{
-Creates a [p, d] dim identity basis; identity matrix followed by rows 0s.
+Creates a \link{p, d} dim identity basis; identity matrix followed by rows 0s.
 }
 \examples{
 create_identity_basis()

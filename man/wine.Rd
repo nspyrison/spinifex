@@ -3,17 +3,16 @@
 \docType{data}
 \name{wine}
 \alias{wine}
-\alias{Wine}
 \title{The wine dataset from the UCI Machine Learning Repository.}
-\format{data frame (tibble) of 178 observations of 13 variables, target 
-class `Type` and 12 numeric variables.}
+\format{data frame (tibble) of 178 observations of 13 variables, target
+class \code{Type} and 12 numeric variables.}
 \usage{
 wine
 }
 \description{
-The wine dataset contains the results of a chemical analysis of wines grown 
-in a specific area of Italy. Three types of wine are represented in the 178 
-samples, with the results of 13 chemical analyses recorded for each sample. 
+The wine dataset contains the results of a chemical analysis of wines grown
+in a specific area of Italy. Three types of wine are represented in the 178
+samples, with the results of 13 chemical analyses recorded for each sample.
 The Type variable has been transformed into a categoric variable.
 }
 \examples{

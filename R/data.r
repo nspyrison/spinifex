@@ -25,16 +25,17 @@
 #'   \item Normal.nucleoli, Normal Nucleoli
 #'   \item Class, Class
 #' }
+#' @details 
+#' To reproducing this dataset:
 #' 
-#' Reproducing this dataset:
-#' `library("mlbench")`
-#' `d <- BreastCancer`
-#' `d <- d[!duplicated(d), ]`
-#' `d <- d[complete.cases(d), ]`
-#' `mat <- as.matrix(d[ , 2:9])`
-#' `mat <- apply(mat, 2, as.numeric)`
-#' `BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))`
-#'
+#' `library("mlbench")` \n
+#' 
+#' `d <- BreastCancer` \n
+#' `d <- d[!duplicated(d), ]` \n
+#' `d <- d[complete.cases(d), ]` \n
+#' `mat <- as.matrix(d[ , 2:9])` \n
+#' `mat <- apply(mat, 2, as.numeric)` \n
+#' `BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))` \n
 #' @name breastcancer
 #' @docType data
 #' @format Data frame (tibble) with 675 observations on 10 variables: a factor 
@@ -139,8 +140,8 @@
 #'   \item Dilution, D280/OD315 of diluted wines
 #'   \item Proline, Proline
 #'
+#' @details 
 #' @name wine
-#' @aliases Wine
 #' @docType data
 #' @format data frame (tibble) of 178 observations of 13 variables, target 
 #' class `Type` and 12 numeric variables.

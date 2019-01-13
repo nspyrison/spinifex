@@ -2,27 +2,27 @@
 % Please edit documentation in R/slideshow.r
 \name{render_gganimate}
 \alias{render_gganimate}
-\title{Render the slides as a *gganimate* animation}
+\title{Render the slides as a \emph{gganimate} animation}
 \usage{
 render_gganimate(slides, manip_col = "blue", cat_var = NULL,
   slide_time = 0.3, ...)
 }
 \arguments{
-\item{slides}{The result of `create_slides()`.}
+\item{slides}{The result of \code{create_slides()}.}
 
-\item{manip_col}{String of the color to highlight the `manip_var`.}
+\item{manip_col}{String of the color to highlight the \code{manip_var}.}
 
-\item{cat_var}{Categorical variable, optionally used to set the data point 
+\item{cat_var}{Categorical variable, optionally used to set the data point
 color and shape.}
 
-\item{slide_time}{Time to show each slide for in seconds. essentially 1/fps, 
+\item{slide_time}{Time to show each slide for in seconds. essentially 1/fps,
 defaults to .3 seconds.}
 
-\item{...}{Optional, pass addition arguments into `plotly::animation_opts()`.}
+\item{...}{Optional, pass addition arguments into \code{plotly::animation_opts()}.}
 }
 \description{
-Takes `slides`, the result of `create_slides()`, and renders them into a 
-*gganimate* animation.
+Takes \code{slides}, the result of \code{create_slides()}, and renders them into a
+\emph{gganimate} animation.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])

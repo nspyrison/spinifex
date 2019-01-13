@@ -7,21 +7,21 @@
 rotate_manip_space(manip_space, theta, phi)
 }
 \arguments{
-\item{manip_space}{A [p, d+1] dim manipulation space to be rotated.}
+\item{manip_space}{A \link{p, d+1} dim manipulation space to be rotated.}
 
-\item{theta}{Angle in radians of rotation "in-plane", on the XY plane of the 
+\item{theta}{Angle in radians of rotation "in-plane", on the XY plane of the
 reference frame. Typically set from manip_type in proj_data().}
 
-\item{phi}{Angle in radians of rotation "out-of-plane", the z axis of the 
-reference frame. Effectively changes the norm of XY contributions of the 
+\item{phi}{Angle in radians of rotation "out-of-plane", the z axis of the
+reference frame. Effectively changes the norm of XY contributions of the
 manip_var.}
 }
 \value{
-A [p, d+1] orthonormal matrix of the rotated (manipulation) space.
+A \link{p, d+1} orthonormal matrix of the rotated (manipulation) space.
 }
 \description{
-Typically called by `manual_tour`. Rotates a [p, d+1] manipulation space 
-matrix  by [3, 3] rotation matrix, returning [p, d+1] orthonormal matrix; 
+Typically called by \code{manual_tour}. Rotates a \link{p, d+1} manipulation space
+matrix  by \link{3, 3} rotation matrix, returning \link{p, d+1} orthonormal matrix;
 the XYZ components of the rotation space. XY are the linear combination of
 the variables for a 2d projection.
 }

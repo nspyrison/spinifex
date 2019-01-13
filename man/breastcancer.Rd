@@ -4,47 +4,49 @@
 \name{breastcancer}
 \alias{breastcancer}
 \title{Wisconsin Breast Cancer Database}
-\format{Data frame (tibble) with 675 observations on 10 variables: a factor 
+\format{Data frame (tibble) with 675 observations on 10 variables: a factor
 Id, 9 numeric variables, and target class.}
 \usage{
 breastcancer
 }
 \description{
-Formatted subset of `mlbench::BreastCancer`. See `mlbench` for original data 
+Formatted subset of \code{mlbench::BreastCancer}. See \code{mlbench} for original data
 more context.
 }
 \details{
 The objective is to identify each of a number of benign or malignant classes.
-Samples arrive periodically as Dr. Wolberg reports his clinical cases. The 
-database therefore reflects this chronological grouping of the data. This 
-grouping information appears immediately below, having been removed from 
-the data itself. Each variable except for the first was converted into 11 
-primitive numerical attributes with values ranging from 0 through 10. There 
+Samples arrive periodically as Dr. Wolberg reports his clinical cases. The
+database therefore reflects this chronological grouping of the data. This
+grouping information appears immediately below, having been removed from
+the data itself. Each variable except for the first was converted into 11
+primitive numerical attributes with values ranging from 0 through 10. There
 are 16 missing attribute values.
 
-Data frame (tibble) with 675 observations on 10 variables: a factor Id, 
+Data frame (tibble) with 675 observations on 10 variables: a factor Id,
 9 numeric variables, and target class:
 \itemize{
-  \item Id, Sample code number
-  \item Cl.thickness, Clump thickness
-  \item Cell.size, Uniformity of cell size
-  \item Cell.shape, Uniformity of cell shape
-  \item Marg.adhesion, Marginal adhesion
-  \item Epith.c.size, Single Epthelial cell size
-  \item Bare.nuclei, Bare nuclei
-  \item Bl.cromatin, Bland chromatin
-  \item Normal.nucleoli, Normal Nucleoli
-  \item Class, Class
+\item Id, Sample code number
+\item Cl.thickness, Clump thickness
+\item Cell.size, Uniformity of cell size
+\item Cell.shape, Uniformity of cell shape
+\item Marg.adhesion, Marginal adhesion
+\item Epith.c.size, Single Epthelial cell size
+\item Bare.nuclei, Bare nuclei
+\item Bl.cromatin, Bland chromatin
+\item Normal.nucleoli, Normal Nucleoli
+\item Class, Class
 }
 
-Reproducing this dataset:
-`library("mlbench")`
-`d <- BreastCancer`
-`d <- d[!duplicated(d), ]`
-`d <- d[complete.cases(d), ]`
-`mat <- as.matrix(d[ , 2:9])`
-`mat <- apply(mat, 2, as.numeric)`
-`BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))`
+To reproducing this dataset:
+
+\code{library("mlbench")} \n
+
+\code{d <- BreastCancer} \n
+\code{d <- d[!duplicated(d), ]} \n
+\code{d <- d[complete.cases(d), ]} \n
+\code{mat <- as.matrix(d[ , 2:9])} \n
+\code{mat <- apply(mat, 2, as.numeric)} \n
+\code{BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))} \n
 }
 \examples{
 

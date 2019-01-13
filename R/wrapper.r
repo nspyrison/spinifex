@@ -24,11 +24,11 @@ play_tour <- function(tour,
   
   # if tour isn't a normal array, make it an array.
   if(class(tour) != "array") {
-    attr(tour, "class") <- NULL # remove history_array class attr.
-    tour <- as.array(tour[,,]) # set array class attr.
+    attr(tour, "class") <- NULL
+    tour <- as.array(tour)
   }
   
-  slides <- create_slides(tour = tour, data = data)
+  slides <- create_slides(tour, data)
   plotly_slideshow <- render_slideshow(slides, disp_type = "plotly",
                                        cat_var, ...) 
   
@@ -80,17 +80,17 @@ play_tour <- function(tour,
 #' 
 #' spinifex(data = tourr::flea[,1:6], manip_var = 4, init_rescale_data = TRUE)
 spinifex <- function(data,
-                     basis      = NULL,
+                     basis       = NULL,
                      manip_var,
-                     manip_type = "radial",
-                     theta      = NULL,     # [radians]
-                     phi_min    = 0,        # [radians]
-                     phi_max    = .5 * pi,  # [radians]
-                     n_slides   = 20,
-                     disp_type  = "plotly",
-                     manip_col  = "blue",   # color of manip_var
-                     cat_var    = NULL,
-                     slide_time = .3,
+                     manip_type  = "radial",
+                     theta       = NULL,     # [radians]
+                     phi_min     = 0,        # [radians]
+                     phi_max     = .5 * pi,  # [radians]
+                     n_slides    = 20,
+                     render_type = render_plotly,
+                     manip_col   = "blue",   # color of manip_var
+                     cat_var     = NULL,
+                     slide_time  = .3,
                      init_rescale_data = FALSE) 
 {
   if (init_rescale_data) data <- tourr::rescale(data)
@@ -106,9 +106,9 @@ spinifex <- function(data,
   
   slides <- create_slides(tour = manual_tour, data = data)
   
-  slideshow <- render_slideshow(slides = slides, disp_type = disp_type, 
-                                manip_col = manip_col, cat_var = cat_var,
-                                slide_time = slide_time)
+  slideshow <- render_type(slides = slides, 
+                           manip_col = manip_col, cat_var = cat_var,
+                           slide_time = slide_time)
   
   return(slideshow)
 }

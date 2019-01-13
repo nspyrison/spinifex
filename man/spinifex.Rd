@@ -8,75 +8,75 @@
 \usage{
 spinifex(data, basis = NULL, manip_var, manip_type = "radial",
   theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 20,
-  disp_type = "plotly", manip_col = "blue", cat_var = NULL,
+  render_type = render_plotly, manip_col = "blue", cat_var = NULL,
   slide_time = 0.3, init_rescale_data = FALSE)
 }
 \arguments{
-\item{data}{A [n, p] dim data to project, consisting of 
+\item{data}{A \link{n, p} dim data to project, consisting of
 only numeric variables (for coercion into matrix).}
 
-\item{basis}{A [p, d] dim orthonormal numeric matrix. If it's left null, a
+\item{basis}{A \link{p, d} dim orthonormal numeric matrix. If it's left null, a
 random basis will be created.}
 
 \item{manip_var}{Integer column number or string exact column name of the.
 variable to manipulate. Required, no default.}
 
-\item{manip_type}{String of the type of manipulation to use. 
-Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
-Yields to `theta` if set. Must set either `manip_type` or `theta`.}
+\item{manip_type}{String of the type of manipulation to use.
+Defaults to "radial". Alternatively accepts "horizontal" or "vertical".
+Yields to \code{theta} if set. Must set either \code{manip_type} or \code{theta}.}
 
-\item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the 
-reference frame. Typically set from manip_type in proj_data(). Supersedes 
-`manip_type`. Must set either `manip_type` or `theta`.}
+\item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the
+reference frame. Typically set from manip_type in proj_data(). Supersedes
+\code{manip_type}. Must set either \code{manip_type} or \code{theta}.}
 
-\item{phi_min}{Minimum value phi should move to. Phi is angle in radians of 
-the "out-of-plane" rotation, the z-axis of the reference frame. 
+\item{phi_min}{Minimum value phi should move to. Phi is angle in radians of
+the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to 0.}
 
-\item{phi_max}{Maximum value phi should move to. Phi is angle in radians of 
-the "out-of-plane" rotation, the z-axis of the reference frame. 
+\item{phi_max}{Maximum value phi should move to. Phi is angle in radians of
+the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to 2 * pi.}
 
 \item{n_slides}{The number of slide-interpolations to make for the tour.}
 
-\item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
+\item{manip_col}{String of the color to highlight the \code{manip_var}.}
 
-\item{manip_col}{String of the color to highlight the `manip_var`.}
-
-\item{cat_var}{Categorical variable, optionally used to set the data point 
+\item{cat_var}{Categorical variable, optionally used to set the data point
 color and shape.}
 
-\item{slide_time}{Time to show each slide for in seconds. essentially 1/fps, 
+\item{slide_time}{Time to show each slide for in seconds. essentially 1/fps,
 defaults to .3 seconds.}
 
 \item{init_rescale_data}{When TRUE will apply tourr::rescale() on the data.
 Defaults to FALSE.}
 
-\item{...}{Optionally pass addition arguments to the `disp_type` options.}
+\item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
+
+\item{...}{Optionally pass addition arguments to the \code{disp_type} options.}
 }
 \value{
-An animation in `disp_type` graphics of the interpolated data and 
-  the corresponding reference frame.
+An animation in \code{disp_type} graphics of the interpolated data and
+the corresponding reference frame.
 }
 \description{
-spinifex is a package that allows for manual tours. Touring is a linear 
-dimensionality reducetion method that projects objects from `p` down to `d` 
+spinifex is a package that allows for manual tours. Touring is a linear
+dimensionality reducetion method that projects objects from \code{p} down to \code{d}
 dimensions. Manual tours manipulate one selected variable by a given amount.
 spinifex can also consume tour paths generated in the tourr package and
 offers streamlined production of plotly graphics to animate the tour.
 
-A wrapper function for manual_tour(), create_slides(), and 
-render_slideshow(). Allows the user to go from data to plotly object of 
+A wrapper function for manual_tour(), create_slides(), and
+render_slideshow(). Allows the user to go from data to plotly object of
 manual tour in one function. For use with other tour paths see play_tour().
 }
 \details{
 It's main functions are:
 \itemize{
-  \item [manual_tour()]
-  \item [create_slides()]
-  \item [render_slideshow()]
-  \item [spinifex()], A wrapper function for the above.
-  \item [play_tour()], A wrapper function which tourr tour paths can be used.
+\item \code{\link[=manual_tour]{manual_tour()}}
+\item \code{\link[=create_slides]{create_slides()}}
+\item \code{\link[=render_slideshow]{render_slideshow()}}
+\item \code{\link[=spinifex]{spinifex()}}, A wrapper function for the above.
+\item \code{\link[=play_tour]{play_tour()}}, A wrapper function which tourr tour paths can be used.
 }
 
 GitHub repo: \url{https://github.com/nspyrison/spinifex}
