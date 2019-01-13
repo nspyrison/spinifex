@@ -9,7 +9,7 @@
 spinifex(data, basis = NULL, manip_var, manip_type = "radial",
   theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 20,
   render_type = render_plotly, manip_col = "blue", cat_var = NULL,
-  slide_time = 0.3, init_rescale_data = FALSE)
+  fps = 3, init_rescale_data = FALSE)
 }
 \arguments{
 \item{data}{A \link{n, p} dim data to project, consisting of
@@ -26,7 +26,7 @@ Defaults to "radial". Alternatively accepts "horizontal" or "vertical".
 Yields to \code{theta} if set. Must set either \code{manip_type} or \code{theta}.}
 
 \item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the
-reference frame. Typically set from manip_type in proj_data(). Supersedes
+reference frame. Typically set from manip_type in \code{proj_data()}. Supersedes
 \code{manip_type}. Must set either \code{manip_type} or \code{theta}.}
 
 \item{phi_min}{Minimum value phi should move to. Phi is angle in radians of
@@ -44,10 +44,9 @@ Required, defaults to 2 * pi.}
 \item{cat_var}{Categorical variable, optionally used to set the data point
 color and shape.}
 
-\item{slide_time}{Time to show each slide for in seconds. essentially 1/fps,
-defaults to .3 seconds.}
+\item{fps}{Frames/slides shown per second. Defaults to 3.}
 
-\item{init_rescale_data}{When TRUE will apply tourr::rescale() on the data.
+\item{init_rescale_data}{When TRUE will apply \code{tourr::rescale()} on the data.
 Defaults to FALSE.}
 
 \item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
@@ -65,8 +64,8 @@ dimensions. Manual tours manipulate one selected variable by a given amount.
 spinifex can also consume tour paths generated in the tourr package and
 offers streamlined production of plotly graphics to animate the tour.
 
-A wrapper function for manual_tour(), create_slides(), and
-render_slideshow(). Allows the user to go from data to plotly object of
+A wrapper function for \code{manual_tour()}, \code{create_slides()}, and
+\code{render_()}. Allows the user to go from data to plotly object of
 manual tour in one function. For use with other tour paths see play_tour().
 }
 \details{

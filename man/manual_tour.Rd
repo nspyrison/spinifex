@@ -28,7 +28,7 @@ Required, defaults to 0.}
 
 \item{phi_max}{Maximum value phi should move to. Phi is angle in radians of
 the "out-of-plane" rotation, the z-axis of the reference frame.
-Required, defaults to 2 * pi.}
+Required, defaults to pi/2.}
 
 \item{n_slides}{Number of slides to create. Defaults to 20.}
 }
@@ -38,11 +38,11 @@ A \link{p, d, n_slides} dim array of the manual tour. Containing
 \code{phi_max}, and back to start.
 }
 \description{
-Typically called by \code{create_slides}. The manual tour of the \code{manip_var}.
+Typically called by \code{create_slides()}. The manual tour of the \code{manip_var}.
 Given a \link{p, d} orthonormal basis, creates an array of \code{n_slides} bases
 extending the norm of \code{manip_var}, via cos(phi), from \code{phi_max}, to
 \code{phi_min}, then back to the starting position (by default: from start, to 0,
-to 1, to start).
+to pi/2, back to start).
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])

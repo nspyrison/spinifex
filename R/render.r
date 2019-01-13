@@ -72,9 +72,8 @@ create_slides <- function(tour,
 
 #' Render the ggplot before the animation package
 #'
-#' Typically called by `render_plotly()` or `render_gganimate()`. Takes 
-#' `slides`, the result of `create_slides()`, and renders them into a ggplot2 
-#' object. 
+#' Typically called by `render_plotly()` or `render_gganimate()`. Takes the 
+#' result of `create_slides()`, and renders them into a ggplot2 object. 
 #'
 #' @param slides The result of `create_slides()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
@@ -90,7 +89,7 @@ create_slides <- function(tour,
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- create_slides(tour = mtour, data = flea_std)
-#' render_gg(slides = sshow)
+#' render_(slides = sshow)
 render_ <- function(slides,
                     manip_col  = "blue", # string of color name
                     cat_var    = NULL,   # cat var to color data and pch
@@ -114,7 +113,6 @@ render_ <- function(slides,
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none")
   
-  # Given manip_var, format reference frame accordingly
   # Initialize
   n_slides  <- length(unique(basis_slides$slide))
   p         <- nrow(basis_slides[,, 1]) / n_slides
@@ -134,11 +132,13 @@ render_ <- function(slides,
   }
   
   # Plot refrence frame axes
-  gg2 <- gg1 + suppressWarnings(ggplot2::geom_segment( # for unused aes "frame".
+  gg2 <- gg1 + suppressWarnings( # Supress for unused aes "frame".
+    ggplot2::geom_segment( 
     data = basis_slides, size = siz_v, colour = col_v,
     mapping = ggplot2::aes(x = basis_slides$V1, y = basis_slides$V2, 
                            xend = 0, yend = 0, frame = basis_slides$slide)
-  ))
+    )
+  )
   
   # Reference frame text
   gg3 <- gg2 # + suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
@@ -166,15 +166,14 @@ render_ <- function(slides,
 
 #' Render the slides as a *plotly* animation
 #'
-#' Takes `slides`, the result of `create_slides()`, and renders them into a 
+#' Takes the result of `create_slides()` and renders them into a 
 #' *plotly* animation.
 #'
 #' @param slides The result of `create_slides()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #' color and shape.
-#' @param slide_time Time to show each slide for in seconds. essentially 1/fps, 
-#' defaults to .3 seconds.
+#' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @export
 #' @examples
@@ -185,16 +184,16 @@ render_ <- function(slides,
 #' sshow <- create_slides(tour = mtour, data = flea_std)
 #' render_plotly(slides = sshow)
 render_plotly <- function(slides,
-                      manip_col  = "blue", # string of color name
-                      cat_var    = NULL,   # cat var to color data and pch
-                      slide_time = .3,     # seconds to show each slide for.
-                      ...) 
+                          manip_col = "blue", # string of color name
+                          cat_var   = NULL,   # cat var to color data and pch
+                          fps       = 3,      # frame/slide per second
+                          ...) 
 {
   # Initialize
-  gg <- render_gg(slides, manip_col, cat_var, ...)
+  gg <- render_(slides, manip_col, cat_var, ...)
   
   ggp <- plotly::ggplotly(gg)
-  ggp <- plotly::animation_opts(p = ggp, frame = slide_time * 1000, 
+  ggp <- plotly::animation_opts(p = ggp, frame = 1 / fps * 1000, 
                                 transition = 0, redraw = FALSE, ...)
   ggp <- plotly::layout(
     ggp, showlegend = F, yaxis = list(showgrid = F, showline = F),
@@ -204,18 +203,16 @@ render_plotly <- function(slides,
 return(ggp)
 }
 
-  
 #' Render the slides as a *gganimate* animation
 #'
-#' Takes `slides`, the result of `create_slides()`, and renders them into a 
+#' Takes the result of `create_slides()` and renders them into a 
 #' *gganimate* animation.
 #'
 #' @param slides The result of `create_slides()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #' color and shape.
-#' @param slide_time Time to show each slide for in seconds. essentially 1/fps, 
-#' defaults to .3 seconds.
+#' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @export
 #' @examples
@@ -226,19 +223,17 @@ return(ggp)
 #' sshow <- create_slides(tour = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
 render_gganimate <- function(slides,
-                             manip_col  = "blue", # string of color name
-                             cat_var    = NULL,   # cat var to color data and pch
-                             slide_time = .3,     # seconds to show each slide for.
+                             manip_col = "blue", # string of color name
+                             cat_var   = NULL,   # cat var to color data and pch
+                             fps       = .3,     # frames per second
                              ...) 
 {
   # Initialize
-  gg <- render_gg(slides, manip_col, cat_var, ...)
+  gg <- render_(slides, manip_col, cat_var, ...)
   
-  gganim <- gg + gganimate::transition_states(slide,
-                                              transition_length = 0,
-                                              state_length = slide_time
+  gganim <- gg + gganimate::transition_states(
+    slide, transition_length = 0, state_length = 1 / fps
   )
   
   return(gganim)
 }
-

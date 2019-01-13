@@ -20,7 +20,7 @@ manip_var.}
 A \link{p, d+1} orthonormal matrix of the rotated (manipulation) space.
 }
 \description{
-Typically called by \code{manual_tour}. Rotates a \link{p, d+1} manipulation space
+Typically called by \code{manual_tour()}. Rotates a \link{p, d+1} manipulation space
 matrix  by \link{3, 3} rotation matrix, returning \link{p, d+1} orthonormal matrix;
 the XYZ components of the rotation space. XY are the linear combination of
 the variables for a 2d projection.

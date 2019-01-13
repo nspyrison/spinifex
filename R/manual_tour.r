@@ -1,6 +1,6 @@
 #' Create a manipulation space
 #'
-#' Typically called by `manual_tour`. Creates a [p, d] dim orthonormal matrix,
+#' Typically called by `manual_tour()`. Creates a [p, d] dim orthonormal matrix,
 #' the manipulation space from the given basis right concatenated with a zero 
 #' vector, with manip_var set to 1.
 #'
@@ -27,7 +27,7 @@ create_manip_space <- function(basis, manip_var) {
 
 #' Rotate and return the manipulation space
 #'
-#' Typically called by `manual_tour`. Rotates a [p, d+1] manipulation space 
+#' Typically called by `manual_tour()`. Rotates a [p, d+1] manipulation space 
 #' matrix  by [3, 3] rotation matrix, returning [p, d+1] orthonormal matrix; 
 #' the XYZ components of the rotation space. XY are the linear combination of
 #' the variables for a 2d projection.
@@ -75,11 +75,11 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' Produce the series of projection bases to rotate a variable into and out 
 #' of a projection
 #'
-#' Typically called by `create_slides`. The manual tour of the `manip_var`.
+#' Typically called by `create_slides()`. The manual tour of the `manip_var`.
 #' Given a [p, d] orthonormal basis, creates an array of `n_slides` bases 
 #' extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
 #' `phi_min`, then back to the starting position (by default: from start, to 0,
-#' to 1, to start).
+#' to pi/2, back to start).
 #'
 #' @param basis A [p, d] dim orthonormal matrix. Required, no default.
 #' @param manip_var Integer column number or string exact column name of the.
@@ -95,7 +95,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #'   Required, defaults to 0.
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
-#'   Required, defaults to 2 * pi.
+#'   Required, defaults to pi/2.
 #' @param n_slides Number of slides to create. Defaults to 20.
 #' @return A [p, d, n_slides] dim array of the manual tour. Containing
 #'   `n_slides` interpolations varying phi from it's start to `phi_min`, to 

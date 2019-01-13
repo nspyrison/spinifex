@@ -15,7 +15,7 @@ create_manip_space(basis, manip_var)
 A \link{p, d+1} orthonormal matrix, the manipulation space.
 }
 \description{
-Typically called by \code{manual_tour}. Creates a \link{p, d} dim orthonormal matrix,
+Typically called by \code{manual_tour()}. Creates a \link{p, d} dim orthonormal matrix,
 the manipulation space from the given basis right concatenated with a zero
 vector, with manip_var set to 1.
 }
