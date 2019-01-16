@@ -1,12 +1,12 @@
 #' Create a manipulation space
 #'
-#' Typically called by `manual_tour()`. Creates a [p, d] dim orthonormal matrix,
+#' Typically called by `manual_tour()`. Creates a (p, d) orthonormal matrix,
 #' the manipulation space from the given basis right concatenated with a zero 
 #' vector, with manip_var set to 1.
 #'
-#' @param basis A [p, d] dim orthonormal matrix.
+#' @param basis A (p, d) orthonormal matrix.
 #' @param manip_var Number of the dimension (numeric variable) to rotate.
-#' @return A [p, d+1] orthonormal matrix, the manipulation space.
+#' @return A (p, d+1) orthonormal matrix, the manipulation space.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
@@ -27,18 +27,18 @@ create_manip_space <- function(basis, manip_var) {
 
 #' Rotate and return the manipulation space
 #'
-#' Typically called by `manual_tour()`. Rotates a [p, d+1] manipulation space 
-#' matrix  by [3, 3] rotation matrix, returning [p, d+1] orthonormal matrix; 
+#' Typically called by `manual_tour()`. Rotates a (p, d+1) manipulation space 
+#' matrix by (d+1, d+1) rotation matrix, returning (p, d+1)  matrix; 
 #' the XYZ components of the rotation space. XY are the linear combination of
 #' the variables for a 2d projection.
 #'
-#' @param manip_space A [p, d+1] dim manipulation space to be rotated.
+#' @param manip_space A (p, d+1) dim manipulation space to be rotated.
 #' @param theta Angle in radians of rotation "in-plane", on the XY plane of the 
 #'   reference frame. Typically set from manip_type in proj_data().
 #' @param phi Angle in radians of rotation "out-of-plane", the z axis of the 
 #'   reference frame. Effectively changes the norm of XY contributions of the 
 #'   manip_var.
-#' @return A [p, d+1] orthonormal matrix of the rotated (manipulation) space.
+#' @return A (p, d+1) orthonormal matrix of the rotated (manipulation) space.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
@@ -67,6 +67,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
               ,nrow = 3, ncol = 3, byrow = TRUE)
   
   rotation_space <- manip_space %*% R
+  colnames(rotation_space) <- colnames(manip_space)
   rownames(rotation_space) <- rownames(manip_space)
   
   return(rotation_space)
@@ -76,12 +77,12 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' of a projection
 #'
 #' Typically called by `create_slides()`. The manual tour of the `manip_var`.
-#' Given a [p, d] orthonormal basis, creates an array of `n_slides` bases 
+#' Given a (p, d) orthonormal basis, creates an array of `n_slides` bases 
 #' extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
 #' `phi_min`, then back to the starting position (by default: from start, to 0,
 #' to pi/2, back to start).
 #'
-#' @param basis A [p, d] dim orthonormal matrix. Required, no default.
+#' @param basis A (p, d) dim orthonormal matrix. Required, no default.
 #' @param manip_var Integer column number or string exact column name of the.
 #'   variable to manipulate. Required, no default.
 #' @param manip_type String of the type of manipulation to use. 
@@ -97,7 +98,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to pi/2.
 #' @param n_slides Number of slides to create. Defaults to 20.
-#' @return A [p, d, n_slides] dim array of the manual tour. Containing
+#' @return A (p, d, n_slides) dim array of the manual tour. Containing
 #'   `n_slides` interpolations varying phi from it's start to `phi_min`, to 
 #'   `phi_max`, and back to start.
 #' @export

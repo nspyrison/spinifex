@@ -7,15 +7,15 @@
 create_manip_space(basis, manip_var)
 }
 \arguments{
-\item{basis}{A \link{p, d} dim orthonormal matrix.}
+\item{basis}{A (p, d) orthonormal matrix.}
 
 \item{manip_var}{Number of the dimension (numeric variable) to rotate.}
 }
 \value{
-A \link{p, d+1} orthonormal matrix, the manipulation space.
+A (p, d+1) orthonormal matrix, the manipulation space.
 }
 \description{
-Typically called by \code{manual_tour()}. Creates a \link{p, d} dim orthonormal matrix,
+Typically called by \code{manual_tour()}. Creates a (p, d) orthonormal matrix,
 the manipulation space from the given basis right concatenated with a zero
 vector, with manip_var set to 1.
 }

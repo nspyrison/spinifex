@@ -4,12 +4,16 @@
 \alias{play_tour}
 \title{Render display of a provided tour path and data}
 \usage{
-play_tour(tour, data = NULL, ...)
+play_tour(tour, data = NULL, render_type = render_plotly,
+  cat_var = NULL, fps = 3, ...)
 }
 \arguments{
 \item{tour}{The result of \code{tourr::save_history} or \code{manual_tour}.}
 
 \item{data}{Optional, number of columns must match that of \code{tour}.}
+
+\item{render_type}{Which graphics to render to. Defaults to render_plotly,
+alternative use render_gganimate.}
 
 \item{...}{Optionally pass addition arguments to \code{plotly::animation_opts}.}
 }

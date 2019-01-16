@@ -15,8 +15,38 @@ in a specific area of Italy. Three types of wine are represented in the 178
 samples, with the results of 13 chemical analyses recorded for each sample.
 The Type variable has been transformed into a categoric variable.
 }
+\details{
+The data contains no missing values and consist of only numeric data, with a
+three class target variable (Type) for classification.
+
+Data frame (tibble) of 178 observations of 13 variables, target
+class \code{Type} and 12 numeric variables:
+\itemize{
+\item Type, The type of wine, into one of three classes, 1 (59 obs),
+2(71 obs), and 3 (48 obs).
+\item Alcohol, Alcohol
+\item Malic, Malic acid
+\item Ash, Ash
+\item Alcalinity, Alcalinity of ash
+\item Magnesium, Magnesium
+\item Phenols, Total phenols
+\item Flavanoids, Flavanoids
+\item Nonflavanoids, Nonflavanoid phenols
+\item Proanthocyanins, Proanthocyanins
+\item Color, Color intsity
+\item Hue, Hue
+\item Dilution, D280/OD315 of diluted wines
+\item Proline, Proline
+}
+
+Reproducing this dataset:\preformatted{library("rattle.data")
+wine <- dplyr::as.tibble(wine)
+}
+}
 \examples{
 
-head(wine)
+str(wine)
+
+spinifex(data = wine[, 2:14], manip_var = 1, init_rescale_data = TRUE)
 }
 \keyword{datasets}

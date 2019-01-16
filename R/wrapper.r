@@ -5,6 +5,8 @@
 #'
 #' @param tour The result of `tourr::save_history` or `manual_tour`.
 #' @param data Optional, number of columns must match that of `tour`.
+#' @param render_type Which graphics to render to. Defaults to render_plotly, 
+#'   alternative use render_gganimate.
 #' @param ... Optionally pass addition arguments to `plotly::animation_opts`.
 #' @export
 #' @examples
@@ -14,6 +16,9 @@
 #' play_tour(tour = tpath, data = flea_std)
 play_tour <- function(tour,
                       data = NULL,
+                      render_type = render_plotly, # alt render_gganimate.
+                      cat_var     = NULL,
+                      fps         = 3,
                       ...) {
   # if data missing, but in tour take data from tour.
   if(is.null(data) & class(tour) == "history_array"){ 
@@ -28,10 +33,9 @@ play_tour <- function(tour,
   }
   
   slides <- create_slides(tour, data)
-  plotly_slideshow <- render_(slides, disp_type = "plotly",
-                                       cat_var, ...) 
+  slideshow <- render_type(slides, manip_col, cat_var, fps)
   
-  return(plotly_slideshow)
+  return(slideshow)
 }
 
 #' Render display of a manual tour of the passed data
@@ -40,35 +44,35 @@ play_tour <- function(tour,
 #' `render_()`. Allows the user to go from data to plotly object of 
 #' manual tour in one function. For use with other tour paths see play_tour().
 #' 
-#' @param data A [n, p] dim data to project, consisting of 
-#' only numeric variables (for coercion into matrix).
-#' @param basis A [p, d] dim orthonormal numeric matrix. If it's left null, a
-#' random basis will be created.
+#' @param data (n, p) dataset to project, consisting of numeric variables.
+#' @param basis A (p, d) dim orthonormal numeric matrix. If it's left null, a
+#'   random basis will be created.
 #' @param manip_var Integer column number or string exact column name of the.
-#' variable to manipulate. Required, no default.
+#'   variable to manipulate. Required, no default.
 #' @param manip_type String of the type of manipulation to use. 
-#' Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
-#' Yields to `theta` if set. Must set either `manip_type` or `theta`.
+#'   Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
+#'   Yields to `theta` if set. Must set either `manip_type` or `theta`.
 #' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
-#' reference frame. Typically set from manip_type in `proj_data()`. Supersedes 
-#' `manip_type`. Must set either `manip_type` or `theta`.
+#'   reference frame. Typically set from manip_type in `proj_data()`. Supersedes 
+#'   `manip_type`. Must set either `manip_type` or `theta`.
 #' @param phi_min Minimum value phi should move to. Phi is angle in radians of 
-#' the "out-of-plane" rotation, the z-axis of the reference frame. 
-#' Required, defaults to 0.
+#'   the "out-of-plane" rotation, the z-axis of the reference frame. Required, 
+#'   defaults to 0.
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
-#' the "out-of-plane" rotation, the z-axis of the reference frame. 
-#' Required, defaults to 2 * pi.
+#'   the "out-of-plane" rotation, the z-axis of the reference frame. Required, 
+#'   defaults to 2 * pi.
 #' @param n_slides The number of slide-interpolations to make for the tour.
-#' @param disp_type The graphics system to use. Defaults to 'plotly'.
 #' @param manip_col String of the color to highlight the `manip_var`.
-#' @param init_rescale_data When TRUE will apply `tourr::rescale()` on the data.
-#' Defaults to FALSE.
+#' @param render_type Which graphics to render to. Defaults to render_plotly, 
+#'   alternative use render_gganimate.
 #' @param cat_var Categorical variable, optionally used to set the data point 
-#' color and shape.
+#'   color and shape.
 #' @param fps Frames/slides shown per second. Defaults to 3.
+#' @param init_rescale_data When TRUE will apply `tourr::rescale()` on the data.
+#'   Defaults to FALSE.
 #' @param ... Optionally pass addition arguments to the `disp_type` options.
 #' @return An animation in `disp_type` graphics of the interpolated data and 
-#' the corresponding reference frame.
+#'   the corresponding reference frame.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
@@ -85,8 +89,8 @@ spinifex <- function(data,
                      phi_min     = 0,        # [radians]
                      phi_max     = .5 * pi,  # [radians]
                      n_slides    = 20,
-                     render_type = render_plotly, # alt render_gganimate.
                      manip_col   = "blue",   # color of manip_var
+                     render_type = render_plotly, # alt render_gganimate.
                      cat_var     = NULL,
                      fps         = 3,
                      init_rescale_data = FALSE) 
@@ -103,10 +107,7 @@ spinifex <- function(data,
                              n_slides = n_slides)
   
   slides <- create_slides(tour = manual_tour, data = data)
-  
-  slideshow <- render_type(slides = slides, 
-                           manip_col = manip_col, cat_var = cat_var,
-                           fps = fps)
+  slideshow <- render_type(slides, manip_col, cat_var, fps)
   
   return(slideshow)
 }

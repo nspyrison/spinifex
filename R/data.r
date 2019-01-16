@@ -26,16 +26,17 @@
 #'   \item Class, Class
 #' }
 #' @details 
-#' To reproducing this dataset:
+#' Reproducing this dataset:
+#' ```
+#' library("mlbench")
 #' 
-#' `library("mlbench")` \n
-#' 
-#' `d <- BreastCancer` \n
-#' `d <- d[!duplicated(d), ]` \n
-#' `d <- d[complete.cases(d), ]` \n
-#' `mat <- as.matrix(d[ , 2:9])` \n
-#' `mat <- apply(mat, 2, as.numeric)` \n
-#' `BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))` \n
+#' d <- mlbench::BreastCancer
+#' d <- d[!duplicated(d), ]
+#' d <- d[complete.cases(d), ]
+#' mat <- as.matrix(d[ , 2:9])
+#' mat <- apply(mat, 2, as.numeric)
+#' breastbancer <- dplyr::as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))
+#' ```
 #' @name breastcancer
 #' @docType data
 #' @format Data frame (tibble) with 675 observations on 10 variables: a factor 
@@ -43,7 +44,9 @@
 #' @keywords datasets
 #' @examples
 #'
-#' head(breastcancer)
+#' str(breastcancer)
+#' 
+#' spinifex(data = breastcancer[, 2:9], manip_var = 3, init_rescale_data = TRUE)
 "breastcancer"
 
 #' Sample dataset of daily weather observations from Canberra airport in Australia.
@@ -89,11 +92,12 @@
 #'   \item RISK_MM, The amount of rain. A kind of measure of the "risk".
 #'   \item RainTomorrow, The target variable. Did it rain tomorrow?
 #' }
-#' 
+#' @details 
 #' Reproducing this dataset:
-#' `library("rattle.data")`
-#' `weather <- as.tibble(weather[ , c(1,3:7,9,12:24)])`
-#'
+#' ```
+#' library("rattle.data")
+#' weather <- dplyr::as.tibble(weather[, c(1,3:7,9,12:24)])
+#' ```
 #' @name weather
 #' @docType data
 #' @format Data frame (tibble) of 366 observations of 20 variables, one year of 
@@ -108,7 +112,9 @@
 #' @keywords datasets
 #' @examples
 #'
-#' head(weather)
+#' str(weather)
+#' 
+#' spinifex(data = weather[, 2:17], manip_var = 5, init_rescale_data = TRUE)
 "weather"
 
 #' The wine dataset from the UCI Machine Learning Repository.
@@ -139,13 +145,20 @@
 #'   \item Hue, Hue
 #'   \item Dilution, D280/OD315 of diluted wines
 #'   \item Proline, Proline
-#'
+#' }
 #' @details 
+#' Reproducing this dataset:
+#' ```
+#' library("rattle.data")
+#' wine <- dplyr::as.tibble(wine)
+#' ```
 #' @name wine
 #' @docType data
 #' @format data frame (tibble) of 178 observations of 13 variables, target 
 #' class `Type` and 12 numeric variables.
 #' @examples
 #'
-#' head(wine)
+#' str(wine)
+#' 
+#' spinifex(data = wine[, 2:14], manip_var = 1, init_rescale_data = TRUE)
 "wine"

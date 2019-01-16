@@ -61,13 +61,15 @@ starting November 2007:
 \item RainTomorrow, The target variable. Did it rain tomorrow?
 }
 
-Reproducing this dataset:
-\code{library("rattle.data")}
-\code{weather <- as.tibble(weather[ , c(1,3:7,9,12:24)])}
+Reproducing this dataset:\preformatted{library("rattle.data")
+weather <- dplyr::as.tibble(weather[, c(1,3:7,9,12:24)])
+}
 }
 \examples{
 
-head(weather)
+str(weather)
+
+spinifex(data = weather[, 2:17], manip_var = 5, init_rescale_data = TRUE)
 }
 \references{
 Data source: http://www.bom.gov.au/climate/dwo/ and http://www.bom.gov.au/climate/data.

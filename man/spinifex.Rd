@@ -8,14 +8,13 @@
 \usage{
 spinifex(data, basis = NULL, manip_var, manip_type = "radial",
   theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 20,
-  render_type = render_plotly, manip_col = "blue", cat_var = NULL,
+  manip_col = "blue", render_type = render_plotly, cat_var = NULL,
   fps = 3, init_rescale_data = FALSE)
 }
 \arguments{
-\item{data}{A \link{n, p} dim data to project, consisting of
-only numeric variables (for coercion into matrix).}
+\item{data}{(n, p) dataset to project, consisting of numeric variables.}
 
-\item{basis}{A \link{p, d} dim orthonormal numeric matrix. If it's left null, a
+\item{basis}{A (p, d) dim orthonormal numeric matrix. If it's left null, a
 random basis will be created.}
 
 \item{manip_var}{Integer column number or string exact column name of the.
@@ -30,16 +29,19 @@ reference frame. Typically set from manip_type in \code{proj_data()}. Supersedes
 \code{manip_type}. Must set either \code{manip_type} or \code{theta}.}
 
 \item{phi_min}{Minimum value phi should move to. Phi is angle in radians of
-the "out-of-plane" rotation, the z-axis of the reference frame.
-Required, defaults to 0.}
+the "out-of-plane" rotation, the z-axis of the reference frame. Required,
+defaults to 0.}
 
 \item{phi_max}{Maximum value phi should move to. Phi is angle in radians of
-the "out-of-plane" rotation, the z-axis of the reference frame.
-Required, defaults to 2 * pi.}
+the "out-of-plane" rotation, the z-axis of the reference frame. Required,
+defaults to 2 * pi.}
 
 \item{n_slides}{The number of slide-interpolations to make for the tour.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}.}
+
+\item{render_type}{Which graphics to render to. Defaults to render_plotly,
+alternative use render_gganimate.}
 
 \item{cat_var}{Categorical variable, optionally used to set the data point
 color and shape.}
@@ -49,8 +51,6 @@ color and shape.}
 \item{init_rescale_data}{When TRUE will apply \code{tourr::rescale()} on the data.
 Defaults to FALSE.}
 
-\item{disp_type}{The graphics system to use. Defaults to 'plotly'.}
-
 \item{...}{Optionally pass addition arguments to the \code{disp_type} options.}
 }
 \value{
@@ -58,11 +58,14 @@ An animation in \code{disp_type} graphics of the interpolated data and
 the corresponding reference frame.
 }
 \description{
-spinifex is a package that allows for manual tours. Touring is a linear
-dimensionality reducetion method that projects objects from \code{p} down to \code{d}
-dimensions. Manual tours manipulate one selected variable by a given amount.
-spinifex can also consume tour paths generated in the tourr package and
-offers streamlined production of plotly graphics to animate the tour.
+spinifex is a package that is compatiable and extends the package \code{tourr}.
+It builds the functionality for manual tours, and adds the ability for any
+tour to be rendered as \code{plotly} or \code{gganimate} objects. Touring is a class
+of dimensionality reducetion that orthagonally projects data from \code{p} down
+to \code{d} dimensions, take a small change in \code{p}-space and interpolates again.
+Manual tours manipulate a selected variable to explore the local structure,
+particaularly effective after finding a interesting tour, perhaps via a
+guided tour.
 
 A wrapper function for \code{manual_tour()}, \code{create_slides()}, and
 \code{render_()}. Allows the user to go from data to plotly object of
@@ -73,7 +76,8 @@ It's main functions are:
 \itemize{
 \item \code{\link[=manual_tour]{manual_tour()}}
 \item \code{\link[=create_slides]{create_slides()}}
-\item \code{\link[=render_slideshow]{render_slideshow()}}
+\item \code{\link[=render_plotly]{render_plotly()}}
+\item \code{\link[=render_gganimate]{render_gganimate()}}
 \item \code{\link[=spinifex]{spinifex()}}, A wrapper function for the above.
 \item \code{\link[=play_tour]{play_tour()}}, A wrapper function which tourr tour paths can be used.
 }

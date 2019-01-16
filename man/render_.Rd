@@ -25,7 +25,7 @@ Typically called by \code{render_plotly()} or \code{render_gganimate()}. Takes t
 result of \code{create_slides()}, and renders them into a ggplot2 object.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)

@@ -8,7 +8,7 @@ view_basis(basis = create_identity_basis(6), labels = paste0("V",
   1:nrow(basis)), ...)
 }
 \arguments{
-\item{basis}{A \link{p, d} basis, XY linear combination of each dimension
+\item{basis}{A (p, d) basis, XY linear combination of each dimension
 (numeric variable).}
 
 \item{labels}{Optional, character vector of \code{p} length, add name to the axes

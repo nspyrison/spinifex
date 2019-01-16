@@ -3,12 +3,10 @@
 #' Takes the result of `manual_tour()` and projects the data over the 
 #' interpolated tour path of the reference frame.
 #'
-#' @param data A [n, p] dim data to project, consisting of only numeric 
-#' variables (for coercion into matrix).
-#' @param tour A [p, d, n_slides] dim array of a tour. Ie) The output of 
-#' `manual_tour`.
-#' @return A list containing the [p, d, n_slides] dim basis slides array, and
-#' the [n, d, n_slides] dim data slides array.
+#' @param data (n, p) dataset to project, consisting of numeric variables.
+#' @param tour A (p, d, n_slides) array of a tour, the output of `manual_tour`.
+#' @return A list containing the (p, d, n_slides) basis slides array, and
+#'   the (n, d, n_slides) data slides array.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
@@ -78,13 +76,13 @@ create_slides <- function(tour,
 #' @param slides The result of `create_slides()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
-#' color and shape.
+#'   color and shape.
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @return A ggplot2 object to be called by `render_plotly()` or 
-#' `render_gganimate()`.
+#'   `render_gganimate()`.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
@@ -172,7 +170,7 @@ render_ <- function(slides,
 #' @param slides The result of `create_slides()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
-#' color and shape.
+#'   color and shape.
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @export
@@ -211,7 +209,7 @@ return(ggp)
 #' @param slides The result of `create_slides()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
-#' color and shape.
+#'   color and shape.
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @export

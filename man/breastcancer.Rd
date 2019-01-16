@@ -37,19 +37,20 @@ Data frame (tibble) with 675 observations on 10 variables: a factor Id,
 \item Class, Class
 }
 
-To reproducing this dataset:
+Reproducing this dataset:\preformatted{library("mlbench")
 
-\code{library("mlbench")} \n
-
-\code{d <- BreastCancer} \n
-\code{d <- d[!duplicated(d), ]} \n
-\code{d <- d[complete.cases(d), ]} \n
-\code{mat <- as.matrix(d[ , 2:9])} \n
-\code{mat <- apply(mat, 2, as.numeric)} \n
-\code{BreastCancer <- as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))} \n
+d <- mlbench::BreastCancer
+d <- d[!duplicated(d), ]
+d <- d[complete.cases(d), ]
+mat <- as.matrix(d[ , 2:9])
+mat <- apply(mat, 2, as.numeric)
+breastbancer <- dplyr::as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))
+}
 }
 \examples{
 
-head(breastcancer)
+str(breastcancer)
+
+spinifex(data = breastcancer[, 2:9], manip_var = 3, init_rescale_data = TRUE)
 }
 \keyword{datasets}

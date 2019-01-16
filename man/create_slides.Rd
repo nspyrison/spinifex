@@ -7,15 +7,13 @@
 create_slides(tour, data = NULL)
 }
 \arguments{
-\item{tour}{A \link{p, d, n_slides} dim array of a tour. Ie) The output of
-\code{manual_tour}.}
+\item{tour}{A (p, d, n_slides) array of a tour, the output of \code{manual_tour}.}
 
-\item{data}{A \link{n, p} dim data to project, consisting of only numeric
-variables (for coercion into matrix).}
+\item{data}{(n, p) dataset to project, consisting of numeric variables.}
 }
 \value{
-A list containing the \link{p, d, n_slides} dim basis slides array, and
-the \link{n, d, n_slides} dim data slides array.
+A list containing the (p, d, n_slides) basis slides array, and
+the (n, d, n_slides) data slides array.
 }
 \description{
 Takes the result of \code{manual_tour()} and projects the data over the
