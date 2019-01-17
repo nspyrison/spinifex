@@ -100,18 +100,17 @@ Optionally we can specify:
 * `Phi_to`, the end angle to rotate the variable to, in the z direction of the basis plane.
 * `n_slides`, the number of increments to calculate phi between the from and to values.
 
-Watch the projection, via `slideshow()`, coloring observations by their species.
 
 ```{r}
 mtour <- manual_tour(basis = rb, manip_var = 1)
-  # manual_tour calls tourr::orthonormalise() that travis CI complains about as it isn't on the CRAN version. Added refrence to the GH version of tourr with Nick T.
 sshow <- create_slides(tour = mtour, data = wine_std)
-render_slideshow(slides = sshow)
+render_plotly(slides = sshow)
 ```
 
 
 ## Example 2 - Rotating a glyph map
 
+TODO: is this the target??
 ```{r}
 library(GGally)
 nasa <- GGally::nasa
@@ -134,7 +133,7 @@ glyph1
 ```{r}
 # Initialize
 nasa_std <- cbind(nasa[c("x", "y")], tourr::rescale(nasa[c("day", "surftemp")]))
-bas <- create_identity_basis(p = ncol(nasa_std))
+bas <- tourr::basis_init(ncol(nasa_std), 2)
 
 # Horizontal roation
 m_sp_x = create_manip_space(basis = bas, manip_var = 3)
@@ -147,23 +146,23 @@ rot_mat_y <- rotate_manip_space(manip_space = m_sp_y, pi/2, pi/6)
 rot_y <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_y))
 
 library(dplyr)
-rot_xy <- bind_cols(rot_x, rot_y)
-rot_xy <- select(rot_xy, x, y1)
-rot_xy <- rename(rot_xy, x=x, y=y1)
-
-ggplot(rot_xy, aes(x=x, y=y)) + geom_point(size=0.3)
+# rot_xy <- bind_cols(rot_x, rot_y)
+# rot_xy <- select(rot_xy, x, y1)
+# rot_xy <- rename(rot_xy, x=x, y=y1)
+# 
+# ggplot(rot_xy, aes(x=x, y=y)) + geom_point(size=0.3)
 ```
 
 ```{r}
 # Horizonal manual rotation
 tour_x <- manual_tour(basis = bas, manip_var = 3, manip_type = "horizontal")
 slides_x <- create_slides(tour = tour_x, data = nasa_std)
-render_slideshow(slides = slides_x)
+# render_plotly(slides = slides_x) # Way too heavy
 
 # Vertical manual rotation
 tour_y <- manual_tour(basis = bas, manip_var = 4, manip_type = "vertical")
 slides_y <- create_slides(tour = tour_y, data = nasa_std)
-render_slideshow(slides = slides_y)
+# render_plotly(slides = slides_y) # Way too heavy
 ```
 
 
@@ -208,7 +207,7 @@ fbasis <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
 
 ftour <- manual_tour(basis = fbasis, manip_var = 4)
 fslides <- create_slides(tour = ftour, data = flea_std)
-render_slideshow(slides = fslides)
+render_plotly(slides = fslides)
 ```
 
 ```{r}
@@ -230,12 +229,12 @@ abbreviate(colnames(flea_std),3)
 
 
 ```{r}
-# render_slideshow(tr1_sshow)
-# render_slideshow(tr2_sshow)
-# render_slideshow(hed_sshow)
-# render_slideshow(ad1_sshow)
-# render_slideshow(ad2_sshow)
-# render_slideshow(ad3_sshow)
+# render_plotly(tr1_sshow)
+# render_plotly(tr2_sshow)
+# render_plotly(hed_sshow)
+# render_plotly(ad1_sshow)
+# render_plotly(ad2_sshow)
+# render_plotly(ad3_sshow)
 ```
 
 
