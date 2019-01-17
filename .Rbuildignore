@@ -1,21 +1,4 @@
-
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\instdoc\$
-^\inst\doc\*$
-^\inst\doc\.*$
-^\inst\doc\*.r$
-^\inst\doc\.*.r$
-^\inst\doc\.*\.r$
-^\inst\doc\__scratchpad\.r$
-^\inst\doc\_attr scratchpad\.r$
-^\inst\doc\_data scratchpad\.r$
-^\inst\doc\_plotly min repex\.r$
-^\inst\doc\_plotly scratchpad\.r$
-^\inst\doc\_plotly ts2\.r$
-^\inst\doc\_plotly viewer ts\.r$
-^\inst\doc\_ref frame scratchpad\.r$
-^\inst\doc\di's tests_old\.r$
 
-^/inst/doc/_attr scratchpad\.r$

@@ -16,7 +16,7 @@
 #' rb <- tourr::basis_random(4, 2)
 #' view_basis(rb)
 #' @export
-view_basis <- function(basis = create_identity_basis(6), 
+view_basis <- function(basis = tourr::basis_init(6,2), 
                        labels = paste0("V", 1:nrow(basis)), 
                        ...) {
   stopifnot(class(basis) %in% c("matrix", "data.frame"))
@@ -27,12 +27,12 @@ view_basis <- function(basis = create_identity_basis(6),
   )
   colnames(basis)[1:2] <- c("X", "Y")
   
-  plot(0, asp = 1, type = 'n', axes = FALSE, ann = FALSE,
-       xlim = c(-1, 1), ylim = c(-1, 1))
-  segments(0, 0, basis[, 1], basis[, 2], ...)
+  graphics::plot(0, asp = 1, type = 'n', axes = FALSE, ann = FALSE,
+                 xlim = c(-1, 1), ylim = c(-1, 1))
+  graphics::segments(0, 0, basis[, 1], basis[, 2], ...)
   theta <- seq(0, 2 * pi, length = 360)
-  lines(cos(theta), sin(theta), ...)
-  text(basis[, 1], basis[, 2], label = labels, ...)
+  graphics::lines(cos(theta), sin(theta), ...)
+  graphics::text(basis[, 1], basis[, 2], label = labels, ...)
   
   return(basis)
 }

@@ -26,11 +26,17 @@
 "_PACKAGE"
 
 globalVariables(c("cat_var",
-                  "manip_type",
-                  "theta",
+                  "disp_type",
                   "phi_min",
                   "phi_max",
+                  "manip_col",
+                  "manip_type",
                   "n_slides",
-                  "disp_type",
-                  "manip_col"
+                  "slide",
+                  "theta"
 ))
+
+### Jenny Bryan's solution: 
+### https://github.com/STAT545-UBC/Discussion/issues/451#issuecomment-264598618
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+# if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
