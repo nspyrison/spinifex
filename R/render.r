@@ -3,8 +3,8 @@
 #' Takes the result of `manual_tour()` and projects the data over the 
 #' interpolated tour path of the reference frame.
 #'
-#' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param tour A (p, d, n_slides) array of a tour, the output of `manual_tour`.
+#' @param data Optional, (n, p) dataset to project, consisting of numeric variables.
 #' @return A list containing the (p, d, n_slides) basis slides array, and
 #'   the (n, d, n_slides) data slides array.
 #' @export
@@ -17,49 +17,36 @@
 
 create_slides <- function(tour,
                           data = NULL) {
-  # Assertions
-  p <- nrow(tour[,, 1])
-  if (!is.null(data)) stopifnot(ncol(data) == p)
-  if (!is.null(data) & !is.matrix(data)) data <- as.matrix(data)
-  stopifnot(is.array(tour))
   
   # Initialize
+  if (!is.matrix(data)) data <- as.matrix(data)
+  p <- nrow(tour[,, 1])
   n_slides     <- dim(tour)[3]
   basis_slides <- NULL
+  data_slides  <- NULL
   
-  if(!is.null(data)) { # IF data exists (ie. spinifex case) THEN: 
-    data_slides <- NULL
+  for (slide in 1:n_slides) {
+    bas_slide <- dplyr::as_tibble(cbind(tour[,, slide], slide))
+    basis_slides <- rbind(basis_slides, bas_slide)
+  }
+  
+  if(!is.null(data)) {
     for (slide in 1:n_slides) {
-      # make bases slides, and
-      curr_slide <- dplyr::as_tibble(tour[,, slide])
-      curr_slide$slide <- slide
-      basis_slides <- rbind(basis_slides, curr_slide)
-      # make data slides
-      curr_slide <- dplyr::as_tibble(data %*% tour[,, slide])
-      curr_slide$V1 <- curr_slide$V1 - mean(curr_slide$V1)
-      curr_slide$V2 <- curr_slide$V2 - mean(curr_slide$V2)
-      curr_slide$slide <- slide
+      dat_slide <- cbind(data %*% tour[,, slide], slide)
+      dat_slide[, 1] <- scale(dat_slide[, 1], scale = FALSE)
+      dat_slide[, 2] <- scale(dat_slide[, 2], scale = FALSE)
       data_slides <- rbind(data_slides, curr_slide)
     }
-  } else {# ELSE, (if data is NULL), make bases slides:
-    for (slide in 1:n_slides) {
-      curr_slide <- dplyr::as_tibble(tour[,, slide])
-      curr_slide$slide <- slide
-      basis_slides <- rbind(basis_slides, curr_slide)
-    }
   }
   
-  # Initiate labels
-  lab_abbr <- if(!is.null(data)) {abbreviate(colnames(data), 3)
-  } else paste0("V", 1:p)
-  lab_abbr <- rep(lab_abbr, n_slides)
-  basis_slides$lab_abbr <- lab_abbr
+  # Initialize labels, attribute
+  lab_abbr <- 
+    if(!is.null(data)) {
+      abbreviate(colnames(data), 3)
+    } else paste0("V", 1:p)
+  basis_slides$lab_abbr <- rep(lab_abbr, n_slides)
   
-  # Keep manip_var as attribute if it's not NULL
-  if (!is.null(attributes(tour)$manip_var)) {
-    manip_var <- attributes(tour)$manip_var
-    attr(basis_slides, "manip_var") <- manip_var
-  }
+  attr(basis_slides, "manip_var") <- attributes(tour)$manip_var
   
   slides <- if(!is.null(data)) {
     list(basis_slides = basis_slides, data_slides = data_slides)
@@ -133,7 +120,7 @@ render_ <- function(slides,
   gg2 <- gg1 + suppressWarnings( # Supress for unused aes "frame".
     ggplot2::geom_segment( 
     data = basis_slides, size = siz_v, colour = col_v,
-    mapping = ggplot2::aes(x = basis_slides$V1, y = basis_slides$V2, 
+    mapping = ggplot2::aes(x = basis_slides[, 1], y = basis_slides[, 2], 
                            xend = 0, yend = 0, frame = basis_slides$slide)
     )
   )
@@ -141,7 +128,7 @@ render_ <- function(slides,
   # Reference frame text
   gg3 <- gg2 # + suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
   # data = basis_slides, size = 4, hjust = 0, vjust = 0, colour = "black",
-  # mapping = ggplot2::aes(x = basis_slides$V1, y = basis_slides$V2, 
+  # mapping = ggplot2::aes(x = basis_slides[, 1], y = basis_slides[, 2], 
   #                        frame = basis_slides$slide, label = lab_abbr)
   # ))
   
@@ -155,7 +142,7 @@ render_ <- function(slides,
   gg4 <- gg3 + suppressWarnings(ggplot2::geom_point( # for unused aes "frame".
     data = data_slides, size = .7, 
     color = cat_var, shape = cat_var + 15,
-    mapping = ggplot2::aes(x = data_slides$V1, y = data_slides$V2,
+    mapping = ggplot2::aes(x = data_slides[, 1], y = data_slides[, 2],
                            frame = data_slides$slide)
   ))
   
