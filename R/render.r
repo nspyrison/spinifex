@@ -81,8 +81,8 @@ create_slides <- function(tour,
 #' render_(slides = sshow, cat_var = flea$species)
 render_ <- function(slides,
                     manip_col  = "blue", # string of color name
-                    cat_var    = NULL,   # cat var to color data and pch
-                    ...) {
+                    cat_var    = NULL   # cat var to color data and pch
+) {
   # Initialize
   if (!is.null(colnames(basis))) labels <- abbreviate(colnames(basis), 3)
   if (length(slides) == 2)
@@ -127,8 +127,7 @@ render_ <- function(slides,
     ggplot2::geom_segment( 
     data = basis_slides, size = siz_v, colour = col_v,
     mapping = ggplot2::aes(x = basis_slides[, 1], y = basis_slides[, 2], 
-                           xend = 0, yend = 0, frame = basis_slides$slide)
-    )
+                           xend = 0, yend = 0, frame = basis_slides$slide))
   )
   # Text labels
   gg3 <- gg2 # + suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
@@ -141,8 +140,8 @@ render_ <- function(slides,
     data = data_slides, size = .7, 
     color = cat_v, shape = cat_v + 15,
     mapping = ggplot2::aes(x = data_slides[, 1], y = data_slides[, 2],
-                           frame = data_slides$slide)
-  ))
+                           frame = data_slides$slide))
+  )
   
   return(gg4)
 }
@@ -166,6 +165,8 @@ render_ <- function(slides,
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- create_slides(tour = mtour, data = flea_std)
 #' render_plotly(slides = sshow)
+#' 
+#' render_plotly(slides = sshow, cat_var = flea$species)
 render_plotly <- function(slides,
                           manip_col = "blue", # string of color name
                           cat_var   = NULL,   # cat var to color data and pch
@@ -173,14 +174,15 @@ render_plotly <- function(slides,
                           ...) 
 {
   # Initialize
-  gg <- render_(slides, manip_col, cat_var, ...)
+  gg <- render_(slides, manip_col, cat_var)
   
   ggp <- plotly::ggplotly(gg)
   ggp <- plotly::animation_opts(p = ggp, frame = 1 / fps * 1000, 
                                 transition = 0, redraw = FALSE, ...)
   ggp <- plotly::layout(
     ggp, showlegend = F, yaxis = list(showgrid = F, showline = F),
-    xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F)
+    xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F),
+    ...
   )
 
 return(ggp)
@@ -205,6 +207,8 @@ return(ggp)
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- create_slides(tour = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
+#' 
+#' render_gganimate(slides = sshow, cat_var = flea$species)
 render_gganimate <- function(slides,
                              manip_col = "blue", # string of color name
                              cat_var   = NULL,   # cat var to color data and pch
