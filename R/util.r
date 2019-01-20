@@ -14,19 +14,11 @@
 #' 
 #' @examples 
 #' rb <- tourr::basis_random(4, 2)
-#' view_basis(rb)
+#' view_basis(basis = rb)
 #' @export
 view_basis <- function(basis = tourr::basis_init(6,2), 
                        labels = paste0("V", 1:nrow(basis)), 
                        ...) {
-  stopifnot(class(basis) %in% c("matrix", "data.frame"))
-  
-  basis <- cbind(basis, 
-                 norm_XY = sqrt(basis[,1]^2 + basis[,2]^2), 
-                 theta   = atan(basis[,2] / basis[,1])
-  )
-  colnames(basis)[1:2] <- c("X", "Y")
-  
   graphics::plot(0, asp = 1, type = 'n', axes = FALSE, ann = FALSE,
                  xlim = c(-1, 1), ylim = c(-1, 1))
   graphics::segments(0, 0, basis[, 1], basis[, 2], ...)
