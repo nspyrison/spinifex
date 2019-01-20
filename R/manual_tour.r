@@ -13,14 +13,14 @@
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
-create_manip_space <- function(basis, manip_var) {
+create_manip_space <- function(basis, 
+                               manip_var) {
   if (!is.matrix(basis)) as.matrix(basis)
-  stopifnot(class(manip_var) == "numeric")
-  
-  z            <- rep(0, len = nrow(basis))
-  z[manip_var] <- 1
-  manip_space  <- tourr::orthonormalise(cbind(basis, z))
-  rownames(manip_space) <- colnames(basis)
+
+  e            <- rep(0, len = nrow(basis))
+  e[manip_var] <- 1
+  manip_space  <- tourr::orthonormalise(cbind(basis, e))
+  colnames(manip_space) <- NULL
   
   return(manip_space)
 }
@@ -28,13 +28,13 @@ create_manip_space <- function(basis, manip_var) {
 #' Rotate and return the manipulation space
 #'
 #' Typically called by `manual_tour()`. Rotates a (p, d+1) manipulation space 
-#' matrix by (d+1, d+1) rotation matrix, returning (p, d+1)  matrix; 
-#' the XYZ components of the rotation space. XY are the linear combination of
-#' the variables for a 2d projection.
+#' matrix by (d+1, d+1) rotation matrix, returning (p, d+1) matrix rotation 
+#' space. The first 2 variables of which are the linear combination of the 
+#' variables for a 2d projection.
 #'
 #' @param manip_space A (p, d+1) dim manipulation space to be rotated.
 #' @param theta Angle in radians of rotation "in-plane", on the XY plane of the 
-#'   reference frame. Typically set from manip_type in proj_data().
+#'   reference frame. Typically set from manip_type in `proj_data()`.
 #' @param phi Angle in radians of rotation "out-of-plane", the z axis of the 
 #'   reference frame. Effectively changes the norm of XY contributions of the 
 #'   manip_var.
