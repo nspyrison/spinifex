@@ -25,21 +25,23 @@ create_slides <- function(tour,
   basis_slides <- NULL
   data_slides  <- NULL
   
+  # basis; array to long df (tibble)
   for (slide in 1:n_slides) {
     bas_slide <- dplyr::as_tibble(cbind(tour[,, slide], slide))
     basis_slides <- rbind(basis_slides, bas_slide)
   }
   
+  # data; if exists,  array to long df (tibble)
   if(!is.null(data)) {
     for (slide in 1:n_slides) {
       dat_slide <- cbind(data %*% tour[,, slide], slide)
       dat_slide[, 1] <- scale(dat_slide[, 1], scale = FALSE)
       dat_slide[, 2] <- scale(dat_slide[, 2], scale = FALSE)
-      data_slides <- rbind(data_slides, curr_slide)
+      data_slides <- rbind(data_slides, dat_slide)
     }
   }
   
-  # Initialize labels, attribute
+  # Add labels, attribute, and list
   lab_abbr <- 
     if(!is.null(data)) {
       abbreviate(colnames(data), 3)
@@ -75,35 +77,24 @@ create_slides <- function(tour,
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- create_slides(tour = mtour, data = flea_std)
 #' render_(slides = sshow)
+#' 
+#' render_(slides = sshow, cat_var = flea$species)
 render_ <- function(slides,
                     manip_col  = "blue", # string of color name
                     cat_var    = NULL,   # cat var to color data and pch
-                    ...) 
-{
+                    ...) {
   # Initialize
+  if (!is.null(colnames(basis))) labels <- abbreviate(colnames(basis), 3)
   if (length(slides) == 2)
-    data_slides <- slides[[2]]
-  basis_slides  <- slides[[1]]
+    data_slides <- data.frame(slides[[2]])
+  basis_slides  <- data.frame(slides[[1]])
+  manip_var     <- attributes(slides$basis_slides)$manip_var
+  n_slides      <- max(basis_slides$slide)
+  p             <- nrow(basis_slides) / n_slides
+  ## Circle
   angle         <- seq(0, 2 * pi, length = 360)
   circ          <- data.frame(x = cos(angle), y = sin(angle))
-  
-  ### Graphics
-  # Plot reference frame circle
-  gg1 <- 
-    ggplot2::ggplot() + ggplot2::geom_path(
-      data = circ, color = "grey80", size = .3, inherit.aes = F,
-      mapping = ggplot2::aes(x = circ$x, y = circ$y)
-    ) +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
-    ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none")
-  
-  # Initialize
-  n_slides  <- length(unique(basis_slides$slide))
-  p         <- nrow(basis_slides[,, 1]) / n_slides
-  manip_var <- attributes(basis_slides)$manip_var
-  
-  # Size and color of manip_var on the ref frame
+  ## manip var asethetics
   if(!is.null(manip_var)) {
     col_v            <- rep("black", p) 
     col_v[manip_var] <- manip_col
@@ -115,8 +106,23 @@ render_ <- function(slides,
     col_v <- "black"
     siz_v <- 0.3
   }
+  ## cat_var asethetics
+  if(!is.null(cat_var)) {
+    if (!is.numeric(cat_var)) cat_var <- as.numeric(as.factor(cat_var))
+    cat_v <- rep(cat_var, n_slides)
+  } else cat_v <- 1
   
-  # Plot refrence frame axes
+  # Graphics (reference frame)
+  ## Circle and options
+  gg1 <- 
+    ggplot2::ggplot() + ggplot2::geom_path(
+      data = circ, color = "grey80", size = .3, inherit.aes = F,
+      mapping = ggplot2::aes(x = circ$x, y = circ$y)
+    ) +
+    ggplot2::scale_color_brewer(palette = "Dark2") +
+    ggplot2::theme_void() +
+    ggplot2::theme(legend.position = "none")
+  ## Axes line segments
   gg2 <- gg1 + suppressWarnings( # Supress for unused aes "frame".
     ggplot2::geom_segment( 
     data = basis_slides, size = siz_v, colour = col_v,
@@ -124,24 +130,16 @@ render_ <- function(slides,
                            xend = 0, yend = 0, frame = basis_slides$slide)
     )
   )
-  
-  # Reference frame text
+  # Text labels
   gg3 <- gg2 # + suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
   # data = basis_slides, size = 4, hjust = 0, vjust = 0, colour = "black",
   # mapping = ggplot2::aes(x = basis_slides[, 1], y = basis_slides[, 2], 
   #                        frame = basis_slides$slide, label = lab_abbr)
   # ))
-  
-  # Given cat_var, set dat point color and shape
-  if(!is.null(cat_var)) {
-    if (!is.numeric(cat_var)) cat_var <- as.numeric(as.factor(cat_var))
-    cat_var <- rep(cat_var, n_slides)
-  } else cat_var <- 1
-  
-  # Plot data projection scatterplot
+  # Projected data scatterplot
   gg4 <- gg3 + suppressWarnings(ggplot2::geom_point( # for unused aes "frame".
     data = data_slides, size = .7, 
-    color = cat_var, shape = cat_var + 15,
+    color = cat_v, shape = cat_v + 15,
     mapping = ggplot2::aes(x = data_slides[, 1], y = data_slides[, 2],
                            frame = data_slides$slide)
   ))
