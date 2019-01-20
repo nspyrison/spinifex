@@ -5,18 +5,14 @@
 \title{Produce the series of projection bases to rotate a variable into and out
 of a projection}
 \usage{
-manual_tour(basis = NULL, manip_var = NULL, manip_type = "radial",
-  theta = NULL, phi_min = 0, phi_max = 0.5 * pi, n_slides = 20)
+manual_tour(basis = NULL, manip_var, theta = NULL, phi_min = 0,
+  phi_max = 0.5 * pi, n_slides = 20)
 }
 \arguments{
 \item{basis}{A (p, d) dim orthonormal matrix. Required, no default.}
 
 \item{manip_var}{Integer column number or string exact column name of the.
 variable to manipulate. Required, no default.}
-
-\item{manip_type}{String of the type of manipulation to use.
-Defaults to "radial". Alternatively accepts "horizontal" or "vertical".
-Yields to \code{theta} if set. Must set either \code{manip_type} or \code{theta}.}
 
 \item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the
 reference frame. Typically set from manip_type in \code{proj_data}. Supersedes
@@ -31,6 +27,10 @@ the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
 
 \item{n_slides}{Number of slides to create. Defaults to 20.}
+
+\item{manip_type}{String of the type of manipulation to use.
+Defaults to "radial". Alternatively accepts "horizontal" or "vertical".
+Yields to \code{theta} if set. Must set either \code{manip_type} or \code{theta}.}
 }
 \value{
 A (p, d, n_slides) dim array of the manual tour. Containing
@@ -38,11 +38,9 @@ A (p, d, n_slides) dim array of the manual tour. Containing
 \code{phi_max}, and back to start.
 }
 \description{
-Typically called by \code{create_slides()}. The manual tour of the \code{manip_var}.
-Given a (p, d) orthonormal basis, creates an array of \code{n_slides} bases
-extending the norm of \code{manip_var}, via cos(phi), from \code{phi_max}, to
-\code{phi_min}, then back to the starting position (by default: from start, to 0,
-to pi/2, back to start).
+Typically called by \code{create_slides()}. An array of projections,
+the manual tour of the \code{manip_var}, which is rotated from phi's starting
+position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])

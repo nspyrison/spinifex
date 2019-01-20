@@ -10,7 +10,7 @@ rotate_manip_space(manip_space, theta, phi)
 \item{manip_space}{A (p, d+1) dim manipulation space to be rotated.}
 
 \item{theta}{Angle in radians of rotation "in-plane", on the XY plane of the
-reference frame. Typically set from manip_type in proj_data().}
+reference frame. Typically set from manip_type in \code{proj_data()}.}
 
 \item{phi}{Angle in radians of rotation "out-of-plane", the z axis of the
 reference frame. Effectively changes the norm of XY contributions of the
@@ -21,9 +21,9 @@ A (p, d+1) orthonormal matrix of the rotated (manipulation) space.
 }
 \description{
 Typically called by \code{manual_tour()}. Rotates a (p, d+1) manipulation space
-matrix by (d+1, d+1) rotation matrix, returning (p, d+1)  matrix;
-the XYZ components of the rotation space. XY are the linear combination of
-the variables for a 2d projection.
+matrix by (d+1, d+1) rotation matrix, returning (p, d+1) matrix rotation
+space. The first 2 variables of which are the linear combination of the
+variables for a 2d projection.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])

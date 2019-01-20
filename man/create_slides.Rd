@@ -9,7 +9,7 @@ create_slides(tour, data = NULL)
 \arguments{
 \item{tour}{A (p, d, n_slides) array of a tour, the output of \code{manual_tour}.}
 
-\item{data}{(n, p) dataset to project, consisting of numeric variables.}
+\item{data}{Optional, (n, p) dataset to project, consisting of numeric variables.}
 }
 \value{
 A list containing the (p, d, n_slides) basis slides array, and

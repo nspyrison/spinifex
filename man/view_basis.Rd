@@ -4,7 +4,7 @@
 \alias{view_basis}
 \title{Plot projection frame and return the axes table.}
 \usage{
-view_basis(basis = create_identity_basis(6), labels = paste0("V",
+view_basis(basis = tourr::basis_init(6, 2), labels = paste0("V",
   1:nrow(basis)), ...)
 }
 \arguments{

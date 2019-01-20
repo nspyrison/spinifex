@@ -4,7 +4,7 @@
 \alias{render_}
 \title{Render the ggplot before the animation package}
 \usage{
-render_(slides, manip_col = "blue", cat_var = NULL, ...)
+render_(slides, manip_col = "blue", cat_var = NULL)
 }
 \arguments{
 \item{slides}{The result of \code{create_slides()}.}
@@ -31,4 +31,6 @@ rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- create_slides(tour = mtour, data = flea_std)
 render_(slides = sshow)
+
+render_(slides = sshow, cat_var = flea$species)
 }
