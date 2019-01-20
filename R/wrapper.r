@@ -47,8 +47,7 @@ play_tour <- function(tour,
 #' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix. If it's left null, a
 #'   random basis will be created.
-#' @param manip_var Integer column number or string exact column name of the.
-#'   variable to manipulate. Required, no default.
+#' @param manip_var Number of the column/dimension to rotate.
 #' @param manip_type String of the type of manipulation to use. 
 #'   Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
 #'   Yields to `theta` if set. Must set either `manip_type` or `theta`.

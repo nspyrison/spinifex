@@ -17,8 +17,7 @@ spinifex(data, basis = NULL, manip_var, manip_type = "radial",
 \item{basis}{A (p, d) dim orthonormal numeric matrix. If it's left null, a
 random basis will be created.}
 
-\item{manip_var}{Integer column number or string exact column name of the.
-variable to manipulate. Required, no default.}
+\item{manip_var}{Number of the column/dimension to rotate.}
 
 \item{manip_type}{String of the type of manipulation to use.
 Defaults to "radial". Alternatively accepts "horizontal" or "vertical".

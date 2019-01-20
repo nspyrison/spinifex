@@ -4,8 +4,7 @@
 \alias{view_basis}
 \title{Plot projection frame and return the axes table.}
 \usage{
-view_basis(basis = tourr::basis_init(6, 2), labels = paste0("V",
-  1:nrow(basis)), ...)
+view_basis(basis, labels = paste0("V", 1:nrow(basis)))
 }
 \arguments{
 \item{basis}{A (p, d) basis, XY linear combination of each dimension
@@ -13,13 +12,9 @@ view_basis(basis = tourr::basis_init(6, 2), labels = paste0("V",
 
 \item{labels}{Optional, character vector of \code{p} length, add name to the axes
 in the reference frame, typically the variable names.}
-
-\item{...}{Optionally pass additional arguments to \code{segments}, \code{lines}, or
-\code{text}.}
 }
 \value{
-The basis, norm, and theta, also plots the reference frame in base
-graphics.
+ggplot object of the basis.
 }
 \description{
 Uses base graphics to plot the circle with axes representing
@@ -27,5 +22,5 @@ the projection frame. Returns the corresponding table.
 }
 \examples{
 rb <- tourr::basis_random(4, 2)
-view_basis(rb)
+view_basis(basis = rb)
 }

@@ -9,7 +9,7 @@ create_manip_space(basis, manip_var)
 \arguments{
 \item{basis}{A (p, d) orthonormal matrix.}
 
-\item{manip_var}{Number of the dimension (numeric variable) to rotate.}
+\item{manip_var}{Number of the column/dimension to rotate.}
 }
 \value{
 A (p, d+1) orthonormal matrix, the manipulation space.

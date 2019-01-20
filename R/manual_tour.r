@@ -5,7 +5,7 @@
 #' vector, with manip_var set to 1.
 #'
 #' @param basis A (p, d) orthonormal matrix.
-#' @param manip_var Number of the dimension (numeric variable) to rotate.
+#' @param manip_var Number of the column/dimension to rotate.
 #' @return A (p, d+1) orthonormal matrix, the manipulation space.
 #' @export
 #' @examples
