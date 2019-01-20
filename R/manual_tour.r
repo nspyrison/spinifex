@@ -76,11 +76,9 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' Produce the series of projection bases to rotate a variable into and out 
 #' of a projection
 #'
-#' Typically called by `create_slides()`. The manual tour of the `manip_var`.
-#' Given a (p, d) orthonormal basis, creates an array of `n_slides` bases 
-#' extending the norm of `manip_var`, via cos(phi), from `phi_max`, to 
-#' `phi_min`, then back to the starting position (by default: from start, to 0,
-#' to pi/2, back to start).
+#' Typically called by `create_slides()`. An array of projections, 
+#' the manual tour of the `manip_var`, which is rotated from phi's starting 
+#' position to `phi_max`, to `phi_min`, and back to the start position.
 #'
 #' @param basis A (p, d) dim orthonormal matrix. Required, no default.
 #' @param manip_var Integer column number or string exact column name of the.
@@ -108,40 +106,24 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' manual_tour(basis = rb, manip_var = 4)
 manual_tour <- function(basis = NULL,
-                        manip_var = NULL,  # column number
-                        manip_type = "radial", #alt: "horizontal" and "vertical"
+                        manip_var,  # column number
+                        # manip_type = "radial", #alt: "horizontal" and "vertical"
                         theta = NULL,      # (radians)
                         phi_min = 0,       # (radians)
                         phi_max = .5 * pi, # (radians)
-                        n_slides = 20) { 
-  manip_type <- tolower(manip_type)
-  if (!is.matrix(basis)) basis <- as.matrix(basis)
-  # Assertions
-  stopifnot(nrow(basis) > 2)
-  stopifnot(!is.null(manip_var))
-  stopifnot(manip_var <= nrow(basis))
-  stopifnot(manip_type %in% c("radial", "horizontal", "vertical") 
-            | !is.null(theta))
+                        n_slides = 20) {
   
-  # Handle args
-  if (!is.null(theta) & !is.null(manip_type))
-    message("Non-null theta used with non-null manip_type. Selecting theta over manip_type.")
-  if (is.null(theta) & manip_type == "horizontal") theta <- 0
-  if (is.null(theta) & manip_type == "vertical")   theta <- pi/2
-  if (is.null(theta) & manip_type == "radial")
-    theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  if (!is.matrix(basis)) basis <- as.matrix(basis)
+  if (is.null(theta))    theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  stopifnot(phi_start < phi_min | phi_start > phi_max)
   
   # Initalize
-  phi_start   <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-  walk_min    <- min(phi_min, phi_max, phi_start)
-  walk_max    <- max(phi_min, phi_max, phi_start)
-  phi_inc     <- 2 * abs(walk_max - walk_min) / (n_slides - 3)
-  manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
-  p           <- nrow(basis)
-  d           <- ncol(basis)
-  if (phi_start < phi_min) warning("phi_start less than phi_min, tour may look odd.")
-  if (phi_start > phi_max) warning("phi_start greater than phi_max, tour may look odd.")
+  manip_space    <- create_manip_space(basis = basis, manip_var = manip_var)
+  p              <- nrow(basis)
+  d              <- ncol(basis)
+  phi_start      <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
   phi_start_sign <- phi_start * sign(manip_space[manip_var, 1])
+  phi_inc        <- 2 * abs(phi_max - phi_min) / (n_slides - 3)
   
   interpolate_walk <- function(seq_start, seq_end){
     # Initialize for interpolate_slides()
@@ -153,10 +135,10 @@ manual_tour <- function(basis = NULL,
     phi_len      <- length(seq(seq_start, seq_end, phi_inc_sign))
     interp       <- array(dim = c(p, d, phi_len))
     
+    # Create slide, store in interpolation
     for (phi in seq(seq_start, seq_end, phi_inc_sign)) {
-      slide     <- slide + 1
-      new_slide <- rotate_manip_space(manip_space, theta, phi)
-      interp[,, slide] <- new_slide[, 1:2]
+      slide <- slide + 1
+      interp[,, slide] <- rotate_manip_space(manip_space, theta, phi)[, 1:2]
     }
     return(interp)
   }
