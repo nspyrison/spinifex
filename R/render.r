@@ -18,7 +18,7 @@ create_slides <- function(tour,
                           data = NULL
 ) {
   # Initialize
-  if (!is.matrix(data)) data <- as.matrix(data)
+  if (!is.null(data) & !is.matrix(data)) data <- as.matrix(data)
   p <- nrow(tour[,, 1])
   n_slides     <- dim(tour)[3]
   basis_slides <- NULL
@@ -129,7 +129,7 @@ render_ <- function(slides,
   )
   # Text labels
   gg3 <- gg2 # + suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
-  # data = basis_slides, size = 4, hjust = 0, vjust = 0, colour = "black",
+  # data = basis_slides, size = 4, vjust = "outward", hjust = "outward",
   # mapping = ggplot2::aes(x = basis_slides[, 1], y = basis_slides[, 2], 
   #                        frame = basis_slides$slide, label = lab_abbr)
   # ))

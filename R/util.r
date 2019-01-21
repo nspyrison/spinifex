@@ -120,7 +120,8 @@ view_manip_sp <- function(basis,
     )
   ## Text labels
   gg3 <- gg2 + ggplot2::geom_text(
-    data = m_sp_r, size = 4, hjust = 0, vjust = 0, colour = col_v,
+    data = m_sp_r, size = 4, colour = col_v,
+    vjust = "outward", hjust = "outward",
     mapping = ggplot2::aes(x = x, y = y, label = labels)
   )
   ## zx circle
@@ -136,7 +137,8 @@ view_manip_sp <- function(basis,
     data = m_sp_z, size = 1, colour = "grey80", linetype = 2,
     mapping = ggplot2::aes(x = x, y = y, xend = x, yend = m_sp_r[manip_var, "y"] )
   ) + ggplot2::geom_text(
-    data = m_sp_z, size = 4, hjust = 0, vjust = 0, colour = z_col,
+    data = m_sp_z, size = 4, colour = z_col,
+    vjust = "outward", hjust = "outward",
     mapping = ggplot2::aes(x = x, y = y, label = labels[manip_var])
   )
   
