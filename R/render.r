@@ -14,10 +14,9 @@
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(rb, manip_var = 4)
 #' create_slides(tour = mtour, data = flea_std)
-
 create_slides <- function(tour,
-                          data = NULL) {
-  
+                          data = NULL
+) {
   # Initialize
   if (!is.matrix(data)) data <- as.matrix(data)
   p <- nrow(tour[,, 1])
@@ -37,7 +36,7 @@ create_slides <- function(tour,
       dat_slide <- cbind(data %*% tour[,, slide], slide)
       dat_slide[, 1] <- scale(dat_slide[, 1], scale = FALSE)
       dat_slide[, 2] <- scale(dat_slide[, 2], scale = FALSE)
-      data_slides <- rbind(data_slides, dat_slide)
+      data_slides <- dplyr::as_tibble(rbind(data_slides, dat_slide))
     }
   }
   
@@ -84,7 +83,6 @@ render_ <- function(slides,
                     cat_var    = NULL   # cat var to color data and pch
 ) {
   # Initialize
-  if (!is.null(colnames(basis))) labels <- abbreviate(colnames(basis), 3)
   if (length(slides) == 2)
     data_slides <- data.frame(slides[[2]])
   basis_slides  <- data.frame(slides[[1]])

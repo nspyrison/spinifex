@@ -107,23 +107,21 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' manual_tour(basis = rb, manip_var = 4)
 manual_tour <- function(basis = NULL,
                         manip_var,  # column number
-                        # manip_type = "radial", #alt: "horizontal" and "vertical"
                         theta = NULL,      # (radians)
                         phi_min = 0,       # (radians)
                         phi_max = .5 * pi, # (radians)
-                        n_slides = 20) {
-  
+                        n_slides = 20
+) {
+  # Initalize
   if (!is.matrix(basis)) basis <- as.matrix(basis)
   if (is.null(theta))    theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
-  stopifnot(phi_start < phi_min | phi_start > phi_max)
-  
-  # Initalize
   manip_space    <- create_manip_space(basis = basis, manip_var = manip_var)
   p              <- nrow(basis)
   d              <- ncol(basis)
   phi_start      <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
   phi_start_sign <- phi_start * sign(manip_space[manip_var, 1])
   phi_inc        <- 2 * abs(phi_max - phi_min) / (n_slides - 3)
+  stopifnot(phi_min <= phi_start & phi_max >= phi_start)
   
   interpolate_walk <- function(seq_start, seq_end){
     # Initialize for interpolate_slides()
