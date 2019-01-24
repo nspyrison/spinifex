@@ -38,7 +38,7 @@ A (p, d, n_slides) dim array of the manual tour. Containing
 \code{phi_max}, and back to start.
 }
 \description{
-Typically called by \code{create_slides()}. An array of projections,
+Typically called by \code{array2af()}. An array of projections,
 the manual tour of the \code{manip_var}, which is rotated from phi's starting
 position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 }

@@ -76,7 +76,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' Produce the series of projection bases to rotate a variable into and out 
 #' of a projection
 #'
-#' Typically called by `create_slides()`. An array of projections, 
+#' Typically called by `array2af()`. An array of projections, 
 #' the manual tour of the `manip_var`, which is rotated from phi's starting 
 #' position to `phi_max`, to `phi_min`, and back to the start position.
 #'
@@ -114,7 +114,7 @@ manual_tour <- function(basis = NULL,
 ) {
   # Initalize
   if (!is.matrix(basis)) basis <- as.matrix(basis)
-  if (is.null(theta))    theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  if (is.null(theta)) theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   manip_space    <- create_manip_space(basis = basis, manip_var = manip_var)
   p              <- nrow(basis)
   d              <- ncol(basis)

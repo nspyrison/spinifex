@@ -18,8 +18,7 @@ view_basis <- function(basis,
 ) {
   # Initialize
   p <- nrow(basis)
-  basis <- as.data.frame(basis)
-  colnames(basis) <- paste0("C", 1:ncol(basis))
+  if (!is.data.frame(basis)) basis <- as.data.frame(basis)
   ## circle
   angle <- seq(0, 2 * pi, length = 360)
   circ  <- data.frame(x = cos(angle), y = sin(angle))
@@ -37,12 +36,13 @@ view_basis <- function(basis,
   ## Axes line segments
   gg2 <- gg1 +
     ggplot2::geom_segment(
-      data = basis, mapping = ggplot2::aes(x = C1, y = C2, xend = 0, yend = 0)
+      data = basis, 
+      mapping = ggplot2::aes(x = basis[,1], y = basis[,2], xend = 0, yend = 0)
     )
   ## Text labels
   gg3 <- gg2 + ggplot2::geom_text(
     data = basis, size = 4, hjust = 0, vjust = 0, colour = "black",
-    mapping = ggplot2::aes(x = C1, y = C2, label = labels)
+    mapping = ggplot2::aes(x = basis[, 1], y = basis[, 1], label = labels)
   )
   
   gg3
@@ -104,10 +104,10 @@ view_manip_sp <- function(basis,
   
   # Graphics (reference frame)
   ## xy circle and options
-  gg1 <- ggplot2::ggplot() + ggplot2::geom_path(
-    data = circ_r, color = manip_col, size = .3, inherit.aes = F,
-    mapping = ggplot2::aes(x = x, y = y)
-  ) +
+  gg1 <- ggplot2::ggplot() + 
+    ggplot2::geom_path(
+      data = circ_r, color = manip_col, size = .3,
+      mapping = ggplot2::aes(circ_r$x, circ_r$y), inherit.aes = F) +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
@@ -116,13 +116,13 @@ view_manip_sp <- function(basis,
   gg2 <- gg1 +
     ggplot2::geom_segment(
       data = m_sp_r, size = siz_v, colour = col_v,
-      mapping = ggplot2::aes(x = x, y = y, xend = 0, yend = 0)
+      mapping = ggplot2::aes(m_sp_r$x, m_sp_r$y, xend = 0, yend = 0)
     )
   ## Text labels
   gg3 <- gg2 + ggplot2::geom_text(
     data = m_sp_r, size = 4, colour = col_v,
     vjust = "outward", hjust = "outward",
-    mapping = ggplot2::aes(x = x, y = y, label = labels)
+    mapping = ggplot2::aes(m_sp_r$x, m_sp_r$y, label = labels)
   )
   ## zx circle
   gg4 <- gg3 + ggplot2::geom_path(
@@ -132,14 +132,14 @@ view_manip_sp <- function(basis,
   ## z manip sp segments, projection line, label
   gg5 <- gg4 + ggplot2::geom_segment(
     data = m_sp_z, size = 1, colour = z_col,
-    mapping = ggplot2::aes(x = x, y = y, xend = 0, yend = 0)
+    mapping = ggplot2::aes(m_sp_z$x, m_sp_z$y, xend = 0, yend = 0)
   ) + ggplot2::geom_segment(
     data = m_sp_z, size = 1, colour = "grey80", linetype = 2,
-    mapping = ggplot2::aes(x = x, y = y, xend = x, yend = m_sp_r[manip_var, "y"] )
+    mapping = ggplot2::aes(m_sp_z$x, m_sp_z$y, xend = x, yend = m_sp_r[manip_var, "y"] )
   ) + ggplot2::geom_text(
     data = m_sp_z, size = 4, colour = z_col,
     vjust = "outward", hjust = "outward",
-    mapping = ggplot2::aes(x = x, y = y, label = labels[manip_var])
+    mapping = ggplot2::aes(m_sp_z$x, m_sp_z$y, label = labels[manip_var])
   )
   
   gg5

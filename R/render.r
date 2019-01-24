@@ -1,9 +1,11 @@
-#' Create a slideshow array of the projected bases
+#' Turns a tour path array into a long data frame (tibble)
 #'
-#' Takes the result of `manual_tour()` and projects the data over the 
-#' interpolated tour path of the reference frame.
+#' Typically called by a wrapper function, `play_manual_tour` or `play_tourr` 
+#' Takes the result of `tourr::save_history()` or `manual_tour()` and 
+#' restuctures the data from an array to a long data frame (tibble) for use in
+#' ggplots.
 #'
-#' @param tour A (p, d, n_slides) array of a tour, the output of `manual_tour`.
+#' @param tour A (p, d, n_slides) array of a tour, the output of `manual_tour()`.
 #' @param data Optional, (n, p) dataset to project, consisting of numeric variables.
 #' @return A list containing the (p, d, n_slides) basis slides array, and
 #'   the (n, d, n_slides) data slides array.
@@ -13,10 +15,9 @@
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(rb, manip_var = 4)
-#' create_slides(tour = mtour, data = flea_std)
-create_slides <- function(tour,
-                          data = NULL
-) {
+#' array2df(tour = mtour, data = flea_std)
+array2df <- function(tour,
+                     data = NULL) {
   # Initialize
   if (!is.null(data) & !is.matrix(data)) data <- as.matrix(data)
   p <- nrow(tour[,, 1])
@@ -59,9 +60,9 @@ create_slides <- function(tour,
 #' Render the ggplot before the animation package
 #'
 #' Typically called by `render_plotly()` or `render_gganimate()`. Takes the 
-#' result of `create_slides()`, and renders them into a ggplot2 object. 
+#' result of `array2df()`, and renders them into a ggplot2 object. 
 #'
-#' @param slides The result of `create_slides()`.
+#' @param slides The result of `array2df()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
@@ -74,7 +75,7 @@ create_slides <- function(tour,
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- create_slides(tour = mtour, data = flea_std)
+#' sshow <- array2df(tour = mtour, data = flea_std)
 #' render_(slides = sshow)
 #' 
 #' render_(slides = sshow, cat_var = flea$species)
@@ -146,10 +147,10 @@ render_ <- function(slides,
 
 #' Render the slides as a *plotly* animation
 #'
-#' Takes the result of `create_slides()` and renders them into a 
+#' Takes the result of `array2df()` and renders them into a 
 #' *plotly* animation.
 #'
-#' @param slides The result of `create_slides()`.
+#' @param slides The result of `array2df()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
@@ -161,7 +162,7 @@ render_ <- function(slides,
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- create_slides(tour = mtour, data = flea_std)
+#' sshow <- array2df(tour = mtour, data = flea_std)
 #' render_plotly(slides = sshow)
 #' 
 #' render_plotly(slides = sshow, cat_var = flea$species)
@@ -188,10 +189,10 @@ return(ggp)
 
 #' Render the slides as a *gganimate* animation
 #'
-#' Takes the result of `create_slides()` and renders them into a 
+#' Takes the result of `array2df()` and renders them into a 
 #' *gganimate* animation.
 #'
-#' @param slides The result of `create_slides()`.
+#' @param slides The result of `array2df()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
@@ -203,7 +204,7 @@ return(ggp)
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- create_slides(tour = mtour, data = flea_std)
+#' sshow <- array2df(tour = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
 #' 
 #' render_gganimate(slides = sshow, cat_var = flea$species)

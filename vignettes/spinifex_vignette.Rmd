@@ -80,7 +80,7 @@ library(spinifex)
 library(tourr)
 # setting seed doens't make tourr reproducible.
 
-data("wine") #dim(wine): 178x14
+str(wine) #dim(wine): 178x14
 wine_std <- tourr::rescale(wine[,-1]) # Type of grape removed.
 
 rb <- tourr::basis_random(n = ncol(wine_std))
@@ -103,7 +103,7 @@ Optionally we can specify:
 
 ```{r}
 mtour <- manual_tour(basis = rb, manip_var = 1)
-sshow <- create_slides(tour = mtour, data = wine_std)
+sshow <- array2df(tour = mtour, data = wine_std)
 render_plotly(slides = sshow)
 ```
 
@@ -132,7 +132,7 @@ glyph1
 
 ```{r}
 # Initialize
-nasa_std <- cbind(nasa[c("x", "y")], tourr::rescale(nasa[c("day", "surftemp")]))
+nasa_std <- cbind(GGally::nasa[c("x", "y")], tourr::rescale(nasa[c("day", "surftemp")]))
 bas <- tourr::basis_init(ncol(nasa_std), 2)
 
 # Horizontal roation
@@ -146,22 +146,21 @@ rot_mat_y <- rotate_manip_space(manip_space = m_sp_y, pi/2, pi/6)
 rot_y <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_y))
 
 library(dplyr)
-# rot_xy <- bind_cols(rot_x, rot_y)
-# rot_xy <- select(rot_xy, x, y1)
-# rot_xy <- rename(rot_xy, x=x, y=y1)
-# 
-# ggplot(rot_xy, aes(x=x, y=y)) + geom_point(size=0.3)
+rot_xy <- bind_cols(rot_x, rot_y)
+rot_xy <- select(rot_xy, X1, X3) %>% rename(x=X1, y=X3)
+
+ggplot(rot_xy, aes(x=x, y=y)) + geom_point(size=0.3)
 ```
 
 ```{r}
 # Horizonal manual rotation
-tour_x <- manual_tour(basis = bas, manip_var = 3, manip_type = "horizontal")
-slides_x <- create_slides(tour = tour_x, data = nasa_std)
+tour_x <- manual_tour(basis = bas, manip_var = 3, theta = 0)
+tourdf_x <- array2df(tour = tour_x, data = nasa_std)
 # render_plotly(slides = slides_x) # Way too heavy
 
 # Vertical manual rotation
-tour_y <- manual_tour(basis = bas, manip_var = 4, manip_type = "vertical")
-slides_y <- create_slides(tour = tour_y, data = nasa_std)
+tour_y <- manual_tour(basis = bas, manip_var = 4, theta = 90)
+tourdf_y <- array2df(tour = tour_y, data = nasa_std)
 # render_plotly(slides = slides_y) # Way too heavy
 ```
 
@@ -195,46 +194,18 @@ Manual tours are often employed after an interesting feature has been identified
 
 ```{r}
 flea_std <- tourr::rescale(tourr::flea[,1:6])
-fpath <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes))
+fpath    <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes))
 
-play_tour(tour = fpath, data = flea_std)
+play_tour_path(tour_path = fpath, data = flea_std)
 ```
 
 From there, we can explore the local structure one variable at a time.
 
 ```{r}
-fbasis <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
-
-ftour <- manual_tour(basis = fbasis, manip_var = 4)
-fslides <- create_slides(tour = ftour, data = flea_std)
-render_plotly(slides = fslides)
-```
-
-```{r}
-abbreviate(colnames(flea_std),3)
-
-# tr1_tour <- manual_tour(basis = h_basis, manip_var = 1)
-# tr1_sshow <- create_slides(data = flea_std, tour = tr1_tour)
-# tr2_tour <- manual_tour(basis = h_basis, manip_var = 2)
-# tr2_sshow <- create_slides(data = flea_std, tour = tr1_tour)
-# hed_tour <- manual_tour(basis = h_basis, manip_var = 3)
-# hed_sshow <- create_slides(data = flea_std, tour = tr1_tour)
-# ad1_tour <- manual_tour(basis = h_basis, manip_var = 4)
-# ad1_sshow <- create_slides(data = flea_std, tour = tr1_tour)
-# ad2_tour <- manual_tour(basis = h_basis, manip_var = 5)
-# ad2_sshow <- create_slides(data = flea_std, tour = tr1_tour)
-# ad3_tour <- manual_tour(basis = h_basis, manip_var = 6)
-# ad3_sshow <- create_slides(data = flea_std, tour = tr1_tour)
-```
-
-
-```{r}
-# render_plotly(tr1_sshow)
-# render_plotly(tr2_sshow)
-# render_plotly(hed_sshow)
-# render_plotly(ad1_sshow)
-# render_plotly(ad2_sshow)
-# render_plotly(ad3_sshow)
+fbasis  <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
+ftour   <- manual_tour(basis = fbasis, manip_var = 4)
+ftourdf <- array2df(tour = ftour, data = flea_std)
+render_plotly(slides = ftourdf)
 ```
 
 
