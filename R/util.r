@@ -42,7 +42,7 @@ view_basis <- function(basis,
   ## Text labels
   gg3 <- gg2 + ggplot2::geom_text(
     data = basis, size = 4, hjust = 0, vjust = 0, colour = "black",
-    mapping = ggplot2::aes(x = basis[, 1], y = basis[, 1], label = labels)
+    mapping = ggplot2::aes(x = basis[, 1], y = basis[, 2], label = labels)
   )
   
   gg3
