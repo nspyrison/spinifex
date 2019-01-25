@@ -111,38 +111,38 @@ render_ <- function(slides,
     cat_v <- rep(cat_var, n_slides)
   } else cat_v <- 1
   
-  # Graphics (reference frame)
-  ## Circle and options
-  gg1 <- 
-    ggplot2::ggplot() + ggplot2::geom_path(
-      data = circ, color = "grey80", size = .3, inherit.aes = F,
-      mapping = ggplot2::aes(x = circ$x, y = circ$y)
-    ) +
+
+  gg <- 
+    ## Ggplot settings
+    ggplot2::ggplot() +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none")
-  ## Axes line segments
-  gg2 <- gg1 + suppressWarnings( # Supress for unused aes "frame".
-    ggplot2::geom_segment( 
-    data = basis_slides, size = siz_v, colour = col_v,
-    mapping = ggplot2::aes(x = basis_slides[, 1], y = basis_slides[, 2], 
-                           xend = 0, yend = 0, frame = basis_slides$slide))
-  )
-  # Text labels
-  gg3 <- gg2 # + suppressWarnings(ggplot2::geom_text( # for unused aes "frame".
-  # data = basis_slides, size = 4, vjust = "outward", hjust = "outward",
-  # mapping = ggplot2::aes(x = basis_slides[, 1], y = basis_slides[, 2], 
-  #                        frame = basis_slides$slide, label = lab_abbr)
-  # ))
-  # Projected data scatterplot
-  gg4 <- gg3 + suppressWarnings(ggplot2::geom_point( # for unused aes "frame".
-    data = data_slides, size = .7, 
-    color = cat_v, shape = cat_v + 15,
-    mapping = ggplot2::aes(x = data_slides[, 1], y = data_slides[, 2],
-                           frame = data_slides$slide))
-  )
+    ggplot2::theme(legend.position = "none") +
+    ## Circle path 
+    ggplot2::geom_path(
+      data = circ, color = "grey80", size = .3, inherit.aes = F,
+      mapping = ggplot2::aes(x = x, y = y)) +
+    ## Basis axes segments
+    suppressWarnings( # Supress for unused aes "frame".
+      ggplot2::geom_segment( 
+        data = basis_slides, size = siz_v, colour = col_v,
+        mapping = ggplot2::aes(x = V1, y = V2,
+                               xend = 0, yend = 0, frame = slide)) 
+    ) +
+    ## Basis axes text labels
+    suppressWarnings( # suppress for unused aes "frame".
+      ggplot2::geom_text(
+        data = basis_slides, size = 4, vjust = "outward", hjust = "outward",
+        mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr))
+    ) + 
+    suppressWarnings( # suppress for unused aes "frame".
+      ggplot2::geom_point( 
+        data = data_slides, size = .7, 
+        color = cat_v, shape = cat_v + 15,
+        mapping = ggplot2::aes(x = V1, y = V2, frame = slide))
+    )
   
-  return(gg4)
+  gg
 }
 
 #' Render the slides as a *plotly* animation
@@ -183,8 +183,8 @@ render_plotly <- function(slides,
     xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F),
     ...
   )
-
-return(ggp)
+  
+  ggp
 }
 
 #' Render the slides as a *gganimate* animation
@@ -217,9 +217,10 @@ render_gganimate <- function(slides,
   # Initialize
   gg <- render_(slides, manip_col, cat_var, ...)
   
-  gganim <- gg + gganimate::transition_states(
+  gga <- 
+    gg + gganimate::transition_states(
     slide, transition_length = 0, state_length = 1 / fps
   )
   
-  return(gganim)
+  return(gga)
 }
