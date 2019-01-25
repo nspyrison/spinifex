@@ -80,7 +80,6 @@ library(spinifex)
 library(tourr)
 # setting seed doens't make tourr reproducible.
 
-str(wine) #dim(wine): 178x14
 wine_std <- tourr::rescale(wine[,-1]) # Type of grape removed.
 
 rb <- tourr::basis_random(n = ncol(wine_std))
