@@ -17,7 +17,8 @@
 #' mtour <- manual_tour(rb, manip_var = 4)
 #' array2df(tour = mtour, data = flea_std)
 array2df <- function(tour,
-                     data = NULL) {
+                     data = NULL
+) {
   # Initialize
   if (!is.null(data) & !is.matrix(data)) data <- as.matrix(data)
   p <- nrow(tour[,, 1])
@@ -66,7 +67,7 @@ array2df <- function(tour,
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
-#' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
+#' @param axes position of the axes: center, bottomleft or off.
 #' @return A ggplot2 object to be called by `render_plotly()` or 
 #'   `render_gganimate()`.
 #' @export
@@ -80,8 +81,9 @@ array2df <- function(tour,
 #' 
 #' render_(slides = sshow, cat_var = flea$species)
 render_ <- function(slides,
-                    manip_col  = "blue", # string of color name
-                    cat_var    = NULL   # cat var to color data and pch
+                    manip_col  = "blue",
+                    cat_var    = NULL,
+                    axes = "center"
 ) {
   # Initialize
   if (length(slides) == 2)
@@ -92,7 +94,10 @@ render_ <- function(slides,
   p             <- nrow(basis_slides) / n_slides
   ## Circle
   angle         <- seq(0, 2 * pi, length = 360)
-  circ          <- data.frame(x = cos(angle), y = sin(angle))
+  circ          <- data.frame(x = cos(angle), y = sin(angle), zero = 0)
+  ## Scale basis axes
+  circ          <- set_axes_position(circ, axes)
+  basis_slides  <- set_axes_position(basis_slides, axes)
   ## manip var asethetics
   if(!is.null(manip_var)) {
     col_v            <- rep("black", p) 
@@ -111,36 +116,41 @@ render_ <- function(slides,
     cat_v <- rep(cat_var, n_slides)
   } else cat_v <- 1
   
-
   gg <- 
     ## Ggplot settings
     ggplot2::ggplot() +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
-    ## Circle path 
-    ggplot2::geom_path(
-      data = circ, color = "grey80", size = .3, inherit.aes = F,
-      mapping = ggplot2::aes(x = x, y = y)) +
-    ## Basis axes segments
-    suppressWarnings( # Supress for unused aes "frame".
-      ggplot2::geom_segment( 
-        data = basis_slides, size = siz_v, colour = col_v,
-        mapping = ggplot2::aes(x = V1, y = V2,
-                               xend = 0, yend = 0, frame = slide)) 
-    ) +
-    ## Basis axes text labels
-    suppressWarnings( # suppress for unused aes "frame".
-      ggplot2::geom_text(
-        data = basis_slides, size = 4, vjust = "outward", hjust = "outward",
-        mapping = ggplot2::aes(x = V1, y = V2, frame = slide, label = lab_abbr))
-    ) + 
+    ## Projected data points
     suppressWarnings( # suppress for unused aes "frame".
       ggplot2::geom_point( 
         data = data_slides, size = .7, 
         color = cat_v, shape = cat_v + 15,
         mapping = ggplot2::aes(x = V1, y = V2, frame = slide))
     )
+  
+  if (axes != "off")
+  {
+    gg <- gg +
+      ## Circle path 
+      ggplot2::geom_path(
+        data = circ, color = "grey80", size = .3, inherit.aes = F,
+        mapping = ggplot2::aes(x = x, y = y)) +
+      ## Basis axes segments
+      suppressWarnings( # Supress for unused aes "frame".
+        ggplot2::geom_segment( 
+          data = basis_slides, size = siz_v, colour = col_v,
+          mapping = ggplot2::aes(x = V1, y = V2, 
+                                 xend = circ$zero, yend = circ$zero, 
+                                 frame = slide))) +
+      ## Basis axes text labels
+      suppressWarnings( # suppress for unused aes "frame".
+        ggplot2::geom_text(
+          data = basis_slides, size = 4, vjust = "outward", hjust = "outward",
+          mapping = ggplot2::aes(x = V1, y = V2, 
+                                 frame = slide, label = lab_abbr)))
+  }
   
   gg
 }
@@ -154,6 +164,7 @@ render_ <- function(slides,
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
+#' @param axes position of the axes: center, bottomleft or off.
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @export
@@ -167,13 +178,15 @@ render_ <- function(slides,
 #' 
 #' render_plotly(slides = sshow, cat_var = flea$species)
 render_plotly <- function(slides,
-                          manip_col = "blue", # string of color name
-                          cat_var   = NULL,   # cat var to color data and pch
-                          fps       = 3,      # frame/slide per second
+                          manip_col = "blue",
+                          cat_var   = NULL,
+                          axes      = "center",
+                          fps       = 3,
                           ...) 
 {
   # Initialize
-  gg <- render_(slides, manip_col, cat_var)
+  gg <- render_(slides = slides, manip_col = manip_col, 
+                cat_var = cat_var, axes = axes)
   
   ggp <- plotly::ggplotly(gg)
   ggp <- plotly::animation_opts(p = ggp, frame = 1 / fps * 1000, 
@@ -196,6 +209,7 @@ render_plotly <- function(slides,
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
+#' @param axes position of the axes: center, bottomleft or off.
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @export
@@ -209,13 +223,15 @@ render_plotly <- function(slides,
 #' 
 #' render_gganimate(slides = sshow, cat_var = flea$species)
 render_gganimate <- function(slides,
-                             manip_col = "blue", # string of color name
-                             cat_var   = NULL,   # cat var to color data and pch
-                             fps       = .3,     # frames per second
+                             manip_col = "blue",
+                             cat_var   = NULL,
+                             axes      = "center",
+                             fps       = .3,
                              ...) 
 {
   # Initialize
-  gg <- render_(slides, manip_col, cat_var, ...)
+  gg <- render_(slides = slides, manip_col = manip_col, 
+                cat_var = cat_var, axes = axes)
   
   gga <- 
     gg + gganimate::transition_states(

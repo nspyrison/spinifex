@@ -4,7 +4,7 @@
 \alias{render_}
 \title{Render the ggplot before the animation package}
 \usage{
-render_(slides, manip_col = "blue", cat_var = NULL)
+render_(slides, manip_col = "blue", cat_var = NULL, axes = "center")
 }
 \arguments{
 \item{slides}{The result of \code{array2df()}.}
@@ -14,7 +14,7 @@ render_(slides, manip_col = "blue", cat_var = NULL)
 \item{cat_var}{Categorical variable, optionally used to set the data point
 color and shape.}
 
-\item{...}{Optional, pass addition arguments into \code{plotly::animation_opts()}.}
+\item{axes}{position of the axes: center, bottomleft or off.}
 }
 \value{
 A ggplot2 object to be called by \code{render_plotly()} or

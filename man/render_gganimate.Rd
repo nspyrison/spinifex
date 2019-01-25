@@ -5,7 +5,7 @@
 \title{Render the slides as a \emph{gganimate} animation}
 \usage{
 render_gganimate(slides, manip_col = "blue", cat_var = NULL,
-  fps = 0.3, ...)
+  axes = "center", fps = 0.3, ...)
 }
 \arguments{
 \item{slides}{The result of \code{array2df()}.}
@@ -14,6 +14,8 @@ render_gganimate(slides, manip_col = "blue", cat_var = NULL,
 
 \item{cat_var}{Categorical variable, optionally used to set the data point
 color and shape.}
+
+\item{axes}{position of the axes: center, bottomleft or off.}
 
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 

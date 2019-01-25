@@ -1,51 +1,27 @@
-#' Plot projection frame and return the axes table.
+#' Returns the axis scale and position
 #' 
-#' Uses base graphics to plot the circle with axes representing
-#' the projection frame. Returns the corresponding table.
+#' Typically called, by other functions to scale axes.
 #' 
-#' @param basis A (p, d) basis, XY linear combination of each dimension 
-#'   (numeric variable).
-#' @param labels Optional, character vector of `p` length, add name to the axes 
-#'   in the reference frame, typically the variable names.
-#' @return ggplot object of the basis.
-#' 
+#' @param x numeric data object to scale and offset
+#' @param axes position of the axes: center, bottomleft or off.
+#' @return axis_scale and axis_scale
 #' @examples 
 #' rb <- basis_random(4, 2)
-#' view_basis(basis = rb)
+#' set_axes_position(x = rb, axes = "bottomleft")
 #' @export
-view_basis <- function(basis,
-                       labels = paste0("V", 1:nrow(basis))
-) {
-  # Initialize
-  p <- nrow(basis)
-  basis <- as.data.frame(basis)
-  ## circle
-  angle <- seq(0, 2 * pi, length = 360)
-  circ  <- data.frame(x = cos(angle), y = sin(angle))
+set_axes_position <- function(x, axes) {
+  position <- match.arg(axes, c("center", "bottomleft", "off"))
+  if (position == "off") return()
   
-  gg <- 
-    ## Ggplot options
-    ggplot2::ggplot() +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
-    ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none") +
-    ggplot2::coord_fixed() + # Do not use with plotly!
-    ## Cirle path
-    ggplot2::geom_path(
-      data = circ, 
-      mapping = ggplot2::aes(x = x, y = y),
-      color = "grey80", size = .3, inherit.aes = F) +
-    ## Basis axes line segments
-    ggplot2::geom_segment(
-      data = basis, 
-      mapping = ggplot2::aes(x = V1, y = V2, xend = 0, yend = 0)) +
-    ## Basis variable text labels
-    ggplot2::geom_text(
-      data = basis, 
-      mapping = ggplot2::aes(x = V1, y = V2, label = labels),
-      size = 4, hjust = 0, vjust = 0, colour = "black")
+  if (position == "center") {
+    axis_scale <- 2 / 3
+    axis_pos   <- 0
+  } else if (position == "bottomleft") {
+    axis_scale <- 1 / 6
+    axis_pos   <- -2 / 3
+  }
   
-  gg
+  axis_scale * x + axis_pos 
 }
 
 #' Plot projection frame and return the axes table.
@@ -55,29 +31,70 @@ view_basis <- function(basis,
 #' 
 #' @param basis A (p, d) basis, XY linear combination of each dimension 
 #'   (numeric variable).
-#' @param labels Optional, character vector of `p` length, add name to the axes 
+#' @param labels Optional character vector of `p` length, add name to the axes 
 #'   in the reference frame, typically the variable names.
+#' @param data Optional (n, p) data, plots xy scatterplot on the frame
+#' @param axes position of the axes: center, bottomleft or off
 #' @return ggplot object of the basis.
 #' 
 #' @examples 
 #' rb <- basis_random(4, 2)
+#' view_basis(basis = rb)
+#' 
 #' flea_std <- tourr::rescale(flea[, 1:4])
-#' view_frame(basis = rb, data = flea_std)
+#' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 #' @export
-view_frame <- function(basis,
-                      data,
-                      labels = paste0("V", 1:nrow(basis))
+view_basis <- function(basis,
+                       labels = paste0("V", 1:nrow(basis)),
+                       data = NULL,
+                       axes = "center"
 ) {
-  basis <- as.matrix(basis)
-  data  <- as.matrix(data)
-  proj  <- as.data.frame(data %*% basis)
+  # Initialize
+  basis <- as.data.frame(basis)
+  angle <- seq(0, 2 * pi, length = 360)
+  circ  <- data.frame(x = cos(angle), y = sin(angle), zero = 0)
+  ## scale axes
+  basis <- set_axes_position(basis, axes)
+  circ  <- set_axes_position(circ, axes)
   
-  gg <- view_basis(basis = basis, labels = labels)
+  gg <- 
+    ## Ggplot options
+    ggplot2::ggplot() +
+    ggplot2::scale_color_brewer(palette = "Dark2") +
+    ggplot2::theme_void() +
+    ggplot2::theme(legend.position = "none") +
+    ggplot2::coord_fixed() # Do not use with plotly!
   
-  gg + ggplot2::geom_point(
-    data = proj,
-    mapping = ggplot2::aes(x = V1, y = V2)
-  )
+  if(axes != "off")
+  {
+    gg <- gg +
+    ## Cirle path
+    ggplot2::geom_path(
+      data = circ, 
+      mapping = ggplot2::aes(x = x, y = y),
+      color = "grey80", size = .3, inherit.aes = F) +
+    ## Basis axes line segments
+    ggplot2::geom_segment(
+      data = basis, 
+      mapping = ggplot2::aes(x = X1, y = X2, xend = circ$zero, yend = circ$zero)) +
+    ## Basis variable text labels
+    ggplot2::geom_text(
+      data = basis, 
+      mapping = ggplot2::aes(x = X1, y = X2, label = labels),
+      size = 4, hjust = 0, vjust = 0, colour = "black")
+  }
+  
+  if (!is.null(data))
+  {
+    # Project data and all to ggplot
+    proj <- as.data.frame(as.matrix(data) %*% as.matrix(basis))
+    gg   <- 
+      gg + ggplot2::geom_point(
+        data = proj,
+        mapping = ggplot2::aes(x = V1, y = V2))
+  }
+  
+  gg
 }
 
 #' Plot projection frame and return the axes table.
@@ -108,10 +125,9 @@ view_manip_space <- function(basis,
                              manip_col = "blue",
                              theta = pi * 5/12,
                              z_col = "red",
-                             labels = paste0("V", 1:nrow(basis)) 
+                             labels = paste0("V", 1:nrow(basis))
 ) {
   # Initialize
-  if (!is.null(colnames(basis))) labels <- abbreviate(colnames(basis), 3)
   xyz <- function(df) {colnames(df) <- c("x", "y", "z"); df}
   ## manip space
   m_sp <- xyz(data.frame(create_manip_space(basis, manip_var)))
@@ -153,7 +169,7 @@ view_manip_space <- function(basis,
     ## Basis axes line segments
     ggplot2::geom_segment(
       data = m_sp_r, 
-      mapping = ggplot2::aes(x = x, y = y, xend = 0, yend = 0),
+      mapping = ggplot2::aes(x = x, y = y, xend = , yend = 0),
       size = siz_v, colour = col_v) +
     ## Basis variable text labels
     ggplot2::geom_text(
@@ -183,3 +199,5 @@ view_manip_space <- function(basis,
   
   gg
 }
+
+

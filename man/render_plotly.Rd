@@ -4,8 +4,8 @@
 \alias{render_plotly}
 \title{Render the slides as a \emph{plotly} animation}
 \usage{
-render_plotly(slides, manip_col = "blue", cat_var = NULL, fps = 3,
-  ...)
+render_plotly(slides, manip_col = "blue", cat_var = NULL,
+  axes = "center", fps = 3, ...)
 }
 \arguments{
 \item{slides}{The result of \code{array2df()}.}
@@ -14,6 +14,8 @@ render_plotly(slides, manip_col = "blue", cat_var = NULL, fps = 3,
 
 \item{cat_var}{Categorical variable, optionally used to set the data point
 color and shape.}
+
+\item{axes}{position of the axes: center, bottomleft or off.}
 
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 

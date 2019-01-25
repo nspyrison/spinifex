@@ -4,14 +4,19 @@
 \alias{view_basis}
 \title{Plot projection frame and return the axes table.}
 \usage{
-view_basis(basis, labels = paste0("V", 1:nrow(basis)))
+view_basis(basis, labels = paste0("V", 1:nrow(basis)), data = NULL,
+  axes = "center")
 }
 \arguments{
 \item{basis}{A (p, d) basis, XY linear combination of each dimension
 (numeric variable).}
 
-\item{labels}{Optional, character vector of \code{p} length, add name to the axes
+\item{labels}{Optional character vector of \code{p} length, add name to the axes
 in the reference frame, typically the variable names.}
+
+\item{data}{Optional (n, p) data, plots xy scatterplot on the frame}
+
+\item{axes}{position of the axes: center, bottomleft or off}
 }
 \value{
 ggplot object of the basis.
@@ -23,4 +28,7 @@ the projection frame. Returns the corresponding table.
 \examples{
 rb <- basis_random(4, 2)
 view_basis(basis = rb)
+
+flea_std <- tourr::rescale(flea[, 1:4])
+view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 }
