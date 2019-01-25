@@ -26,6 +26,10 @@ knitr::opts_chunk$set(
   fig.align  = "center",
   cache      = FALSE
 )
+
+library(spinifex)
+library(tourr)
+library(GGally)
 ```
 
 # Introduction
@@ -76,14 +80,13 @@ Flea is the data we want to rotate. We initialize a random basis and then view i
 Load the data and select a random basis with `basis_random(p)`. View the basis in p-space with `view_basis(basis, data)`, where data is optional, but adds the dimension names.
 
 ```{r}
-library(spinifex)
-library(tourr)
-# setting seed doens't make tourr reproducible.
 
-wine_std <- tourr::rescale(wine[,-1]) # Type of grape removed.
-
-rb <- tourr::basis_random(n = ncol(wine_std))
-view_basis(basis = rb, labels = colnames(wine_std))
+# # setting seed doens't make tourr reproducible.
+# 
+# wine_std <- tourr::rescale(wine[,-1]) # Type of grape removed.
+# 
+# rb <- tourr::basis_random(n = ncol(wine_std))
+# view_basis(basis = rb, labels = colnames(wine_std))
 ```
 
 <!-- I like to think of the basis as piece of paper that maps p dimension down to 2. The manipulation type (alternatively theta) is the angle of the on this basis plane between (1, 0) and the manipulation variable's vector in, our case we select 'head'. -->
@@ -101,9 +104,9 @@ Optionally we can specify:
 
 
 ```{r}
-mtour <- manual_tour(basis = rb, manip_var = 1)
-sshow <- array2df(tour = mtour, data = wine_std)
-render_plotly(slides = sshow)
+# mtour <- manual_tour(basis = rb, manip_var = 1)
+# sshow <- array2df(tour = mtour, data = wine_std)
+# render_plotly(slides = sshow)
 ```
 
 
@@ -111,7 +114,7 @@ render_plotly(slides = sshow)
 
 TODO: is this the target??
 ```{r}
-library(GGally)
+
 nasa <- GGally::nasa
 
 temp.gly <-
@@ -192,19 +195,19 @@ tourdf_y <- array2df(tour = tour_y, data = nasa_std)
 Manual tours are often employed after an interesting feature has been identified. The local area around PCA for example might be interesting to explore. Alternatively we can use (stochastic) gradient decent on some objective function and start from the resulting basis. Let's do just that, optimize a Holes tour using the packages `tourr`:
 
 ```{r}
-flea_std <- tourr::rescale(tourr::flea[,1:6])
-fpath    <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes))
-
-play_tour_path(tour_path = fpath, data = flea_std)
+# flea_std <- tourr::rescale(tourr::flea[,1:6])
+# fpath    <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes))
+# 
+# play_tour_path(tour_path = fpath, data = flea_std)
 ```
 
 From there, we can explore the local structure one variable at a time.
 
 ```{r}
-fbasis  <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
-ftour   <- manual_tour(basis = fbasis, manip_var = 4)
-ftourdf <- array2df(tour = ftour, data = flea_std)
-render_plotly(slides = ftourdf)
+# fbasis  <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
+# ftour   <- manual_tour(basis = fbasis, manip_var = 4)
+# ftourdf <- array2df(tour = ftour, data = flea_std)
+# render_plotly(slides = ftourdf)
 ```
 
 
@@ -226,8 +229,6 @@ Thanks to Prof. Dianne Cook for focus, namesake, and the ground work underpinnin
 
 ## References
 <!-- Monash prefers APA -->
-<!-- citation(package = "tourr") -->
-<!-- citation(package = "GGally") -->
 - Cook, D., & Buja, A. (1997). Manual Controls for High-Dimensional Data Projections. Journal of Computational and Graphical Statistics, 6(4), 464–480. https://doi.org/10.2307/1390747
 - Wickham, H., Cook, D., & Hofmann, H. (2015). Visualizing statistical models: Removing the blindfold: Visualizing Statistical Models. Statistical Analysis and Data Mining: The ASA Data Science Journal, 8(4), 203–225. https://doi.org/10.1002/sam.11271
 - Dianne Cook and Hadley Wickham (NA). tourr: Implement Tour Methods in R Code. R package version 0.5.5.9000. https://github.com/ggobi/tourr

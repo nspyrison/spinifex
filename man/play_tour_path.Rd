@@ -5,7 +5,8 @@
 \title{Render display of a provided tour path}
 \usage{
 play_tour_path(tour_path, data = NULL, angle = 0.05,
-  render_type = render_plotly, cat_var = NULL, fps = 3, ...)
+  render_type = render_plotly, cat_var = NULL, axes = "center",
+  fps = 3, ...)
 }
 \arguments{
 \item{tour_path}{The result of \code{tourr::save_history()} or \code{manual_tour()}.}
@@ -16,6 +17,13 @@ play_tour_path(tour_path, data = NULL, angle = 0.05,
 
 \item{render_type}{Which graphics to render to. Defaults to render_plotly,
 alternative use render_gganimate.}
+
+\item{cat_var}{Categorical variable, optionally used to set the data point
+color and shape.}
+
+\item{axes}{position of the axes: center, bottomleft or off.}
+
+\item{fps}{Frames/slides shown per second. Defaults to 3.}
 
 \item{...}{Optionally pass additional arguments to \code{render_type}.}
 }

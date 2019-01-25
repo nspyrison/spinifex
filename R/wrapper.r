@@ -8,6 +8,10 @@
 #' @param angle target distance (in radians) between bases. Defaults to .05.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #'   alternative use render_gganimate.
+#' @param cat_var Categorical variable, optionally used to set the data point 
+#'   color and shape.
+#' @param axes position of the axes: center, bottomleft or off.
+#' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optionally pass additional arguments to `render_type`.
 #' @export
 #' @examples
@@ -21,8 +25,9 @@
 play_tour_path <- function(tour_path,
                            data = NULL,
                            angle = .05,
-                           render_type = render_plotly, # alt render_gganimate.
+                           render_type = render_plotly,
                            cat_var = NULL,
+                           axes = "center",
                            fps = 3,
                            ...) {
   # if data missing, but in an attribute, use that.
@@ -40,7 +45,8 @@ play_tour_path <- function(tour_path,
   }
   
   tourdf <- array2df(tour_path, data)
-  disp   <- render_type(tourdf, manip_col, cat_var, fps, ...)
+  disp   <- render_type(tourdf = tourdf, manip_col = manip_col, 
+                        cat_var = cat_var, axes = axes, fps = fps, ...)
   
   disp
 }
@@ -83,20 +89,20 @@ play_tour_path <- function(tour_path,
 #' 
 #' play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 #' 
-#' play_manual_tour(data = tourr::flea[,1:6], basis = NULL, manip_var = 4, 
-#'   theta = 0, phi_min = 0, phi_max = pi, nslides = 30, manip_col = "red", 
-#'   render_type = render_gganimate, cat_var = flea$species, fps = 4, 
-#'   init_rescale_data = FALSE)
+#' play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
+#'   manip_col = "red", render_type = render_gganimate, cat_var = flea$species, 
+#'   axes = "bottomleft")
 play_manual_tour <- function(data,
                              basis       = NULL,
                              manip_var,
-                             theta       = NULL,     # [radians]
-                             phi_min     = 0,        # [radians]
-                             phi_max     = .5 * pi,  # [radians]
+                             theta       = NULL,
+                             phi_min     = 0,
+                             phi_max     = .5 * pi,
                              n_slides    = 20,
-                             manip_col   = "blue",   # color of manip_var
-                             render_type = render_plotly, # alt render_gganimate.
+                             manip_col   = "blue",
+                             render_type = render_plotly,
                              cat_var     = NULL,
+                             axes        = "center",
                              fps         = 3,
                              init_rescale_data = FALSE,
                              ...) {
@@ -106,10 +112,13 @@ play_manual_tour <- function(data,
     basis <- tourr::basis_random(n = ncol(data))
   }
   
-  m_tour <- manual_tour(basis, manip_var, theta, phi_min, phi_max, n_slides)
+  m_tour <- manual_tour(basis = basis, manip_var = manip_var,
+                        theta = theta, phi_min = phi_min, phi_max = phi_max,
+                        n_slides = n_slides)
   
-  slides <- array2df(m_tour, data)
-  disp   <- render_type(slides, manip_col, cat_var, fps, ...)
+  slides <- array2df(tour = m_tour, data = data)
+  disp   <- render_type(slides = slides, manip_col = manip_col,
+                        cat_var = cat_var, axes = axes, fps = fps, ...)
   
   disp
 }

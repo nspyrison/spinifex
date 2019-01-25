@@ -18,7 +18,7 @@ set_axes_position <- function(x, axes) {
     axis_pos   <- 0
   } else if (position == "bottomleft") {
     axis_scale <- 1 / 6
-    axis_pos   <- -2 / 3
+    axis_pos   <- -1 / 3
   }
   
   axis_scale * x + axis_pos 
@@ -52,8 +52,9 @@ view_basis <- function(basis,
   # Initialize
   basis <- as.data.frame(basis)
   angle <- seq(0, 2 * pi, length = 360)
-  circ  <- data.frame(x = cos(angle), y = sin(angle), zero = 0)
+  circ  <- data.frame(x = cos(angle), y = sin(angle))
   ## scale axes
+  zero  <- set_axes_position(0, axes)
   basis <- set_axes_position(basis, axes)
   circ  <- set_axes_position(circ, axes)
   
@@ -76,7 +77,7 @@ view_basis <- function(basis,
     ## Basis axes line segments
     ggplot2::geom_segment(
       data = basis, 
-      mapping = ggplot2::aes(x = X1, y = X2, xend = circ$zero, yend = circ$zero)) +
+      mapping = ggplot2::aes(x = X1, y = X2, xend = zero, yend = zero)) +
     ## Basis variable text labels
     ggplot2::geom_text(
       data = basis, 

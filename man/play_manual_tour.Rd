@@ -7,7 +7,7 @@
 play_manual_tour(data, basis = NULL, manip_var, theta = NULL,
   phi_min = 0, phi_max = 0.5 * pi, n_slides = 20,
   manip_col = "blue", render_type = render_plotly, cat_var = NULL,
-  fps = 3, init_rescale_data = FALSE, ...)
+  axes = "center", fps = 3, init_rescale_data = FALSE, ...)
 }
 \arguments{
 \item{data}{(n, p) dataset to project, consisting of numeric variables.}

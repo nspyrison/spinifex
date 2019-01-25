@@ -79,11 +79,11 @@ array2df <- function(tour,
 #' sshow <- array2df(tour = mtour, data = flea_std)
 #' render_(slides = sshow)
 #' 
-#' render_(slides = sshow, cat_var = flea$species)
+#' render_(slides = sshow, cat_var = flea$species, axes = "bottomleft")
 render_ <- function(slides,
-                    manip_col  = "blue",
-                    cat_var    = NULL,
-                    axes = "center"
+                    manip_col = "blue",
+                    cat_var   = NULL,
+                    axes      = "center"
 ) {
   # Initialize
   if (length(slides) == 2)
@@ -94,10 +94,12 @@ render_ <- function(slides,
   p             <- nrow(basis_slides) / n_slides
   ## Circle
   angle         <- seq(0, 2 * pi, length = 360)
-  circ          <- data.frame(x = cos(angle), y = sin(angle), zero = 0)
+  circ          <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes
+  zero          <- set_axes_position(0, axes)
   circ          <- set_axes_position(circ, axes)
-  basis_slides  <- set_axes_position(basis_slides, axes)
+  basis_slides  <- data.frame(set_axes_position(basis_slides[, 1:2], axes), 
+                              basis_slides[, 3:ncol(basis_slides)])
   ## manip var asethetics
   if(!is.null(manip_var)) {
     col_v            <- rep("black", p) 
@@ -142,7 +144,7 @@ render_ <- function(slides,
         ggplot2::geom_segment( 
           data = basis_slides, size = siz_v, colour = col_v,
           mapping = ggplot2::aes(x = V1, y = V2, 
-                                 xend = circ$zero, yend = circ$zero, 
+                                 xend = zero, yend = zero, 
                                  frame = slide))) +
       ## Basis axes text labels
       suppressWarnings( # suppress for unused aes "frame".
@@ -235,7 +237,7 @@ render_gganimate <- function(slides,
   
   gga <- 
     gg + gganimate::transition_states(
-    slide, transition_length = 0, state_length = 1 / fps
+      slide, transition_length = 0, state_length = 1 / fps
   )
   
   return(gga)
