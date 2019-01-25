@@ -10,7 +10,7 @@
 #' @return ggplot object of the basis.
 #' 
 #' @examples 
-#' rb <- tourr::basis_random(4, 2)
+#' rb <- basis_random(4, 2)
 #' view_basis(basis = rb)
 #' @export
 view_basis <- function(basis,
@@ -46,6 +46,38 @@ view_basis <- function(basis,
       size = 4, hjust = 0, vjust = 0, colour = "black")
   
   gg
+}
+
+#' Plot projection frame and return the axes table.
+#' 
+#' Uses base graphics to plot the circle with axes representing
+#' the projection frame. Returns the corresponding table.
+#' 
+#' @param basis A (p, d) basis, XY linear combination of each dimension 
+#'   (numeric variable).
+#' @param labels Optional, character vector of `p` length, add name to the axes 
+#'   in the reference frame, typically the variable names.
+#' @return ggplot object of the basis.
+#' 
+#' @examples 
+#' rb <- basis_random(4, 2)
+#' flea_std <- tourr::rescale(flea[, 1:4])
+#' view_frame(basis = rb, data = flea_std)
+#' @export
+view_frame <- function(basis,
+                      data,
+                      labels = paste0("V", 1:nrow(basis))
+) {
+  basis <- as.matrix(basis)
+  data  <- as.matrix(data)
+  proj  <- as.data.frame(data %*% basis)
+  
+  gg <- view_basis(basis = basis, labels = labels)
+  
+  gg + ggplot2::geom_point(
+    data = proj,
+    mapping = ggplot2::aes(x = V1, y = V2)
+  )
 }
 
 #' Plot projection frame and return the axes table.
