@@ -16,7 +16,8 @@
 #' 
 #' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
-#' play_tour_path(tpath, NULL, render_gganimate, flea$species, 4)
+#' play_tour_path(tour_path = tpath, data = flea_std, angle = .05, 
+#'   render_type = render_gganimate, cat_var = flea$species, fps = 4)
 play_tour_path <- function(tour_path,
                            data = NULL,
                            angle = .05,
@@ -30,14 +31,13 @@ play_tour_path <- function(tour_path,
     data <- attributes(tour_path)$data
   }
   
+  tour_path <- tourr::interpolate(tour_path, angle)
+  
   # if tour_path isn't a normal array, make it an array.
-  if(class(tour_path) != "array") {
+  if("array" %in% class(tour_path)) {
     attr(tour_path, "class") <- NULL
     tour_path <- as.array(tour_path)
   }
-  
-  #tourr::interpolate(tour_path, angle)
-  ## Error in is_orthonormal(Fa) : is.matrix(x) is not TRUE
   
   tourdf <- array2df(tour_path, data)
   disp   <- render_type(tourdf, manip_col, cat_var, fps, ...)
@@ -83,8 +83,10 @@ play_tour_path <- function(tour_path,
 #' 
 #' play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 #' 
-#' play_manual_tour(tourr::flea[,1:6], NULL, 4, 0, 0, pi, 40, "red", 
-#'                  render_gganimate, flea$species, 4, FALSE)
+#' play_manual_tour(data = tourr::flea[,1:6], basis = NULL, manip_var = 4, 
+#'   theta = 0, phi_min = 0, phi_max = pi, nslides = 30, manip_col = "red", 
+#'   render_type = render_gganimate, cat_var = flea$species, fps = 4, 
+#'   init_rescale_data = FALSE)
 play_manual_tour <- function(data,
                              basis       = NULL,
                              manip_var,

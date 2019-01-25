@@ -61,6 +61,8 @@ rb <- tourr::basis_random(n = ncol(flea_std))
 
 play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 
-play_manual_tour(tourr::flea[,1:6], NULL, 4, 0, 0, pi, 40, "red", 
-                 render_gganimate, flea$species, 4, FALSE)
+play_manual_tour(data = tourr::flea[,1:6], basis = NULL, manip_var = 4, 
+  theta = 0, phi_min = 0, phi_max = pi, nslides = 30, manip_col = "red", 
+  render_type = render_gganimate, cat_var = flea$species, fps = 4, 
+  init_rescale_data = FALSE)
 }

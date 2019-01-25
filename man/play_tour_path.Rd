@@ -29,5 +29,6 @@ tpath    <- save_history(flea_std, guided_tour(cmass))
 
 play_tour_path(tour_path = tpath, data = flea_std)
 
-play_tour_path(tpath, NULL, render_gganimate, flea$species, 4)
+play_tour_path(tour_path = tpath, data = flea_std, angle = .05, 
+  render_type = render_gganimate, cat_var = flea$species, fps = 4)
 }
