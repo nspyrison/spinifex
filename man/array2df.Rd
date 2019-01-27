@@ -7,9 +7,9 @@
 array2df(array, data = NULL)
 }
 \arguments{
-\item{data}{Optional, (n, p) dataset to project, consisting of numeric variables.}
+\item{array}{A (p, d, n_slides) array of a tour, the output of \code{manual_tour()}.}
 
-\item{tour}{A (p, d, n_slides) array of a tour, the output of \code{manual_tour()}.}
+\item{data}{Optional, (n, p) dataset to project, consisting of numeric variables.}
 }
 \value{
 A list containing the (p, d, n_slides) basis slides array, and
@@ -22,7 +22,7 @@ restuctures the data from an array to a long data frame (tibble) for use in
 ggplots.
 }
 \examples{
-flea_std <- tourr::rescale(flea[,1:6])
+flea_std <- tourr::rescale(flea[, 1:6])
 
 rb <- basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)

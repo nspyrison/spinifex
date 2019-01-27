@@ -114,7 +114,7 @@
 #'
 #' str(weather)
 #' 
-#' spinifex(data = weather[, 2:17], manip_var = 5, init_rescale_data = TRUE)
+#' play_manual_tour(data = weather[, 2:17], manip_var = 5, init_rescale_data = TRUE)
 "weather"
 
 #' The wine dataset from the UCI Machine Learning Repository.
@@ -160,5 +160,5 @@
 #'
 #' str(wine)
 #' 
-#' spinifex(data = wine[, 2:14], manip_var = 1, init_rescale_data = TRUE)
+#' play_manual_tour(data = wine[, 2:14], manip_var = 1, init_rescale_data = TRUE)
 "wine"

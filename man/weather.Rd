@@ -69,7 +69,7 @@ weather <- dplyr::as.tibble(weather[, c(1,3:7,9,12:24)])
 
 str(weather)
 
-spinifex(data = weather[, 2:17], manip_var = 5, init_rescale_data = TRUE)
+play_manual_tour(data = weather[, 2:17], manip_var = 5, init_rescale_data = TRUE)
 }
 \references{
 Data source: http://www.bom.gov.au/climate/dwo/ and http://www.bom.gov.au/climate/data.

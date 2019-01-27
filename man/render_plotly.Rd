@@ -26,9 +26,9 @@ Takes the result of \code{array2df()} and renders them into a
 \emph{plotly} animation.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[,1:6])
+flea_std <- tourr::rescale(flea[, 1:6])
 
-rb <- tourr::basis_random(n = ncol(flea_std))
+rb <- basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 render_plotly(slides = sshow)

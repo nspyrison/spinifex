@@ -36,7 +36,7 @@ set_axes_position <- function(x, axes) {
 #' @param data Optional (n, p) data, plots xy scatterplot on the frame
 #' @param axes position of the axes: center, bottomleft or off
 #' @return ggplot object of the basis.
-#' 
+#' @import tourr
 #' @examples 
 #' rb <- basis_random(4, 2)
 #' view_basis(basis = rb)
@@ -117,7 +117,7 @@ view_basis <- function(basis,
 #' @return ggplot object of the basis.
 #' 
 #' @examples 
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
+#' flea_std <- tourr::rescale(flea[, 1:6])
 #' rb <- basis_random(ncol(flea_std), 2)
 #' 
 #' view_manip_space(basis = rb, manip_var = 4)

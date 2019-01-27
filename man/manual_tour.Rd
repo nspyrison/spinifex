@@ -6,7 +6,7 @@
 of a projection}
 \usage{
 manual_tour(basis = NULL, manip_var, theta = NULL, phi_min = 0,
-  phi_max = 0.5 * pi, n_slides = 20)
+  phi_max = 0.5 * pi)
 }
 \arguments{
 \item{basis}{A (p, d) dim orthonormal matrix. Required, no default.}
@@ -15,8 +15,7 @@ manual_tour(basis = NULL, manip_var, theta = NULL, phi_min = 0,
 variable to manipulate. Required, no default.}
 
 \item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the
-reference frame. Typically set from manip_type in \code{proj_data}. Supersedes
-\code{manip_type}. Must set either \code{manip_type} or \code{theta}.}
+reference frame. Defaults to theta of the basis for a radial manual tour.}
 
 \item{phi_min}{Minimum value phi should move to. Phi is angle in radians of
 the "out-of-plane" rotation, the z-axis of the reference frame.
@@ -25,15 +24,11 @@ Required, defaults to 0.}
 \item{phi_max}{Maximum value phi should move to. Phi is angle in radians of
 the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
-
-\item{manip_type}{String of the type of manipulation to use.
-Defaults to "radial". Alternatively accepts "horizontal" or "vertical".
-Yields to \code{theta} if set. Must set either \code{manip_type} or \code{theta}.}
 }
 \value{
 A (p, d, 4) history_array of the manual tour. The bases set for
 phi_start, \code{phi_min},  \code{phi_max}, and back to phi_start. To be called by
-tourr::interpolate().
+\code{tourr::interpolate()}.
 }
 \description{
 Typically called by \code{array2af()}. An array of projections,

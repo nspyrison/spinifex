@@ -28,6 +28,7 @@
 #' @docType package
 "_PACKAGE"
 
+# Manual tour globals:
 globalVariables(c("cat_var",
                   "disp_type",
                   "phi_min",
@@ -36,10 +37,18 @@ globalVariables(c("cat_var",
                   "manip_type",
                   "n_slides",
                   "slide",
-                  "theta"
-))
+                  "theta")
+)
 
-### Jenny Bryan's solution: 
-### https://github.com/STAT545-UBC/Discussion/issues/451#issuecomment-264598618
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
-# if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+# ggplot aes globals:
+globalVariables(c("V1",
+                  "V2",
+                  "x",
+                  "y",
+                  "z",
+                  "xend",
+                  "yend",
+                  "lab",
+                  "lab_abbr",
+                  "slide")
+)

@@ -5,13 +5,13 @@
 #' restuctures the data from an array to a long data frame (tibble) for use in
 #' ggplots.
 #'
-#' @param tour A (p, d, n_slides) array of a tour, the output of `manual_tour()`.
+#' @param array A (p, d, n_slides) array of a tour, the output of `manual_tour()`.
 #' @param data Optional, (n, p) dataset to project, consisting of numeric variables.
 #' @return A list containing the (p, d, n_slides) basis slides array, and
 #'   the (n, d, n_slides) data slides array.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(flea[,1:6])
+#' flea_std <- tourr::rescale(flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
@@ -71,9 +71,9 @@ array2df <- function(array, data = NULL) {
 #'   `render_gganimate()`.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
+#' flea_std <- tourr::rescale(flea[, 1:6])
 #' 
-#' rb <- tourr::basis_random(n = ncol(flea_std))
+#' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_(slides = sshow)
@@ -170,9 +170,9 @@ render_ <- function(slides,
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' flea_std <- tourr::rescale(flea[, 1:6])
 #' 
-#' rb <- tourr::basis_random(n = ncol(flea_std))
+#' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_plotly(slides = sshow)
@@ -215,9 +215,9 @@ render_plotly <- function(slides,
 #' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' flea_std <- tourr::rescale(flea[, 1:6])
 #' 
-#' rb <- tourr::basis_random(n = ncol(flea_std))
+#' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)

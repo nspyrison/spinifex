@@ -7,6 +7,7 @@
 #' @param basis A (p, d) orthonormal matrix.
 #' @param manip_var Number of the column/dimension to rotate.
 #' @return A (p, d+1) orthonormal matrix, the manipulation space.
+#' @import tourr
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(flea[,1:6])
@@ -83,12 +84,8 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @param basis A (p, d) dim orthonormal matrix. Required, no default.
 #' @param manip_var Integer column number or string exact column name of the.
 #'   variable to manipulate. Required, no default.
-#' @param manip_type String of the type of manipulation to use. 
-#'   Defaults to "radial". Alternatively accepts "horizontal" or "vertical". 
-#'   Yields to `theta` if set. Must set either `manip_type` or `theta`.
 #' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
-#'   reference frame. Typically set from manip_type in `proj_data`. Supersedes 
-#'   `manip_type`. Must set either `manip_type` or `theta`.
+#'   reference frame. Defaults to theta of the basis for a radial manual tour.
 #' @param phi_min Minimum value phi should move to. Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to 0.
@@ -97,7 +94,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #'   Required, defaults to pi/2.
 #' @return A (p, d, 4) history_array of the manual tour. The bases set for
 #'   phi_start, `phi_min`,  `phi_max`, and back to phi_start. To be called by
-#'   tourr::interpolate().
+#'   `tourr::interpolate()`.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(flea[,1:6])
@@ -105,11 +102,10 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' rb <- basis_random(n = ncol(flea_std))
 #' manual_tour(basis = rb, manip_var = 4)
 manual_tour <- function(basis = NULL,
-                        manip_var,  # column number
-                        theta = NULL,      # (radians)
-                        phi_min = 0,       # (radians)
-                        phi_max = .5 * pi, # (radians)
-                        n_slides = 20
+                        manip_var,
+                        theta = NULL,
+                        phi_min = 0,
+                        phi_max = .5 * pi
 ) {
   
   # Initalize

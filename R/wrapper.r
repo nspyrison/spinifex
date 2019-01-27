@@ -13,6 +13,7 @@
 #' @param axes position of the axes: center, bottomleft or off.
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optionally pass additional arguments to `render_type`.
+#' @import tourr
 #' @export
 #' @examples
 #' flea_std <- rescale(tourr::flea[,1:6])
@@ -36,7 +37,7 @@ play_tour_path <- function(tour_path,
     data <- attributes(tour_path)$data
   }
   
-  tour <- tourr::interpolate(tour_path = tour_path, angle = angle)
+  tour <- tourr::interpolate(basis_set = tour_path, angle = angle)
   
   slides <- array2df(array = tour, data = data)
   disp   <- render_type(slides = slides, manip_col = manip_col, 
@@ -70,12 +71,14 @@ play_tour_path <- function(tour_path,
 #'   alternative use render_gganimate.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
+#' @param axes position of the axes: center, bottomleft or off.
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param init_rescale_data When TRUE will apply `tourr::rescale()` on the data.
 #'   Defaults to FALSE.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #'   plotting options.
 #' @return An animation of a manual tour.
+#' @import tourr
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])

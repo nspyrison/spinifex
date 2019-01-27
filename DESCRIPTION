@@ -20,7 +20,9 @@ Imports:
     GGally,
     gganimate,
     ggplot2,
+    gifski,
     plotly,
+    png,
     tibble,
     webshot
 Suggests: 
