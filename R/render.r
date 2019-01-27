@@ -11,31 +11,30 @@
 #'   the (n, d, n_slides) data slides array.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' flea_std <- tourr::rescale(flea[,1:6])
 #' 
-#' rb <- tourr::basis_random(n = ncol(flea_std))
-#' mtour <- manual_tour(rb, manip_var = 4)
-#' array2df(tour = mtour, data = flea_std)
-array2df <- function(tour,
-                     data = NULL
-) {
+#' rb <- basis_random(n = ncol(flea_std))
+#' mtour <- manual_tour(basis = rb, manip_var = 4)
+#' array2df(array = mtour, data = flea_std)
+array2df <- function(array, data = NULL) {
   # Initialize
-  if (!is.null(data) & !is.matrix(data)) data <- as.matrix(data)
-  p <- nrow(tour[,, 1])
-  n_slides     <- dim(tour)[3]
+  attr(array, "class") <- "array"
+  if (!is.null(data)) data <- as.matrix(data)
+  p <- nrow(array[,, 1])
+  n_slides     <- dim(array)[3]
   basis_slides <- NULL
   data_slides  <- NULL
   
   # basis; array to long df (tibble)
   for (slide in 1:n_slides) {
-    bas_slide <- dplyr::as_tibble(cbind(tour[,, slide], slide))
+    bas_slide <- dplyr::as_tibble(cbind(array[,, slide], slide))
     basis_slides <- rbind(basis_slides, bas_slide)
   }
   
   # data; if exists,  array to long df (tibble)
   if(!is.null(data)) {
     for (slide in 1:n_slides) {
-      dat_slide <- cbind(data %*% tour[,, slide], slide)
+      dat_slide <- cbind(data %*% array[,, slide], slide)
       dat_slide[, 1] <- scale(dat_slide[, 1], scale = FALSE)
       dat_slide[, 2] <- scale(dat_slide[, 2], scale = FALSE)
       data_slides <- dplyr::as_tibble(rbind(data_slides, dat_slide))
@@ -49,13 +48,13 @@ array2df <- function(tour,
     } else paste0("V", 1:p)
   basis_slides$lab_abbr <- rep(lab_abbr, n_slides)
   
-  attr(basis_slides, "manip_var") <- attributes(tour)$manip_var
+  attr(basis_slides, "manip_var") <- attributes(array)$manip_var
   
   slides <- if(!is.null(data)) {
     list(basis_slides = basis_slides, data_slides = data_slides)
   } else list(basis_slides = basis_slides)
   
-  return(slides)
+  slides
 }
 
 #' Render the ggplot before the animation package
@@ -76,7 +75,7 @@ array2df <- function(tour,
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- array2df(tour = mtour, data = flea_std)
+#' sshow <- array2df(array = mtour, data = flea_std)
 #' render_(slides = sshow)
 #' 
 #' render_(slides = sshow, cat_var = flea$species, axes = "bottomleft")
@@ -175,7 +174,7 @@ render_ <- function(slides,
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- array2df(tour = mtour, data = flea_std)
+#' sshow <- array2df(array = mtour, data = flea_std)
 #' render_plotly(slides = sshow)
 #' 
 #' render_plotly(slides = sshow, cat_var = flea$species)
@@ -220,7 +219,7 @@ render_plotly <- function(slides,
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- array2df(tour = mtour, data = flea_std)
+#' sshow <- array2df(array = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
 #' 
 #' render_gganimate(slides = sshow, cat_var = flea$species)
@@ -240,5 +239,5 @@ render_gganimate <- function(slides,
       slide, transition_length = 0, state_length = 1 / fps
   )
   
-  return(gga)
+  gga
 }

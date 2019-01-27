@@ -5,7 +5,7 @@
 #'
 #' @param tour_path The result of `tourr::save_history()` or `manual_tour()`.
 #' @param data Optional, number of columns must match that of `tour_path`.
-#' @param angle target distance (in radians) between bases. Defaults to .05.
+#' @param angle Target distance (in radians) between bases. Defaults to .05.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #'   alternative use render_gganimate.
 #' @param cat_var Categorical variable, optionally used to set the data point 
@@ -30,22 +30,16 @@ play_tour_path <- function(tour_path,
                            axes = "center",
                            fps = 3,
                            ...) {
-  # if data missing, but in an attribute, use that.
+  # if data missing, but an attribute, use that.
   if(is.null(data) & !is.null(attributes(tour_path)$data)){ 
     message("data passed as NULL with a tourr object containing attached data; rendering the tour_path data.")
     data <- attributes(tour_path)$data
   }
   
-  tour_path <- tourr::interpolate(tour_path, angle)
+  tour <- tourr::interpolate(tour_path = tour_path, angle = angle)
   
-  # if tour_path isn't a normal array, make it an array.
-  if("array" %in% class(tour_path)) {
-    attr(tour_path, "class") <- NULL
-    tour_path <- as.array(tour_path)
-  }
-  
-  tourdf <- array2df(tour_path, data)
-  disp   <- render_type(tourdf = tourdf, manip_col = manip_col, 
+  slides <- array2df(array = tour, data = data)
+  disp   <- render_type(slides = slides, manip_col = manip_col, 
                         cat_var = cat_var, axes = axes, fps = fps, ...)
   
   disp
@@ -70,7 +64,7 @@ play_tour_path <- function(tour_path,
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to pi / 2.
-#' @param n_slides The number of slide-interpolations to make for the tour.
+#' @param angle Target distance (in radians) between bases. Defaults to .05.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #'   alternative use render_gganimate.
@@ -98,7 +92,7 @@ play_manual_tour <- function(data,
                              theta       = NULL,
                              phi_min     = 0,
                              phi_max     = .5 * pi,
-                             n_slides    = 20,
+                             angle       = .05,
                              manip_col   = "blue",
                              render_type = render_plotly,
                              cat_var     = NULL,
@@ -113,10 +107,10 @@ play_manual_tour <- function(data,
   }
   
   m_tour <- manual_tour(basis = basis, manip_var = manip_var,
-                        theta = theta, phi_min = phi_min, phi_max = phi_max,
-                        n_slides = n_slides)
+                        theta = theta, phi_min = phi_min, phi_max = phi_max)
+  tour <- tourr::interpolate(basis_set = m_tour, angle = angle)
   
-  slides <- array2df(tour = m_tour, data = data)
+  slides <- array2df(array = tour, data = data)
   disp   <- render_type(slides = slides, manip_col = manip_col,
                         cat_var = cat_var, axes = axes, fps = fps, ...)
   

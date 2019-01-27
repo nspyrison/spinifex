@@ -29,7 +29,7 @@ flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- array2df(tour = mtour, data = flea_std)
+sshow <- array2df(array = mtour, data = flea_std)
 render_(slides = sshow)
 
 render_(slides = sshow, cat_var = flea$species, axes = "bottomleft")
