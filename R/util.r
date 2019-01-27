@@ -42,6 +42,7 @@ set_axes_position <- function(x, axes) {
 #' view_basis(basis = rb)
 #' 
 #' flea_std <- tourr::rescale(flea[, 1:4])
+#' view_basis(basis = rb, data = flea_std)
 #' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 #' @export
 view_basis <- function(basis,
@@ -77,18 +78,18 @@ view_basis <- function(basis,
     ## Basis axes line segments
     ggplot2::geom_segment(
       data = basis, 
-      mapping = ggplot2::aes(x = X1, y = X2, xend = zero, yend = zero)) +
+      mapping = ggplot2::aes(x = V1, y = V2, xend = zero, yend = zero)) +
     ## Basis variable text labels
     ggplot2::geom_text(
       data = basis, 
-      mapping = ggplot2::aes(x = X1, y = X2, label = labels),
+      mapping = ggplot2::aes(x = V1, y = V2, label = labels),
       size = 4, hjust = 0, vjust = 0, colour = "black")
   }
   
   if (!is.null(data))
   {
     # Project data and all to ggplot
-    proj <- as.data.frame(as.matrix(data) %*% as.matrix(basis))
+    proj <- as.data.frame(tourr::rescale(as.matrix(data) %*% as.matrix(basis)-.5))
     gg   <- 
       gg + ggplot2::geom_point(
         data = proj,
@@ -170,7 +171,7 @@ view_manip_space <- function(basis,
     ## Basis axes line segments
     ggplot2::geom_segment(
       data = m_sp_r, 
-      mapping = ggplot2::aes(x = x, y = y, xend = , yend = 0),
+      mapping = ggplot2::aes(x = x, y = y, xend = 0, yend = 0),
       size = siz_v, colour = col_v) +
     ## Basis variable text labels
     ggplot2::geom_text(
@@ -200,5 +201,4 @@ view_manip_space <- function(basis,
   
   gg
 }
-
-
+ 

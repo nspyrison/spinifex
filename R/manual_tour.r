@@ -22,7 +22,7 @@ create_manip_space <- function(basis,
   manip_space  <- tourr::orthonormalise(cbind(basis, e))
   colnames(manip_space) <- NULL
   
-  return(manip_space)
+  manip_space
 }
 
 #' Rotate and return the manipulation space
@@ -70,7 +70,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
   colnames(rotation_space) <- colnames(manip_space)
   rownames(rotation_space) <- rownames(manip_space)
   
-  return(rotation_space)
+  rotation_space
 }
 
 #' Produce the series of projection bases to rotate a variable into and out 
@@ -112,42 +112,28 @@ manual_tour <- function(basis = NULL,
                         phi_max = .5 * pi, # (radians)
                         n_slides = 20
 ) {
+  
   # Initalize
-  if (!is.matrix(basis)) basis <- as.matrix(basis)
+  basis <- as.matrix(basis)
   if (is.null(theta)) theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   manip_space    <- create_manip_space(basis = basis, manip_var = manip_var)
   p              <- nrow(basis)
   d              <- ncol(basis)
-  phi_start      <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-  phi_start_sign <- phi_start * sign(manip_space[manip_var, 1])
-  phi_inc        <- 2 * abs(phi_max - phi_min) / (n_slides - 3)
+  phi_start      <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2)) *
+    sign(manip_space[manip_var, 1])
+  phi_min <- phi_min + phi_start # now relative to proj plane.
+  phi_max <- phi_max + phi_start
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)
   
-  interpolate_walk <- function(seq_start, seq_end){
-    # Initialize for interpolate_slides()
-    slide        <- 0
-    new_slide    <- NULL
-    seq_start    <- seq_start + phi_start_sign # Transform such that phi is relative to Z=0, rather than phi_start
-    seq_end      <- seq_end   + phi_start_sign
-    phi_inc_sign <- phi_inc * ifelse(seq_end > seq_start, 1, -1) 
-    phi_len      <- length(seq(seq_start, seq_end, phi_inc_sign))
-    interp       <- array(dim = c(p, d, phi_len))
-    
-    # Create slide, store in interpolation
-    for (phi in seq(seq_start, seq_end, phi_inc_sign)) {
-      slide <- slide + 1
-      interp[,, slide] <- rotate_manip_space(manip_space, theta, phi)[, 1:2]
-    }
-    return(interp)
-  }
+  # Make "history_array", to be tourr::interpolate()'d. See tourr::save_history().
+  hist <- array(NA, dim = c(p, d, 4))
+  hist[,,1] <- manip_space[, 1:d]
+  hist[,,2] <- rotate_manip_space(manip_space, theta, phi_min)[, 1:d]
+  hist[,,3] <- rotate_manip_space(manip_space, theta, phi_max)[, 1:d]
+  hist[,,4] <- hist[,,1]
   
-  walk1 <- interpolate_walk(phi_start, phi_min)
-  walk2 <- interpolate_walk(phi_min, phi_max)
-  walk3 <- interpolate_walk(phi_max, phi_start)
-  walk4 <- interpolate_walk(phi_start, phi_start)
+  attr(hist, "manip_var") <- manip_var
+  class(hist) <- c("history_array", class(hist))
   
-  m_tour <- array(c(walk1, walk2, walk3, walk4), dim = c(p, d, n_slides))
-  attr(m_tour, "manip_var") <- manip_var
-  
-  return(m_tour)
+  hist
 }
