@@ -5,8 +5,10 @@ Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
     )
-Description: Allows manipulation of single variables in high dim spaces. Useful in 
-	conjunction with tours and projection persuit as implemented by the tourr package.
+Description: Used in touring; orthagonal linear projections of numeric 
+  multivariate data (p>3). Implements manual tours, for manipulation of single 
+  variables. Additionally offers graphic output as gganimate and plotly 
+  including tourr tour paths.
 Depends: 
     R (>= 3.4.0),
     tourr
