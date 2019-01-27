@@ -12,7 +12,7 @@
 #' It's main functions are:
 #' \itemize{
 #'   \item [manual_tour()], Performs manual tour and returns a tour path array.
-#'   \item [array2df()], Turns a tour path array into a (long) df for ggplot 
+#'   \item [interpolate2df()], Turns a tour path array into a (long) df for ggplot 
 #'   graphics.
 #'   \item [render_plotly()], Plots tour path df as a plotly object.
 #'   \item [render_gganimate()],  Plots tour path df as a gganimate object.

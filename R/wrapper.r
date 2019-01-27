@@ -5,7 +5,7 @@
 #'
 #' @param tour_path The result of `tourr::save_history()` or `manual_tour()`.
 #' @param data Optional, number of columns must match that of `tour_path`.
-#' @param angle Target distance (in radians) between bases. Defaults to .05.
+#' @param angle target distance (in radians) between bases.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #'   alternative use render_gganimate.
 #' @param cat_var Categorical variable, optionally used to set the data point 
@@ -37,9 +37,7 @@ play_tour_path <- function(tour_path,
     data <- attributes(tour_path)$data
   }
   
-  tour <- tourr::interpolate(basis_set = tour_path, angle = angle)
-  
-  slides <- array2df(array = tour, data = data)
+  slides <- interpolate2df(array = tour_path, data = data, angle = angle)
   disp   <- render_type(slides = slides, manip_col = manip_col, 
                         cat_var = cat_var, axes = axes, fps = fps, ...)
   
@@ -50,11 +48,12 @@ play_tour_path <- function(tour_path,
 #'
 #' Performs the sepicify manual tour and returns an animation of `render_type`.
 #' For use with `tourr::save_history()` tour paths see `play_tour_path()`. 
-#' A wrapper function for `manual_tour()`, `array2df()`, and `render_()`.
+#' A wrapper function for `manual_tour()`, `interpolate2df()`, and `render_()`.
 #' 
 #' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix. 
 #'   If it's left null, random basis will be used.
+#' @param angle target distance (in radians) between bases.
 #' @param manip_var Number of the column/dimension to rotate.
 #' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
 #'   reference frame.
@@ -65,7 +64,6 @@ play_tour_path <- function(tour_path,
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to pi / 2.
-#' @param angle Target distance (in radians) between bases. Defaults to .05.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #'   alternative use render_gganimate.
@@ -111,9 +109,8 @@ play_manual_tour <- function(data,
   
   m_tour <- manual_tour(basis = basis, manip_var = manip_var,
                         theta = theta, phi_min = phi_min, phi_max = phi_max)
-  tour <- tourr::interpolate(basis_set = m_tour, angle = angle)
   
-  slides <- array2df(array = tour, data = data)
+  slides <- interpolate2df(array = m_tour, data = data, angle = angle)
   disp   <- render_type(slides = slides, manip_col = manip_col,
                         cat_var = cat_var, axes = axes, fps = fps, ...)
   

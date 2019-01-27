@@ -114,8 +114,7 @@ manual_tour <- function(basis = NULL,
   manip_space    <- create_manip_space(basis = basis, manip_var = manip_var)
   p              <- nrow(basis)
   d              <- ncol(basis)
-  phi_start      <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2)) *
-    sign(manip_space[manip_var, 1])
+  phi_start      <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
   phi_min <- phi_min + phi_start # now relative to proj plane.
   phi_max <- phi_max + phi_start
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)

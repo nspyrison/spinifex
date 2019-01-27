@@ -19,7 +19,7 @@ guided tour.
 It's main functions are:
 \itemize{
 \item \code{\link[=manual_tour]{manual_tour()}}, Performs manual tour and returns a tour path array.
-\item \code{\link[=array2df]{array2df()}}, Turns a tour path array into a (long) df for ggplot
+\item \code{\link[=interpolate2df]{interpolate2df()}}, Turns a tour path array into a (long) df for ggplot
 graphics.
 \item \code{\link[=render_plotly]{render_plotly()}}, Plots tour path df as a plotly object.
 \item \code{\link[=render_gganimate]{render_gganimate()}},  Plots tour path df as a gganimate object.

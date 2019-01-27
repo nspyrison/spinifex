@@ -13,7 +13,7 @@ play_tour_path(tour_path, data = NULL, angle = 0.05,
 
 \item{data}{Optional, number of columns must match that of \code{tour_path}.}
 
-\item{angle}{Target distance (in radians) between bases. Defaults to .05.}
+\item{angle}{target distance (in radians) between bases.}
 
 \item{render_type}{Which graphics to render to. Defaults to render_plotly,
 alternative use render_gganimate.}

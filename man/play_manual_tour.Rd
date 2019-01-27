@@ -29,7 +29,7 @@ Required, defaults to 0.}
 the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi / 2.}
 
-\item{angle}{Target distance (in radians) between bases. Defaults to .05.}
+\item{angle}{target distance (in radians) between bases.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}.}
 
@@ -55,7 +55,7 @@ An animation of a manual tour.
 \description{
 Performs the sepicify manual tour and returns an animation of \code{render_type}.
 For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}.
-A wrapper function for \code{manual_tour()}, \code{array2df()}, and \code{render_()}.
+A wrapper function for \code{manual_tour()}, \code{interpolate2df()}, and \code{render_()}.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])

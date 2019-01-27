@@ -20,15 +20,15 @@ RoxygenNote: 6.1.1
 Imports:
     dplyr,
     GGally,
-    gganimate,
     ggplot2,
-    gifski,
     plotly,
-    png,
     tibble,
     webshot
 Suggests: 
+    gganimate,
+    gifski,
     knitr,
+    png,
     rmarkdown 
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))
