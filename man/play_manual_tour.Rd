@@ -5,7 +5,7 @@
 \title{Render display of a manual tour}
 \usage{
 play_manual_tour(data, basis = NULL, manip_var, theta = NULL,
-  phi_min = 0, phi_max = 0.5 * pi, n_slides = 20,
+  phi_min = 0, phi_max = 0.5 * pi, angle = 0.05,
   manip_col = "blue", render_type = render_plotly, cat_var = NULL,
   axes = "center", fps = 3, init_rescale_data = FALSE, ...)
 }
@@ -29,7 +29,7 @@ Required, defaults to 0.}
 the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi / 2.}
 
-\item{n_slides}{The number of slide-interpolations to make for the tour.}
+\item{angle}{Target distance (in radians) between bases. Defaults to .05.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}.}
 
@@ -61,8 +61,7 @@ rb <- tourr::basis_random(n = ncol(flea_std))
 
 play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 
-play_manual_tour(data = tourr::flea[,1:6], basis = NULL, manip_var = 4, 
-  theta = 0, phi_min = 0, phi_max = pi, nslides = 30, manip_col = "red", 
-  render_type = render_gganimate, cat_var = flea$species, fps = 4, 
-  init_rescale_data = FALSE)
+play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
+  manip_col = "red", render_type = render_gganimate, cat_var = flea$species, 
+  axes = "bottomleft")
 }

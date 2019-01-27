@@ -46,7 +46,7 @@
 #'
 #' str(breastcancer)
 #' 
-#' spinifex(data = breastcancer[, 2:9], manip_var = 3, init_rescale_data = TRUE)
+#' play_manual_tour(data = breastcancer[, 2:9], manip_var = 3, init_rescale_data = TRUE)
 "breastcancer"
 
 #' Sample dataset of daily weather observations from Canberra airport in Australia.

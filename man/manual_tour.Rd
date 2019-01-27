@@ -26,16 +26,14 @@ Required, defaults to 0.}
 the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
 
-\item{n_slides}{Number of slides to create. Defaults to 20.}
-
 \item{manip_type}{String of the type of manipulation to use.
 Defaults to "radial". Alternatively accepts "horizontal" or "vertical".
 Yields to \code{theta} if set. Must set either \code{manip_type} or \code{theta}.}
 }
 \value{
-A (p, d, n_slides) dim array of the manual tour. Containing
-\code{n_slides} interpolations varying phi from it's start to \code{phi_min}, to
-\code{phi_max}, and back to start.
+A (p, d, 4) history_array of the manual tour. The bases set for
+phi_start, \code{phi_min},  \code{phi_max}, and back to phi_start. To be called by
+tourr::interpolate().
 }
 \description{
 Typically called by \code{array2af()}. An array of projections,
@@ -43,8 +41,8 @@ the manual tour of the \code{manip_var}, which is rotated from phi's starting
 position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[,1:6])
+flea_std <- tourr::rescale(flea[,1:6])
 
-rb <- tourr::basis_random(n = ncol(flea_std))
+rb <- basis_random(n = ncol(flea_std))
 manual_tour(basis = rb, manip_var = 4)
 }

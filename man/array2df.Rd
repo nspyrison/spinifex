@@ -4,12 +4,12 @@
 \alias{array2df}
 \title{Turns a tour path array into a long data frame (tibble)}
 \usage{
-array2df(tour, data = NULL)
+array2df(array, data = NULL)
 }
 \arguments{
-\item{tour}{A (p, d, n_slides) array of a tour, the output of \code{manual_tour()}.}
-
 \item{data}{Optional, (n, p) dataset to project, consisting of numeric variables.}
+
+\item{tour}{A (p, d, n_slides) array of a tour, the output of \code{manual_tour()}.}
 }
 \value{
 A list containing the (p, d, n_slides) basis slides array, and
@@ -22,9 +22,9 @@ restuctures the data from an array to a long data frame (tibble) for use in
 ggplots.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[,1:6])
+flea_std <- tourr::rescale(flea[,1:6])
 
-rb <- tourr::basis_random(n = ncol(flea_std))
-mtour <- manual_tour(rb, manip_var = 4)
-array2df(tour = mtour, data = flea_std)
+rb <- basis_random(n = ncol(flea_std))
+mtour <- manual_tour(basis = rb, manip_var = 4)
+array2df(array = mtour, data = flea_std)
 }
