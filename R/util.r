@@ -17,8 +17,8 @@ set_axes_position <- function(x, axes) {
     axis_scale <- 2 / 3
     axis_pos   <- 0
   } else if (position == "bottomleft") {
-    axis_scale <- 1 / 6
-    axis_pos   <- -1 / 3
+    axis_scale <- 1 / 4
+    axis_pos   <- -2 / 3
   }
   
   axis_scale * x + axis_pos 

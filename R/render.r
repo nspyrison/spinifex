@@ -106,7 +106,7 @@ render_ <- function(slides,
   col_v <- "black"
   siz_v <- 0.3
   if(!is.null(manip_var)) {
-    col_v            <- rep("black", p) 
+    col_v            <- rep("grey50", p) 
     col_v[manip_var] <- manip_col
     col_v            <- rep(col_v, n_slides)
     siz_v            <- rep(0.3, p)
@@ -151,7 +151,7 @@ render_ <- function(slides,
       ## Basis axes text labels
       suppressWarnings( # suppress for unused aes "frame".
         ggplot2::geom_text(
-          data = basis_slides, size = 4, vjust = "outward", hjust = "outward",
+          data = basis_slides, colour = col_v, size = 4, vjust = "outward", hjust = "outward",
           mapping = ggplot2::aes(x = V1, y = V2, 
                                  frame = slide, label = lab_abbr)))
   }
