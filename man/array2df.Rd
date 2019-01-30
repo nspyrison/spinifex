@@ -4,7 +4,7 @@
 \alias{array2df}
 \title{Turns a tour path array into a long data frame (tibble)}
 \usage{
-array2df(array, data = NULL, angle = 0.05)
+array2df(array, data = NULL)
 }
 \arguments{
 \item{array}{A (p, d, n_slides) array of a tour, the output of \code{manual_tour()}.}

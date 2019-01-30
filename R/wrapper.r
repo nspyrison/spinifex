@@ -37,8 +37,10 @@ play_tour_path <- function(tour_path,
     data <- attributes(tour_path)$data
   }
   
-  slides <- array2df(array = tour_path, data = data, angle = angle)
-  disp   <- render_type(slides = slides, manip_col = manip_col, 
+  tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
+  attr(tour_path, "class") <- "array"
+  slides    <- array2df(array = tour_path, data = data)
+  disp      <- render_type(slides = slides, manip_col = manip_col, 
                         cat_var = cat_var, axes = axes, fps = fps, ...)
   
   disp
@@ -107,10 +109,10 @@ play_manual_tour <- function(data,
     basis <- tourr::basis_random(n = ncol(data))
   }
   
-  m_tour <- manual_tour(basis = basis, manip_var = manip_var,
+  m_tour <- manual_tour(basis = basis, manip_var = manip_var, angle = angle,
                         theta = theta, phi_min = phi_min, phi_max = phi_max)
   
-  slides <- array2df(array = m_tour, data = data, angle = angle)
+  slides <- array2df(array = m_tour, data = data)
   disp   <- render_type(slides = slides, manip_col = manip_col,
                         cat_var = cat_var, axes = axes, fps = fps, ...)
   

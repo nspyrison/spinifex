@@ -17,13 +17,9 @@
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' array2df(array = mtour, data = flea_std)
-array2df <- function(array, data = NULL, angle = .05) {
+array2df <- function(array, data = NULL) {
   # Initialize
   manip_var <- attributes(array)$manip_var
-  if (class(array) == "history_array") { #ie. from tourr:save_history()
-    array <- tourr::interpolate(basis_set = array, angle = angle)
-    attr(array, "class") <- "array"
-  }
   p <- nrow(array[,, 1])
   n_slides     <- dim(array)[3]
   
@@ -35,9 +31,9 @@ array2df <- function(array, data = NULL, angle = .05) {
   }
   
   # data; if exists,  array to long df (tibble)
-  data_slides <- NULL
   if(!is.null(data)) {
     data <- as.matrix(data)
+    data_slides <- NULL
     for (slide in 1:n_slides) {
       dat_slide <- cbind(data %*% array[,, slide], slide)
       dat_slide[, 1] <- scale(dat_slide[, 1], scale = FALSE)

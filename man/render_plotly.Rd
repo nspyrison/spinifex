@@ -33,5 +33,5 @@ mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 render_plotly(slides = sshow)
 
-render_plotly(slides = sshow, cat_var = flea$species)
+render_plotly(slides = sshow, cat_var = flea$species, axes = "bottomleft")
 }
