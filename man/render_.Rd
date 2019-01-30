@@ -7,7 +7,7 @@
 render_(slides, manip_col = "blue", cat_var = NULL, axes = "center")
 }
 \arguments{
-\item{slides}{The result of \code{interpolate2df()}.}
+\item{slides}{The result of \code{array2df()}.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}.}
 
@@ -22,14 +22,14 @@ A ggplot2 object to be called by \code{render_plotly()} or
 }
 \description{
 Typically called by \code{render_plotly()} or \code{render_gganimate()}. Takes the
-result of \code{interpolate2df()}, and renders them into a ggplot2 object.
+result of \code{array2df()}, and renders them into a ggplot2 object.
 }
 \examples{
 flea_std <- tourr::rescale(flea[, 1:6])
 
 rb <- basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- interpolate2df(array = mtour, data = flea_std)
+sshow <- array2df(array = mtour, data = flea_std)
 render_(slides = sshow)
 
 render_(slides = sshow, cat_var = flea$species, axes = "bottomleft")

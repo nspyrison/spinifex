@@ -157,12 +157,12 @@ ggplot(rot_xy, aes(x=x, y=y)) + geom_point(size=0.3)
 ```{r}
 # # Horizonal manual rotation
 # tour_x <- manual_tour(basis = bas, manip_var = 3, theta = 0)
-# tourdf_x <- interpolate2df(array = tour_x, data = nasa_std)
+# tourdf_x <- array2df(array = tour_x, data = nasa_std)
 # # render_plotly(slides = slides_x) # Way too heavy
 # 
 # # Vertical manual rotation
 # tour_y <- manual_tour(basis = bas, manip_var = 4, theta = 90)
-# tourdf_y <- interpolate2df(array = tour_y, data = nasa_std)
+# tourdf_y <- array2df(array = tour_y, data = nasa_std)
 # # render_plotly(slides = slides_y) # Way too heavy
 ```
 

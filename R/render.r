@@ -16,26 +16,28 @@
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' interpolate2df(array = mtour, data = flea_std)
-interpolate2df <- function(array, data = NULL, angle = .05) {
+#' array2df(array = mtour, data = flea_std)
+array2df <- function(array, data = NULL, angle = .05) {
   # Initialize
   manip_var <- attributes(array)$manip_var
-  array <- tourr::interpolate(basis_set = array, angle = angle)
-  attr(array, "class") <- "array"
-  if (!is.null(data)) data <- as.matrix(data)
+  if (class(array) == "history_array") { #ie. from tourr:save_history()
+    array <- tourr::interpolate(basis_set = array, angle = angle)
+    attr(array, "class") <- "array"
+  }
   p <- nrow(array[,, 1])
   n_slides     <- dim(array)[3]
-  basis_slides <- NULL
-  data_slides  <- NULL
   
   # basis; array to long df (tibble)
+  basis_slides <- NULL
   for (slide in 1:n_slides) {
     bas_slide <- dplyr::as_tibble(cbind(array[,, slide], slide))
     basis_slides <- rbind(basis_slides, bas_slide)
   }
   
   # data; if exists,  array to long df (tibble)
+  data_slides <- NULL
   if(!is.null(data)) {
+    data <- as.matrix(data)
     for (slide in 1:n_slides) {
       dat_slide <- cbind(data %*% array[,, slide], slide)
       dat_slide[, 1] <- scale(dat_slide[, 1], scale = FALSE)
@@ -45,10 +47,8 @@ interpolate2df <- function(array, data = NULL, angle = .05) {
   }
   
   # Add labels, attribute, and list
-  lab_abbr <- 
-    if(!is.null(data)) {
-      abbreviate(colnames(data), 3)
-    } else paste0("V", 1:p)
+  lab_abbr <- if(!is.null(data)) abbreviate(colnames(data), 3) 
+  else paste0("V", 1:p)
   basis_slides$lab_abbr <- rep(lab_abbr, n_slides)
   
   attr(basis_slides, "manip_var") <- manip_var
@@ -63,9 +63,9 @@ interpolate2df <- function(array, data = NULL, angle = .05) {
 #' Render the ggplot before the animation package
 #'
 #' Typically called by `render_plotly()` or `render_gganimate()`. Takes the 
-#' result of `interpolate2df()`, and renders them into a ggplot2 object. 
+#' result of `array2df()`, and renders them into a ggplot2 object. 
 #'
-#' @param slides The result of `interpolate2df()`.
+#' @param slides The result of `array2df()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
@@ -78,7 +78,7 @@ interpolate2df <- function(array, data = NULL, angle = .05) {
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- interpolate2df(array = mtour, data = flea_std)
+#' sshow <- array2df(array = mtour, data = flea_std)
 #' render_(slides = sshow)
 #' 
 #' render_(slides = sshow, cat_var = flea$species, axes = "bottomleft")
@@ -161,10 +161,10 @@ render_ <- function(slides,
 
 #' Render the slides as a *plotly* animation
 #'
-#' Takes the result of `interpolate2df()` and renders them into a 
+#' Takes the result of `array2df()` and renders them into a 
 #' *plotly* animation.
 #'
-#' @param slides The result of `interpolate2df()`.
+#' @param slides The result of `array2df()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
@@ -177,10 +177,10 @@ render_ <- function(slides,
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- interpolate2df(array = mtour, data = flea_std)
+#' sshow <- array2df(array = mtour, data = flea_std)
 #' render_plotly(slides = sshow)
 #' 
-#' render_plotly(slides = sshow, cat_var = flea$species)
+#' render_plotly(slides = sshow, cat_var = flea$species, axes = "bottomleft")
 render_plotly <- function(slides,
                           manip_col = "blue",
                           cat_var   = NULL,
@@ -206,10 +206,10 @@ render_plotly <- function(slides,
 
 #' Render the slides as a *gganimate* animation
 #'
-#' Takes the result of `interpolate2df()` and renders them into a 
+#' Takes the result of `array2df()` and renders them into a 
 #' *gganimate* animation.
 #'
-#' @param slides The result of `interpolate2df()`.
+#' @param slides The result of `array2df()`.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param cat_var Categorical variable, optionally used to set the data point 
 #'   color and shape.
@@ -222,7 +222,7 @@ render_plotly <- function(slides,
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- interpolate2df(array = mtour, data = flea_std)
+#' sshow <- array2df(array = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
 #' 
 #' render_gganimate(slides = sshow, cat_var = flea$species)

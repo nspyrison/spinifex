@@ -37,7 +37,7 @@ play_tour_path <- function(tour_path,
     data <- attributes(tour_path)$data
   }
   
-  slides <- interpolate2df(array = tour_path, data = data, angle = angle)
+  slides <- array2df(array = tour_path, data = data, angle = angle)
   disp   <- render_type(slides = slides, manip_col = manip_col, 
                         cat_var = cat_var, axes = axes, fps = fps, ...)
   
@@ -48,7 +48,7 @@ play_tour_path <- function(tour_path,
 #'
 #' Performs the sepicify manual tour and returns an animation of `render_type`.
 #' For use with `tourr::save_history()` tour paths see `play_tour_path()`. 
-#' A wrapper function for `manual_tour()`, `interpolate2df()`, and `render_()`.
+#' A wrapper function for `manual_tour()`, `array2df()`, and `render_()`.
 #' 
 #' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix. 
@@ -110,7 +110,7 @@ play_manual_tour <- function(data,
   m_tour <- manual_tour(basis = basis, manip_var = manip_var,
                         theta = theta, phi_min = phi_min, phi_max = phi_max)
   
-  slides <- interpolate2df(array = m_tour, data = data, angle = angle)
+  slides <- array2df(array = m_tour, data = data, angle = angle)
   disp   <- render_type(slides = slides, manip_col = manip_col,
                         cat_var = cat_var, axes = axes, fps = fps, ...)
   

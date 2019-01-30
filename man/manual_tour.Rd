@@ -6,7 +6,7 @@
 of a projection}
 \usage{
 manual_tour(basis = NULL, manip_var, theta = NULL, phi_min = 0,
-  phi_max = 0.5 * pi)
+  phi_max = 0.5 * pi, angle = 0.05)
 }
 \arguments{
 \item{basis}{A (p, d) dim orthonormal matrix. Required, no default.}

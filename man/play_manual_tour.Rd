@@ -55,7 +55,7 @@ An animation of a manual tour.
 \description{
 Performs the sepicify manual tour and returns an animation of \code{render_type}.
 For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}.
-A wrapper function for \code{manual_tour()}, \code{interpolate2df()}, and \code{render_()}.
+A wrapper function for \code{manual_tour()}, \code{array2df()}, and \code{render_()}.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])

@@ -8,7 +8,7 @@ render_gganimate(slides, manip_col = "blue", cat_var = NULL,
   axes = "center", fps = 3, ...)
 }
 \arguments{
-\item{slides}{The result of \code{interpolate2df()}.}
+\item{slides}{The result of \code{array2df()}.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}.}
 
@@ -22,7 +22,7 @@ color and shape.}
 \item{...}{Optional, pass addition arguments into \code{plotly::animation_opts()}.}
 }
 \description{
-Takes the result of \code{interpolate2df()} and renders them into a
+Takes the result of \code{array2df()} and renders them into a
 \emph{gganimate} animation.
 }
 \examples{
@@ -30,7 +30,7 @@ flea_std <- tourr::rescale(flea[, 1:6])
 
 rb <- basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- interpolate2df(array = mtour, data = flea_std)
+sshow <- array2df(array = mtour, data = flea_std)
 render_gganimate(slides = sshow)
 
 render_gganimate(slides = sshow, cat_var = flea$species)
