@@ -112,19 +112,21 @@ manual_tour <- function(basis = NULL,
   basis <- as.matrix(basis)
   p     <- nrow(basis)
   d     <- ncol(basis)
+  manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
   if (is.null(theta)) theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
-  phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-  # phi_min   <- phi_min + phi_start # now relative to the projection plane.
-  # phi_max   <- phi_max + phi_start
+  phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2)) 
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)
+  #phi_start <- phi_start * sign(manip_space[manip_var, 1])
   
   # Find phi's path
   find_path <- function(start, end)
   {
-    dist     <- abs(end - start)
-    steps    <- round(dist/angle)
-    angle    <- dist/steps
-    sign     <- ifelse(end > start, 1, -1)
+    start <- start - phi_start
+    end   <- end - phi_start
+    dist  <- abs(end - start)
+    steps <- round(dist/angle)
+    angle <- dist/steps
+    sign  <- ifelse(end > start, 1, -1)
     
     seq(from=start, to=end, by=sign*angle)
   }
@@ -135,13 +137,12 @@ manual_tour <- function(basis = NULL,
   
   ## Make projected basis array
   n_frames <- length(phi_path)
-  manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
-
+  
   basis_set <- array(NA, dim = c(p, d, n_frames))
   for (i in 1:n_frames) {
     thisFrame <- rotate_manip_space(manip_space = manip_space, theta = theta,
-                                    phi = phi_path[i])[, 1:d]
-    basis_set[,, i] <- thisFrame
+                                    phi = phi_path[i])
+    basis_set[,, i] <- thisFrame[, 1:d]
   }
 
   attr(basis_set, "manip_var") <- manip_var
