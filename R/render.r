@@ -126,7 +126,7 @@ render_ <- function(slides,
     ggplot2::theme(legend.position = "none") +
     ggplot2::scale_fill_brewer(palette = "Dark2") +
   ## Projected data points
-  gg <- gg + suppressWarnings( # Supress for unused aes "frame".
+  suppressWarnings( # Supress for unused aes "frame".
     ggplot2::geom_point( 
       data = data_slides, size = .7, shape = as.integer(cat_v) + 15,
       mapping = ggplot2::aes(x = V1, y = V2, frame = slide, 
@@ -190,7 +190,7 @@ render_plotly <- function(slides,
   gg <- render_(slides = slides, manip_col = manip_col, 
                 cat_var = cat_var, axes = axes)
   
-  ggp <- plotly::ggplotly(gg)
+  ggp <- plotly::ggplotly(p = gg, tooltip = "none")
   ggp <- plotly::animation_opts(p = ggp, frame = 1 / fps * 1000, 
                                 transition = 0, redraw = FALSE, ...)
   ggp <- plotly::layout(
@@ -198,6 +198,7 @@ render_plotly <- function(slides,
     xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F),
     ...
   )
+  #plotly::style(p = ggp, traces = c(1,2,3,4), hoverinfo = "...")
   
   ggp
 }
