@@ -91,8 +91,7 @@ view_basis <- function(basis,
     # Project data and all to ggplot
     proj <- as.data.frame(
       tourr::rescale(as.matrix(data) %*% as.matrix(basis))-.5)
-    gg   <- 
-      gg + ggplot2::geom_point(
+    gg <- gg + ggplot2::geom_point(
         data = proj,
         mapping = ggplot2::aes(x = V1, y = V2))
   }

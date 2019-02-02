@@ -90,14 +90,17 @@ render_ <- function(slides,
   manip_var     <- attributes(slides$basis_slides)$manip_var
   n_slides      <- max(basis_slides$slide)
   p             <- nrow(basis_slides) / n_slides
+  d             <- ncol(basis_slides) - 2
   ## Circle
   angle         <- seq(0, 2 * pi, length = 360)
   circ          <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes
-  zero          <- set_axes_position(0, axes)
-  circ          <- set_axes_position(circ, axes)
-  basis_slides  <- data.frame(set_axes_position(basis_slides[, 1:2], axes), 
-                              basis_slides[, 3:ncol(basis_slides)])
+  if (axes != "off"){
+    zero          <- set_axes_position(0, axes)
+    circ          <- set_axes_position(circ, axes)
+    basis_slides  <- data.frame(set_axes_position(basis_slides[, 1:d], axes), 
+                                basis_slides[, (d+1):ncol(basis_slides)])
+  }
   ## manip var asethetics
   col_v <- "black"
   siz_v <- 0.3
@@ -112,26 +115,24 @@ render_ <- function(slides,
   ## cat_var asethetics
   cat_v <- 1
   if(!is.null(cat_var)) {
-    if (!is.numeric(cat_var)) cat_var <- as.numeric(as.factor(cat_var))
-    cat_v <- rep(cat_var, n_slides)
+    cat_var <- as.factor(cat_var)
+    cat_v   <- rep(cat_var, n_slides)
   }
   
   gg <- 
     ## Ggplot settings
     ggplot2::ggplot() +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
-    ## Projected data points
-    suppressWarnings( # suppress for unused aes "frame".
-      ggplot2::geom_point( 
-        data = data_slides, size = .7, 
-        color = cat_v, shape = cat_v + 15,
-        mapping = ggplot2::aes(x = V1, y = V2, frame = slide))
-    )
+    ggplot2::scale_fill_brewer(palette = "Dark2") +
+  ## Projected data points
+  gg <- gg + suppressWarnings( # Supress for unused aes "frame".
+    ggplot2::geom_point( 
+      data = data_slides, size = .7, shape = as.integer(cat_v) + 15,
+      mapping = ggplot2::aes(x = V1, y = V2, frame = slide, 
+                             color = cat_v)))
   
-  if (axes != "off")
-  {
+  if (axes != "off"){
     gg <- gg +
       ## Circle path 
       ggplot2::geom_path(
@@ -147,11 +148,12 @@ render_ <- function(slides,
       ## Basis axes text labels
       suppressWarnings( # suppress for unused aes "frame".
         ggplot2::geom_text(
-          data = basis_slides, colour = col_v, size = 4, vjust = "outward", hjust = "outward",
+          data = basis_slides, 
           mapping = ggplot2::aes(x = V1, y = V2, 
-                                 frame = slide, label = lab_abbr)))
+                                 frame = slide, label = lab_abbr),
+          colour = col_v, size = 4, vjust = "outward", hjust = "outward"))
   }
-  
+    
   gg
 }
 
