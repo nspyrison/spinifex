@@ -113,7 +113,7 @@ render_ <- function(slides,
     siz_v            <- rep(siz_v, n_slides)
   }
   ## cat_var asethetics
-  cat_v <- 1
+  cat_v <- as.factor(1)
   if(!is.null(cat_var)) {
     cat_var <- as.factor(cat_var)
     cat_v   <- rep(cat_var, n_slides)
@@ -142,14 +142,16 @@ render_ <- function(slides,
       suppressWarnings( # Supress for unused aes "frame".
         ggplot2::geom_segment( 
           data = basis_slides, size = siz_v, colour = col_v,
-          mapping = ggplot2::aes(x = V1, y = V2, 
+          mapping = ggplot2::aes(x = V1 +9^-9*slide,  # hack for plotly error
+                                 y = V2, 
                                  xend = zero, yend = zero, 
                                  frame = slide))) +
       ## Basis axes text labels
       suppressWarnings( # suppress for unused aes "frame".
         ggplot2::geom_text(
           data = basis_slides, 
-          mapping = ggplot2::aes(x = V1, y = V2, 
+          mapping = ggplot2::aes(x = V1 +9^-9*slide,  # hack for plotly error
+                                 y = V2, 
                                  frame = slide, label = lab_abbr),
           colour = col_v, size = 4, vjust = "outward", hjust = "outward"))
   }
@@ -190,7 +192,8 @@ render_plotly <- function(slides,
   gg <- render_(slides = slides, manip_col = manip_col, 
                 cat_var = cat_var, axes = axes)
   
-  ggp <- plotly::ggplotly(p = gg, tooltip = "none")
+  ggp <- plotly::ggplotly(p = gg) #, tooltip = "none") 
+    ## removing tooltip exacerbates geom error
   ggp <- plotly::animation_opts(p = ggp, frame = 1 / fps * 1000, 
                                 transition = 0, redraw = FALSE, ...)
   ggp <- plotly::layout(
@@ -198,7 +201,6 @@ render_plotly <- function(slides,
     xaxis = list(scaleanchor = "y", scaleratio = 1, showgrid = F, showline = F),
     ...
   )
-  #plotly::style(p = ggp, traces = c(1,2,3,4), hoverinfo = "...")
   
   ggp
 }
