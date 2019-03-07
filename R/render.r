@@ -126,7 +126,7 @@ render_ <- function(slides,
     ggplot2::theme(legend.position = "none") +
     ggplot2::scale_color_brewer(palette = "Dark2") +
   ## Projected data points
-  suppressWarnings( # Supress for unused aes "frame".
+  suppressWarnings( # Suppress for unused aes "frame".
     ggplot2::geom_point( 
       data = data_slides, size = .7, shape = as.integer(cat_v) + 15,
       mapping = ggplot2::aes(x = V1, y = V2, frame = slide, 
@@ -139,7 +139,7 @@ render_ <- function(slides,
         data = circ, color = "grey80", size = .3, inherit.aes = F,
         mapping = ggplot2::aes(x = x, y = y)) +
       ## Basis axes segments
-      suppressWarnings( # Supress for unused aes "frame".
+      suppressWarnings( # Suppress for unused aes "frame".
         ggplot2::geom_segment( 
           data = basis_slides, size = siz_v, colour = col_v,
           mapping = ggplot2::aes(x = V1 +9^-9*slide,  # hack for plotly error
@@ -147,7 +147,7 @@ render_ <- function(slides,
                                  xend = zero, yend = zero, 
                                  frame = slide))) +
       ## Basis axes text labels
-      suppressWarnings( # suppress for unused aes "frame".
+      suppressWarnings( # Suppress for unused aes "frame".
         ggplot2::geom_text(
           data = basis_slides, 
           mapping = ggplot2::aes(x = V1 +9^-9*slide,  # hack for plotly error

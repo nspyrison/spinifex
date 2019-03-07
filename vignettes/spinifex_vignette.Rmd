@@ -9,7 +9,8 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-<!-- #EXAMPLE: https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->
+<!-- #Example vignette: 
+https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   echo       = TRUE,   # code
@@ -34,64 +35,48 @@ library(GGally)
 
 # Introduction
 
-## Motivation
+Numeric multivariate data is ubiquitous and viewing data within data-space (rather than summarized as parameters or statistics) is a critical part of exploratory data analysis and the data analysis workflow in general. Viewing data that exists in more than 3 numeric dimensions quickly becomes complex. Linear projections of high dimensional spaces offers a scalable way to extend viewing these data-spaces as the dimenstion of the data increase. Viewing many of such projections is a technique know as *tours*.
 
-Data sets commonly contain many dimensions (numeric variables). What happens to the visualization of the data as we get above 3 or so dimensions? Adding aesthetics such as point size or color, can afford another dimension or two, but the extension is quite limited. Too often data-space visualizations are abandoned either for plotting in model and parameter-space ($ie.$ residual plots and parallel coordinate plots) or abandoned altogether for tabular statistics [@Wicham_removing_YYYY]. Yet looking at statistics alone can leave us with quite the wrong picture, which becomes obvious when plotting data-space [@anscobes_Q; @dino-data_yyyy]. It's clear that we should try to extend graphics in these spaces as far as possible. Dimensionality reduction techniques use sub-space embedding to project a $p$-dimensional object onto a $d$-dimensional subspace, typically with $d = 2$ and $p \gt d$.
-
-## Methodology
-
-There are two major branches of dimensionality reduction techniques: linear and non-linear. Consider a simple XY coordinate grid. Linear transformations include rotation, shear, and scaling component, $eg.$ anything that allows parallel lines on the original grid to stay parallel. Any transformation that doesn't preserve parallel lines is non-linear including, warping, waving, folding etc.
-
-Traditionally, linear techniques including principal component analysis (PCA), correspondence analysis (CCA), or other single value decomposition (SVD) techniques have been used to approximate high dim spaces down to 2 or 3-d. However, even when such techniques help to order dimension to describe the most variation in a given number of dimension, variation is necessarily lost in the $p - d$ components not plotted.
-
-More recently, non-linear techniques such as t-distributed stochastic neighbor embedding (t-SNE) and Sammon mapping have seen a rise in popularity. These techniques can make for astonishing plots showing distinctions and likeness across groups, but can suffer from over-fitting and lose inter-operability back to the original dimensions. They make for stark graphics and can be nice litmus test for outlier identification, yet losing a map back to the original dimensions is a non-starter for most quantitative pursuits.
-
-We purpose the use of linear dimensionallity reduction techniques known as touring. With touring we maintain the operability to the original variable space, while not discarding any components to avoid losing information held within the data.
-
-## Touring
-
-In short, touring involves orthagonally projection a $p$-dimensional data object down to $d$-dimensional embedding (2d in the case of standard computer monitors). Many of such interpolated embeddings can be made by making small local changes to the basis. When viewed in order the an observer can watch the change in the projection as the data object is rotated in $p$-space.
-
-~~~
-This concept can be illustrated succinctly by anecdote of shadow puppets. A 3-d object (hand) blocks a light source that casts a shadow (linear projection) onto a 2-d screen. Suppose a bar stool hinders a light source such that shadow is a circle. while the object is stationary the shadow circular shade does not give conclusive information about the shape of the object. However, rotation of the bar stool in 3-dimensions quickly and intuitively conveys this information. This is the premise behind touring. In the same way, information and interesting profiles describing high dimensional datasets can be observed by watching projections of linear combinations of higher dimensions as the data rotates.
-
-Touring was originally suggested by Asimov et. al. in 1985[@Asimov et. al. 1985]. In which he purposed grand tour, essentially watching a 2-d projection of a random  walk in p-space.The method of rotating a data object is essentially four-fold[@Buja et. al. 2004]: 'grand tour' -- a random forest selection of dimension and direction, predefined path -- such as rotating through the full range of each variable in order, a 'little tour', data-defined path -- using stochastic gradient descent on some objective function, and manual control -- the selection of a particular variable, degree, and magnitude of change. 
-
-SITE TOURR AND EXPLAIN WHAT SPINIFEX DOES [here](https://cran.r-project.org/web/packages/tourr/tourr.pdf).
+The package `spinifex` allows the application of manual tours, where a selected variable is rotated fully into and out of the give projection basis. It's also compatible with other tours from the tourr package and extends graphic display to `plotly` and `gganimate`.
 
 
+## Tours
+
+In short, tours are class of dynamic orthogonal (linear) projections that embed $p-$dimensional variate space ($\textbf{X} \in \mathbb{R}^{p}$) down to $d$ dimensions and observes many such projections as $p-$ space is rotated. Tours are useful in identify clustering, outliers, and structure held within numeric multivariate data. We focus on the application of the manual tour in this document. A wider application of tours can be found at: [cran.r-project.org/web/packages/tourr/tourr.pdf](https://cran.r-project.org/web/packages/tourr/tourr.pdf).
+
+This concept is illustrated well with the anecdote of shadow puppets. Suppose a bar stool is held in front of a light source. This is a linear projection of a 3D object (bar stool) down to 2D (it's shadow). If we observe the shadow change over time as the bar stool is rotated, we are watching a 3- to 2D tour. Some projections may not convey much information (the seat may only cast a circular shadow), but as we watch the stool rotate our visual interpretation quickly understands the geometry of the object. The same is true for tours, each view holds some information, and a better understanding of the structure is gained over time. 
+
+## Notation
+
+- *n* - number of observations in the data
+- *p* - number of variables/dimensions in the data
+- *d* - number of dimensions in the projection, $d \leq p$, typically 2
+- *basis* - $[p,~d]$ orthonormal matrix, orientation of the variables projecting from $p-$ to $d-$space
+- *refference frame* - graphical display of the basis, line segments on a unit circle, showing how each variable contributes to the projection space
+- *manip var* - the selected variable to manipulate into and out of the projection, highlighted in blue below
+
+**TODO: CONTINUE EDITING HERE.**
 
 # Usage
 
 ## Example 1 - Rotate arbitrary basis
 
-For this example we'll be using the wine data set. It consists of 178 observations of wine across 13 numeric variables and a categorical variable of type of grape (with 3 levels). 
+For this example, we'll be using the flea data set. It consists of 74 observations of wine across 6 numeric variables and a categorical variable of the species of flea beetle (with 3 levels).
 
-Suppose we want to perform a rotation on one dimensions of the 6-dimensional data.  
+Suppose we want to perform a rotation on, `aded2`, one dimension of the 6-dimensional data. We'll initialize a random basis and then view the manipulation space.
 
-In order to rotate a dimension in p-space we need the following arguments: 
-
-* `data`, [n, p] matrix, or data frame of numeric columns.
-* `basis`, [p, d=2] matrix, a linear combination of dimensions mapping to 2-D.
-* `manip_var`, name or number of the dimension to rotate.
-
-Flea is the data we want to rotate. We initialize a random basis and then view it. Later we'll manipulate the variable 'head'.
-
-Load the data and select a random basis with `basis_random(p)`. View the basis in p-space with `view_basis(basis, data)`, where data is optional, but adds the dimension names.
 
 ```{r}
+flea_std <- tourr::rescale(tourr::flea[,-7]) # species of grape removed.
 
-# # setting seed doens't make tourr reproducible.
-# 
-# wine_std <- tourr::rescale(wine[,-1]) # Type of grape removed.
-# 
-# rb <- tourr::basis_random(n = ncol(wine_std))
-# view_basis(basis = rb, labels = colnames(wine_std))
+str(flea_std)
+flea_rb <- tourr::basis_random(n = ncol(flea_std))
+view_manip_space(basis = flea_rb, manip_var = 5, labels = colnames(flea_std))
 ```
 
 <!-- I like to think of the basis as piece of paper that maps p dimension down to 2. The manipulation type (alternatively theta) is the angle of the on this basis plane between (1, 0) and the manipulation variable's vector in, our case we select 'head'. -->
 
-<!-- In order to rotate the data object we effectively rotate this map. Imagine gluing the bottome of pen to the (0, 0) origin of the paper. By rotating the pen about the origin we rotate the whole paper.  -->
+<!-- In order to rotate the data object we effectively rotate this map. Imagine gluing the bottom of a pen to the (0, 0) origin of the paper. By rotating the pen about the origin we rotate the whole paper.  -->
 
 Use `proj_data()` to rotate `data` at the current orientation `basis`, by manipulating `manip_var` of the `manip` type, for a sequence of 'phi' `from` through `to` by an increment `by`.
 
@@ -215,8 +200,7 @@ From there, we can explore the local structure one variable at a time.
 
 ## Summary
 
-[RECAP WHAT PKG HELPS US DO, nanier for example:]
-The tools in `naniar` help us identify where missingness is, while maintaining a tidy workflow. We care about these mechanisms or these patterns because they can help us understand potential mechanisms, such as equipment failures, and then identify possible solutions based upon this evidence.
+`spinifex` applies manual tours and integrates with `tourr`, extending graphic diplay to `plotly` and `gganimate`. This is part of an import technique collectively known as $tours$. Tours
 
 ## Namesake 
 
@@ -226,15 +210,6 @@ The name 'spinifex' comes from the [spinifex hopping mouse](https://en.wikipedia
 ## Acknowledgement
 
 Thanks to Prof. Dianne Cook for focus, namesake, and the ground work underpinning this work. Thanks to Dr. Ursula Laa for use-cases and application.
-
-## References
-<!-- Monash prefers APA -->
-- Cook, D., & Buja, A. (1997). Manual Controls for High-Dimensional Data Projections. Journal of Computational and Graphical Statistics, 6(4), 464–480. https://doi.org/10.2307/1390747
-- Wickham, H., Cook, D., & Hofmann, H. (2015). Visualizing statistical models: Removing the blindfold: Visualizing Statistical Models. Statistical Analysis and Data Mining: The ASA Data Science Journal, 8(4), 203–225. https://doi.org/10.1002/sam.11271
-- Dianne Cook and Hadley Wickham (NA). tourr: Implement Tour Methods in R Code. R package version 0.5.5.9000. https://github.com/ggobi/tourr
-- Barret Schloerke, Jason Crowley, Di Cook, Francois Briatte, Moritz Marbach,
-Edwin Thoen, Amos Elberg and Joseph Larmarange (2017). GGally: Extension to
-'ggplot2'. R package version 1.3.2. https://CRAN.R-project.org/package=GGally
 
 
 

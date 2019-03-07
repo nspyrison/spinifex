@@ -116,7 +116,6 @@ manual_tour <- function(basis = NULL,
   if (is.null(theta)) theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
   phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2)) 
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)
-  #phi_start <- phi_start * sign(manip_space[manip_var, 1])
   
   # Find phi's path
   find_path <- function(start, end)
