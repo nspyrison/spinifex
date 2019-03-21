@@ -120,8 +120,8 @@ manual_tour <- function(basis = NULL,
   # Find phi's path
   find_path <- function(start, end)
   {
-    start <- start - phi_start
-    end   <- end - phi_start
+    start <- pi/2 - (start - phi_start)
+    end   <- pi/2 - (end - phi_start)
     dist  <- abs(end - start)
     steps <- round(dist/angle)
     angle <- dist/steps
