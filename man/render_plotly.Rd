@@ -19,7 +19,8 @@ color and shape.}
 
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 
-\item{...}{Optional, pass addition arguments into \code{plotly::animation_opts()}.}
+\item{...}{Optional, pass addition arguments to \code{plotly::animation_opts()}
+and \code{plotly::layout()}.}
 }
 \description{
 Takes the result of \code{array2df()} and renders them into a

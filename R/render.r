@@ -124,7 +124,7 @@ render_ <- function(slides,
     ggplot2::ggplot() +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
+    ggplot2::scale_color_brewer(palette = "Dark2")
   ## Projected data points
   suppressWarnings( # Suppress for unused aes "frame".
     ggplot2::geom_point( 
@@ -170,7 +170,8 @@ render_ <- function(slides,
 #'   color and shape.
 #' @param axes position of the axes: center, bottomleft or off.
 #' @param fps Frames/slides shown per second. Defaults to 3.
-#' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
+#' @param ... Optional, pass addition arguments to `plotly::animation_opts()` 
+#'   and `plotly::layout()`.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(flea[, 1:6])
@@ -216,7 +217,8 @@ render_plotly <- function(slides,
 #'   color and shape.
 #' @param axes position of the axes: center, bottomleft or off.
 #' @param fps Frames/slides shown per second. Defaults to 3.
-#' @param ... Optional, pass addition arguments into `plotly::animation_opts()`.
+#' @param ... Optional, pass addition arguments to 
+#'   `gganimate::transition_states()` and `gganimate::animate()`.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(flea[, 1:6])
@@ -236,12 +238,10 @@ render_gganimate <- function(slides,
 {
   # Initialize
   gg <- render_(slides = slides, manip_col = manip_col, 
-                cat_var = cat_var, axes = axes)
-  
-  gga <- 
-    gg + gganimate::transition_states(
-      slide, transition_length = 0, state_length = 1 / fps
-  )
-  
-  gga
+                cat_var = cat_var, axes = axes) + ggplot2::coord_fixed()
+    
+    gga <- gg + gganimate::transition_states(
+      slide, transition_length = 0, state_length = 1 / fps, ...)
+    
+    gganimate::animate(gga, ...)
 }
