@@ -20,7 +20,7 @@ color and shape.}
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 
 \item{...}{Optional, pass addition arguments to
-\code{gganimate::transition_states()} and \code{gganimate::animate()}.}
+\code{gganimate::transition_states()}.}
 }
 \description{
 Takes the result of \code{array2df()} and renders them into a

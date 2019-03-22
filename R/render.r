@@ -218,7 +218,7 @@ render_plotly <- function(slides,
 #' @param axes position of the axes: center, bottomleft or off.
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optional, pass addition arguments to 
-#'   `gganimate::transition_states()` and `gganimate::animate()`.
+#'   `gganimate::transition_states()`.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(flea[, 1:6])
@@ -243,5 +243,5 @@ render_gganimate <- function(slides,
     gga <- gg + gganimate::transition_states(
       slide, transition_length = 0, state_length = 1 / fps, ...)
     
-    gganimate::animate(gga, ...)
+    gga
 }
