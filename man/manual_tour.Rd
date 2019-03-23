@@ -24,6 +24,8 @@ Required, defaults to 0.}
 \item{phi_max}{Maximum value phi should move to. Phi is angle in radians of
 the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
+
+\item{angle}{target distance (in radians) between bases.}
 }
 \value{
 A (p, d, 4) history_array of the manual tour. The bases set for

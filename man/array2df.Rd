@@ -10,8 +10,6 @@ array2df(array, data = NULL)
 \item{array}{A (p, d, n_slides) array of a tour, the output of \code{manual_tour()}.}
 
 \item{data}{Optional, (n, p) dataset to project, consisting of numeric variables.}
-
-\item{angle}{target distance (in radians) between bases}
 }
 \value{
 A list containing the (p, d, n_slides) basis slides array, and

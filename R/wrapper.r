@@ -84,11 +84,13 @@ play_tour_path <- function(tour_path,
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' 
+#' \dontrun{
 #' play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 #' 
 #' play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
 #'   manip_col = "red", render_type = render_gganimate, cat_var = flea$species, 
 #'   axes = "bottomleft")
+#' }
 play_manual_tour <- function(data,
                              basis       = NULL,
                              manip_var,
