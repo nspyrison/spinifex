@@ -7,7 +7,6 @@
 #'
 #' @param array A (p, d, n_slides) array of a tour, the output of `manual_tour()`.
 #' @param data Optional, (n, p) dataset to project, consisting of numeric variables.
-#' @param angle target distance (in radians) between bases
 #' @return A list containing the (p, d, n_slides) basis slides array, and
 #'   the (n, d, n_slides) data slides array.
 #' @export
