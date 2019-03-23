@@ -124,7 +124,7 @@ render_ <- function(slides,
     ggplot2::ggplot() +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
-    ggplot2::scale_color_brewer(palette = "Dark2")
+    ggplot2::scale_color_brewer(palette = "Dark2") +
   ## Projected data points
   suppressWarnings( # Suppress for unused aes "frame".
     ggplot2::geom_point( 
