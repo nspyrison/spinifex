@@ -40,7 +40,7 @@ Numeric multivariate data is ubiquitous and viewing data within data-space (rath
 The package `spinifex` allows the application of manual tours, where a selected variable is rotated fully into and out of the give projection basis. It's also compatible with other tours from the `tourr` package and extends graphics display to `plotly` and `gganimate`.
 
 
-## Dynamic projections of high dimensional data
+## Dynamic projections of high dimensional data, tours
 
 *Tours* are a class of dynamic orthogonal (linear) projections that embed $p-$dimensional (Euclidean) space into a $d-$dimensional subspace and animates many such projections as the projection basis (orientation) is rotated. Tours are useful in identify clustering, outliers, and structure held within numeric multivariate data. 
 
@@ -59,14 +59,13 @@ We focus on the application of the *manual tours* in this document. In a manual 
 
 # Usage
 
-<!-- ## Util
-view_basis() view_manip_space()?-->
+In the below examples we go through some use cases for manual tours.
 
-## Example 1 - Rotate an arbitrary basis
+## Example 1 - Rotate an arbitrary basis (& utility functions)
 
 For this example, we'll be using the flea data set. It consists of 74 observations of flea beetles across 6 numeric variables and a categorical variable of the species of flea beetle (with 3 levels).
 
-The following example will explore how changing the contributions of the variable, `aded2`, will affect the structure of the projection. We'll initialize a random basis and then view the manipulation space.
+The following example will explore how changing the contributions of the variable, `head`, will affect the structure of the projection. We'll initialize a random basis and then view the manipulation space.
 
 
 ```{r view-basis}
@@ -82,13 +81,13 @@ We started from a random basis, that explains the orthogonal projection from $p$
 We want to explore how the coefficients of `aede2`, the *manip var*, contributed to the structure in this projection. In order to change the contributions without breaking the orthogonality of the other variables, we need to add a dimension. We call this new space the manipulation space, which can be viewed with the function `view_manip_space()`. Note that the projection plane containing the reference frame is laid down on the surface, while the manipulation dimension is at a right angle out-of-plane, with a full contribution on the manip var.
 
 ```{r view-manip-space}
-view_manip_space(basis = flea_rb, manip_var = 5, labels = colnames(flea_std))
+view_manip_space(basis = flea_rb, manip_var = 3, labels = colnames(flea_std))
 ```
 
 Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
 
 ```{r}
-play_manual_tour(data = flea_std, basis = flea_rb, manip_var = 5)
+play_manual_tour(data = flea_std, basis = flea_rb, manip_var = 3)
 ```
 
 *plotly animation not rendered in this vignette, but will display in viewer*
@@ -139,32 +138,37 @@ ggplot(rot_xy, aes(x=x, y=y)) + geom_point(size=0.3) +
   theme_bw() + labs(x = "", y = "")
 ```
 
-# TODO: continue here
 
 ## Example 3 - Rotation after holes guided tour
 
-Manual tours are often employed after an interesting feature has been identified. The local area around PCA for example might be interesting to explore. Alternatively we can use (stochastic) gradient decent on some objective function and start from the resulting basis. Let's do just that, optimize a Holes tour using the packages `tourr`:
+Manual tours are often employed after an interesting feature has been identified. How the contributions of each variable impact the structure of resulting PCA, for example, might be interesting to explore. Alternatively, we can perform projection pursuit to maximize an objective function within the projection and performing a hill-climbing algorithm and explore what effect the contributions of the variables have there. Let's do just that, optimizing a Holes indexed guided tour using the package `tourr`.
 
 ```{r}
-# flea_std <- tourr::rescale(tourr::flea[,1:6])
-# fpath    <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes))
-# 
-# play_tour_path(tour_path = fpath, data = flea_std)
+flea_std <- tourr::rescale(tourr::flea[,1:6])
+fpath    <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes()))
+
+play_tour_path(tour_path = fpath, data = flea_std, angle = .15, 
+  render_type = render_gganimate, cat_var = flea$species, fps = 4)
 ```
 
-From there, we can explore the local structure one variable at a time.
+This shows the optimization path of the holes index. We'll grab the reference axes from the last frame and used that a starting orientation for a manual tour.
 
 ```{r}
-# fbasis  <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
-# ftour   <- manual_tour(basis = fbasis, manip_var = 4)
-# ftourdf <- array2df(tour = ftour, data = flea_std)
-# render_plotly(slides = ftourdf)
+f_holes_bas  <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
+view_basis(f_holes_bas, labels = colnames(flea_std))
 ```
 
+We'll select `aded2` as the manip_var, as it is mostly orthogonal to four of the other variables and often has a larger contribution than `tars1`.
 
-# Conclusion
+```{r}
+?play_manual_tour
+play_manual_tour(data = flea_std, basis = f_holes_bas, 
+                 manip_var = 5, cat_var = flea$species)
+```
 
-## Summary
+We can see that `aede2` is important in distinguishing between the purple cluster and the green cluster. However, even when it's contribution is zeros the contribution of `tars1` is enough to keep the cluster from overlapping.
+
+# Summary
 
 `spinifex` applies manual tours and integrates with `tourr`, extending graphics display to `plotly` and `gganimate`. This is part of an import technique collectively known as $tours$. Tours
 
@@ -173,7 +177,7 @@ From there, we can explore the local structure one variable at a time.
 The name 'spinifex' comes from the [spinifex hopping mouse](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, in the words of Di "it spins, it hops and needs a 'mouse'."
 
 
-## Acknowledgement
+## Acknowledgements
 
 Thanks to Prof. Dianne Cook for providing focus, namesake, and the groundwork underpinning this work. Thanks to Dr. Ursula Laa for use-cases and applications.
 

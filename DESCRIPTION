@@ -1,22 +1,24 @@
 Package: spinifex
-Title: Manual Control for Manipulating Single Variables in Projections of High Dimensional Spaces
+Title: Manual Tours, Manual Control of the Contribution a Single Variable make to a Projection
 Version: 0.0.0.9000
 Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
     )
-Description: Used in touring; orthogonal linear projections of numeric 
-  multivariate data (p>3). Implements manual tours, for manipulation of single 
-  variables. Additionally offers graphic output as gganimate and plotly 
-  including tourr tour paths.
+Description: Generates the path for Manual Tours. Tours are dynamic orthogonal 
+  linear projections of numeric multivariate data (p>3). Implements manual 
+  tours, for manual of crotrol of the contributions of the selected variable 
+  with the projection space. Additionally allows other tours to be rendered 
+  using the gganimate and plotly animation packages.
 Depends: 
     R (>= 3.4.0),
     tourr
 License: GPL-3
-BugReports: https://github.com/nspyrison/spinifex/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
+URL: https://github.com/nspyrison/spinifex/
+BugReports: https://github.com/nspyrison/spinifex/issues
 Imports:
     dplyr,
     GGally,
