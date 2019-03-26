@@ -33,10 +33,10 @@ over the path and renders into a selected \code{render_type}.
 }
 \examples{
 flea_std <- rescale(tourr::flea[,1:6])
-tpath    <- save_history(flea_std, guided_tour(cmass))
+tpath    <- save_history(flea_std, max = 3)
 
-play_tour_path(tour_path = tpath, data = flea_std)
+play_tour_path(tour_path = tpath, data = flea_std, angle = .15)
 
-play_tour_path(tour_path = tpath, data = flea_std, angle = .05, 
-  render_type = render_gganimate, cat_var = flea$species, fps = 4)
+##play_tour_path(tour_path = tpath, data = flea_std, angle = .15, 
+##  render_type = render_gganimate, cat_var = flea$species, fps = 4)
 }

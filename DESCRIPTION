@@ -1,11 +1,11 @@
 Package: spinifex
-Title: Manual controls for manipulating dimensions in high-dim (p>3) Spaces
+Title: Manual Control for Manipulating Single Variables in Projections of High Dimensional Spaces
 Version: 0.0.0.9000
 Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
     )
-Description: Used in touring; orthagonal linear projections of numeric 
+Description: Used in touring; orthogonal linear projections of numeric 
   multivariate data (p>3). Implements manual tours, for manipulation of single 
   variables. Additionally offers graphic output as gganimate and plotly 
   including tourr tour paths.
@@ -32,6 +32,3 @@ Suggests:
     rmarkdown 
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))
-Remotes:  
-    ggobi/tourr,
-    thomasp85/gganimate
