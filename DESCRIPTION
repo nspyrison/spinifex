@@ -1,5 +1,5 @@
 Package: spinifex
-Title: Manual Tours, Manual Control of the Contribution a Single Variable make to a Projection
+Title: Manual Tours, Manual Control of dynamic projections of numeric multivariate data.
 Version: 0.0.0.9000
 Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
