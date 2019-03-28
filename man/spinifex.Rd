@@ -6,13 +6,14 @@
 \alias{spinifex-package}
 \title{spinifex}
 \description{
-spinifex is a package that is compatiable and extends the package \code{tourr}.
-It builds the functionality for manual tours, and adds the ability for any
-tour to be rendered as \code{plotly} or \code{gganimate} objects. Touring is a class
-of dimensionality reducetion that orthagonally projects data from \code{p} down
-to \code{d} dimensions, take a small change in \code{p}-space and interpolates again.
-Manual tours manipulate a selected variable to explore the local structure,
-particaularly effective after finding a interesting tour, perhaps via a
+spinifex is a package that extends the package \code{tourr}.
+It builds the functionality for manual tours and allows other
+tours to be rendered by \code{plotly} or \code{gganimate}. Tours are a class of
+dynamic linear (orthogonal) projections of numeric multivariate data from
+\code{p} down to \code{d} dimensions that are viewed as an animation as \code{p}-space is
+rotated. Manual tours manipulate a selected variable, exploring how they
+contribute to the sensitivity of the structure in the projection. This is
+particularly useful after finding an interesting tour, perhaps via a
 guided tour.
 }
 \details{

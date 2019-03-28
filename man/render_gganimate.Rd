@@ -4,18 +4,21 @@
 \alias{render_gganimate}
 \title{Render the slides as a \emph{gganimate} animation}
 \usage{
-render_gganimate(slides, manip_col = "blue", cat_var = NULL,
+render_gganimate(slides, manip_col = "blue", col = "black", pch = 20,
   axes = "center", fps = 3, ...)
 }
 \arguments{
-\item{slides}{The result of \code{array2df()}.}
+\item{slides}{The result of \code{array2df()}, a long df of the projected frames.}
 
-\item{manip_col}{String of the color to highlight the \code{manip_var}.}
+\item{manip_col}{String of the color to highlight the \code{manip_var}.
+Defaults to "blue".}
 
-\item{cat_var}{Categorical variable, optionally used to set the data point
-color and shape.}
+\item{col}{Color of the projected points. Defaults to "black".}
 
-\item{axes}{position of the axes: center, bottomleft or off.}
+\item{pch}{Point character of the projected points. Defaults to 20.}
+
+\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
+to "center".}
 
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 
@@ -27,12 +30,13 @@ Takes the result of \code{array2df()} and renders them into a
 \emph{gganimate} animation.
 }
 \examples{
-flea_std <- tourr::rescale(flea[, 1:6])
+flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
 rb <- basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 render_gganimate(slides = sshow)
 
-render_gganimate(slides = sshow, cat_var = flea$species)
+render_gganimate(slides = sshow, col = col_of(flea$species), 
+  axes = "bottomleft", fps = 2)
 }

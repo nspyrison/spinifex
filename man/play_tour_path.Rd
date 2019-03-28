@@ -5,8 +5,8 @@
 \title{Render display of a provided tour path}
 \usage{
 play_tour_path(tour_path, data = NULL, angle = 0.05,
-  render_type = render_plotly, cat_var = NULL, axes = "center",
-  fps = 3, ...)
+  render_type = render_plotly, col = "black", pch = 20,
+  axes = "center", fps = 3, ...)
 }
 \arguments{
 \item{tour_path}{The result of \code{tourr::save_history()} or \code{manual_tour()}.}
@@ -18,10 +18,12 @@ play_tour_path(tour_path, data = NULL, angle = 0.05,
 \item{render_type}{Which graphics to render to. Defaults to render_plotly,
 alternative use render_gganimate.}
 
-\item{cat_var}{Categorical variable, optionally used to set the data point
-color and shape.}
+\item{col}{Color of the projected points. Defaults to "black".}
 
-\item{axes}{position of the axes: center, bottomleft or off.}
+\item{pch}{Point character of the projected points. Defaults to 20.}
+
+\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
+to "center".}
 
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 
@@ -37,6 +39,6 @@ tpath    <- save_history(flea_std, max = 3)
 
 play_tour_path(tour_path = tpath, data = flea_std, angle = .15)
 
-##play_tour_path(tour_path = tpath, data = flea_std, angle = .15, 
-##  render_type = render_gganimate, cat_var = flea$species, fps = 4)
+##play_tour_path(tour_path = tpath, data = flea_std, angle = .15, fps = 4,
+##  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
 }

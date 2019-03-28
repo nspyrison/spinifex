@@ -16,7 +16,8 @@ in the reference frame, typically the variable names.}
 
 \item{data}{Optional (n, p) data, plots xy scatterplot on the frame}
 
-\item{axes}{position of the axes: center, bottomleft or off}
+\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
+to "center".}
 }
 \value{
 ggplot object of the basis.

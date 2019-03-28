@@ -216,7 +216,7 @@ view_manip_space <- function(basis,
 
 #' 
 #' @examples 
-#' pch_of(tourr::flea$species)
+#' col_of(tourr::flea$species)
 #' @export
 col_of <- function(cat, pallet_name = "Dark2")
 {

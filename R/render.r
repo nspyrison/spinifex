@@ -113,14 +113,18 @@ render_ <- function(slides,
     axes_siz[manip_var] <- 1
     axes_siz            <- rep(axes_siz, n_slides)
   }
-  ## projection col asethetic
-  proj_col <- "black"
-  if(!is.null(col)) {
-    proj_col <- rep_len(col, length(data_slides))
+  ## projection color and point char asethetics
+  if(length(col)!=1) {
+    if (is.factor(col)) {col <- col_of(col)}
+    col <- rep_len(col, nrow(data_slides))
+  }
+  if(length(pch)!=1) {
+    if (is.factor(pch)) {pch <- pch_of(pch)}
+    pch <- rep_len(pch, nrow(data_slides))
   }
   
   gg <- 
-    ## Ggplot settings
+    ## ggplot settings
     ggplot2::ggplot() +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
@@ -128,8 +132,8 @@ render_ <- function(slides,
   ## Projected data points
   suppressWarnings( # Suppress for unused aes "frame".
     ggplot2::geom_point( 
-      data = data_slides, size = .7, shape = pch,
-      mapping = ggplot2::aes(x = V1, y = V2, frame = slide, color = proj_col)
+      data = data_slides, size = .7, shape = pch, color = col,
+      mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
     )
   )
   
@@ -144,7 +148,7 @@ render_ <- function(slides,
       suppressWarnings( # Suppress for unused aes "frame".
         ggplot2::geom_segment( 
           data = basis_slides, size = axes_siz, colour = axes_col,
-          mapping = ggplot2::aes(x = V1 +9^-9*slide,  # hack for plotly error
+          mapping = ggplot2::aes(x = V1,
                                  y = V2, 
                                  xend = zero, yend = zero, 
                                  frame = slide)
@@ -154,7 +158,7 @@ render_ <- function(slides,
       suppressWarnings( # Suppress for unused aes "frame".
         ggplot2::geom_text(
           data = basis_slides, 
-          mapping = ggplot2::aes(x = V1 +9^-9*slide,  # hack for plotly error
+          mapping = ggplot2::aes(x = V1,
                                  y = V2, 
                                  frame = slide, label = lab_abbr),
           colour = axes_col, size = 4, vjust = "outward", hjust = "outward")
@@ -181,7 +185,7 @@ render_ <- function(slides,
 #'   and `plotly::layout()`.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(flea[, 1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
@@ -202,8 +206,7 @@ render_plotly <- function(slides,
   gg <- render_(slides = slides, manip_col = manip_col, 
                 col = col, pch = pch, axes = axes)
   
-  ggp <- plotly::ggplotly(p = gg) #, tooltip = "none") 
-    ## removing tooltip exacerbates geom error
+  ggp <- plotly::ggplotly(p = gg, tooltip = "none") 
   ggp <- plotly::animation_opts(p = ggp, frame = 1 / fps * 1000, 
                                 transition = 0, redraw = FALSE, ...)
   ggp <- plotly::layout(
@@ -232,7 +235,7 @@ render_plotly <- function(slides,
 #'   `gganimate::transition_states()`.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(flea[, 1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
@@ -258,3 +261,4 @@ render_gganimate <- function(slides,
     
     gga
 }
+

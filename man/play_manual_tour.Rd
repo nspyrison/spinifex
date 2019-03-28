@@ -6,8 +6,9 @@
 \usage{
 play_manual_tour(data, basis = NULL, manip_var, theta = NULL,
   phi_min = 0, phi_max = 0.5 * pi, angle = 0.05,
-  manip_col = "blue", render_type = render_plotly, cat_var = NULL,
-  axes = "center", fps = 3, init_rescale_data = FALSE, ...)
+  manip_col = "blue", render_type = render_plotly, col = "black",
+  pch = 20, axes = "center", fps = 3, init_rescale_data = FALSE,
+  ...)
 }
 \arguments{
 \item{data}{(n, p) dataset to project, consisting of numeric variables.}
@@ -36,10 +37,12 @@ Required, defaults to pi / 2.}
 \item{render_type}{Which graphics to render to. Defaults to render_plotly,
 alternative use render_gganimate.}
 
-\item{cat_var}{Categorical variable, optionally used to set the data point
-color and shape.}
+\item{col}{Color of the projected points. Defaults to "black".}
 
-\item{axes}{position of the axes: center, bottomleft or off.}
+\item{pch}{Point character of the projected points. Defaults to 20.}
+
+\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
+to "center".}
 
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 
@@ -64,6 +67,5 @@ rb <- tourr::basis_random(n = ncol(flea_std))
 play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 
 ##play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
-##  manip_col = "red", render_type = render_gganimate, cat_var = flea$species, 
-##  axes = "bottomleft")
+##  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
 }

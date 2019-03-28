@@ -4,33 +4,27 @@
 \alias{render_}
 \title{Render the ggplot before the animation package}
 \usage{
-render_(slides, manip_col = "blue", cat_var = NULL, axes = "center")
+render_(slides, manip_col = "blue", col = "black", pch = 20,
+  axes = "center")
 }
 \arguments{
-\item{slides}{The result of \code{array2df()}.}
+\item{slides}{The result of \code{array2df()}, a long df of the projected frames.}
 
-\item{manip_col}{String of the color to highlight the \code{manip_var}.}
+\item{manip_col}{String of the color to highlight the \code{manip_var}.
+Defaults to "blue".}
 
-\item{cat_var}{Categorical variable, optionally used to set the data point
-color and shape.}
+\item{col}{Color of the projected points. Defaults to "black".}
 
-\item{axes}{position of the axes: center, bottomleft or off.}
+\item{pch}{Point character of the projected points. Defaults to 20.}
+
+\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
+to "center".}
 }
 \value{
-A ggplot2 object to be called by \code{render_plotly()} or
+A ggplot2 object ready to be called by \code{render_plotly()} or
 \code{render_gganimate()}.
 }
 \description{
 Typically called by \code{render_plotly()} or \code{render_gganimate()}. Takes the
 result of \code{array2df()}, and renders them into a ggplot2 object.
-}
-\examples{
-flea_std <- tourr::rescale(flea[, 1:6])
-
-rb <- basis_random(n = ncol(flea_std))
-mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- array2df(array = mtour, data = flea_std)
-render_(slides = sshow)
-
-render_(slides = sshow, cat_var = flea$species, axes = "bottomleft")
 }

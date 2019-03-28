@@ -9,7 +9,8 @@ set_axes_position(x, axes)
 \arguments{
 \item{x}{numeric data object to scale and offset}
 
-\item{axes}{position of the axes: center, bottomleft or off.}
+\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
+to "center".}
 }
 \value{
 axis_scale and axis_scale

@@ -2,7 +2,7 @@
 % Please edit documentation in R/render.r
 \name{array2df}
 \alias{array2df}
-\title{Turns a tour path array into a long data frame (tibble)}
+\title{Turns a tour path array into a long data frame (/tibble)}
 \usage{
 array2df(array, data = NULL)
 }
@@ -16,10 +16,10 @@ A list containing the (p, d, n_slides) basis slides array, and
 the (n, d, n_slides) data slides array.
 }
 \description{
-Typically called by a wrapper function, \code{play_manual_tour} or \code{play_tourr}
-Takes the result of \code{tourr::save_history()} or \code{manual_tour()} and
-restuctures the data from an array to a long data frame (tibble) for use in
-ggplots.
+Typically called by a wrapper function, \code{play_manual_tour} or
+\code{play_tour_path}. Takes the result of \code{tourr::save_history()} or
+\code{manual_tour()} and restuctures the data from an array to a long data frame
+(/tibble) for use in ggplots.
 }
 \examples{
 flea_std <- tourr::rescale(flea[, 1:6])
