@@ -32,6 +32,12 @@ Suggests:
     knitr,
     png,
     rmarkdown,
-    RColorBrewer
+    RColorBrewer,
+      magick,
+    svglite,
+    testthat,
+    base64enc,
+    htmltools,
+    covr
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))
