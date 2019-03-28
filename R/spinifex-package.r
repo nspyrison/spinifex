@@ -1,13 +1,15 @@
 #' spinifex
 #'
-#' spinifex is a package that is compatiable and extends the package `tourr`. 
-#' It builds the functionality for manual tours, and adds the ability for any 
-#' tour to be rendered as `plotly` or `gganimate` objects. Touring is a class 
-#' of dimensionality reducetion that orthagonally projects data from `p` down 
-#' to `d` dimensions, take a small change in `p`-space and interpolates again. 
-#' Manual tours manipulate a selected variable to explore the local structure,
-#' particaularly effective after finding a interesting tour, perhaps via a 
+#' spinifex is a package that extends the package `tourr`. 
+#' It builds the functionality for manual tours and allows other
+#' tours to be rendered by `plotly` or `gganimate`. Tours are a class of
+#' dynamic linear (orthogonal) projections of numeric multivariate data from 
+#' `p` down to `d` dimensions that are viewed as an animation as `p`-space is 
+#' rotated. Manual tours manipulate a selected variable, exploring how they 
+#' contribute to the sensitivity of the structure in the projection. This is
+#' particularly useful after finding an interesting tour, perhaps via a 
 #' guided tour.
+#' 
 #'
 #' It's main functions are:
 #' \itemize{
@@ -29,7 +31,8 @@
 "_PACKAGE"
 
 # Manual tour globals:
-globalVariables(c("cat_var",
+globalVariables(c("col",
+                  "pch",
                   "disp_type",
                   "phi_min",
                   "phi_max",

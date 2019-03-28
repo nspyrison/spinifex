@@ -8,9 +8,10 @@
 #' @param angle target distance (in radians) between bases.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #'   alternative use render_gganimate.
-#' @param cat_var Categorical variable, optionally used to set the data point 
-#'   color and shape.
-#' @param axes position of the axes: center, bottomleft or off.
+#' @param col Color of the projected points. Defaults to "black".
+#' @param pch Point character of the projected points. Defaults to 20.
+#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
+#'   to "center".
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optionally pass additional arguments to `render_type`.
 #' @import tourr
@@ -21,13 +22,15 @@
 #' 
 #' play_tour_path(tour_path = tpath, data = flea_std, angle = .15)
 #' 
-#' ##play_tour_path(tour_path = tpath, data = flea_std, angle = .15, 
-#' ##  render_type = render_gganimate, cat_var = flea$species, fps = 4)
+#' ##play_tour_path(tour_path = tpath, data = flea_std, angle = .15, fps = 4,
+#' ##  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+
 play_tour_path <- function(tour_path,
                            data = NULL,
                            angle = .05,
                            render_type = render_plotly,
-                           cat_var = NULL,
+                           col = "black", 
+                           pch = 20,
                            axes = "center",
                            fps = 3,
                            ...) {
@@ -41,7 +44,7 @@ play_tour_path <- function(tour_path,
   attr(tour_path, "class") <- "array"
   slides    <- array2df(array = tour_path, data = data)
   disp      <- render_type(slides = slides, manip_col = manip_col, 
-                        cat_var = cat_var, axes = axes, fps = fps, ...)
+                           col = col, pch = pch, axes = axes, fps = fps, ...)
   
   disp
 }
@@ -69,9 +72,10 @@ play_tour_path <- function(tour_path,
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #'   alternative use render_gganimate.
-#' @param cat_var Categorical variable, optionally used to set the data point 
-#'   color and shape.
-#' @param axes position of the axes: center, bottomleft or off.
+#' @param col Color of the projected points. Defaults to "black".
+#' @param pch Point character of the projected points. Defaults to 20.
+#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
+#'   to "center".
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param init_rescale_data When TRUE will apply `tourr::rescale()` on the data.
 #'   Defaults to FALSE.
@@ -87,8 +91,8 @@ play_tour_path <- function(tour_path,
 #' play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 #' 
 #' ##play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
-#' ##  manip_col = "red", render_type = render_gganimate, cat_var = flea$species, 
-#' ##  axes = "bottomleft")
+#' ##  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+
 play_manual_tour <- function(data,
                              basis       = NULL,
                              manip_var,
@@ -98,7 +102,8 @@ play_manual_tour <- function(data,
                              angle       = .05,
                              manip_col   = "blue",
                              render_type = render_plotly,
-                             cat_var     = NULL,
+                             col = "black", 
+                             pch = 20,
                              axes        = "center",
                              fps         = 3,
                              init_rescale_data = FALSE,
@@ -114,7 +119,7 @@ play_manual_tour <- function(data,
   
   slides <- array2df(array = m_tour, data = data)
   disp   <- render_type(slides = slides, manip_col = manip_col,
-                        cat_var = cat_var, axes = axes, fps = fps, ...)
+                        col = col, pch = pch, axes = axes, fps = fps, ...)
   
   disp
 }

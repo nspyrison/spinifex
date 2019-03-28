@@ -3,7 +3,8 @@
 #' Typically called, by other functions to scale axes.
 #' 
 #' @param x numeric data object to scale and offset
-#' @param axes position of the axes: center, bottomleft or off.
+#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
+#'   to "center".
 #' @return axis_scale and axis_scale
 #' @examples 
 #' rb <- basis_random(4, 2)
@@ -34,7 +35,8 @@ set_axes_position <- function(x, axes) {
 #' @param labels Optional character vector of `p` length, add name to the axes 
 #'   in the reference frame, typically the variable names.
 #' @param data Optional (n, p) data, plots xy scatterplot on the frame
-#' @param axes position of the axes: center, bottomleft or off
+#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
+#'   to "center".
 #' @return ggplot object of the basis.
 #' @import tourr
 #' @examples 
@@ -201,4 +203,41 @@ view_manip_space <- function(basis,
   
   gg
 }
- 
+
+
+#' Return `col` values for a given categorical variable
+#' 
+#' Retruns string `col` values for a passed categorical variable.
+#' 
+#' @param cat The categorical variable to return the `col` values for.
+#' @param pallet_name The name of the `RColorBrewer` pallet to get the colors 
+#'   from. Defaults to "Dark2"
+#' @return The integer `col` values for a passed categorical variable.
+
+#' 
+#' @examples 
+#' pch_of(tourr::flea$species)
+#' @export
+col_of <- function(cat, pallet_name = "Dark2")
+{
+  n   <- length(levels(cat))
+  pal <- RColorBrewer::brewer.pal(n, pallet_name)
+  ret <- pal[as.integer(factor(cat))]
+  
+  ret
+}
+
+#' Return `pch` values for a given categorical variable
+#' 
+#' Retruns integer `pch` values for a passed categorical variable.
+#' 
+#' @param cat
+#' @return The integer `pch` values for a passed categorical variable.
+#' 
+#' @examples 
+#' pch_of(tourr::flea$species)
+#' @export
+pch_of <- function(cat)
+{
+  as.integer(factor(cat))
+}

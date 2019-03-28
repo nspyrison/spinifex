@@ -5,11 +5,11 @@ Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
     )
-Description: Generates the path for Manual Tours. Tours are dynamic orthogonal 
+Description: Generates the path for Manual Tours. Tours are dynamic 
   linear projections of numeric multivariate data (p>3). Implements manual 
-  tours, for manual of crotrol of the contributions of the selected variable 
-  with the projection space. Additionally allows other tours to be rendered 
-  using the gganimate and plotly animation packages.
+  tours, for manual of control of the contributions of the selected variable 
+  on the projection space. Additionally allows other tours to be rendered 
+  using the 'gganimate' and 'plotly' animation packages.
 Depends: 
     R (>= 3.4.0),
     tourr
@@ -31,6 +31,7 @@ Suggests:
     gifski,
     knitr,
     png,
-    rmarkdown 
+    rmarkdown,
+    RColorBrewer
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))
