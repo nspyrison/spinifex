@@ -6,6 +6,9 @@
 \usage{
 pch_of(cat)
 }
+\arguments{
+\item{cat}{The categorical variable to return the \code{pch} values for.}
+}
 \value{
 The integer \code{pch} values for a passed categorical variable.
 }

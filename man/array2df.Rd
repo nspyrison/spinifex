@@ -22,7 +22,7 @@ Typically called by a wrapper function, \code{play_manual_tour} or
 (/tibble) for use in ggplots.
 }
 \examples{
-flea_std <- tourr::rescale(flea[, 1:6])
+flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
 rb <- basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)

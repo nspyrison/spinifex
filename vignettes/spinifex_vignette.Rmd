@@ -170,11 +170,11 @@ We can see that `aede2` is important in distinguishing between the purple cluste
 
 # Summary
 
-`spinifex` applies manual tours and integrates with `tourr`, extending graphics display to `plotly` and `gganimate`. This is part of an import technique collectively known as $tours$. Tours
+Dynamic linear projection of numeric data, collectively known as $tours$ is an important tool for visualizing data space as dimensionality increases. This package, `spinifex`, extends the `tourr` package and allows for manual tours. It also allows tours to be rendered by the animation packages `plotly` and `gganimate`. 
 
 ## Namesake 
 
-The name 'spinifex' comes from the [spinifex hopping mouse](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, in the words of Di "it spins, it hops and needs a 'mouse'."
+The name 'spinifex' comes from the [spinifex hopping mouse (wiki)](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, in the words of Di "it spins, it hops and needs a 'mouse'."
 
 
 ## Acknowledgements

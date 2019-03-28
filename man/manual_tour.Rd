@@ -38,7 +38,7 @@ the manual tour of the \code{manip_var}, which is rotated from phi's starting
 position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 }
 \examples{
-flea_std <- tourr::rescale(flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[,1:6])
 
 rb <- basis_random(n = ncol(flea_std))
 manual_tour(basis = rb, manip_var = 4)

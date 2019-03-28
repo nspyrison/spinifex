@@ -43,7 +43,7 @@ set_axes_position <- function(x, axes) {
 #' rb <- basis_random(4, 2)
 #' view_basis(basis = rb)
 #' 
-#' flea_std <- tourr::rescale(flea[, 1:4])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:4])
 #' view_basis(basis = rb, data = flea_std)
 #' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 #' @export
@@ -119,7 +119,7 @@ view_basis <- function(basis,
 #' @return ggplot object of the basis.
 #' 
 #' @examples 
-#' flea_std <- tourr::rescale(flea[, 1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' rb <- basis_random(ncol(flea_std), 2)
 #' 
 #' view_manip_space(basis = rb, manip_var = 4)
@@ -213,7 +213,6 @@ view_manip_space <- function(basis,
 #' @param pallet_name The name of the `RColorBrewer` pallet to get the colors 
 #'   from. Defaults to "Dark2"
 #' @return The integer `col` values for a passed categorical variable.
-
 #' 
 #' @examples 
 #' col_of(tourr::flea$species)
@@ -231,7 +230,7 @@ col_of <- function(cat, pallet_name = "Dark2")
 #' 
 #' Retruns integer `pch` values for a passed categorical variable.
 #' 
-#' @param cat
+#' @param cat The categorical variable to return the `pch` values for.
 #' @return The integer `pch` values for a passed categorical variable.
 #' 
 #' @examples 

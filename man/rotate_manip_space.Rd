@@ -26,7 +26,7 @@ space. The first 2 variables of which are the linear combination of the
 variables for a 2d projection.
 }
 \examples{
-flea_std <- tourr::rescale(flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[,1:6])
 
 rb  <- basis_random(n = ncol(flea_std))
 msp <- create_manip_space(basis = rb, manip_var = 4) 

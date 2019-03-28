@@ -11,7 +11,7 @@
 #'   the (n, d, n_slides) data slides array.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(flea[, 1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
@@ -70,7 +70,7 @@ array2df <- function(array, data = NULL) {
 #' @return A ggplot2 object ready to be called by `render_plotly()` or 
 #'   `render_gganimate()`.
 #' @export
-#' flea_std <- tourr::rescale(flea[, 1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
