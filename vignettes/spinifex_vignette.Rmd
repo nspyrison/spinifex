@@ -22,8 +22,8 @@ knitr::opts_chunk$set(
   error      = FALSE,
   collapse   = TRUE,
   comment    = "#>",
-  fig.height = 6,
-  fig.width  = 9,
+  fig.height = 4,
+  fig.width  = 6,
   fig.align  = "center",
   cache      = FALSE
 )
