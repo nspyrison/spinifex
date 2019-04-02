@@ -5,14 +5,16 @@
 * linux, osx (on travis-ci),
 * win-builder (release)
 
+
 ## R CMD check
 
--- R CMD check results -------------------------------- spinifex 0.0.0.9000 ----
-Duration: 1m 50.3s
+-- R CMD check results -------------------------------- spinifex 0.1.0.9000 ----
+Duration: 3m 34s
 
 0 errors v | 0 warnings v | 0 notes v
 
 R CMD check succeeded
+
 
 ## Travis CI
 
@@ -23,21 +25,27 @@ osx oldrel: error
 osx release: succeeded
 osx oldrel: error
 
+
 ## check_win_release()
 
+Installation time in seconds: 4
+Check time in seconds: 352
 Status: 3 NOTEs
+R version 3.5.3 (2019-03-11)
 
 The Title field should be in title case, current version then in title case:
 'Manual tours, manual control of dynamic projections of numeric multivariate data'
 'Manual Tours, Manual Control of Dynamic Projections of Numeric Multivariate Data'
 
-** running examples for arch 'i386' ... [100s] NOTE
+** running examples for arch 'i386' ... [116s] NOTE
 Examples with CPU or elapsed time > 10s
                   user system elapsed
-render_gganimate 71.03   3.26   62.63
-render_plotly     9.51   0.50   10.22
-** running examples for arch 'x64' ... [96s] NOTE
+render_gganimate 83.71   3.42   73.58
+render_plotly     9.04   0.56   10.55
+** running examples for arch 'x64' ... [104s] NOTE
 Examples with CPU or elapsed time > 10s
                   user system elapsed
-render_gganimate 65.47   3.11   59.71
+render_gganimate 64.63   3.84   60.20
+render_plotly    10.11   0.42   11.13
+breastcancer      9.23   0.35   10.09
 
