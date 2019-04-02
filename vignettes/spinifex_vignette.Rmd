@@ -1,11 +1,11 @@
 ---
-title: "spinifex vignette"
+title: "Spinifex"
 author: "Nicholas S Spyrison"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{spinifex}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -174,7 +174,7 @@ Dynamic linear projection of numeric data, collectively known as $tours$ is an i
 
 ## Namesake 
 
-The name 'spinifex' comes from the [spinifex hopping mouse (wiki)](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, in the words of Di "it spins, it hops and needs a 'mouse'."
+The name 'spinifex' comes from the [spinifex hopping mouse (wiki)](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, in the words of Di Cook "It spins, it hops and needs a 'mouse'."
 
 
 ## Acknowledgements
