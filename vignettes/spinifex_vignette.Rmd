@@ -94,7 +94,7 @@ play_manual_tour(data = flea_std, basis = flea_rb, manip_var = 3)
 
 ## Example 2 - Rotating a glyph map
 
-Another of the *manual tour* is the creation a *glyph-maps*, where time series can be shown side-by-side, similar to faceting (offsetting) on their lat/long physical positions. We'll use the following `GGally` glyph-map as a  
+Another of the *manual tour* is the creation a *glyph-maps*, where time series can be shown side-by-side, like faceting (offsetting) on their lat/long physical positions. We'll use the following `GGally` glyph-map as a  
 
 ```{r, echo=F}
 nasa <- select(GGally::nasa, lat, long, day, surftemp)
@@ -110,7 +110,7 @@ glyph <-
 glyph
 ```
 
-Subset the data, rescaling the measures. We'll perform a horizontal rotation and followed by the vertical rotation before bringing them together. Perform a horizontal rotation ($\theta$`=0`) on the `day` values (`manip_var=3`). Premultiply the data with the rotation matrix to project the data.
+Subset the data, rescaling the measures. We'll perform a horizontal rotation and followed by the vertical rotation before bringing them together. Perform a horizontal rotation ($\theta$`=0`) on the `day` values (`manip_var=3`). Pre-multiply the data with the rotation matrix to project the data.
 
 ```{r Horizontal}
 # Initialize
@@ -124,7 +124,7 @@ rot_mat_x <- rotate_manip_space(manip_space = m_sp_x, theta = 0, phi = pi/6)
 rot_x     <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_x))
 ```
 
-Likewise, we'll perform a vertical rotation ($\theta$`=pi/2`) on surface tempurature (manip_var=4). Combine the rotations and plot just the rotated values without lat/long or x/y markers, neat!
+Likewise, we'll perform a vertical rotation ($\theta$`=pi/2`) on surface temperature (manip_var=4). Combine the rotations and plot just the rotated values without lat/long or x/y markers, neat!
 ```{r Vertical}
 # Vertical roation
 m_sp_y    <- create_manip_space(basis = bas, manip_var = 4)
@@ -158,7 +158,7 @@ f_holes_bas  <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
 view_basis(f_holes_bas, labels = colnames(flea_std))
 ```
 
-We'll select `aded2` as the manip_var, as it is mostly orthogonal to four of the other variables and often has a larger contribution than `tars1`.
+We'll select `aede2` as the manip_var, as it is mostly orthogonal to four of the other variables and often has a larger contribution than `tars1`.
 
 ```{r}
 ?play_manual_tour
@@ -166,7 +166,7 @@ play_manual_tour(data = flea_std, basis = f_holes_bas,
                  manip_var = 5, col = flea$species)
 ```
 
-We can see that `aede2` is important in distinguishing between the purple cluster and the green cluster. However, even when it's contribution is zeros the contribution of `tars1` is enough to keep the cluster from overlapping.
+We can see that `aede2` is important in distinguishing between the purple cluster and the green cluster. However, even when its contribution is zeros the contribution of `tars1` is enough to keep the cluster from overlapping.
 
 # Summary
 
@@ -174,12 +174,12 @@ Dynamic linear projection of numeric data, collectively known as $tours$ is an i
 
 ## Namesake 
 
-The name 'spinifex' comes from the [spinifex hopping mouse (wiki)](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to it's relation to this work, in the words of Di Cook "It spins, it hops and needs a 'mouse'."
+The name 'spinifex' comes from the [spinifex hopping mouse (wiki)](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to its relation to this work, in the words of Di Cook "It spins, it hops and needs a 'mouse'."
 
 
 ## Acknowledgements
 
+This package and vignette were made in *R* with much support from `knitr` and `roxygen2`.
+
 Thanks to Prof. Dianne Cook for providing focus, namesake, and the groundwork underpinning this work. Thanks to Dr. Ursula Laa for use-cases and applications.
-
-
 
