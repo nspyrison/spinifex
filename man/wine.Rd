@@ -44,9 +44,9 @@ wine <- dplyr::as.tibble(wine)
 }
 }
 \examples{
-
 str(wine)
-
+\dontrun{
 play_manual_tour(data = wine[, 2:14], manip_var = 1, init_rescale_data = TRUE)
+}
 }
 \keyword{datasets}

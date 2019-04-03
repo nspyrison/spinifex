@@ -48,9 +48,9 @@ breastbancer <- dplyr::as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))
 }
 }
 \examples{
-
 str(breastcancer)
-
+\dontrun{
 play_manual_tour(data = breastcancer[, 2:9], manip_var = 3, init_rescale_data = TRUE)
+}
 }
 \keyword{datasets}

@@ -86,7 +86,7 @@ view_manip_space(basis = flea_rb, manip_var = 3, labels = colnames(flea_std))
 
 Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
 
-```{r}
+```{r, eval=F}
 play_manual_tour(data = flea_std, basis = flea_rb, manip_var = 3)
 ```
 
@@ -146,7 +146,8 @@ Manual tours are often employed after an interesting feature has been identified
 ```{r}
 flea_std <- tourr::rescale(tourr::flea[,1:6])
 fpath    <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes()))
-
+```
+```{r, eval=F]
 play_tour_path(tour_path = fpath, data = flea_std, angle = .15, 
   render_type = render_gganimate, col = flea$species, fps = 4)
 ```
@@ -160,8 +161,7 @@ view_basis(f_holes_bas, labels = colnames(flea_std))
 
 We'll select `aede2` as the manip_var, as it is mostly orthogonal to four of the other variables and often has a larger contribution than `tars1`.
 
-```{r}
-?play_manual_tour
+```{r, eval=F}
 play_manual_tour(data = flea_std, basis = f_holes_bas, 
                  manip_var = 5, col = flea$species)
 ```

@@ -17,13 +17,15 @@
 #' @import tourr
 #' @export
 #' @examples
+#' \dontrun{
 #' flea_std <- rescale(tourr::flea[,1:6])
 #' tpath    <- save_history(flea_std, max = 3)
 #' 
 #' play_tour_path(tour_path = tpath, data = flea_std, angle = .15)
 #' 
-#' ##play_tour_path(tour_path = tpath, data = flea_std, angle = .15, fps = 4,
-#' ##  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+#' play_tour_path(tour_path = tpath, data = flea_std, angle = .15, fps = 4,
+#'   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+#' }
 
 play_tour_path <- function(tour_path,
                            data = NULL,
@@ -85,14 +87,15 @@ play_tour_path <- function(tour_path,
 #' @import tourr
 #' @export
 #' @examples
+#' \dontrun{
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' 
 #' play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 #' 
-#' ##play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
-#' ##  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
-
+#' play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
+#'   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+#' }
 play_manual_tour <- function(data,
                              basis       = NULL,
                              manip_var,

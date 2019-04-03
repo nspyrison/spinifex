@@ -43,10 +43,10 @@
 #' Id, 9 numeric variables, and target class.
 #' @keywords datasets
 #' @examples
-#'
 #' str(breastcancer)
-#' 
+#' \dontrun{
 #' play_manual_tour(data = breastcancer[, 2:9], manip_var = 3, init_rescale_data = TRUE)
+#' }
 "breastcancer"
 
 #' Sample dataset of daily weather observations from Canberra airport in Australia.
@@ -111,10 +111,10 @@
 #' @references Data source: http://www.bom.gov.au/climate/dwo/ and http://www.bom.gov.au/climate/data.
 #' @keywords datasets
 #' @examples
-#'
 #' str(weather)
-#' 
+#' \dontrun{
 #' play_manual_tour(data = weather[, 2:17], manip_var = 5, init_rescale_data = TRUE)
+#' }
 "weather"
 
 #' The wine dataset from the UCI Machine Learning Repository.
@@ -157,8 +157,8 @@
 #' @format data frame (tibble) of 178 observations of 13 variables, target 
 #' class `Type` and 12 numeric variables.
 #' @examples
-#'
 #' str(wine)
-#' 
+#' \dontrun{
 #' play_manual_tour(data = wine[, 2:14], manip_var = 1, init_rescale_data = TRUE)
+#' }
 "wine"

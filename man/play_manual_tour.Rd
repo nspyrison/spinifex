@@ -61,11 +61,13 @@ For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}
 A wrapper function for \code{manual_tour()}, \code{array2df()}, and \code{render_()}.
 }
 \examples{
+\dontrun{
 flea_std <- tourr::rescale(tourr::flea[,1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
 
 play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 
-##play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
-##  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
+  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+}
 }

@@ -17,17 +17,12 @@ particularly useful after finding an interesting tour, perhaps via a
 guided tour.
 }
 \details{
-It's main functions are:
+Its main functions are:
 \itemize{
-\item \code{\link[=manual_tour]{manual_tour()}}, Performs manual tour and returns a tour path array.
-\item \code{\link[=array2df]{array2df()}}, Turns a tour path array into a (long) df for ggplot
-graphics.
-\item \code{\link[=render_plotly]{render_plotly()}}, Plots tour path df as a plotly object.
-\item \code{\link[=render_gganimate]{render_gganimate()}},  Plots tour path df as a gganimate object.
-\item \code{\link[=play_manual_tour]{play_manual_tour()}}, A wrapper function, applies the above for a
-manual tour.
-\item \code{\link[=play_tour_path]{play_tour_path()}}, A wrapper function, renders a tour path array as
-\code{render_type}.
+\item \code{\link[=play_manual_tour]{play_manual_tour()}}, performs a manual tour, returning a \code{plotly} animate by default.
+\item \code{\link[=play_tour_path]{play_tour_path()}}, turns a tour path into an animatation, returning a \code{plotly} object by default.
+\item \code{\link[=view_basis]{view_basis()}}, plot a basis set on a reference axis.
+\item \code{\link[=view_manip_space]{view_manip_space()}}, plot a manipualation space highlighting the manip var.
 }
 
 GitHub repo: \url{https://github.com/nspyrison/spinifex}

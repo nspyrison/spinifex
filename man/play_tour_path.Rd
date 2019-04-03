@@ -34,11 +34,13 @@ Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interp
 over the path and renders into a selected \code{render_type}.
 }
 \examples{
+\dontrun{
 flea_std <- rescale(tourr::flea[,1:6])
 tpath    <- save_history(flea_std, max = 3)
 
 play_tour_path(tour_path = tpath, data = flea_std, angle = .15)
 
-##play_tour_path(tour_path = tpath, data = flea_std, angle = .15, fps = 4,
-##  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+play_tour_path(tour_path = tpath, data = flea_std, angle = .15, fps = 4,
+  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+}
 }
