@@ -5,7 +5,7 @@ Initial submission to CRAN.
 ## Primary functions
 
 - play_tour_path()
-- play_manaual_tour()
+- play_manual_tour()
 
 ## util functions
 

@@ -16,26 +16,34 @@ Duration: 3m 34s
 R CMD check succeeded
 
 
-## Travis CI
+## check_rhub()
 
-linux oldrel: error
-linux release: succeeded
-linux devel: error
-osx oldrel: error
-osx release: succeeded
-osx devel: error
+0 errors √ | 0 warnings √ | 2 notes x
+
+checking examples ... NOTE
+Examples with CPU or elapsed time > 5s
+                  user system elapsed
+render_gganimate 42.57   1.72   38.59
+render_plotly     5.37   0.79    6.08
+
+
+## check_win_devel()
+
+Success
+
+* checking examples ... NOTE
+Examples with CPU or elapsed time > 5s
+                  user system elapsed
+render_gganimate 42.57   1.72   38.59
+render_plotly     5.37   0.79    6.08
 
 
 ## check_win_release()
 
 Installation time in seconds: 4
 Check time in seconds: 352
-Status: 3 NOTEs
+Status: 2 NOTEs
 R version 3.5.3 (2019-03-11)
-
-The Title field should be in title case, current version then in title case:
-'Manual tours, manual control of dynamic projections of numeric multivariate data'
-'Manual Tours, Manual Control of Dynamic Projections of Numeric Multivariate Data'
 
 ** running examples for arch 'i386' ... [116s] NOTE
 Examples with CPU or elapsed time > 10s
@@ -48,4 +56,13 @@ Examples with CPU or elapsed time > 10s
 render_gganimate 64.63   3.84   60.20
 render_plotly    10.11   0.42   11.13
 breastcancer      9.23   0.35   10.09
+
+## Travis CI
+
+linux oldrel: error
+linux release: succeeded
+linux devel: error
+osx oldrel: error
+osx release: succeeded
+osx devel: error
 

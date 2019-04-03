@@ -179,7 +179,7 @@ The name 'spinifex' comes from the [spinifex hopping mouse (wiki)](https://en.wi
 
 ## Acknowledgements
 
-This package and vignette were made in *R* with much support from `knitr` and `roxygen2`.
+This package and vignette were made in *R* with much support from `devtools` and `roxygen2`.
 
 Thanks to Prof. Dianne Cook for providing focus, namesake, and the groundwork underpinning this work. Thanks to Dr. Ursula Laa for use-cases and applications.
 

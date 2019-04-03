@@ -11,17 +11,12 @@
 #' guided tour.
 #' 
 #'
-#' It's main functions are:
+#' Its main functions are:
 #' \itemize{
-#'   \item [manual_tour()], Performs manual tour and returns a tour path array.
-#'   \item [array2df()], Turns a tour path array into a (long) df for ggplot 
-#'   graphics.
-#'   \item [render_plotly()], Plots tour path df as a plotly object.
-#'   \item [render_gganimate()],  Plots tour path df as a gganimate object.
-#'   \item [play_manual_tour()], A wrapper function, applies the above for a 
-#'   manual tour.
-#'   \item [play_tour_path()], A wrapper function, renders a tour path array as 
-#'   `render_type`.
+#'   \item [play_manual_tour()], performs a manual tour, returning a `plotly` animate by default.
+#'   \item [play_tour_path()], turns a tour path into an animatation, returning a `plotly` object by default.
+#'   \item [view_basis()], plot a basis set on a reference axis.
+#'   \item [view_manip_space()], plot a manipualation space highlighting the manip var.
 #' }
 #'
 #' GitHub repo: \url{https://github.com/nspyrison/spinifex}
