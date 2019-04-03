@@ -2,67 +2,72 @@
 
 ## Test environments
 * local Windows 10 x64, R 3.5.3
-* linux, osx (on travis-ci),
-* win-builder (release)
+* linux, osx via Travis CI (oldrel, release, devel)
+* win-builder (devel)
+* rhub
 
 
 ## R CMD check
 
--- R CMD check results -------------------------------- spinifex 0.1.0 ----
-Duration: 3m 34s
+-- R CMD check results -------------------------------------------------------- spinifex 0.1.0 ----
+Duration: 23.8s
 
-0 errors v | 0 warnings v | 0 notes v
-
-R CMD check succeeded
+0 errors √ | 0 warnings √ | 0 notes √
 
 
 ## check_rhub()
 
-0 errors √ | 0 warnings √ | 2 notes x
+-- spinifex 0.1.0: NOTE
 
-checking examples ... NOTE
-Examples with CPU or elapsed time > 5s
-                  user system elapsed
-render_gganimate 42.57   1.72   38.59
-render_plotly     5.37   0.79    6.08
+  Build ID:   spinifex_0.1.0.tar.gz-0c3c7961a35c4695ad8c9decca784cda
+  Platform:   Windows Server 2008 R2 SP1, R-devel, 32/64 bit
+  Submitted:  3m 10.5s ago
+  Build time: 3m 26.7s
+  
+> checking CRAN incoming feasibility ... NOTE
+  Maintainer: 'Nicholas Spyrison <spyrison@gmail.com>'
+  
+  New submission
+  
+  Possibly mis-spelled words in DESCRIPTION:
+    spinifex (12:66)
+    tourr (10:20)
 
+0 errors √ | 0 warnings √ | 1 note x
 
 ## check_win_devel()
 
-Success
+Installation time in seconds: 8
+Check time in seconds: 101
+Status: 1 NOTE
 
-* checking examples ... NOTE
-Examples with CPU or elapsed time > 5s
-                  user system elapsed
-render_gganimate 42.57   1.72   38.59
-render_plotly     5.37   0.79    6.08
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: 'Nicholas Spyrison <spyrison@gmail.com>'
 
+New submission
 
-## check_win_release()
+Possibly mis-spelled words in DESCRIPTION:
+  spinifex (12:66)
+  tourr (10:20)
 
-Installation time in seconds: 4
-Check time in seconds: 352
-Status: 2 NOTEs
-R version 3.5.3 (2019-03-11)
-
-** running examples for arch 'i386' ... [116s] NOTE
-Examples with CPU or elapsed time > 10s
-                  user system elapsed
-render_gganimate 83.71   3.42   73.58
-render_plotly     9.04   0.56   10.55
-** running examples for arch 'x64' ... [104s] NOTE
-Examples with CPU or elapsed time > 10s
-                  user system elapsed
-render_gganimate 64.63   3.84   60.20
-render_plotly    10.11   0.42   11.13
-breastcancer      9.23   0.35   10.09
 
 ## Travis CI
 
-linux oldrel: error
-linux release: succeeded
-linux devel: error
-osx oldrel: error
-osx release: succeeded
-osx devel: error
+- linux
+    - release pass
+    - devel pass
+- osx
+    - release pass
+    - devel ERROR:
+    
+Installing R
+295.75s$ brew update >/dev/null
+==> Downloading https://homebrew.bintray.com/bottles-portable-ruby/portable-ruby-2.3.7.mavericks.bottle.tar.gz
+######################################################################## 100.0%
+==> Pouring portable-ruby-2.3.7.mavericks.bottle.tar.gz
+3.54s$ curl -fLo /tmp/R.pkg https://r.research.att.com/el-capitan/R-devel/R-devel-el-capitan-signed.pkg
+curl: (22) The requested URL returned error: 404 Not Found
+The command "eval curl -fLo /tmp/R.pkg https://r.research.att.com/el-capitan/R-devel/R-devel-el-capitan-signed.pkg " failed. Retrying, 2 of 3.
+...
 
+    
