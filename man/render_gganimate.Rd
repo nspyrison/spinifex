@@ -30,6 +30,7 @@ Takes the result of \code{array2df()} and renders them into a
 \emph{gganimate} animation.
 }
 \examples{
+\dontrun{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
 rb <- basis_random(n = ncol(flea_std))
@@ -39,4 +40,5 @@ render_gganimate(slides = sshow)
 
 render_gganimate(slides = sshow, col = col_of(flea$species), 
   axes = "bottomleft", fps = 2)
+}
 }

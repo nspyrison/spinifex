@@ -185,6 +185,7 @@ render_ <- function(slides,
 #'   and `plotly::layout()`.
 #' @export
 #' @examples
+#' \dontrun{
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
@@ -194,6 +195,7 @@ render_ <- function(slides,
 #' 
 #' render_plotly(slides = sshow, col = col_of(flea$species), 
 #'   axes = "bottomleft", fps = 2)
+#' }
 render_plotly <- function(slides,
                           manip_col = "blue",
                           col = "black", 
@@ -235,6 +237,7 @@ render_plotly <- function(slides,
 #'   `gganimate::transition_states()`.
 #' @export
 #' @examples
+#' \dontrun{
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
@@ -244,6 +247,7 @@ render_plotly <- function(slides,
 #' 
 #' render_gganimate(slides = sshow, col = col_of(flea$species), 
 #'   axes = "bottomleft", fps = 2)
+#' }
 render_gganimate <- function(slides,
                              manip_col = "blue",
                              col = "black", 
