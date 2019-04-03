@@ -14,6 +14,8 @@ Description: Generates the path for manual tours. Tours are generally
   to that variable. The result is an animation where the variable is toured into 
   and out of the projection completely, which can be rendered 
   using the 'gganimate' and 'plotly' packages.
+  Cook & Buja (1997) <doi:10.2307/1390747>
+  Wickham et. al. (2011) <doi:10.18637/jss.v040.i02>
 Depends: 
     R (>= 3.4.0),
     tourr
