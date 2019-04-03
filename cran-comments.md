@@ -8,7 +8,7 @@
 
 ## R CMD check
 
--- R CMD check results -------------------------------- spinifex 0.1.0.9000 ----
+-- R CMD check results -------------------------------- spinifex 0.1.0 ----
 Duration: 3m 34s
 
 0 errors v | 0 warnings v | 0 notes v
@@ -20,10 +20,10 @@ R CMD check succeeded
 
 linux oldrel: error
 linux release: succeeded
-linux oldrel: error
+linux devel: error
 osx oldrel: error
 osx release: succeeded
-osx oldrel: error
+osx devel: error
 
 
 ## check_win_release()

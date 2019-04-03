@@ -2,11 +2,5 @@
 
 # spinifex
 
-spinifex is a package that is compatiable and extends the package `tourr`. 
-It builds the functionality for manual tours, and adds the ability for any 
-tour to be rendered as `plotly` or `gganimate` objects. Touring is a class 
-of dimensionality reducetion that orthogonally projects data from `p` down 
-to `d` dimensions, take a small change in `p`-space and interpolates again. 
-Manual tours manipulate a selected variable to explore the local structure,
-particaularly effective after finding a interesting tour, perhaps via a 
-guided tour.
+Generates the path for manual tours. Tours are generally available in the tourr package. The grand tour is an algorithm that shows all possible projections given sufficient time. Guided uses projection pursuit to steer the tour towards interesting projections. The spinifex package implements manual of control, where the contribution of a selected variable can be adjusted between -1 to 1, to examine the sensitivity of structure in the data to that variable. The result is an animation where the variable is toured into and out of the projection completely, which can be rendered using the 'gganimate' and 'plotly' packages.
+

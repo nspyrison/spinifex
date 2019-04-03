@@ -1,6 +1,6 @@
 Package: spinifex
 Title: Manual tours, manual control of dynamic projections of numeric multivariate data
-Version: 0.1.0.9000
+Version: 0.1.0
 Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
