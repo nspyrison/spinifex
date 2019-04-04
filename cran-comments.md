@@ -10,7 +10,7 @@
 ## R CMD check
 
 -- R CMD check results -------------------------------------------------------- spinifex 0.1.0 ----
-Duration: 23.8s
+Duration: 24.7s
 
 0 errors √ | 0 warnings √ | 0 notes √
 
@@ -19,21 +19,18 @@ Duration: 23.8s
 
 -- spinifex 0.1.0: NOTE
 
-  Build ID:   spinifex_0.1.0.tar.gz-0c3c7961a35c4695ad8c9decca784cda
+  Build ID:   spinifex_0.1.0.tar.gz-10124a2285d34216ad4d61ded9f7c238
   Platform:   Windows Server 2008 R2 SP1, R-devel, 32/64 bit
-  Submitted:  3m 10.5s ago
-  Build time: 3m 26.7s
-  
+  Submitted:  3m 59.7s ago
+  Build time: 3m 55.6s
+
 > checking CRAN incoming feasibility ... NOTE
   Maintainer: 'Nicholas Spyrison <spyrison@gmail.com>'
   
   New submission
-  
-  Possibly mis-spelled words in DESCRIPTION:
-    spinifex (12:66)
-    tourr (10:20)
 
 0 errors √ | 0 warnings √ | 1 note x
+
 
 ## check_win_devel()
 
@@ -45,10 +42,6 @@ Status: 1 NOTE
 Maintainer: 'Nicholas Spyrison <spyrison@gmail.com>'
 
 New submission
-
-Possibly mis-spelled words in DESCRIPTION:
-  spinifex (12:66)
-  tourr (10:20)
 
 
 ## Travis CI

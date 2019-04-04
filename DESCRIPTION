@@ -5,17 +5,16 @@ Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
     )
-Description: Generates the path for manual tours. Tours are generally 
-  available in the tourr package. The grand tour is an algorithm that
-  shows all possible projections given sufficient time. Guided uses projection 
-  pursuit to steer the tour towards interesting projections. The spinifex
-  package implements manual of control, where the contribution of a selected variable 
+Description: Functions that generate the path for manual tours
+  ['Cook' & 'Buja' (1997) <doi:10.2307/1390747>]. Tours are generally available in the
+  'tourr' package ['Wickham' 'et' 'al.' (2011) <doi:10.18637/jss.v040.i02>]. 
+  The grand tour is an algorithm that shows all possible projections given sufficient time. 
+  Guided uses projection pursuit to steer the tour towards interesting projections. 
+  The 'spinifex' package implements manual control, where the contribution of a selected variable 
   can be adjusted between -1 to 1, to examine the sensitivity of structure in the data
-  to that variable. The result is an animation where the variable is toured into 
-  and out of the projection completely, which can be rendered 
-  using the 'gganimate' and 'plotly' packages.
-  Cook & Buja (1997) <doi:10.2307/1390747>
-  Wickham et. al. (2011) <doi:10.18637/jss.v040.i02>
+  to that variable. 
+  The result is an animation where the variable is toured into and out of the projection 
+  completely, which can be rendered using the 'gganimate' and 'plotly' packages.
 Depends: 
     R (>= 3.4.0),
     tourr
