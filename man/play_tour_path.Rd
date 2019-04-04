@@ -34,7 +34,7 @@ Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interp
 over the path and renders into a selected \code{render_type}.
 }
 \examples{
-\dontrun{
+\dontshow{
 flea_std <- rescale(tourr::flea[,1:6])
 tpath    <- save_history(flea_std, max = 3)
 

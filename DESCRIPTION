@@ -5,7 +5,7 @@ Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
     )
-Description: Functions that generate the path for manual tours
+Description: Generates the path for manual tours
   ['Cook' & 'Buja' (1997) <doi:10.2307/1390747>]. Tours are generally available in the
   'tourr' package ['Wickham' 'et' 'al.' (2011) <doi:10.18637/jss.v040.i02>]. 
   The grand tour is an algorithm that shows all possible projections given sufficient time. 
