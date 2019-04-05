@@ -1,5 +1,10 @@
 ## cran-comments.md
 
+## \dontrun{} examples (4x)
+
+The 4 functions that contain `\\dontrun{}` produce animations that take >5sec that users need to know about, but cause issues in examples and checks. The manipulations before the animation rending is already tested in the examples of the other functions.
+
+
 ## Test environments
 * local Windows 10 x64, R 3.5.3
 * linux, osx via Travis CI (oldrel, release, devel)
@@ -10,7 +15,7 @@
 ## R CMD check
 
 -- R CMD check results -------------------------------------------------------- spinifex 0.1.0 ----
-Duration: 24.7s
+Duration: 23.9s
 
 0 errors √ | 0 warnings √ | 0 notes √
 
