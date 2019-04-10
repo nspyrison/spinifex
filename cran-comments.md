@@ -1,5 +1,7 @@
 ## cran-comments.md
 
+DOI: 10.2307/1390747 works fine in manual checks.
+
 ### dontrun{} examples (4x)
 
 The 4 functions that contain `\dontrun{}` produce animations that take >5sec that users need to know about, but cause issues in examples and checks. The manipulations before the animation rending is already tested in the examples of the other functions.
