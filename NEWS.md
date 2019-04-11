@@ -1,3 +1,9 @@
+# spinifex 0.2.0
+
+Building support for 3D manual tours. New angle, omega.
+
+- 
+
 # spinifex 0.1.0
 
 Initial submission to CRAN.
@@ -7,7 +13,7 @@ Initial submission to CRAN.
 - play_tour_path()
 - play_manual_tour()
 
-## util functions
+## Primary util functions
 
--view_basis()
--view_manip_space()
+- view_basis()
+- view_manip_space()
