@@ -1,6 +1,6 @@
-#' Render display of a 2D manual tour
+#' Render display of a 2D radial manual tour
 #'
-#' Performs the a 2D manual tour and returns an animation of `render_type`.
+#' Performs the a 2D radial manual tour and returns an animation of `render_type`.
 #' For use with `tourr::save_history()` tour paths see `play_tour_path()`. 
 #' 
 #' @param data (n, p) dataset to project, consisting of numeric variables.
@@ -37,12 +37,12 @@
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' 
-#' play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
+#' play_radial_tour(data = flea_std, basis = rb, manip_var = 4)
 #' 
-#' play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
+#' play_radial_tour(data = flea_std, basis = rb, manip_var = 6, 
 #'   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
 #' }
-play_manual_tour <- function(data,
+play_radial_tour <- function(data,
                              basis       = NULL,
                              manip_var,
                              theta       = NULL,
