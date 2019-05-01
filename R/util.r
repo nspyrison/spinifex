@@ -110,7 +110,7 @@ view_basis <- function(basis,
 #'   (numeric variable).
 #' @param manip_var Number of the column/dimension to rotate.
 #' @param manip_col String of the color to highlight the `manip_var`.
-#' @param theta Angle in radians to rotate the manip space. 
+#' @param tilt Angle in radians to rotate the projection plane. 
 #'   Defaults to pi * 5/12.
 #' @param z_col Color to illustrate the z direction or out of the projection 
 #'   plane.
@@ -127,48 +127,48 @@ view_basis <- function(basis,
 view_manip_space <- function(basis,
                              manip_var,
                              manip_col = "blue",
-                             theta = NULL,
+                             tilt = 5/12 * pi,
                              z_col = "red",
                              labels = paste0("V", 1:nrow(basis))
 ) {
   # Initialize
   ## manip space
-  m_sp <- as.data.frame(create_manip_space(basis, manip_var))
+  m_sp <- as.matrix(create_manip_space(basis, manip_var))
   p <- nrow(m_sp)
-  if (is.null(theta)) 
-  {theta <- atan(as.numeric(m_sp[manip_var, 2]) / 
-                     as.numeric(m_sp[manip_var, 1]))}
-  phi <- atan(as.numeric(m_sp[manip_var, 3]) / 
-                as.numeric(m_sp[manip_var, 1]))
-  ## angle curves
-  make_circ <- function(ang_st = 0, ang_stop = 2 * pi){
-    angle <- seq(ang_st, 2 * pi, 
-                 length = round(360 * abs(ang_st - ang_stop) / (2 * pi)) )
-    data.frame(x = cos(angle), y = sin(angle), z = 0)
-  }
-  xyz <- function(df) {colnames(df) <- c("x", "y", "z"); df}
-  theta_curve <- make_circ(0, theta)
-  phi_curve   <- make_circ(theta, phi)
+  theta <- atan(m_sp[manip_var, 2] / m_sp[manip_var, 1])
+  phi   <- atan(m_sp[manip_var, 3] / 
+                  sqrt(m_sp[manip_var, 1]^2 + m_sp[manip_var, 2]^2))
   ## manip var asethetics
   col_v            <- rep("grey80", p)
   col_v[manip_var] <- manip_col
   siz_v            <- rep(0.3, p)
   siz_v[manip_var] <- 1
-
   ## basis rotation
-  c <- cos(theta)
-  s <- sin(theta)
+  c <- cos(tilt)
+  s <- sin(tilt)
   rot  <- matrix(c(1,0,0, 0,c,-1*s, 0,0,s),
                  ncol = 3, byrow = T)
+  ## helper funcs
+  make_circ <- function(ang_st = 0, ang_stop = 2 * pi){
+    angle <- seq(ang_st, ang_stop, 
+                 length = round(360 * abs(ang_st - ang_stop) / (2 * pi)) )
+    as.matrix(data.frame(x = cos(angle), y = sin(angle), z = 0))
+  }
+  xyz <- function(df) {colnames(df) <- c("x", "y", "z"); as.data.frame(df)}
   ## rotated spaces
-  circ_r <- xyz(as.matrix(make_circ()) %*% rot)
-  m_sp_r <- xyz(as.matrix(m_sp) %*% rot)
+  circ_r <- xyz(make_circ() %*% rot)
+  m_sp_r <- xyz(m_sp %*% rot)
   m_sp_z <- data.frame(x = m_sp[manip_var, 1],
                        y = m_sp[manip_var, 2],
-                       z = m_sp[manip_var, 3] * sin(theta),
+                       z = m_sp[manip_var, 3] * sin(tilt),
                        xend = m_sp_r[manip_var, "x"],
                        yend = m_sp_r[manip_var, "y"],
                        lab = labels[manip_var])
+  ## angle curves, phi & theta notation.
+  theta_curve <- xyz(make_circ(0, theta) %*% rot)
+  phi_curve   <- xyz(make_circ(theta, phi))
+  #phi_curve$x <- phi_curve$x * cos(tilt)
+  phi_curve$y <- phi_curve$y * sin(tilt)
 
   
   gg <- 
@@ -195,7 +195,7 @@ view_manip_space <- function(basis,
       size = 4, colour = col_v, vjust = "outward", hjust = "outward") +
     ## Z circle path
     ggplot2::geom_path(
-      data = circ_r,
+      data = as.data.frame(circ_r),
       mapping = ggplot2::aes(x = x, y = z),
       color = z_col, size = .3, inherit.aes = F) +
     ## Z manip axis segment
@@ -216,25 +216,24 @@ view_manip_space <- function(basis,
     ## Theta curve path
     ggplot2::geom_path(
       data = theta_curve, 
-      mapping = ggplot2::aes(x = x, y = y), 
+      mapping = ggplot2::aes(x = x/5, y = y/5), 
       color = manip_col, size = .1, linetype = 2, inherit.aes = F) +
     ## Theta text
     ggplot2::geom_text(
-      data = m_sp_r[manip_var, ], 
-      mapping = ggplot2::aes(x = x/2 + sqrt(x^2 + y^2)/2 , y = y/2 + 0, 
-                             label = "theta"), 
-      size = 4, colour = manip_col, parse = T) +
+      data = theta_curve[round(nrow(theta_curve)/2), ], 
+      mapping = ggplot2::aes(x = x/5, y = y/5, label = "theta"), 
+      size = 4, colour = manip_col, parse = T, 
+      vjust = "outward", hjust = "outward") +
     ## Phi curve path
     ggplot2::geom_path(
       data = phi_curve, 
-      mapping = ggplot2::aes(x = x, y = y), 
+      mapping = ggplot2::aes(x = x/3, y = y/3), 
       color = z_col, size = .1, linetype = 2, inherit.aes = F) +
     ## Phi text 
     ggplot2::geom_text(
-      data = m_sp_z, 
-      mapping = ggplot2::aes(x = x/2 + xend/2 , y = z/2 + yend/2, 
-                             label = "phi"), 
-      size = 4, colour = z_col, parse = T)
+      data = phi_curve[round(nrow(phi_curve)/2), ], 
+      mapping = ggplot2::aes(x = x/3 , y = y/3, label = "phi"), 
+      size = 4, colour = z_col, parse = T, vjust = "outward", hjust = "outward")
     
     
     
