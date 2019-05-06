@@ -135,9 +135,9 @@ view_manip_space <- function(basis,
   ## manip space
   m_sp <- as.matrix(create_manip_space(basis, manip_var))
   p <- nrow(m_sp)
-  theta <- atan(m_sp[manip_var, 2] / m_sp[manip_var, 1])
-  phi   <- atan(m_sp[manip_var, 3] / 
-                  sqrt(m_sp[manip_var, 1]^2 + m_sp[manip_var, 2]^2))
+  find_angle <- function(a,b) acos( sum(a*b) / ( sqrt(sum(a * a)) * sqrt(sum(b * b)) ) )
+  theta <- find_angle(m_sp[manip_var, ], c(1,0,0)) * sign(m_sp[manip_var, 2])
+  phi   <- find_angle(m_sp[manip_var, ], c(m_sp[manip_var, 1:2],0))
   ## manip var asethetics
   col_v            <- rep("grey80", p)
   col_v[manip_var] <- manip_col
@@ -160,16 +160,16 @@ view_manip_space <- function(basis,
   m_sp_r <- xyz(m_sp %*% rot)
   m_sp_z <- data.frame(x = m_sp[manip_var, 1],
                        y = m_sp[manip_var, 2],
-                       z = m_sp[manip_var, 3] * sin(tilt),
+                       z = m_sp[manip_var, 3] * s,
                        xend = m_sp_r[manip_var, "x"],
                        yend = m_sp_r[manip_var, "y"],
                        lab = labels[manip_var])
-  ## angle curves, phi & theta notation.
+  ## rotate angle curves, phi & theta
   theta_curve <- xyz(make_circ(0, theta) %*% rot)
   phi_curve   <- xyz(make_circ(theta, phi))
-  #phi_curve$x <- phi_curve$x * cos(tilt)
-  phi_curve$y <- phi_curve$y * sin(tilt)
-
+  phi_curve$y <- phi_curve$y * sin(tilt) #really the z direction
+  mid_theta   <- round(nrow(theta_curve)/2)
+  mid_phi     <- round(nrow(phi_curve)/2)
   
   gg <- 
     ## Ggplot options
@@ -215,25 +215,25 @@ view_manip_space <- function(basis,
       size = 4, colour = z_col, vjust = "outward", hjust = "outward") +
     ## Theta curve path
     ggplot2::geom_path(
-      data = theta_curve, 
-      mapping = ggplot2::aes(x = x/5, y = y/5), 
-      color = manip_col, size = .1, linetype = 2, inherit.aes = F) +
+      data = theta_curve/5, 
+      mapping = ggplot2::aes(x = x, y = y), 
+      color = manip_col, size = .1, linetype = 1, inherit.aes = F) +
     ## Theta text
     ggplot2::geom_text(
-      data = theta_curve[round(nrow(theta_curve)/2), ], 
+      data = theta_curve[mid_theta, ]/5 *1.2, 
       mapping = ggplot2::aes(x = x/5, y = y/5, label = "theta"), 
       size = 4, colour = manip_col, parse = T, 
       vjust = "outward", hjust = "outward") +
     ## Phi curve path
     ggplot2::geom_path(
-      data = phi_curve, 
-      mapping = ggplot2::aes(x = x/3, y = y/3), 
+      data = phi_curve/3, 
+      mapping = ggplot2::aes(x = x-.1, y = y), 
       color = z_col, size = .1, linetype = 2, inherit.aes = F) +
     ## Phi text 
     ggplot2::geom_text(
-      data = phi_curve[round(nrow(phi_curve)/2), ], 
-      mapping = ggplot2::aes(x = x/3 , y = y/3, label = "phi"), 
-      size = 4, colour = z_col, parse = T, vjust = "outward", hjust = "outward")
+      data = phi_curve[mid_phi, ]/3 *1.2, 
+      mapping = ggplot2::aes(x = x, y = y, label = "phi"), 
+      size = 4, colour = z_col, parse = T)
     
     
     
