@@ -6,25 +6,38 @@ library(dplyr)
 # file.edit("C:/Users/spyri/Documents/R/functionSectioning/app.R")
 # write.csv(tourr::olive, file="./data/olive.csv",row.names=FALSE)
 
+
 launchApp <- function(.data = NULL, .basis = NULL) {
   if (is.null(.data)|T) {
     .data  <- tourr::flea
   }
   
-  vars  <- names(.data)
-  nVars <- min(ncol(.data), 15)
+  vars <- names(.data)
+  nSelected <- min(ncol(.data), 15)
+
   
   source('ui.R', local = TRUE)
   
   server <- function(input, output) {
     
+    datasetReact <- reactive({
+      # move this to a reactive function?
+      if (!is.null(input$file)) {
+        .data <- read.csv(input$file$datapath, header = T, sep = ",")
+      }
+      
+      
+      
+    })
+    
     output$str_data <- renderPrint({
-      if (is.null(input$file)) {} else .data <- input$file
+
       
       str(.data)
     })
     
-    output$plotlytest <- renderPlotly({
+    output$plotlyAnim <- renderPlotly({
+      # move this to a reactive function?
       num_data <- .data[, which(colnames(.data) %in% input$variables)]
       cat_var  <- .data[, which(colnames(.data) == input$cat_var)]
       n <- ncol(num_data)

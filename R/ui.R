@@ -3,42 +3,52 @@
 
 
 # First tab
-tabInput <- tabPanel("input", fluidPage(
-  sidebarPanel(
-    fileInput("file", "data file (CSV format)",
-              accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"
-              )
+tabInput <- tabPanel(
+  "input", fluidPage(
+    sidebarPanel(
+      # Input csv file
+      fileInput("file", "data file (CSV format)",
+                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
+      ),
+      # include which variables
+      checkboxGroupInput(
+        "variables",
+        label = "Choose variables to display",
+        choices = vars,
+        selected = vars[1:nSelected]
+      ),
+      # rescale and random basis initiation
+      tags$hr(),
+      checkboxInput("rescale_data", "Rescale", value = TRUE),
+      checkboxInput("rand_basis", "Random basis", value = TRUE)
     ),
-    checkboxGroupInput(
-      "variables",
-      label = "Choose variables to display",
-      choices = vars,
-      selected = if (is.null(.data)) vars[1:6] else vars[1:nVars]
+    mainPanel(h2("Data structure"), 
+              verbatimTextOutput("str_data"))
+  )
+)
+
+# Second tab
+tabResults <-  tabPanel(
+  "results", fluidPage(
+    sidebarPanel(
+      # manip and Cat vars
+      selectInput('manip_var', 'Manip var', vars, selected = "aede2"),
+      selectInput('cat_var', 'Categorical var', vars, selected = "species"),
+      # More options: axes placement and angle step size
+      tags$hr(),
+      checkboxInput("show", "More options"),
+      conditionalPanel(
+        "input.show",
+        selectInput('axes', 'Reference axes', c('center', 'bottomleft', 'off'),
+                    'center',  multiple = FALSE),
+        sliderInput('angle', 'Angle step size',value = .05, min = .01, max = .3)
+      )
     ),
-    checkboxInput("rescale_data", "Rescale", value = TRUE),
-    checkboxInput("rand_basis", "Random basis", value = TRUE)
-  ),
-  mainPanel(h2("Data structure"), verbatimTextOutput("str_data"))
-))
+    mainPanel(plotlyOutput("plotlyAnim"))
+  )
+)
 
-tabResults <-  tabPanel("results", fluidPage(
-  sidebarPanel(
-    selectInput('manip_var', 'Manip var', vars, selected = "aede2"),
-    selectInput('cat_var', 'Categorical var', vars, selected = "species"),
-    checkboxInput("show", "More options"),
-    conditionalPanel(
-      "input.show",
-      selectInput('axes', 'Reference axes', c('center', 'bottomleft', 'off'),
-                  'center',  multiple = FALSE),
-      sliderInput('angle', 'Angle step size',value = .05, min = .01, max = .3)
-      # numericInput("angle", "Angular step size", 0.05, min = 0.01, max = .3),
-      ## update every button change.
-    )
-  ),
-  mainPanel(plotlyOutput("plotlytest"))
-))
-
-#putting the ui together
+# Combining tabs together in the ui.
 ui <- fluidPage(
   navbarPage(
     "Radial manual tours",
