@@ -5,3 +5,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 cran-comments.md
+\R\app.R
+\R\ui.R
+\R\app_functions.R

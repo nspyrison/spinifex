@@ -20,10 +20,16 @@ tabInput <- tabPanel(
       # rescale and random basis initiation
       tags$hr(),
       checkboxInput("rescale_data", "Rescale", value = TRUE),
-      checkboxInput("rand_basis", "Random basis", value = TRUE)
+      checkboxInput("rand_basis", "Random basis", value = TRUE),
+      # update button
+      tags$hr(),
+      textOutput("updateButtonPress"),
+      actionButton("updateButton", "Update results")
     ),
     mainPanel(h2("Data structure"), 
-              verbatimTextOutput("str_data"))
+              verbatimTextOutput("str_data"),
+              verbatimTextOutput("messages")
+    )
   )
 )
 
