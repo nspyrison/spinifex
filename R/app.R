@@ -7,7 +7,7 @@ launchApp <- function(.data = NULL, .basis = NULL) {
   # Default to flea
   if (is.null(.data)) {
     .data <- tourr::flea
-    #splitInput(tourr::flea, rv) # requires reactive :(
+    reactive(splitInput(tourr::flea, rv))
   }
   vars <- names(.data)
   nSelected <- min(ncol(.data), 6)
@@ -17,56 +17,51 @@ launchApp <- function(.data = NULL, .basis = NULL) {
   
   server <- function(input, output, session) {
     
+    # data structure output init
+    output$str_data <- renderPrint({str(.data)})
+    
     # if data changes process it.
     observeEvent(input$file, {
       if (is.null(input$file)) {
         return()
       }
-      readInput(input$file, rv, output, session)
-      # splitInput(read.csv(input$file$datapath, stringsAsFactors = FALSE), rv)
-      # updateCheckboxGroupInput(session,
-      #                          "variables",
-      #                          choices = names(rv$d),
-      #                          selected = names(rv$d[1:rv$nSelected]))
+      readInput(input$file, rv, input, output, session)
       output$updateButtonPress <- renderText("Data uploaded__________")
     })
     
-    # data structure output
-    output$str_data <- renderPrint({
-      str(.data)
+    # Updates manip_var dropdown
+    observeEvent(input$variables, {
+    updateSelectInput(session,
+                      "manip_var",
+                      choices = input$variables)
     })
     
-    # If button pressed...
-    observeEvent(input$updateButton, {
+    # If genrate button pressed, make tour
+    observeEvent(input$generate, {
+      output$generate <- renderText("__button pressed__")
       
-      updateCheckboxGroupInput(session,
-                               "variables",
-                               choices = vars,
-                               selected = vars[1:2])
-      output$updateButtonPress <- renderText("pressed")
+      # tour animation
+      output$plotlyAnim <- renderPlotly({
+        selected_vars <- rv$d[, which(colnames(rv$d) %in% input$variables)]
+        #cat_var <- rv$groupVars[, which(colnames(rv$groupVars) == input$cat_var)]
+        manip_var <- which(colnames(rv$d) == input$manip_var)
+        n <- ncol(selected_vars)
+        if (input$rescale_data) selected_vars <- tourr::rescale(selected_vars)
+        if (input$rand_basis) .basis <- tourr::basis_random(n = n, d = 2)
+        
+        play_manual_tour(
+          data = selected_vars,
+          basis = .basis,
+          manip_var = manip_var,
+          #col = cat_var,
+          #pch = cat_var,
+          axes = input$axes,
+          angle = input$angle
+        )
+      })
     })
     
-    # animation output
-    output$plotlyAnim <- renderPlotly({
-      # move this to a reactive function? for default, no
-      num_data <- rv$d[, which(colnames(rv$d) %in% input$variables)]
-      cat_var  <- rv$groupVars[, which(colnames(rv$groupVars) == input$cat_var)]
-      n <- ncol(num_data)
-      if (input$rescale_data) num_data <- tourr::rescale(num_data)
-      if (input$rand_basis) .basis <- tourr::basis_random(n = n, d = 2)
-      
-      play_manual_tour(
-        data = num_data,
-        basis = .basis,
-        manip_var = which(colnames(.data) == input$manip_var),
-        col = cat_var,
-        pch = cat_var,
-        axes = input$axes,
-        angle = input$angle
-      )
-    })
-    
-    
+    output$variables <- renderPrint({ input$variables })
   }
   shinyApp(ui, server)
 }

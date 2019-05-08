@@ -20,15 +20,11 @@ tabInput <- tabPanel(
       # rescale and random basis initiation
       tags$hr(),
       checkboxInput("rescale_data", "Rescale", value = TRUE),
-      checkboxInput("rand_basis", "Random basis", value = TRUE),
-      # update button
-      tags$hr(),
-      textOutput("updateButtonPress"),
-      actionButton("updateButton", "Update results")
+      checkboxInput("rand_basis", "Random basis", value = TRUE)
     ),
     mainPanel(h2("Data structure"), 
               verbatimTextOutput("str_data"),
-              verbatimTextOutput("messages")
+              verbatimTextOutput("variables")
     )
   )
 )
@@ -37,12 +33,16 @@ tabInput <- tabPanel(
 tabResults <-  tabPanel(
   "results", fluidPage(
     sidebarPanel(
+      # generate tour button
+      actionButton("generate", "Generate tour"),
+      textOutput("generate"),
+      tags$hr(),
       # manip and Cat vars
       selectInput('manip_var', 'Manip var', vars, selected = "aede2"),
       selectInput('cat_var', 'Categorical var', vars, selected = "species"),
       # More options: axes placement and angle step size
       tags$hr(),
-      checkboxInput("show", "More options"),
+      checkboxInput("show", "More options",value = T),
       conditionalPanel(
         "input.show",
         selectInput('axes', 'Reference axes', c('center', 'bottomleft', 'off'),

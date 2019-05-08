@@ -17,25 +17,32 @@ splitInput <- function(inData, rv){
   rv$groups <- inData[rv$groupVars]
 }
 
+updateContent <- function(rv, input, output, session) {
+  updateCheckboxGroupInput(session,
+                           "variables",
+                           choices = names(rv$d),
+                           selected = names(rv$d[1:rv$nSelected]))
+  output$str_data <- renderPrint({str(rv$d)})
+  
+  if (length(rv$groups)>=1) {
+    updateSelectInput(session,
+                      "cat_var",
+                      choices = names(rv$groups))
+  } else {
+    updateSelectInput(session,
+                      "cat_var",
+                      choices = c("None"))
+  }
+}
+
 # read input file, update ui
-readInput <- function(file, rv, output, session){
+readInput <- function(file, rv, input, output, session){
   splitInput(read.csv(file$datapath, stringsAsFactors = FALSE), rv)
   output$messages <- 
     renderText(validate(need(
       rv$nSelected > 2,
       "Error: Can only display tour for more than 2 parameters!"
     )))
-  updateCheckboxGroupInput(session,
-                           "variables",
-                           choices = names(rv$d),
-                           selected = names(rv$d[1:rv$nSelected]))
-  if (sum(rv$groupVars)) { # if only 1 groupVar, then select.
-    updateSelectInput(session,
-                      "cat_var",
-                      choices = names(rv$groups))}
-  else {
-    updateSelectInput(session,
-                      "cat_var",
-                      choices = c("None"))
-  }
+  # change included variable choices and selection.
+  updateContent(rv, input, output, session)
 }
