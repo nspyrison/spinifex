@@ -43,17 +43,19 @@ manual_tour <- function(basis = NULL,
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)
   
   # Find phi's path
-  find_path <- function(start, end)
-  {
+  find_path <- function(start, end){
+    
     mvar_xsign <- -sign(basis[manip_var, 1])
     start <- mvar_xsign * (start - phi_start)
     end   <- mvar_xsign * (end - phi_start)
     dist  <- abs(end - start)
-    steps <- round(dist/angle)
-    angle <- dist/steps
+    remainder <- dist %% angle # remainder
     sign  <- ifelse(end > start, 1, -1)
     
-    seq(from=start, to=end, by=sign*angle)
+    path <- seq(from = start, to = end - remainder, by = sign * angle)
+    if (remainder != 0) path <- c(path, end)
+    
+    path
   }
   
   phi_path <- c(find_path(start = phi_start, end = phi_min),
