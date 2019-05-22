@@ -6,15 +6,16 @@ library(dplyr)
 # file.edit("C:/Users/spyri/Documents/R/functionSectioning/app.R")
 # file.edit("C:/Users/spyri/Documents/R/functionSectioning/inputUpdates.R")
 # file.edit("C:/Users/spyri/Documents/R/functionSectioning/helper.R")
-# write.csv(tourr::olive, file="./data/olive.csv",row.names=FALSE)
+# write.csv(tourr::flea, file="./data/flea.csv",row.names=FALSE)
 
 # separate data into numeric and group vars.
 splitInput <- function(inData, rv){
   rv$numVars <- sapply(inData, is.numeric)
   rv$groupVars <- sapply(inData, function(x) is.character(x)|is.factor(x))
   rv$d <- inData[rv$numVars] # rv$d is only numeric vars
-  rv$nSelected <- min(ncol(rv$d), 6)
   rv$groups <- inData[rv$groupVars]
+  rv$nSelected <- min(ncol(rv$d), 6)
+
 }
 
 updateContent <- function(rv, input, output, session) {
@@ -26,11 +27,17 @@ updateContent <- function(rv, input, output, session) {
   
   if (length(rv$groups)>=1) {
     updateSelectInput(session,
-                      "cat_var",
+                      "col_var",
                       choices = names(rv$groups))
-  } else {
     updateSelectInput(session,
-                      "cat_var",
+                      "pch_var",
+                      choices = names(rv$groups))
+  } else { #list "none", if there are not character or factor vars.
+    updateSelectInput(session,
+                      "col_var",
+                      choices = c("None"))
+    updateSelectInput(session,
+                      "pch_var",
                       choices = c("None"))
   }
 }

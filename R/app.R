@@ -27,7 +27,6 @@ launchApp <- function(.data = NULL, .basis = NULL) {
         return()
       }
       readInput(input$file, rv, input, output, session)
-      #output$updateButtonPress <- renderText("Data uploaded__________")
     })
     
     # Updates manip_var dropdown
@@ -44,8 +43,9 @@ launchApp <- function(.data = NULL, .basis = NULL) {
       # tour animation
       output$plotlyAnim <- renderPlotly({
         selected_vars <- rv$d[, which(colnames(rv$d) %in% input$variables)]
-        #TODO: fix cat_var. even calulating cat_var causes error..
-        #cat_var <- rv$groupVars[, which(colnames(rv$groupVars) == input$cat_var)]
+        #TODO: split cat_var to col_var and pch_var.
+        col_var <- rv$groups[, which(colnames(rv$groups) == input$col_var)]
+        pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)]
         manip_var <- which(colnames(rv$d) == input$manip_var)
         n <- ncol(selected_vars)
         if (input$rescale_data) selected_vars <- tourr::rescale(selected_vars)
@@ -55,18 +55,20 @@ launchApp <- function(.data = NULL, .basis = NULL) {
           data = selected_vars,
           basis = .basis,
           manip_var = manip_var,
-          #col = cat_var,
-          #pch = cat_var,
+          col = col_of(col_var),
+          pch = pch_of(pch_var),
           axes = input$axes,
           angle = input$angle
         )
       })
     })
     
-    #TODO: Trouble shooting output: 
-    output$cat_var_decode <- renderPrint({ cat_var <- rv$groupVars[, which(colnames(rv$groupVars) == input$cat_var)]})
-    output$cat_var <- renderPrint({ input$cat_var })
-    
+    # Development/trouble shooting output: 
+    output$tsMessage <- renderPrint({
+      paste("input$col_var: ", input$col_var, 
+            " col_var column num: ", which(colnames(rv$groups) == input$col_var) )
+    })
+
     output$variables <- renderPrint({ input$variables })
   }
   shinyApp(ui, server)
