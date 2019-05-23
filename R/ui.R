@@ -24,7 +24,7 @@ tabInput <- tabPanel(
                    selected = "Random"),
       conditionalPanel(
         "input.init_func == 'Manual'",
-        fileInput("basis", "Basis file (CSV format) [p by d=2] matrix",
+        fileInput("basispath", "Basis file (CSV format) [p by d=2] matrix",
                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
       ),
       tags$hr(),

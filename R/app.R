@@ -50,7 +50,8 @@ launchApp <- function(.data = NULL, .basis = NULL) {
         n <- ncol(selected_dat)
         if (input$init_func == "Random") .basis <- tourr::basis_random(n = n, d = 2)
         if (input$init_func == "PCA")    .basis <- prcomp(selected_dat)[[2]][, 1:2]
-        if (input$init_func == "manual") .basis <- input$basis
+        if (input$init_func == "Manual") .basis <- 
+          read.csv(input$basispath$datapath, stringsAsFactors = FALSE)
         if (input$rescale_data) selected_dat <- tourr::rescale(selected_dat)
         
         play_manual_tour(
