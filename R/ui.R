@@ -6,7 +6,7 @@ tabInput <- tabPanel(
   "input", fluidPage(
     sidebarPanel(
       # Input csv file
-      fileInput("file", "Data file (CSV format)",
+      fileInput("file", "Data file (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
       ),
       # include which variables
@@ -24,7 +24,7 @@ tabInput <- tabPanel(
                    selected = "Random"),
       conditionalPanel(
         "input.init_func == 'Manual'",
-        fileInput("basispath", "Basis file (CSV format) [p by d=2] matrix",
+        fileInput("basispath", "Basis file (.csv or .rda) [p by d=2] matrix",
                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
       ),
       tags$hr(),

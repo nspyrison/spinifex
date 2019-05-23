@@ -50,8 +50,17 @@ launchApp <- function(.data = NULL, .basis = NULL) {
         n <- ncol(selected_dat)
         if (input$init_func == "Random") .basis <- tourr::basis_random(n = n, d = 2)
         if (input$init_func == "PCA")    .basis <- prcomp(selected_dat)[[2]][, 1:2]
-        if (input$init_func == "Manual") .basis <- 
-          read.csv(input$basispath$datapath, stringsAsFactors = FALSE)
+        if (input$init_func == "Manual") {
+          path <- input$basispath$datapath
+          ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
+          if (ext == ".csv")
+            .basis <- read.csv(path, stringsAsFactors = FALSE)
+          if (ext == ".rda"){ #loads the object, not just name.
+            tmp <- new.env()
+            load(file = path, envir = tmp)
+            .basis <- tmp[[ls(tmp)[1]]]
+          }
+        }
         if (input$rescale_data) selected_dat <- tourr::rescale(selected_dat)
         
         play_manual_tour(
