@@ -1,9 +1,9 @@
 #Example: see function sectioning:
 # file.edit("C:/Users/spyri/Documents/R/functionSectioning/ui.R")
 
-# First tab, INPUT
+# Input Tab
 tabInput <- tabPanel(
-  "input", fluidPage(
+  "Input", fluidPage(
     sidebarPanel(
       # Input csv file
       fileInput("file", "Data file (.csv format)",
@@ -18,9 +18,7 @@ tabInput <- tabPanel(
       ),
       # basis init and rescale
       radioButtons("init_func", "Start basis",
-                   choices = c("Random",
-                               "PCA",
-                               "Manual"),
+                   choices = c("Random", "PCA", "Manual"),
                    selected = "Random"),
       conditionalPanel(
         "input.init_func == 'Manual'",
@@ -38,9 +36,9 @@ tabInput <- tabPanel(
   )
 )
 
-# Second tab, RESULTS
-tabResults <-  tabPanel(
-  "results", fluidPage(
+# Radial Manual Tab
+tabRadial <-  tabPanel(
+  "Radial Manual", fluidPage(
     sidebarPanel(
       # generate tour button
       actionButton("generate", "Generate tour"),
@@ -70,9 +68,30 @@ tabResults <-  tabPanel(
   )
 )
 
-# Third tab, GALLERY
+# Oblique Manual Tab
+tabOblique <- tabPanel(
+  "Oblique Manual", fluidPage(
+  )
+)
+
+# Static Linear Tab
+tabStatic <- tabPanel(
+  "Linear Projection", fluidPage(
+    sidebarPanel(
+      radioButtons("static_linear", "Linear projection technique",
+                   choices = c("PCA", "LDA", "SPLOM"),
+                   selected = "PCA")
+    ),
+    mainPanel(
+      
+    )
+  )
+)
+
+
+# Galery Tab
 tabGallery <- tabPanel(
-  "gallery", fluidPage(
+  "Gallery", fluidPage(
   )
 )
 
@@ -82,7 +101,9 @@ ui <- fluidPage(
   navbarPage(
     "Radial manual tours",
     tabInput,
-    tabResults,
+    tabRadial,
+    tabOblique,
+    tabStatic,
     tabGallery
   )
 )

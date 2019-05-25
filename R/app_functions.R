@@ -4,6 +4,8 @@ library(spinifex)
 library(dplyr)
 # write.csv(tourr::flea, file="./data/flea.csv",row.names=FALSE)
 
+
+### GENERAL LOADING (orginally for radial manual)
 # separate data into numeric and group vars.
 splitInput <- function(inData, rv){
   rv$numVars <- sapply(inData, is.numeric)
@@ -41,4 +43,31 @@ updateContent <- function(rv, input, output, session) {
 readInput <- function(file, rv, input, output, session){
   splitInput(read.csv(file$datapath, stringsAsFactors = FALSE), rv)
   updateContent(rv, input, output, session)
+}
+### END GENERAL LOADING
+
+
+### STATIC LINEAR PROJECTION
+dat <- flea[,1:6]; method <- "PCA"; 
+col <- col_of(flea[,7]); pch <- pch_of(flea[,7])
+staticProjection <- function(dat, method, col, pch) {
+  if (method == "PCA") {
+    library(ggfortify)
+    suppressWarnings(
+      autoplot(prcomp(dat), colour = col, shape = pch+15,
+               loadings = T, loadings.label = T, 
+               loadings.colour = 'gray50', loadings.label.colour = 'gray30')
+    )
+  }
+  if (method == "LDA") { # LDA NEEDS A CLASS, have to ref frame col by name.
+    library(lfda)
+    # Local Fisher Discriminant Analysis (LFDA)
+    model <- lfda(dat, col, r = 3, metric="plain")
+    autoplot(model, data = flea, frame = T, frame.colour = 'species')
+  }
+  if (method == "SPLOM") {
+    library(GGally)
+    splom_pch <- as.character(pch)
+    GGally::ggpairs(data = dat, aes(colour = col, shape = splom_pch, alpha=.2))
+    }
 }
