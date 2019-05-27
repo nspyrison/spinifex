@@ -1,7 +1,8 @@
 #Example: see function sectioning:
 # file.edit("C:/Users/spyri/Documents/R/functionSectioning/ui.R")
+# ,textOutput("devMessage")
 
-# Input Tab
+### Input Tab
 tabInput <- tabPanel(
   "Input", fluidPage(
     sidebarPanel(
@@ -17,11 +18,11 @@ tabInput <- tabPanel(
         selected = vars[1:nSelected]
       ),
       # basis init and rescale
-      radioButtons("init_func", "Start basis",
+      radioButtons("basis_init", "Start basis",
                    choices = c("Random", "PCA", "Manual"),
                    selected = "Random"),
       conditionalPanel(
-        "input.init_func == 'Manual'",
+        "input.basis_init == 'Manual'",
         fileInput("basispath", "Basis file (.csv or .rda) [p by d=2] matrix",
                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
       ),
@@ -30,19 +31,16 @@ tabInput <- tabPanel(
     ),
     mainPanel(h2("Data structure"),
               verbatimTextOutput("str_data")
-              # ,verbatimTextOutput("devMessage2")
-              # ,verbatimTextOutput("devMessage3")
     )
   )
 )
 
-# Radial Manual Tab
+### Radial Manual Tab
 tabRadial <-  tabPanel(
   "Radial Manual", fluidPage(
     sidebarPanel(
       # generate tour button
-      actionButton("generate", "Generate tour"),
-      textOutput("generate"),
+      actionButton("radial_button", "Generate tour"),
       tags$hr(),
       
       # manip, col, and pch vars
@@ -60,50 +58,49 @@ tabRadial <-  tabPanel(
       sliderInput('angle', 'Angle step size', value = .05, min = .01, max = .3)
     ),
     
-    
     mainPanel(
       plotlyOutput("plotlyAnim")
-      # ,textOutput("devMessage")
     )
   )
 )
 
-# Oblique Manual Tab
+### Static Linear Tab
+tabStatic <- tabPanel(
+  "Linear projection", fluidPage(
+    sidebarPanel(
+      actionButton("static_button", "Generate projection"),
+      tags$hr(),
+      radioButtons("static_tech", "Linear projection technique",
+                   choices = c("PCA", "LDA (holder)", "SPLOM"),
+                   selected = "PCA")
+    ),
+    mainPanel(
+      plotOutput("static_plot")
+    )
+  )
+)
+
+### Oblique Manual Tab
 tabOblique <- tabPanel(
   "Oblique Manual", fluidPage(
   )
 )
 
-# Static Linear Tab
-tabStatic <- tabPanel(
-  "Linear Projection", fluidPage(
-    sidebarPanel(
-      radioButtons("static_linear", "Linear projection technique",
-                   choices = c("PCA", "LDA", "SPLOM"),
-                   selected = "PCA")
-    ),
-    mainPanel(
-      
-    )
-  )
-)
-
-
-# Galery Tab
+### Galery Tab
 tabGallery <- tabPanel(
   "Gallery", fluidPage(
   )
 )
 
 
-# Combining tabs together in the ui.
+### Combined tabs
 ui <- fluidPage(
   navbarPage(
     "Radial manual tours",
     tabInput,
     tabRadial,
-    tabOblique,
     tabStatic,
+    tabOblique,
     tabGallery
   )
 )

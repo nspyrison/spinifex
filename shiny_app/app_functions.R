@@ -48,26 +48,32 @@ readInput <- function(file, rv, input, output, session){
 
 
 ### STATIC LINEAR PROJECTION
-dat <- flea[,1:6]; method <- "PCA"; 
-col <- col_of(flea[,7]); pch <- pch_of(flea[,7])
 staticProjection <- function(dat, method, col, pch) {
   if (method == "PCA") {
     library(ggfortify)
-    suppressWarnings(
-      autoplot(prcomp(dat), colour = col, shape = pch+15,
+    return(suppressWarnings(
+      autoplot(prcomp(dat), colour = col_of(col), shape = pch_of(pch) + 15,
                loadings = T, loadings.label = T, 
                loadings.colour = 'gray50', loadings.label.colour = 'gray30')
-    )
+    ))
   }
   if (method == "LDA") { # LDA NEEDS A CLASS, have to ref frame col by name.
-    library(lfda)
-    # Local Fisher Discriminant Analysis (LFDA)
-    model <- lfda(dat, col, r = 3, metric="plain")
-    autoplot(model, data = flea, frame = T, frame.colour = 'species')
+    # library(lfda)
+    # # Local Fisher Discriminant Analysis (LFDA)
+    # model <- lfda(dat, col, r = 3, metric="plain")
+    # return(
+    #   autoplot(model, data = flea, frame = T, frame.colour = 'species')
+    # )
   }
   if (method == "SPLOM") {
     library(GGally)
     splom_pch <- as.character(pch)
-    GGally::ggpairs(data = dat, aes(colour = col, shape = splom_pch, alpha=.2))
-    }
+    return(
+      GGally::ggpairs(data = dat, aes(colour = col, shape = splom_pch, alpha=.2))
+    )
+  }
 }
+# dat <- tourr::flea[,1:6]; method <- "PCA"; 
+# col <- col_of(tourr::flea[,7]); pch <- pch_of(tourr::flea[,7])
+# staticProjection(dat, method, col, pch)
+
