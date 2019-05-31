@@ -1,26 +1,18 @@
-# Debugging:
-# https://shiny.rstudio.com/articles/debugging.html
-# Also use browser(), break points, "showcase mode"
-
 source('app_functions.R', local = TRUE)
 
 launchApp <- function(.data = NULL, .basis = NULL) {
   # Initiate reactive values, rv
   rv <- reactiveValues()
-  
-  ### Default to flea
-  if (is.null(.data)) {
-    .data <- tourr::flea
-  }
-  # defaults to populated choice values (before server)
-  vars <- names(.data)
-  nSelected <- min(ncol(.data), 6)
   source('ui.R', local = TRUE)
   
   server <- function(input, output, session) {
-    # update parameters based on default data
-    observe(splitInput(.data, rv))
-    observe(updateContent(rv, input, output, session))
+    #default to flea
+    if (is.null(.data)) {
+      .data <- tourr::flea
+      observe(splitInput(.data, rv))
+      observe(updateContent(rv, input, output, session))
+    }
+    
     # if data changes process it
     observeEvent(input$file, {
       if (is.null(input$file)) {return()}

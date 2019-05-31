@@ -14,14 +14,11 @@ tabInput <- tabPanel(
       checkboxGroupInput(
         "variables",
         label = "Choose variables to display",
-        choices = vars,
-        selected = vars[1:nSelected]
+        choices = "none"
       ),
       # Point color, shape and rescale [0,1] data
-      selectInput('col_var', 'Point color', vars, 
-                  selected = if(is.null(.data)) "species"),
-      selectInput('pch_var', 'Point shape', vars, 
-                  selected = if(is.null(.data)) "species"),
+      selectInput('col_var', 'Point color', "none"),
+      selectInput('pch_var', 'Point shape', "none"),
       tags$hr(),
       checkboxInput("rescale_data", "Rescale values", value = TRUE)
     ),
@@ -49,8 +46,7 @@ tabRadial <-  tabPanel(
       ),
       
       # manip, col, and pch vars
-      selectInput('manip_var', 'Manip var', vars, 
-                  selected = if(is.null(.data)) "aede2"),
+      selectInput('manip_var', 'Manip var', "none"),
       
       # More options: axes placement and angle step size
       tags$hr(),
