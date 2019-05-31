@@ -80,12 +80,30 @@ tabStatic <- tabPanel(
 ### Oblique Manual Tab
 tabOblique <- tabPanel(
   "Oblique Manual", fluidPage(
-  )
-)
-
-### Galery Tab
-tabGallery <- tabPanel(
-  "Gallery", fluidPage(
+    sidebarPanel(
+      # basis init and rescale
+      radioButtons("obl_basis_init", "Start basis",
+                   choices = c("Random", "PCA", "Manual"),
+                   selected = "Random"),
+      conditionalPanel(
+        "input.obl_basis_init == 'Manual'",
+        fileInput("basispath", "Basis file (.csv or .rda) [p by d=2] matrix",
+                  accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
+      ),
+      
+      # manip var, ref axes placement
+      selectInput('obl_manip_var', 'Manip var', "none"),
+      selectInput('obl_axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
+                  'center',  multiple = FALSE),
+      tags$hr(),
+      # Slider controls
+      sliderInput("obl_x_slider", "X contribution", min = -1, max = 1, value = 0),
+      sliderInput("obl_y_slider", "Y contribution", min = -1, max = 1, value = 0)
+    ),
+    
+    mainPanel(
+      plotlyOutput("obl_plotlyAnim")
+    )
   )
 )
 
@@ -97,8 +115,7 @@ ui <- fluidPage(
     tabInput,
     tabRadial,
     tabStatic,
-    tabOblique,
-    tabGallery
+    tabOblique
   )
 )
 

@@ -22,7 +22,7 @@ updateContent <- function(rv, input, output, session) {
                            selected = names(rv$d[1:rv$nSelected]))
   output$str_data <- renderPrint({str(rv$d)})
   
-  if (length(rv$groups)>=1) {
+  if (length(rv$groups) >= 1) {
     updateSelectInput(session,
                       "col_var",
                       choices = names(rv$groups))

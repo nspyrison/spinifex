@@ -35,7 +35,7 @@ launchApp <- function(.data = NULL, .basis = NULL) {
         pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)]
         manip_var <- which(colnames(rv$d) == input$manip_var)
         n <- ncol(selected_dat)
-
+        
         if (input$basis_init == "Random") .basis <- tourr::basis_random(n = n, d = 2)
         if (input$basis_init == "PCA")    .basis <- prcomp(selected_dat)[[2]][, 1:2]
         if (input$basis_init == "Manual") {
