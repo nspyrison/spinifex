@@ -29,26 +29,7 @@ launchApp <- function(.data = NULL, .basis = NULL) {
     ### Radial tour
     observeEvent(input$radial_button, {
       output$plotlyAnim <- renderPlotly({
-        selected_dat <- rv$d[, which(colnames(rv$d) %in% input$variables)]
-        if (input$rescale_data) selected_dat <- tourr::rescale(selected_dat)
-        col_var <- rv$groups[, which(colnames(rv$groups) == input$col_var)]
-        pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)]
-        manip_var <- which(colnames(rv$d) == input$manip_var)
-        n <- ncol(selected_dat)
-        
-        if (input$basis_init == "Random") .basis <- tourr::basis_random(n = n, d = 2)
-        if (input$basis_init == "PCA")    .basis <- prcomp(selected_dat)[[2]][, 1:2]
-        if (input$basis_init == "Manual") {
-          path <- input$basispath$datapath
-          ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
-          if (ext == ".csv")
-            .basis <- read.csv(path, stringsAsFactors = FALSE)
-          if (ext == ".rda"){ #load the object, not just name.
-            tmp <- new.env()
-            load(file = path, envir = tmp)
-            .basis <- tmp[[ls(tmp)[1]]]
-          }
-        }
+
         
         play_manual_tour(
           data = selected_dat,
