@@ -1,4 +1,5 @@
 source('app_functions.R', local = TRUE)
+# shiny::runApp("shiny_app", display.mode="showcase") # run with code display
 
 launchApp <- function(.data = NULL, .basis = NULL) {
   # Initiate reactive values, rv
@@ -6,18 +7,18 @@ launchApp <- function(.data = NULL, .basis = NULL) {
   source('ui.R', local = TRUE)
   
   server <- function(input, output, session) {
-    # init default: flea data
+    # initialize default: flea data
     if (is.null(.data)) {
       .data <- tourr::flea
-      observe(parseData(.data, rv))
-      observe(updateParam(rv, input, output, session))
     }
-    output$str_data <- renderPrint({str(.data)})
+    isolate(parseData(.data, rv))
+    isolate(updateParam(rv, input, output, session))
     
     #### Input tab
     observeEvent(input$file, {
       if (is.null(input$file)) {return()}
-      parseData(read.csv(input$file$datapath, stringsAsFactors = FALSE), rv)
+      .data <- read.csv(input$file$datapath, stringsAsFactors = FALSE)
+      parseData(.data, rv)
       updateParam(rv, input, output, session)
     })
     # Update manip_var 
@@ -49,16 +50,12 @@ launchApp <- function(.data = NULL, .basis = NULL) {
     observeEvent(input$static_button, {
       # initialize
       initInput(rv, input)
-      # rv$selected_dat <- rv$d[, which(colnames(rv$d) %in% input$variables)]
-      # if (input$rescale_data) rv$selected_dat <- tourr::rescale(rv$selected_dat)
-      # col_var <- rv$groups[, which(colnames(rv$groups) == input$col_var)]
-      # pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)]
       
       output$static_plot <- renderPlot({
         staticProjection(dat = rv$selected_dat, 
-                         method = input$static_tech, 
-                         col = col_var, 
-                         pch = pch_var
+                         method = input$static_method, 
+                         col = rv$col_var, 
+                         pch = rv$pch_var
         )
       })
     })
@@ -83,12 +80,10 @@ launchApp <- function(.data = NULL, .basis = NULL) {
       paste("input$col_var: ", input$col_var, 
             " col_var column num: ", which(colnames(rv$groups) == input$col_var) )
     })
-    output$devMessage2 <- renderPrint({ input$init_func })
-    output$devMessage3 <- renderPrint({ input$variables })
+    output$devMessage2 <- renderPrint({ input$variables })
     
   }
   shinyApp(ui, server)
 }
 
 launchApp()
-# shiny::runApp("shiny_app", display.mode="showcase")

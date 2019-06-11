@@ -24,7 +24,7 @@ tabInput <- tabPanel(
     ),
     mainPanel(h2("Data structure"),
               verbatimTextOutput("str_data")
-              ,verbatimTextOutput("devMessage3")
+              #,verbatimTextOutput("devMessage3")
     )
     
   )
@@ -65,11 +65,11 @@ tabRadial <-  tabPanel(
 
 ### Static Linear Tab
 tabStatic <- tabPanel(
-  "Linear projection", fluidPage(
+  "Static projections", fluidPage(
     sidebarPanel(
       actionButton("static_button", "Generate projection"),
       tags$hr(),
-      radioButtons("static_tech", "Linear projection technique",
+      radioButtons("static_method", "Linear projection technique",
                    choices = c("PCA", "LDA (holder)", "SPLOM"),
                    selected = "PCA")
     ),

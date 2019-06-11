@@ -5,39 +5,13 @@ library(dplyr)
 # write.csv(tourr::flea, file="./data/flea.csv",row.names=FALSE)
 
 
-### GENERAL LOADING (orginally for radial manual)
-# separate data into numeric and group vars.
-parseData <- function(InFile, rv){
-  rv$numVars <- sapply(InFile, is.numeric)
-  rv$groupVars <- sapply(InFile, function(x) is.character(x)|is.factor(x))
-  rv$d <- InFile[rv$numVars] # rv$d is only numeric vars
-  rv$groups <- InFile[rv$groupVars]
+### GENERAL LOADING/INIT
+parseData <- function(.data, rv){
+  rv$numVars <- sapply(.data, is.numeric)
+  rv$groupVars <- sapply(.data, function(x) is.character(x)|is.factor(x))
+  rv$d <- .data[rv$numVars] # rv$d is only numeric vars
+  rv$groups <- .data[rv$groupVars]
   rv$nSelected <- min(ncol(rv$d), 6)
-}
-
-#TODO: CONTINUE MOVING OVER CONENT FROM SCRIPT TO FUNC AND WRIRE UP TO CORRECT RV VALUES.
-initInput <- function(rv, input) {
-  # from Input tab:
-  rv$selected_dat <- rv$d[, which(colnames(rv$d) %in% input$variables)]
-  if (input$rescale_data) rv$selected_dat <- tourr::rescale(rv$selected_dat)
-  rv$col_var <- rv$groups[, which(colnames(rv$groups) == input$col_var)] # a column
-  rv$pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)] # a column
-  rv$n <- ncol(rv$selected_dat)
-  
-  # from other tabs:
-  rv$manip_var <- which(colnames(rv$d) == input$manip_var) # a number
-  if (input$basis_init == "Random") rv$basis <- tourr::basis_random(n = rv$n, d = 2)
-  if (input$basis_init == "PCA")    rv$basis <- prcomp(rv$selected_dat)[[2]][, 1:2]
-  if (input$basis_init == "From file") {
-    path <- input$basispath$datapath
-    ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
-    if (ext == ".csv") rv$basis <- read.csv(path, stringsAsFactors = FALSE)
-    if (ext == ".rda"){ # load .rda object, not just name.
-      tmp <- new.env()
-      load(file = path, envir = tmp)
-      rv$basis <- tmp[[ls(tmp)[1]]]
-    }
-  }
 }
 
 updateParam <- function(rv, input, output, session) {
@@ -63,7 +37,31 @@ updateParam <- function(rv, input, output, session) {
                       choices = c("None"))
   }
 }
-### END GENERAL LOADING
+
+initInput <- function(rv, input) {
+  # from Input tab:
+  rv$selected_dat <- rv$d[, which(colnames(rv$d) %in% input$variables)]
+  if (input$rescale_data) rv$selected_dat <- tourr::rescale(rv$selected_dat)
+  rv$col_var <- rv$groups[, which(colnames(rv$groups) == input$col_var)] # a column
+  rv$pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)] # a column
+  rv$n <- ncol(rv$selected_dat)
+  
+  # from other tabs:
+  rv$manip_var <- which(colnames(rv$d) == input$manip_var) # a number
+  if (input$basis_init == "Random") rv$basis <- tourr::basis_random(n = rv$n, d = 2)
+  if (input$basis_init == "PCA")    rv$basis <- prcomp(rv$selected_dat)[[2]][, 1:2]
+  if (input$basis_init == "From file") {
+    path <- input$basispath$datapath
+    ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
+    if (ext == ".csv") rv$basis <- read.csv(path, stringsAsFactors = FALSE)
+    if (ext == ".rda"){ # load .rda object, not just name.
+      tmp <- new.env()
+      load(file = path, envir = tmp)
+      rv$basis <- tmp[[ls(tmp)[1]]]
+    }
+  }
+}
+### END GENERAL LOADING/INIT
 
 
 ### STATIC LINEAR PROJECTION
