@@ -6,37 +6,39 @@ launchApp <- function(.data = NULL, .basis = NULL) {
   source('ui.R', local = TRUE)
   
   server <- function(input, output, session) {
-    #default to flea
+    # init default: flea data
     if (is.null(.data)) {
       .data <- tourr::flea
-      observe(splitInput(.data, rv))
-      observe(updateContent(rv, input, output, session))
+      observe(parseData(.data, rv))
+      observe(updateParam(rv, input, output, session))
     }
+    output$str_data <- renderPrint({str(.data)})
     
-    # if data changes process it
+    #### Input tab
     observeEvent(input$file, {
       if (is.null(input$file)) {return()}
-      readInput(input$file, rv, input, output, session)
+      parseData(read.csv(input$file$datapath, stringsAsFactors = FALSE), rv)
+      updateParam(rv, input, output, session)
     })
-    # Update manip_var dropdown if vars selected changes
+    # Update manip_var 
     observeEvent(input$variables, {
       updateSelectInput(session,
                         "manip_var",
                         choices = input$variables)
     })
-    output$str_data <- renderPrint({str(.data)})
-    
+
     ### Radial tour
     observeEvent(input$radial_button, {
+      # initialize
+      initInput(rv, input)
+      
       output$plotlyAnim <- renderPlotly({
-
-        
         play_manual_tour(
-          data = selected_dat,
-          basis = .basis,
-          manip_var = manip_var,
-          col = col_of(col_var),
-          pch = pch_of(pch_var),
+          data = rv$selected_dat,
+          basis = rv$basis,
+          manip_var = rv$manip_var,
+          col = col_of(rv$col_var),
+          pch = pch_of(rv$pch_var),
           axes = input$axes,
           angle = input$angle
         )
@@ -45,14 +47,15 @@ launchApp <- function(.data = NULL, .basis = NULL) {
     
     ### Static projections
     observeEvent(input$static_button, {
+      # initialize
+      initInput(rv, input)
+      # rv$selected_dat <- rv$d[, which(colnames(rv$d) %in% input$variables)]
+      # if (input$rescale_data) rv$selected_dat <- tourr::rescale(rv$selected_dat)
+      # col_var <- rv$groups[, which(colnames(rv$groups) == input$col_var)]
+      # pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)]
+      
       output$static_plot <- renderPlot({
-        # Init
-        selected_dat <- rv$d[, which(colnames(rv$d) %in% input$variables)]
-        if (input$rescale_data) selected_dat <- tourr::rescale(selected_dat)
-        col_var <- rv$groups[, which(colnames(rv$groups) == input$col_var)]
-        pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)]
-        
-        staticProjection(dat = selected_dat, 
+        staticProjection(dat = rv$selected_dat, 
                          method = input$static_tech, 
                          col = col_var, 
                          pch = pch_var

@@ -24,7 +24,9 @@ tabInput <- tabPanel(
     ),
     mainPanel(h2("Data structure"),
               verbatimTextOutput("str_data")
+              ,verbatimTextOutput("devMessage3")
     )
+    
   )
 )
 
@@ -37,7 +39,7 @@ tabRadial <-  tabPanel(
       tags$hr(),
       # basis init and rescale
       radioButtons("basis_init", "Start basis",
-                   choices = c("Random", "PCA", "Manual"),
+                   choices = c("Random", "PCA", "From file"),
                    selected = "Random"),
       conditionalPanel(
         "input.basis_init == 'Manual'",
@@ -83,7 +85,7 @@ tabOblique <- tabPanel(
     sidebarPanel(
       # basis init and rescale
       radioButtons("obl_basis_init", "Start basis",
-                   choices = c("Random", "PCA", "Manual"),
+                   choices = c("Random", "PCA", "From file"),
                    selected = "Random"),
       conditionalPanel(
         "input.obl_basis_init == 'Manual'",

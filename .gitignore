@@ -7,3 +7,4 @@ doc
 .pdf
 vignettes/introduction_files
 vignettes/introduction_cache
+shiny_app/example_apps.r
