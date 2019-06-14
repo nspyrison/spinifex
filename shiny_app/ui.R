@@ -36,15 +36,19 @@ tabRadial <-  tabPanel(
     sidebarPanel(
       # generate tour button
       actionButton("radial_button", "Generate tour"),
+      conditionalPanel("input.radial_button == TRUE",
+                       actionButton("save", "Save basis"),
+                       numericInput("basis2save", "basis to save", 1,
+                                    min = 1, max = 100)
+      ),
       tags$hr(),
       # basis init and rescale
       radioButtons("basis_init", "Start basis",
                    choices = c("Random", "PCA", "Projection pursuit", "From file"),
                    selected = "Random"),
       ## Projection pursuit options
-      conditionalPanel(
-        "input.basis_init == 'Projection pursuit'",
-        selectInput("pp_type", "Pursuit index", guidedTourOptions)
+      conditionalPanel("input.basis_init == 'Projection pursuit'", # condition not working, starts visible.
+                       selectInput("pp_type", "Pursuit index", guidedTourOptions)
       ),
       ## From file options
       conditionalPanel(
@@ -90,27 +94,27 @@ tabGlyphmap <- tabPanel(
   "Glyphmap manual", fluidPage(
     sidebarPanel(
       # basis init and rescale
-      radioButtons("obl_basis_init", "Start basis",
+      radioButtons("gly_basis_init", "Start basis",
                    choices = c("Random", "PCA", "From file"),
                    selected = "Random"),
       conditionalPanel(
-        "input.obl_basis_init == 'From file'",
+        "input.gly_basis_init == 'From file'",
         fileInput("basispath", "Basis file (.csv or .rda, [p x 2] matrix)",
                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
       ),
       
       # manip var, ref axes placement
-      selectInput('obl_manip_var', 'Manip var', "none"),
-      selectInput('obl_axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
+      selectInput('gly_manip_var', 'Manip var', "none"),
+      selectInput('gly_axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
                   'center',  multiple = FALSE),
       tags$hr(),
       # Slider controls
-      sliderInput("obl_x_slider", "X contribution", min = -1, max = 1, value = 0),
-      sliderInput("obl_y_slider", "Y contribution", min = -1, max = 1, value = 0)
+      sliderInput("gly_x_slider", "X contribution", min = -1, max = 1, value = 0),
+      sliderInput("gly_y_slider", "Y contribution", min = -1, max = 1, value = 0)
     ),
     
     mainPanel(
-      plotlyOutput("obl_plotlyAnim")
+      plotlyOutput("gly_plotlyAnim")
     )
   )
 )

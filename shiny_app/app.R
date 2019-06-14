@@ -33,17 +33,30 @@ launchApp <- function(.data = NULL, .basis = NULL) {
       # initialize
       initInput(rv, input)
       
+      rv$fullTour <- manual_tour(basis = rv$basis,
+                                 manip_var = rv$manip_var,
+                                 angle = input$angle
+      )
+      
       output$plotlyAnim <- renderPlotly({
-        play_manual_tour(
-          data = rv$selected_dat,
-          basis = rv$basis,
-          manip_var = rv$manip_var,
-          col = col_of(rv$col_var),
-          pch = pch_of(rv$pch_var),
-          axes = input$axes,
-          angle = input$angle
+        play_manual_tour(data = rv$selected_dat,
+                         basis = rv$basis,
+                         manip_var = rv$manip_var,
+                         col = col_of(rv$col_var),
+                         pch = pch_of(rv$pch_var),
+                         axes = input$axes,
+                         angle = input$angle
         )
       })
+    })
+    # Save button (radial manual)
+    observeEvent(input$save, {
+      browser()
+      if (is.null(rv$fullTour)) return()
+      out <- rv$fullTour[,,input$basis2save]
+      # save(out, file = paste0("tour_basis_", input$basis2save, ".rda")) # .rda file
+      write.csv2(out, row.names = FALSE, col.names = FALSE, 
+                 file = paste0("tour_basis_", input$basis2save, ".csv"))
     })
     
     ### Static projections
@@ -65,6 +78,7 @@ launchApp <- function(.data = NULL, .basis = NULL) {
       # initialize
       initInput(rv, input)
       output$glyphmap_plot <- renderPlot({
+        ## working from vignette example #2:
         
       })
     })
@@ -84,7 +98,7 @@ launchApp()
 
 ##### DEPRICATING OBLIQUE
 ### Oblique: this gives 1 frame at phi1, cannot change phi1
-###but will need to use some of the earlier internal functions to change theta and phi
+### but will need to use some of the earlier internal functions to change theta and phi
 # flea_std <- tourr::rescale(tourr::flea[,1:6])
 # basis <- tourr::basis_random(n = ncol(flea_std))
 # manip_var <- 4

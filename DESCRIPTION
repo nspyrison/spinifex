@@ -42,6 +42,5 @@ Suggests:
     scagnostics,
     mbgraphic,
     minerva
-    
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))

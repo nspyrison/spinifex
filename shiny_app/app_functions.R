@@ -50,7 +50,7 @@ initInput <- function(rv, input) {
   rv$pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)] # a column
   rv$n <- ncol(rv$selected_dat)
   rv$manip_var <- which(colnames(rv$d) == input$manip_var) # a number
-  
+
   # Basis init
   if (input$basis_init == "Random") rv$basis <- tourr::basis_random(n = rv$n, d = 2)
   if (input$basis_init == "PCA")    rv$basis <- prcomp(rv$selected_dat)[[2]][, 1:2]
@@ -82,7 +82,7 @@ staticProjection <- function(dat, method, col, pch) {
     library(ggfortify)
     return(suppressWarnings(
       autoplot(prcomp(dat), colour = col_of(col), shape = pch_of(pch) + 15,
-               loadings = T, loadings.label = T, 
+               loadings = T, loadings.label = T,
                loadings.colour = 'gray50', loadings.label.colour = 'gray30')
     ))
   }
@@ -103,26 +103,26 @@ staticProjection <- function(dat, method, col, pch) {
   }
 }
 # TEST STATIC
-# dat <- tourr::flea[,1:6]; method <- "PCA"; 
+# dat <- tourr::flea[,1:6]; method <- "PCA";
 # col <- col_of(tourr::flea[,7]); pch <- pch_of(tourr::flea[,7])
 # staticProjection(dat, method, col, pch)
 ### END OF STATIC
 
 ### PROJECTION PURSUIT
 guidedTourOptions <- c("cmass", "holes", "Skinny", "Striated", "Convex", "Clumpy"
-                       ,"splines2d", "dcor2d", "MIC", "TIC") 
+                       ,"splines2d", "dcor2d", "MIC", "TIC")
 scags <- function(scagMetricIndex) {
   function(mat) {return (scagnostics(mat)[scagMetricIndex])}
 }
 getGuidedTour <- function(indexName, grId=NA){ # reurtns a tour function
-  if(indexName=="cmass"){return(guided_tour(cmass()))}
-  if(indexName=="holes"){return(guided_tour(holes()))}
+  if(indexName == "cmass"){return(guided_tour(cmass()))}
+  if(indexName == "holes"){return(guided_tour(holes()))}
   if(indexName %in% c("Skinny", "Striated", "Convex", "Clumpy")){return(guided_tour(scags(indexName)))}
-  if(indexName=="splines2d"){return(guided_tour(splineIndex()))}
-  if(indexName=="dcor2d"){return(guided_tour(dcorIndex()))}
+  if(indexName == "splines2d"){return(guided_tour(splineIndex()))}
+  if(indexName == "dcor2d"){return(guided_tour(dcorIndex()))}
   if(indexName %in% c("MIC", "TIC")){return(guided_tour(mineIndex(indexName)))}
-  if(indexName=="lda_pp"){return(guided_tour(lda_pp(grId)))} #TODO:no grID 
-  if(indexName=="pda_pp"){return(guided_tour(pda_pp(grId)))} # as of now
+  if(indexName == "lda_pp"){return(guided_tour(lda_pp(grId)))} #TODO:no grID
+  if(indexName == "pda_pp"){return(guided_tour(pda_pp(grId)))} # as of now
   else return(guided_tour(holes()))
 }
 ###
