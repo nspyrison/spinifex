@@ -52,7 +52,7 @@ launchApp <- function(.data = NULL, .basis = NULL) {
       initInput(rv, input)
       
       output$static_plot <- renderPlot({
-        staticProjection(dat = rv$selected_dat, 
+        staticProjection(dat = rv$selected_dat, # defined in app_function.R
                          method = input$static_method, 
                          col = rv$col_var, 
                          pch = rv$pch_var
@@ -62,6 +62,8 @@ launchApp <- function(.data = NULL, .basis = NULL) {
     
     ### glyphmap tour
     observeEvent(input$SET_OF_INPUTS, { # will need to obs many inputs
+      # initialize
+      initInput(rv, input)
       output$glyphmap_plot <- renderPlot({
         
       })

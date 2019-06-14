@@ -30,13 +30,18 @@ Imports:
     ggplot2,
     plotly,
     tibble,
-    webshot
+    webshot,
+    shiny
 Suggests: 
     gganimate,
     gifski,
     knitr,
     png,
     rmarkdown,
-    RColorBrewer
+    RColorBrewer,
+    scagnostics,
+    mbgraphic,
+    minerva
+    
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))

@@ -32,18 +32,24 @@ tabInput <- tabPanel(
 
 ### Radial Manual Tab
 tabRadial <-  tabPanel(
-  "Radial Manual", fluidPage(
+  "Radial manual", fluidPage(
     sidebarPanel(
       # generate tour button
       actionButton("radial_button", "Generate tour"),
       tags$hr(),
       # basis init and rescale
       radioButtons("basis_init", "Start basis",
-                   choices = c("Random", "PCA", "From file"),
+                   choices = c("Random", "PCA", "Projection pursuit", "From file"),
                    selected = "Random"),
+      ## Projection pursuit options
       conditionalPanel(
-        "input.basis_init == 'Manual'",
-        fileInput("basispath", "Basis file (.csv or .rda) [p by d=2] matrix",
+        "input.basis_init == 'Projection pursuit'",
+        selectInput("pp_type", "Pursuit index", guidedTourOptions)
+      ),
+      ## From file options
+      conditionalPanel(
+        "input.basis_init == 'From file'",
+        fileInput("basispath", "Basis file (.csv or .rda, [p x 2] matrix)",
                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
       ),
       
@@ -88,8 +94,8 @@ tabGlyphmap <- tabPanel(
                    choices = c("Random", "PCA", "From file"),
                    selected = "Random"),
       conditionalPanel(
-        "input.obl_basis_init == 'Manual'",
-        fileInput("basispath", "Basis file (.csv or .rda) [p by d=2] matrix",
+        "input.obl_basis_init == 'From file'",
+        fileInput("basispath", "Basis file (.csv or .rda, [p x 2] matrix)",
                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
       ),
       

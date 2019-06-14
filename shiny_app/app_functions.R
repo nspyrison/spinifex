@@ -2,6 +2,10 @@ library(shiny)
 library(plotly)
 library(spinifex)
 library(dplyr)
+### Projection Pursuit
+library(scagnostics) # "Skinny", "Striated", "Convex", "Clumpy" 
+library(mbgraphic) #splines2d, dcor2d
+library(minerva) #MIC, TIC
 # write.csv(tourr::flea, file="./data/flea.csv",row.names=FALSE)
 
 
@@ -39,17 +43,18 @@ updateParam <- function(rv, input, output, session) {
 }
 
 initInput <- function(rv, input) {
-  # from Input tab:
+  # Apply inputs to data
   rv$selected_dat <- rv$d[, which(colnames(rv$d) %in% input$variables)]
   if (input$rescale_data) rv$selected_dat <- tourr::rescale(rv$selected_dat)
   rv$col_var <- rv$groups[, which(colnames(rv$groups) == input$col_var)] # a column
   rv$pch_var <- rv$groups[, which(colnames(rv$groups) == input$pch_var)] # a column
   rv$n <- ncol(rv$selected_dat)
-  
-  # from other tabs:
   rv$manip_var <- which(colnames(rv$d) == input$manip_var) # a number
+  
+  # Basis init
   if (input$basis_init == "Random") rv$basis <- tourr::basis_random(n = rv$n, d = 2)
   if (input$basis_init == "PCA")    rv$basis <- prcomp(rv$selected_dat)[[2]][, 1:2]
+  # Basis from file
   if (input$basis_init == "From file") {
     path <- input$basispath$datapath
     ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
@@ -59,6 +64,13 @@ initInput <- function(rv, input) {
       load(file = path, envir = tmp)
       rv$basis <- tmp[[ls(tmp)[1]]]
     }
+  }
+  # basis from end of Proj pursuit.
+  if (input$basis_init == "Projection pursuit") {
+    tourFunc <- getGuidedTour(input$pp_type)
+    tour <- save_history(rv$selected_dat, tourFunc)
+    basis_len <- dim(tour)[3]
+    rv$basis <- matrix(as.numeric(tour[,, basis_len]), ncol = 2)
   }
 }
 ### END GENERAL LOADING/INIT
@@ -90,7 +102,27 @@ staticProjection <- function(dat, method, col, pch) {
     )
   }
 }
+# TEST STATIC
 # dat <- tourr::flea[,1:6]; method <- "PCA"; 
 # col <- col_of(tourr::flea[,7]); pch <- pch_of(tourr::flea[,7])
 # staticProjection(dat, method, col, pch)
+### END OF STATIC
 
+### PROJECTION PURSUIT
+guidedTourOptions <- c("cmass", "holes", "Skinny", "Striated", "Convex", "Clumpy"
+                       ,"splines2d", "dcor2d", "MIC", "TIC") 
+scags <- function(scagMetricIndex) {
+  function(mat) {return (scagnostics(mat)[scagMetricIndex])}
+}
+getGuidedTour <- function(indexName, grId=NA){ # reurtns a tour function
+  if(indexName=="cmass"){return(guided_tour(cmass()))}
+  if(indexName=="holes"){return(guided_tour(holes()))}
+  if(indexName %in% c("Skinny", "Striated", "Convex", "Clumpy")){return(guided_tour(scags(indexName)))}
+  if(indexName=="splines2d"){return(guided_tour(splineIndex()))}
+  if(indexName=="dcor2d"){return(guided_tour(dcorIndex()))}
+  if(indexName %in% c("MIC", "TIC")){return(guided_tour(mineIndex(indexName)))}
+  if(indexName=="lda_pp"){return(guided_tour(lda_pp(grId)))} #TODO:no grID 
+  if(indexName=="pda_pp"){return(guided_tour(pda_pp(grId)))} # as of now
+  else return(guided_tour(holes()))
+}
+###
