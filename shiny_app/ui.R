@@ -79,9 +79,9 @@ tabStatic <- tabPanel(
   )
 )
 
-### Oblique Manual Tab
-tabOblique <- tabPanel(
-  "Oblique Manual", fluidPage(
+### Glyphmap Manual Tab
+tabGlyphmap <- tabPanel(
+  "Glyphmap manual", fluidPage(
     sidebarPanel(
       # basis init and rescale
       radioButtons("obl_basis_init", "Start basis",
@@ -113,11 +113,11 @@ tabOblique <- tabPanel(
 ### Combined tabs
 ui <- fluidPage(
   navbarPage(
-    "Radial manual tours",
+    "Manual tours",
     tabInput,
     tabRadial,
     tabStatic,
-    tabOblique
+    tabGlyphmap
   )
 )
 

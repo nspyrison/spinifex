@@ -60,18 +60,10 @@ launchApp <- function(.data = NULL, .basis = NULL) {
       })
     })
     
-    ### Oblique tour
+    ### glyphmap tour
     observeEvent(input$SET_OF_INPUTS, { # will need to obs many inputs
-      output$oblique_plot <- renderPlot({
-        ###TODO: this gives 1 frame at phi1, cannot change phi1
-        ###but will need to use some of the earlier internal functions to change theta and phi
-        # flea_std <- tourr::rescale(tourr::flea[,1:6])
-        # basis <- tourr::basis_random(n = ncol(flea_std))
-        # manip_var <- 4
-        # phi1 <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-        # 
-        # play_manual_tour(data = flea_std, basis = basis, manip_var = 4, 
-        #                  phi_min = phi1, phi_max = phi1)
+      output$glyphmap_plot <- renderPlot({
+        
       })
     })
     
@@ -87,3 +79,15 @@ launchApp <- function(.data = NULL, .basis = NULL) {
 }
 
 launchApp()
+
+##### DEPRICATING OBLIQUE
+### Oblique: this gives 1 frame at phi1, cannot change phi1
+###but will need to use some of the earlier internal functions to change theta and phi
+# flea_std <- tourr::rescale(tourr::flea[,1:6])
+# basis <- tourr::basis_random(n = ncol(flea_std))
+# manip_var <- 4
+# phi1 <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
+# 
+# play_manual_tour(data = flea_std, basis = basis, manip_var = 4, 
+#                  phi_min = phi1, phi_max = phi1)
+#####
