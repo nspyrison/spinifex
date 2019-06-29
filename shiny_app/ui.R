@@ -1,3 +1,6 @@
+## No external functions, so included in .Rbuildignore.
+## presumably still useable by server.R.
+
 # Example: see function sectioning
 # file.edit("C:/Users/spyri/Documents/R/functionSectioning/ui.R")
 # ,textOutput("devMessage")

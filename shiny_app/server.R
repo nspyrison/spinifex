@@ -1,3 +1,13 @@
+#' Shiny app for exploring multivariate data, comparing manual tours with 
+#' alternative techniques
+#' 
+#' @author Nicholas Spyrison
+#' @export
+#' @examples \dontrun{
+#' library(spinifex)
+#' launchApp()
+#' }
+
 source('app_functions.R', local = TRUE)
 # shiny::runApp("shiny_app", display.mode="showcase") # run with code display
 
@@ -14,7 +24,7 @@ launchApp <- function(.data = NULL, .basis = NULL) {
     isolate(parseData(.data, rv))
     isolate(updateParam(rv, input, output, session))
     
-    #### Input tab
+    ### Input tab
     observeEvent(input$file, {
       if (is.null(input$file)) {return()}
       .data <- read.csv(input$file$datapath, stringsAsFactors = FALSE)

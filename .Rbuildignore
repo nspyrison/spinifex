@@ -4,7 +4,6 @@
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-cran-comments.md
-\R\app.R
-\R\ui.R
-\R\app_functions.R
+^cran-comments\.md
+^/shiny_app/ui\.R
+^/shiny_app/app_functions\.R

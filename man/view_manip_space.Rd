@@ -4,8 +4,8 @@
 \alias{view_manip_space}
 \title{Plot projection frame and return the axes table.}
 \usage{
-view_manip_space(basis, manip_var, manip_col = "blue", theta = pi *
-  5/12, z_col = "red", labels = paste0("V", 1:nrow(basis)))
+view_manip_space(basis, manip_var, manip_col = "blue", tilt = 5/12 *
+  pi, z_col = "red", labels = paste0("V", 1:nrow(basis)))
 }
 \arguments{
 \item{basis}{A (p, d) basis, XY linear combination of each dimension
@@ -15,7 +15,7 @@ view_manip_space(basis, manip_var, manip_col = "blue", theta = pi *
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}.}
 
-\item{theta}{Angle in radians to rotate the manip space.
+\item{tilt}{Angle in radians to rotate the projection plane.
 Defaults to pi * 5/12.}
 
 \item{z_col}{Color to illustrate the z direction or out of the projection

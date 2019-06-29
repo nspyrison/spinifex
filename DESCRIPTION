@@ -31,7 +31,8 @@ Imports:
     plotly,
     tibble,
     webshot,
-    shiny
+    shiny,
+    magrittr
 Suggests: 
     gganimate,
     gifski,
