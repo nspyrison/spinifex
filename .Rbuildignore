@@ -7,3 +7,4 @@
 ^cran-comments\.md
 ^/shiny_app/ui\.R
 ^/shiny_app/app_functions\.R
+^/devExamples/$

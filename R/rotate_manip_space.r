@@ -12,6 +12,7 @@
 #'   reference frame. Effectively changes the norm of XY contributions of the 
 #'   manip_var.
 #' @return A (p, d+1) orthonormal matrix of the rotated (manipulation) space.
+#' @import magrittr
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
