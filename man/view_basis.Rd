@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.r
 \name{view_basis}
 \alias{view_basis}
-\title{Plot projection frame and return the axes table.}
+\title{Plot projection frame and return the axes table}
 \usage{
 view_basis(basis, labels = paste0("V", 1:nrow(basis)), data = NULL,
   axes = "center")

@@ -25,7 +25,7 @@ set_axes_position <- function(x, axes) {
   axis_scale * x + axis_pos 
 }
 
-#' Plot projection frame and return the axes table.
+#' Plot projection frame and return the axes table
 #' 
 #' Uses base graphics to plot the circle with axes representing
 #' the projection frame. Returns the corresponding table.
