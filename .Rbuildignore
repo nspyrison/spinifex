@@ -4,8 +4,8 @@
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^cran-comments\.md
+^cran-comments\.md$
 
 
 
-^/devExamples/$
+^/devExamples/.*$
