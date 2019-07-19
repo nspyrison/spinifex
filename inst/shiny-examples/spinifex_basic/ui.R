@@ -10,12 +10,12 @@ tabInput <- tabPanel(
   "Input", fluidPage(
     sidebarPanel(
       # Input csv file
-      selectInput('dat', 'data set', 
+      selectInput('dat', 'Data set', 
                   c('flea', 'olive', 'weather', 'wine', 'breastcancer', 'mtcars')),
       # include which variables in the projection
       checkboxGroupInput(
         "variables",
-        label = "Choose variables to display",
+        label = "Variables to include",
         choices = "none"
       ),
       # Point color, shape and rescale [0,1] data
