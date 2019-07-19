@@ -16,7 +16,7 @@ tabInput <- tabPanel(
       # include which variables
       checkboxGroupInput(
         "variables",
-        label = "Choose variables to display",
+        label = "Variables to include",
         choices = "none"
       ),
       # Point color, shape and rescale [0,1] data
@@ -39,12 +39,6 @@ tabRadial <-  tabPanel(
     sidebarPanel(
       # generate tour button
       actionButton("radial_button", "Generate tour"),
-      conditionalPanel("input.radial_button == TRUE",
-                       actionButton("save", "Save basis"),
-                       numericInput("basis2save", "basis to save", 1,
-                                    min = 1, max = 100)
-      ),
-      tags$hr(),
       # basis init and rescale
       radioButtons("basis_init", "Start basis",
                    choices = c("Random", "PCA", "Projection pursuit", "From file"),
@@ -67,7 +61,11 @@ tabRadial <-  tabPanel(
       tags$hr(),
       selectInput('axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
                   'center',  multiple = FALSE),
-      sliderInput('angle', 'Angle step size', value = .05, min = .01, max = .3)
+      sliderInput('angle', 'Angle step size', value = .05, min = .01, max = .3),
+      tags$hr(),
+      numericInput("basistosave", "Basis to save", 1,
+                   min = 1, max = 1000),
+      actionButton("save", "Save basis")
     ),
     
     mainPanel(
@@ -96,10 +94,17 @@ tabStatic <- tabPanel(
 tabGlyphmap <- tabPanel(
   "Glyphmap manual", fluidPage(
     sidebarPanel(
+      # generate tour button
+      actionButton("gly_button", "Generate tour"),
       # basis init and rescale
       radioButtons("gly_basis_init", "Start basis",
-                   choices = c("Random", "PCA", "From file"),
+                   choices = c("Random", "PCA", "Projection pursuit", "From file"),
                    selected = "Random"),
+      ## Projection pursuit options
+      conditionalPanel("input.basis_init == 'Projection pursuit'", # condition not working, starts visible.
+                       selectInput("pp_type", "Pursuit index", guidedTourOptions)
+      ),
+      ## Basis From file select
       conditionalPanel(
         "input.gly_basis_init == 'From file'",
         fileInput("basispath", "Basis file (.csv or .rda, [p x 2] matrix)",
@@ -112,8 +117,8 @@ tabGlyphmap <- tabPanel(
                   'center',  multiple = FALSE),
       tags$hr(),
       # Slider controls
-      sliderInput("gly_x_slider", "X contribution", min = -1, max = 1, value = 0),
-      sliderInput("gly_y_slider", "Y contribution", min = -1, max = 1, value = 0)
+      sliderInput("gly_x_slider", "X contribution", min = -1, max = 1, value = 0, step = .1),
+      sliderInput("gly_y_slider", "Y contribution", min = -1, max = 1, value = 0, step = .1)
     ),
     
     mainPanel(
@@ -132,5 +137,6 @@ ui <- fluidPage(
     tabStatic,
     tabGlyphmap
   )
+  #,verbatimTextOutput("devMessage")
 )
 

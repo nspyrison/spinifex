@@ -43,12 +43,6 @@ tabRadial <-  tabPanel(
       radioButtons("basis_init", "Start basis",
                    choices = c("Random", "PCA"),
                    selected = "Random"),
-      ## From file options
-      conditionalPanel(
-        "input.basis_init == 'From file'",
-        fileInput("basispath", "Basis file (.csv or .rda, [p x 2] matrix)",
-                  accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
-      ),
       
       # manip, col, and pch vars
       selectInput('manip_var', 'Manip var', "none"),
@@ -67,13 +61,13 @@ tabRadial <-  tabPanel(
 )
 
 
-
-### Combined tabs
+### Tabs combined
 ui <- fluidPage(
   navbarPage(
     "Manual tours -- basic",
     tabInput,
     tabRadial
   )
+  #,verbatimTextOutput("devMessage")
 )
 

@@ -8,7 +8,7 @@
 #' launchApp()
 #' }
 
-source('app_functions.R', local = TRUE)
+source('global.R', local = TRUE)
 # shiny::runApp("shiny_app", display.mode="showcase") # run with code display
 
 launchApp <- function(.data = NULL, .basis = NULL) {
@@ -63,10 +63,10 @@ launchApp <- function(.data = NULL, .basis = NULL) {
     observeEvent(input$save, {
       browser()
       if (is.null(rv$fullTour)) return()
-      out <- rv$fullTour[,,input$basis2save]
-      # save(out, file = paste0("tour_basis_", input$basis2save, ".rda")) # .rda file
+      out <- rv$fullTour[,,input$basistosave]
+      # save(out, file = paste0("tour_basis_", input$basistosave, ".rda")) # .rda file
       write.csv2(out, row.names = FALSE, col.names = FALSE, 
-                 file = paste0("tour_basis_", input$basis2save, ".csv"))
+                 file = paste0("tour_basis_", input$basistosave, ".csv"))
     })
     
     ### Static projections
@@ -95,10 +95,9 @@ launchApp <- function(.data = NULL, .basis = NULL) {
     
     ### Development/troubleshooting output: 
     output$devMessage <- renderPrint({
-      paste("input$col_var: ", input$col_var, 
+      paste("Dev Message: input$col_var: ", input$col_var, 
             " col_var column num: ", which(colnames(rv$groups) == input$col_var) )
     })
-    output$devMessage2 <- renderPrint({ input$variables })
     
   }
   shinyApp(ui, server)
