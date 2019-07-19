@@ -16,12 +16,6 @@ launchApp <- function(.data = NULL, .basis = NULL) {
   source('ui.R', local = TRUE)
   
   server <- function(input, output, session) {
-    # initialize default: flea data
-    if (is.null(.data)) {
-      .data <- tourr::flea
-    }
-    isolate(parseData(.data, rv))
-    isolate(updateParam(rv, input, output, session))
     
     ### Input tab
     observeEvent(input$dat, {
