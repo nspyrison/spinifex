@@ -11,7 +11,7 @@
 #' primitive numerical attributes with values ranging from 0 through 10. There 
 #' are 16 missing attribute values.
 #'
-#' Data frame (tibble) with 675 observations on 10 variables: a factor Id, 
+#' Data frame with 675 observations on 10 variables: a factor Id, 
 #' 9 numeric variables, and target class:
 #' \itemize{
 #'   \item Id, Sample code number
@@ -29,17 +29,18 @@
 #' Reproducing this dataset:
 #' ```
 #' library("mlbench")
+#' data(BreastCancer)
 #' 
-#' d <- mlbench::BreastCancer
+#' d <- BreastCancer
 #' d <- d[!duplicated(d), ]
 #' d <- d[complete.cases(d), ]
 #' mat <- as.matrix(d[ , 2:9])
 #' mat <- apply(mat, 2, as.numeric)
-#' breastbancer <- dplyr::as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))
+#' breastcancer <- data.frame(Id = d$Id, mat, Class = d$Class)
 #' ```
 #' @name breastcancer
 #' @docType data
-#' @format Data frame (tibble) with 675 observations on 10 variables: a factor 
+#' @format Data frame with 675 observations on 10 variables: a factor 
 #' Id, 9 numeric variables, and target class.
 #' @keywords datasets
 #' @examples
@@ -67,7 +68,7 @@
 #' The source dataset is Copyright by the Australian Commonwealth Bureau of 
 #' Meteorology and is provided as part of the rattle package with permission.
 #'
-#' Data frame (tibble) of 366 observations of 20 variables, one year of 
+#' Data frame of 366 observations of 20 variables, one year of 
 #' daily observations of weather variables at Canberra airport in Australia 
 #' starting November 2007:
 #' \itemize{
@@ -96,11 +97,11 @@
 #' Reproducing this dataset:
 #' ```
 #' library("rattle.data")
-#' weather <- dplyr::as.tibble(weather[, c(1,3:7,9,12:24)])
+#' weather <- weather[, c(1,3:7,9,12:24)]
 #' ```
 #' @name weather
 #' @docType data
-#' @format Data frame (tibble) of 366 observations of 20 variables, one year of 
+#' @format Data frame of 366 observations of 20 variables, one year of 
 #' daily observations of weather variables at Canberra airport in Australia 
 #' starting November 2007.
 #' @source The daily observations are available from http://www.bom.gov.au/climate/data. 
@@ -127,7 +128,7 @@
 #' The data contains no missing values and consist of only numeric data, with a 
 #' three class target variable (Type) for classification.
 #'
-#' Data frame (tibble) of 178 observations of 13 variables, target 
+#' Data frame of 178 observations of 13 variables, target 
 #' class `Type` and 12 numeric variables:
 #' \itemize{
 #'   \item Type, The type of wine, into one of three classes, 1 (59 obs), 
@@ -150,11 +151,11 @@
 #' Reproducing this dataset:
 #' ```
 #' library("rattle.data")
-#' wine <- dplyr::as.tibble(wine)
+#' wine
 #' ```
 #' @name wine
 #' @docType data
-#' @format data frame (tibble) of 178 observations of 13 variables, target 
+#' @format data frame of 178 observations of 13 variables, target 
 #' class `Type` and 12 numeric variables.
 #' @examples
 #' str(wine)
