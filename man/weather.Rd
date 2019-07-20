@@ -4,7 +4,7 @@
 \name{weather}
 \alias{weather}
 \title{Sample dataset of daily weather observations from Canberra airport in Australia.}
-\format{Data frame (tibble) of 366 observations of 20 variables, one year of
+\format{Data frame of 366 observations of 20 variables, one year of
 daily observations of weather variables at Canberra airport in Australia
 starting November 2007.}
 \source{
@@ -35,7 +35,7 @@ only for repeatable demonstration of various data science operations.
 The source dataset is Copyright by the Australian Commonwealth Bureau of
 Meteorology and is provided as part of the rattle package with permission.
 
-Data frame (tibble) of 366 observations of 20 variables, one year of
+Data frame of 366 observations of 20 variables, one year of
 daily observations of weather variables at Canberra airport in Australia
 starting November 2007:
 \itemize{
@@ -62,7 +62,7 @@ starting November 2007:
 }
 
 Reproducing this dataset:\preformatted{library("rattle.data")
-weather <- dplyr::as.tibble(weather[, c(1,3:7,9,12:24)])
+weather <- weather[, c(1,3:7,9,12:24)]
 }
 }
 \examples{

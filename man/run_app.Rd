@@ -4,7 +4,7 @@
 \alias{run_app}
 \title{Runs a shiny app demonstrating manual tours}
 \usage{
-run_app()
+run_app(example)
 }
 \value{
 opens a local shiny app
@@ -14,5 +14,8 @@ Runs a local shiny app that demonstrates manual tour and comparable
 traditional techniques for static projections of multivariate data sets.
 }
 \examples{
-run_app()
+\dontrun{
+run_app(example = "intro")
+run_app(example = "comparison")
+}
 }

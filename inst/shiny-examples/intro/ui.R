@@ -1,10 +1,3 @@
-## No external functions, so included in .Rbuildignore.
-## presumably still useable by server.R.
-
-# Example: see function sectioning
-# file.edit("C:/Users/spyri/Documents/R/functionSectioning/ui.R")
-# ,textOutput("devMessage")
-
 ### Input Tab
 tabInput <- tabPanel(
   "Input", fluidPage(
@@ -26,7 +19,6 @@ tabInput <- tabPanel(
     ),
     mainPanel(h2("Data structure"),
               verbatimTextOutput("str_data")
-              #,verbatimTextOutput("devMessage3")
     )
     
   )
@@ -49,7 +41,8 @@ tabRadial <-  tabPanel(
       
       # More options: axes placement and angle step size
       tags$hr(),
-      selectInput('axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
+      selectInput('axes', 'Reference axes location', 
+                  c('center', 'bottomleft', 'off'),
                   'center',  multiple = FALSE),
       sliderInput('angle', 'Angle step size', value = .05, min = .01, max = .3)
     ),

@@ -4,7 +4,7 @@
 \name{breastcancer}
 \alias{breastcancer}
 \title{Wisconsin Breast Cancer Database}
-\format{Data frame (tibble) with 675 observations on 10 variables: a factor
+\format{Data frame with 675 observations on 10 variables: a factor
 Id, 9 numeric variables, and target class.}
 \usage{
 breastcancer
@@ -22,7 +22,7 @@ the data itself. Each variable except for the first was converted into 11
 primitive numerical attributes with values ranging from 0 through 10. There
 are 16 missing attribute values.
 
-Data frame (tibble) with 675 observations on 10 variables: a factor Id,
+Data frame with 675 observations on 10 variables: a factor Id,
 9 numeric variables, and target class:
 \itemize{
 \item Id, Sample code number
@@ -38,13 +38,14 @@ Data frame (tibble) with 675 observations on 10 variables: a factor Id,
 }
 
 Reproducing this dataset:\preformatted{library("mlbench")
+data(BreastCancer)
 
-d <- mlbench::BreastCancer
+d <- BreastCancer
 d <- d[!duplicated(d), ]
 d <- d[complete.cases(d), ]
 mat <- as.matrix(d[ , 2:9])
 mat <- apply(mat, 2, as.numeric)
-breastbancer <- dplyr::as.tibble(data.frame(Id = d$Id, mat, Class = d$Class))
+breastcancer <- data.frame(Id = d$Id, mat, Class = d$Class)
 }
 }
 \examples{

@@ -1,10 +1,11 @@
-#' Shiny app for exploring toy multivariate datasets with the manual tour
+#' Shiny app for exploring multivariate data, comparing manual tours with 
+#' alternative techniques
 #' 
 #' @author Nicholas Spyrison
 #' @export
 #' @examples \dontrun{
 #' library(spinifex)
-#' launchApp()
+#' launchApp("comparison")
 #' }
 
 source('global.R', local = TRUE)
@@ -15,16 +16,17 @@ launchApp <- function(.data = NULL, .basis = NULL) {
   source('ui.R', local = TRUE)
   
   server <- function(input, output, session) {
+    # initialize default: flea data
+    if (is.null(.data)) {
+      .data <- tourr::flea
+    }
+    isolate(parseData(.data, rv))
+    isolate(updateParam(rv, input, output, session))
     
     ### Input tab
-    observeEvent(input$dat, {
-      if (is.null(input$dat)) {return()}
-      if (input$dat == "flea") .data <- tourr::flea
-      if (input$dat == "olive") .data <- tourr::olive
-      if (input$dat == "wine") .data <- spinifex::wine
-      if (input$dat == "weather") .data <- spinifex::weather
-      if (input$dat == "breastcancer") .data <- spinifex::breastcancer
-      if (input$dat == "mtcars") .data <- mtcars
+    observeEvent(input$file, {
+      if (is.null(input$file)) {return()}
+      .data <- read.csv(input$file$datapath, stringsAsFactors = FALSE)
       parseData(.data, rv)
       updateParam(rv, input, output, session)
     })
@@ -34,13 +36,13 @@ launchApp <- function(.data = NULL, .basis = NULL) {
                         "manip_var",
                         choices = input$variables)
     })
-    
+
     ### Radial tour
     observeEvent(input$radial_button, {
       # initialize
       initInput(rv, input)
       
-      rv$fullTour <- manual_tour(basis = rv$basis,
+      rv$fullTo <- manual_tour(basis = rv$basis,
                                  manip_var = rv$manip_var,
                                  angle = input$angle
       )
@@ -58,12 +60,11 @@ launchApp <- function(.data = NULL, .basis = NULL) {
     })
     # Save button (radial manual)
     observeEvent(input$save, {
-      browser()
       if (is.null(rv$fullTour)) return()
-      out <- rv$fullTour[,, input$basis2save]
-      # save(out, file = paste0("tour_basis_", input$basis2save, ".rda")) # .rda file
+      out <- rv$fullTour[,,input$basistosave]
+      # save(out, file = paste0("tour_basis_", input$basistosave, ".rda")) # .rda file
       write.csv2(out, row.names = FALSE, col.names = FALSE, 
-                 file = paste0("tour_basis_", input$basis2save, ".csv"))
+                 file = paste0("tour_basis_", input$basistosave, ".csv"))
     })
     
     ### Static projections
@@ -92,12 +93,24 @@ launchApp <- function(.data = NULL, .basis = NULL) {
     
     ### Development/troubleshooting output: 
     output$devMessage <- renderPrint({
-      paste("Development Message: input$col_var: ", input$col_var, 
+      paste("Dev Message: input$col_var: ", input$col_var, 
             " col_var column num: ", which(colnames(rv$groups) == input$col_var) )
     })
-
+    
   }
   shinyApp(ui, server)
 }
 
 launchApp()
+
+##### DEPRICATING OBLIQUE
+### Oblique: this gives 1 frame at phi1, cannot change phi1
+### but will need to use some of the earlier internal functions to change theta and phi
+# flea_std <- tourr::rescale(tourr::flea[,1:6])
+# basis <- tourr::basis_random(n = ncol(flea_std))
+# manip_var <- 4
+# phi1 <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
+# 
+# play_manual_tour(data = flea_std, basis = basis, manip_var = 4, 
+#                  phi_min = phi1, phi_max = phi1)
+#####

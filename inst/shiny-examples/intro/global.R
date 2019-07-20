@@ -4,6 +4,7 @@ library(spinifex)
 library(dplyr)
 # write.csv(tourr::flea, file="./data/flea.csv",row.names=FALSE)
 
+numVars <- NULL
 
 ### GENERAL LOADING/INIT
 parseData <- function(.data, rv){
@@ -13,8 +14,15 @@ parseData <- function(.data, rv){
   rv$groups <- .data[rv$groupVars]
   rv$nSelected <- min(ncol(rv$d), 6)
 }
+# numVars <- reactive(sapply(data(), is.numeric))
+# groupVars <- reactive(sapply(data(), function(x) is.character(x)|is.factor(x)))
+# d <- reactive(data()[numVars()]) # d is only numeric vars
+# groups <- reactive(data()[groupVars()])
+# nSelected <- reactive(min(ncol(d()), 6))
+
 
 updateParam <- function(rv, input, output, session) {
+  
   updateCheckboxGroupInput(session,
                            "variables",
                            choices = names(rv$d),

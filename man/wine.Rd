@@ -4,7 +4,7 @@
 \name{wine}
 \alias{wine}
 \title{The wine dataset from the UCI Machine Learning Repository.}
-\format{data frame (tibble) of 178 observations of 13 variables, target
+\format{data frame of 178 observations of 13 variables, target
 class \code{Type} and 12 numeric variables.}
 \usage{
 wine
@@ -19,7 +19,7 @@ The Type variable has been transformed into a categoric variable.
 The data contains no missing values and consist of only numeric data, with a
 three class target variable (Type) for classification.
 
-Data frame (tibble) of 178 observations of 13 variables, target
+Data frame of 178 observations of 13 variables, target
 class \code{Type} and 12 numeric variables:
 \itemize{
 \item Type, The type of wine, into one of three classes, 1 (59 obs),
@@ -40,7 +40,7 @@ class \code{Type} and 12 numeric variables:
 }
 
 Reproducing this dataset:\preformatted{library("rattle.data")
-wine <- dplyr::as.tibble(wine)
+wine
 }
 }
 \examples{
