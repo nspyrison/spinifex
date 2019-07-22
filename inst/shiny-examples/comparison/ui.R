@@ -5,6 +5,9 @@
 # file.edit("C:/Users/spyri/Documents/R/functionSectioning/ui.R")
 # ,textOutput("devMessage")
 
+guidedTourOptions <- c("cmass", "holes", "Skinny", "Striated", "Convex", 
+                       "Clumpy","splines2d", "dcor2d", "MIC", "TIC")
+
 ### Input Tab
 tabInput <- tabPanel(
   "Input", fluidPage(
@@ -69,7 +72,11 @@ tabRadial <-  tabPanel(
     ),
     
     mainPanel(
-      plotlyOutput("plotlyAnim")
+      plotlyOutput("plotlyAnim"),
+      conditionalPanel("input.save",
+                       h4("Last basis saved"),
+                       tableOutput("last_save")
+      )
     )
   )
 )

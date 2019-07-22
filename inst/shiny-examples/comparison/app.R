@@ -5,103 +5,137 @@
 #' @export
 #' @examples \dontrun{
 #' library(spinifex)
-#' launchApp("comparison")
+#' run_app("comparison")
 #' }
 
 source('global.R', local = TRUE)
+source('ui.R', local = TRUE)
 
-launchApp <- function(.data = NULL, .basis = NULL) {
-  # Initiate reactive values, rv
-  rv <- reactiveValues()
-  source('ui.R', local = TRUE)
+
+
+server <- function(input, output, session) {
   
-  server <- function(input, output, session) {
-    # initialize default: flea data
-    if (is.null(.data)) {
-      .data <- tourr::flea
-    }
-    isolate(parseData(.data, rv))
-    isolate(updateParam(rv, input, output, session))
+  data <- reactive({
+      if (is.null(input$file)) {return(tourr::flea)}
+      read.csv(input$file$datapath, stringsAsFactors = FALSE)
+  })
+  
+  ### Data initialize
+  numericVars <- reactive(sapply(data(), is.numeric))
+  groupVars   <- reactive(sapply(data(), function(x) is.character(x)|is.factor(x)))
+  numericDat  <- reactive(data()[numericVars()]) # d is only numeric vars
+  groupDat    <- reactive(data()[groupVars()])
+  colToSelect <- reactive(min(ncol(numericDat()), 6))
+  
+  ### Input initialize
+  selected_dat <- reactive({
+    x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
+    if (input$rescale_data) x <- tourr::rescale(x)
+    return(x)
+  })
+  col_var <- reactive({ # a column
+    groupDat()[, which(colnames(groupDat()) == input$col_var)] 
+  })
+  pch_var <- reactive({
+    groupDat()[, which(colnames(groupDat()) == input$pch_var)] # a column
+  })
+  n <- reactive(ncol(selected_dat()))
+  manip_var <- reactive(which(colnames(numericDat()) == input$manip_var)) # number
+  basis <- reactive({
+    if (input$basis_init == "Random") x <- tourr::basis_random(n = n(), d = 2)
+    if (input$basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
+    return(x)
+  })
+  
+  ### Update dropdown lists
+  observe({
+    updateCheckboxGroupInput(session,
+                             "variables",
+                             choices = names(numericDat()),
+                             selected = names(numericDat()[1:colToSelect()]))
     
-    ### Input tab
-    observeEvent(input$file, {
-      if (is.null(input$file)) {return()}
-      .data <- read.csv(input$file$datapath, stringsAsFactors = FALSE)
-      parseData(.data, rv)
-      updateParam(rv, input, output, session)
-    })
-    # Update manip_var 
-    observeEvent(input$variables, {
+    updateSelectInput(session,
+                      "manip_var",
+                      choices = input$variables)
+    
+    if (length(groupDat()) >= 1) {
       updateSelectInput(session,
-                        "manip_var",
-                        choices = input$variables)
+                        "col_var",
+                        choices = names(groupDat()))
+      updateSelectInput(session,
+                        "pch_var",
+                        choices = names(groupDat()))
+    } else { # list "none", if there are not character or factor vars.
+      updateSelectInput(session,
+                        "col_var",
+                        choices = c("None"))
+      updateSelectInput(session,
+                        "pch_var",
+                        choices = c("None"))
+    }
+  })
+  
+  ##### Output
+  ### Input tab
+  output$str_data <- renderPrint({str(data())})
+  ### Radial tab
+  observeEvent(input$radial_button, {
+    tour_path <- reactive({manual_tour(basis = basis(),
+                                       manip_var = manip_var(),
+                                       angle = input$angle)
     })
-
-    ### Radial tour
-    observeEvent(input$radial_button, {
-      # initialize
-      initInput(rv, input)
-      
-      rv$fullTo <- manual_tour(basis = rv$basis,
-                                 manip_var = rv$manip_var,
-                                 angle = input$angle
+    
+    output$plotlyAnim <- renderPlotly({
+      play_manual_tour(data = selected_dat(),
+                       basis = basis(),
+                       manip_var = manip_var(),
+                       col = col_of(col_var()),
+                       pch = pch_of(pch_var()),
+                       axes = input$axes,
+                       angle = input$angle
       )
+    })
+  })
+  # Save button (radial)
+  observeEvent(input$save, {
+    if (is.null(tour_path())) return()
+    out <- tour_path()[,, input$basistosave]
+    # save(out, file = paste0("tour_basis_", input$basistosave, ".rda")) # .rda file
+    write.csv2(out, row.names = FALSE, col.names = FALSE, 
+               file = paste0("tour_basis_", input$basistosave, ".csv"))
+    output$last_save <- renderTable({ out })
+  })
+  
+  ### Static tab
+  observeEvent(input$static_button, {
+    output$static_plot <- renderPlot({
+      staticProjection(dat = selected_dat(), # defined in app_function.R
+                       method = input$static_method, 
+                       col = col_var(), 
+                       pch = pch_var()
+      )
+    })
+  })
+  
+  ### glyphmap tab -- Work in progess
+  observeEvent(input$SET_OF_INPUTS, { # will need to obs many inputs
+    # initialize
+    initInput(rv, input)
+    output$glyphmap_plot <- renderPlot({
+      ## working from vignette example #2:
       
-      output$plotlyAnim <- renderPlotly({
-        play_manual_tour(data = rv$selected_dat,
-                         basis = rv$basis,
-                         manip_var = rv$manip_var,
-                         col = col_of(rv$col_var),
-                         pch = pch_of(rv$pch_var),
-                         axes = input$axes,
-                         angle = input$angle
-        )
-      })
     })
-    # Save button (radial manual)
-    observeEvent(input$save, {
-      if (is.null(rv$fullTour)) return()
-      out <- rv$fullTour[,,input$basistosave]
-      # save(out, file = paste0("tour_basis_", input$basistosave, ".rda")) # .rda file
-      write.csv2(out, row.names = FALSE, col.names = FALSE, 
-                 file = paste0("tour_basis_", input$basistosave, ".csv"))
-    })
-    
-    ### Static projections
-    observeEvent(input$static_button, {
-      # initialize
-      initInput(rv, input)
-      
-      output$static_plot <- renderPlot({
-        staticProjection(dat = rv$selected_dat, # defined in app_function.R
-                         method = input$static_method, 
-                         col = rv$col_var, 
-                         pch = rv$pch_var
-        )
-      })
-    })
-    
-    ### glyphmap tour
-    observeEvent(input$SET_OF_INPUTS, { # will need to obs many inputs
-      # initialize
-      initInput(rv, input)
-      output$glyphmap_plot <- renderPlot({
-        ## working from vignette example #2:
-        
-      })
-    })
-    
-    ### Development/troubleshooting output: 
-    output$devMessage <- renderPrint({
-      paste("Dev Message: input$col_var: ", input$col_var, 
-            " col_var column num: ", which(colnames(rv$groups) == input$col_var) )
-    })
-    
-  }
-  shinyApp(ui, server)
+  })
+  
+  ### Development help -- uncomment message at bottom on ui.R to use
+  output$devMessage <- renderPrint({
+    numericVars()
+    #paste("Development Message: nSelected(): ", head(numVars()))
+  })
+  
 }
+shinyApp(ui, server)
 
-launchApp()
 
 ##### DEPRICATING OBLIQUE
 ### Oblique: this gives 1 frame at phi1, cannot change phi1
