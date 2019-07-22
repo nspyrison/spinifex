@@ -12,7 +12,6 @@ source('global.R', local = TRUE)
 source('ui.R', local = TRUE)
 
 
-
 server <- function(input, output, session) {
   
   data <- reactive({
@@ -26,8 +25,10 @@ server <- function(input, output, session) {
   numericDat  <- reactive(data()[numericVars()]) # d is only numeric vars
   groupDat    <- reactive(data()[groupVars()])
   colToSelect <- reactive(min(ncol(numericDat()), 6))
+  output$str_data <- renderPrint({str(data())})
   
-  ### Input initialize
+  ##### Radial tab
+  ### Initialize input 
   selected_dat <- reactive({
     x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
     if (input$rescale_data) x <- tourr::rescale(x)
@@ -46,14 +47,18 @@ server <- function(input, output, session) {
     if (input$basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
     return(x)
   })
+  # for saving a basis
+  tour_path <- reactive({manual_tour(basis = basis(),
+                                     manip_var = manip_var(),
+                                     angle = input$angle)
+  })
   
-  ### Update dropdown lists
+  ### Update inputs
   observe({
     updateCheckboxGroupInput(session,
                              "variables",
                              choices = names(numericDat()),
                              selected = names(numericDat()[1:colToSelect()]))
-    
     updateSelectInput(session,
                       "manip_var",
                       choices = input$variables)
@@ -75,16 +80,8 @@ server <- function(input, output, session) {
     }
   })
   
-  ##### Output
-  ### Input tab
-  output$str_data <- renderPrint({str(data())})
-  ### Radial tab
+  ### Radial tour animation
   observeEvent(input$radial_button, {
-    tour_path <- reactive({manual_tour(basis = basis(),
-                                       manip_var = manip_var(),
-                                       angle = input$angle)
-    })
-    
     output$plotlyAnim <- renderPlotly({
       play_manual_tour(data = selected_dat(),
                        basis = basis(),
@@ -97,33 +94,62 @@ server <- function(input, output, session) {
     })
   })
   # Save button (radial)
-  observeEvent(input$save, {
+  observeEvent(input$radial_save, {
     if (is.null(tour_path())) return()
     out <- tour_path()[,, input$basistosave]
     # save(out, file = paste0("tour_basis_", input$basistosave, ".rda")) # .rda file
     write.csv2(out, row.names = FALSE, col.names = FALSE, 
                file = paste0("tour_basis_", input$basistosave, ".csv"))
-    output$last_save <- renderTable({ out })
+    output$last_save <- renderTable(out)
   })
+  ##### End of radial tab
   
-  ### Static tab
+  ##### Static tab
   observeEvent(input$static_button, {
     output$static_plot <- renderPlot({
-      staticProjection(dat = selected_dat(), # defined in app_function.R
+      staticProjection(dat = selected_dat(),
                        method = input$static_method, 
                        col = col_var(), 
                        pch = pch_var()
       )
     })
   })
+  ##### End of static tab
   
-  ### glyphmap tab -- Work in progess
-  observeEvent(input$SET_OF_INPUTS, { # will need to obs many inputs
-    # initialize
-    initInput(rv, input)
-    output$glyphmap_plot <- renderPlot({
-      ## working from vignette example #2:
-      
+  ##### Oblique tab
+  ### Initialize oblique input 
+  obl_manip_var <- reactive(which(colnames(numericDat()) == input$obl_manip_var)) # number
+  obl_basis <- reactive({
+    if (input$obl_basis_init == "Random") x <- tourr::basis_random(n = n(), d = 2)
+    if (input$obl_basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
+    return(x)
+  })
+  
+  ### Update oblique inputs
+  observe({
+    updateSelectInput(session,
+                      "obl_manip_var",
+                      choices = input$variables)
+  })
+  
+  ### Oblique output
+  observeEvent(input$obl_button, {
+    # Basis
+    output$obl_basis_out <- renderTable(
+      oblique_basis(basis = obl_basis(),
+                    manip_var = obl_manip_var(), 
+                    theta = NULL, #TODO: fix phi and theta #obl_x_slider
+                    phi = NULL))
+    # Frame
+    output$obl_plotlyAnim <- renderPlot({
+      oblique_frame(data = selected_dat(),
+                    basis = obl_basis(), 
+                    manip_var = obl_manip_var(),
+                    theta = NULL, #TODO: fix phi and theta #obl_x_slider
+                    phi = NULL,
+                    col = col_of(col_var()),
+                    pch = pch_of(pch_var()),
+                    axes = input$axes)
     })
   })
   

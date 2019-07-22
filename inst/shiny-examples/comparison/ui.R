@@ -1,14 +1,6 @@
-## No external functions, so included in .Rbuildignore.
-## presumably still useable by server.R.
 
-# Example: see function sectioning
-# file.edit("C:/Users/spyri/Documents/R/functionSectioning/ui.R")
-# ,textOutput("devMessage")
 
-guidedTourOptions <- c("cmass", "holes", "Skinny", "Striated", "Convex", 
-                       "Clumpy","splines2d", "dcor2d", "MIC", "TIC")
-
-### Input Tab
+### Input tab
 tabInput <- tabPanel(
   "Input", fluidPage(
     sidebarPanel(
@@ -28,7 +20,7 @@ tabInput <- tabPanel(
       tags$hr(),
       checkboxInput("rescale_data", "Rescale values", value = TRUE)
     ),
-    mainPanel(h2("Data structure"),
+    mainPanel(h3("Data structure"),
               verbatimTextOutput("str_data")
               #,verbatimTextOutput("devMessage3")
     )
@@ -36,18 +28,19 @@ tabInput <- tabPanel(
   )
 )
 
-### Radial Manual Tab
+
+### Radial tab
 tabRadial <-  tabPanel(
-  "Radial manual", fluidPage(
+  "Radial", fluidPage(
     sidebarPanel(
       # generate tour button
       actionButton("radial_button", "Generate tour"),
-      # basis init and rescale
+      # basis init
       radioButtons("basis_init", "Start basis",
                    choices = c("Random", "PCA", "Projection pursuit", "From file"),
                    selected = "Random"),
       ## Projection pursuit options
-      conditionalPanel("input.basis_init == 'Projection pursuit'", # condition not working, starts visible.
+      conditionalPanel("input.basis_init == 'Projection pursuit'",
                        selectInput("pp_type", "Pursuit index", guidedTourOptions)
       ),
       ## From file options
@@ -56,11 +49,8 @@ tabRadial <-  tabPanel(
         fileInput("basispath", "Basis file (.csv or .rda, [p x 2] matrix)",
                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
       ),
-      
-      # manip, col, and pch vars
+      # manip var, axes, angle, save
       selectInput('manip_var', 'Manip var', "none"),
-      
-      # More options: axes placement and angle step size
       tags$hr(),
       selectInput('axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
                   'center',  multiple = FALSE),
@@ -68,12 +58,12 @@ tabRadial <-  tabPanel(
       tags$hr(),
       numericInput("basistosave", "Basis to save", 1,
                    min = 1, max = 1000),
-      actionButton("save", "Save basis")
+      actionButton("radial_save", "Save basis")
     ),
-    
+    # Output display
     mainPanel(
       plotlyOutput("plotlyAnim"),
-      conditionalPanel("input.save",
+      conditionalPanel("input.radial_save",
                        h4("Last basis saved"),
                        tableOutput("last_save")
       )
@@ -81,7 +71,7 @@ tabRadial <-  tabPanel(
   )
 )
 
-### Static Linear Tab
+### Static tab
 tabStatic <- tabPanel(
   "Static projections", fluidPage(
     sidebarPanel(
@@ -97,39 +87,40 @@ tabStatic <- tabPanel(
   )
 )
 
-### Glyphmap Manual Tab
-tabGlyphmap <- tabPanel(
-  "Glyphmap manual", fluidPage(
+### Oblique tab
+tabOblique <- tabPanel(
+  "Oblique", fluidPage(
     sidebarPanel(
       # generate tour button
-      actionButton("gly_button", "Generate tour"),
+      actionButton("obl_button", "Generate tour"),
       # basis init and rescale
-      radioButtons("gly_basis_init", "Start basis",
+      radioButtons("obl_basis_init", "Start basis",
                    choices = c("Random", "PCA", "Projection pursuit", "From file"),
                    selected = "Random"),
       ## Projection pursuit options
-      conditionalPanel("input.basis_init == 'Projection pursuit'", # condition not working, starts visible.
+      conditionalPanel("input.obl_basis_init == 'Projection pursuit'",
                        selectInput("pp_type", "Pursuit index", guidedTourOptions)
       ),
       ## Basis From file select
       conditionalPanel(
-        "input.gly_basis_init == 'From file'",
+        "input.obl_basis_init == 'From file'",
         fileInput("basispath", "Basis file (.csv or .rda, [p x 2] matrix)",
                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
       ),
-      
       # manip var, ref axes placement
-      selectInput('gly_manip_var', 'Manip var', "none"),
-      selectInput('gly_axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
+      selectInput('obl_manip_var', 'Manip var', "none"),
+      selectInput('obl_axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
                   'center',  multiple = FALSE),
       tags$hr(),
       # Slider controls
-      sliderInput("gly_x_slider", "X contribution", min = -1, max = 1, value = 0, step = .1),
-      sliderInput("gly_y_slider", "Y contribution", min = -1, max = 1, value = 0, step = .1)
+      sliderInput("obl_x_slider", "X contribution", min = -1, max = 1, value = 0, step = .1),
+      sliderInput("obl_y_slider", "Y contribution", min = -1, max = 1, value = 0, step = .1)
     ),
     
     mainPanel(
-      plotlyOutput("gly_plotlyAnim")
+      plotlyOutput("obl_plotlyAnim"),
+      h4("Current basis"),
+      tableOutput("obl_basis_out")
     )
   )
 )
@@ -138,12 +129,12 @@ tabGlyphmap <- tabPanel(
 ### Combined tabs
 ui <- fluidPage(
   navbarPage(
-    "Manual tours",
+    "Manual tours -- comparison",
     tabInput,
     tabRadial,
     tabStatic,
-    tabGlyphmap
+    tabOblique
   )
-  #,verbatimTextOutput("devMessage")
+  # ,verbatimTextOutput("devMessage")
 )
 

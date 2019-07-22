@@ -17,7 +17,7 @@ tabInput <- tabPanel(
       tags$hr(),
       checkboxInput("rescale_data", "Rescale values", value = TRUE)
     ),
-    mainPanel(h2("Data structure"),
+    mainPanel(h3("Data structure"),
               verbatimTextOutput("str_data")
     )
     
@@ -57,7 +57,7 @@ tabRadial <-  tabPanel(
 ### Tabs combined
 ui <- fluidPage(
   navbarPage(
-    "Manual tours -- basic",
+    "Manual tours -- intro",
     tabInput,
     tabRadial
   )

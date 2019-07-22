@@ -60,4 +60,4 @@ getGuidedTour <- function(indexName, grId=NA){ # reurtns a tour function
   if(indexName == "pda_pp"){return(guided_tour(pda_pp(grId)))} # as of now
   else return(guided_tour(holes()))
 }
-###
+### END OF PROJECTION PURSUIT
