@@ -42,8 +42,8 @@ array2df <- function(array, data = NULL) {
   }
   
   # Add labels, attribute, and list
-  lab_abbr <- if(!is.null(data)) abbreviate(colnames(data), 3) 
-  else paste0("V", 1:p)
+  lab_abbr <- if(!is.null(data)) {abbreviate(colnames(data), 3)
+  } else paste0("V", 1:p)
   basis_slides$lab_abbr <- rep(lab_abbr, n_slides)
   
   attr(basis_slides, "manip_var") <- manip_var

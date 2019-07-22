@@ -3,14 +3,15 @@
 #' Runs a local shiny app that demonstrates manual tour and comparable 
 #' traditional techniques for static projections of multivariate data sets.
 #' 
+#' @param example name of the shiny app to run. Expects "intro" or "comparison"
 #' @return opens a local shiny app
-#' 
+#' @export
 #' @examples 
 #' \dontrun{
 #' run_app(example = "intro")
 #' run_app(example = "comparison")
 #' }
-#' @export
+
 
 # For adjusting or adding more apps it may be useful to read: 
 # https://deanattali.com/2015/04/21/r-package-shiny-app/

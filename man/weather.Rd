@@ -68,7 +68,7 @@ weather <- weather[, c(1,3:7,9,12:24)]
 \examples{
 str(weather)
 \dontrun{
-play_manual_tour(data = weather[, 2:17], manip_var = 5, init_rescale_data = TRUE)
+play_manual_tour(data = weather[, 2:17], manip_var = 5, rescale_data = TRUE)
 }
 }
 \references{

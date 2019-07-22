@@ -13,6 +13,7 @@
 #' @return A ggplot2 object ready to be called by `render_plotly()` or 
 #'   `render_gganimate()`.
 #' @export
+#' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
@@ -29,20 +30,20 @@ render_ <- function(slides,
 ) {
   # Initialize
   if (length(slides) == 2)
-    data_slides <- data.frame(slides[[2]])
-  basis_slides  <- data.frame(slides[[1]])
-  manip_var     <- attributes(slides$basis_slides)$manip_var
-  n_slides      <- max(basis_slides$slide)
-  p             <- nrow(basis_slides) / n_slides
-  d             <- ncol(basis_slides) - 2
+    data_slides  <- data.frame(slides[[2]])
+  basis_slides   <- data.frame(slides[[1]])
+  manip_var      <- attributes(slides$basis_slides)$manip_var
+  n_slides       <- max(basis_slides$slide)
+  p              <- nrow(basis_slides) / n_slides
+  d              <- ncol(basis_slides) - 2
   ## Circle
-  angle         <- seq(0, 2 * pi, length = 360)
-  circ          <- data.frame(x = cos(angle), y = sin(angle))
+  angle          <- seq(0, 2 * pi, length = 360)
+  circ           <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes
   if (axes != "off"){
-    zero          <- set_axes_position(0, axes)
-    circ          <- set_axes_position(circ, axes)
-    basis_slides  <- data.frame(set_axes_position(basis_slides[, 1:d], axes), 
+    zero         <- set_axes_position(0, axes)
+    circ         <- set_axes_position(circ, axes)
+    basis_slides <- data.frame(set_axes_position(basis_slides[, 1:d], axes), 
                                 basis_slides[, (d+1):ncol(basis_slides)])
   }
   ## manip var axes asethetics

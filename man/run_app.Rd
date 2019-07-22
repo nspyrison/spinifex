@@ -6,6 +6,9 @@
 \usage{
 run_app(example)
 }
+\arguments{
+\item{example}{name of the shiny app to run. Expects "intro" or "comparison"}
+}
 \value{
 opens a local shiny app
 }

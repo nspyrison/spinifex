@@ -151,7 +151,7 @@ view_manip_space <- function(basis,
   ## helper funcs
   make_circ <- function(ang_st = 0, ang_stop = 2 * pi){
     angle <- seq(ang_st, ang_stop, 
-                 length = round(360 * abs(ang_st - ang_stop) / (2 * pi)) )
+                 length = max(round(360 * abs(ang_st - ang_stop) / (2 * pi)),3) )
     as.matrix(data.frame(x = cos(angle), y = sin(angle), z = 0))
   }
   xyz <- function(df) {colnames(df) <- c("x", "y", "z"); as.data.frame(df)}
@@ -166,8 +166,8 @@ view_manip_space <- function(basis,
                        lab = labels[manip_var])
   ## rotate angle curves, phi & theta
   theta_curve <- xyz(make_circ(0, theta) %*% rot)
-  phi_curve   <- xyz(make_circ(theta, phi))
-  phi_curve$y <- phi_curve$y * sin(tilt) #really the z direction
+  phi_curve   <- xyz(make_circ(theta, theta + phi))
+  phi_curve$y <- phi_curve$y * s #really the z direction
   mid_theta   <- round(nrow(theta_curve)/2)
   mid_phi     <- round(nrow(phi_curve)/2)
   
@@ -220,14 +220,14 @@ view_manip_space <- function(basis,
       color = manip_col, size = .1, linetype = 1, inherit.aes = F) +
     ## Theta text
     ggplot2::geom_text(
-      data = theta_curve[mid_theta, ]/5 *1.2, 
+      data = theta_curve[mid_theta, ]/5 *1.33, 
       mapping = ggplot2::aes(x = x/5, y = y/5, label = "theta"), 
       size = 4, colour = manip_col, parse = T, 
       vjust = "outward", hjust = "outward") +
     ## Phi curve path
     ggplot2::geom_path(
       data = phi_curve/3, 
-      mapping = ggplot2::aes(x = x-.1, y = y), 
+      mapping = ggplot2::aes(x = x, y = y), 
       color = z_col, size = .1, linetype = 2, inherit.aes = F) +
     ## Phi text 
     ggplot2::geom_text(

@@ -25,7 +25,7 @@
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
 #' @param fps Frames/slides shown per second. Defaults to 3.
-#' @param init_rescale_data When TRUE will apply `tourr::rescale()` on the data.
+#' @param rescale_data When TRUE scales the data to between 0 and 1.
 #'   Defaults to FALSE.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #'   plotting options.
@@ -55,9 +55,9 @@ play_manual_tour <- function(data,
                              pch         = 20,
                              axes        = "center",
                              fps         = 3,
-                             init_rescale_data = FALSE,
+                             rescale_data = FALSE,
                              ...) {
-  if (init_rescale_data) data <- tourr::rescale(data)
+  if (rescale_data) data <- tourr::rescale(data)
   if (is.null(basis)) {
     message("NULL basis passed. Initializing random basis.")
     basis <- tourr::basis_random(n = ncol(data))

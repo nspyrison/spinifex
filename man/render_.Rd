@@ -28,3 +28,13 @@ A ggplot2 object ready to be called by \code{render_plotly()} or
 Typically called by \code{render_plotly()} or \code{render_gganimate()}. Takes the
 result of \code{array2df()}, and renders them into a ggplot2 object.
 }
+\examples{
+flea_std <- tourr::rescale(tourr::flea[, 1:6])
+
+rb <- basis_random(n = ncol(flea_std))
+mtour <- manual_tour(basis = rb, manip_var = 4)
+sshow <- array2df(array = mtour, data = flea_std)
+render_(slides = sshow)
+
+render_(slides = sshow, axes = "bottomleft")
+}
