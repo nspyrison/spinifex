@@ -72,7 +72,8 @@ oblique_frame <- function(data,
     list(basis_slides = basis_slides, data_slides = data_slides)
   } else list(basis_slides = basis_slides)
   
-  gg <- render_(slides, manip_col, col, pch, axes, ...)
+  gg <- render_(slides, manip_col, col, pch, axes, ...) +
+    ggplot2::coord_fixed()
   
   gg
 }

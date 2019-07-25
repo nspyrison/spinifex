@@ -1,6 +1,6 @@
 
 
-### Input tab
+### Input tab ----
 tabInput <- tabPanel(
   "Input", fluidPage(
     sidebarPanel(
@@ -29,7 +29,7 @@ tabInput <- tabPanel(
 )
 
 
-### Radial tab
+### Radial tab ----
 tabRadial <-  tabPanel(
   "Radial", fluidPage(
     sidebarPanel(
@@ -71,7 +71,7 @@ tabRadial <-  tabPanel(
   )
 )
 
-### Static tab
+### Static tab ----
 tabStatic <- tabPanel(
   "Static projections", fluidPage(
     sidebarPanel(
@@ -87,7 +87,7 @@ tabStatic <- tabPanel(
   )
 )
 
-### Oblique tab
+### Oblique tab ----
 tabOblique <- tabPanel(
   "Oblique", fluidPage(
     sidebarPanel(
@@ -118,7 +118,7 @@ tabOblique <- tabPanel(
     ),
     
     mainPanel(
-      plotlyOutput("obl_plotlyAnim"),
+      plotOutput("obl_ggplot_out"),
       h4("Current basis"),
       tableOutput("obl_basis_out")
     )
@@ -126,7 +126,7 @@ tabOblique <- tabPanel(
 )
 
 
-### Combined tabs
+### Tabs combined ----
 ui <- fluidPage(
   navbarPage(
     "Manual tours -- comparison",

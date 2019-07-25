@@ -11,7 +11,7 @@ library(minerva) #MIC, TIC
 # write.csv(tourr::flea, file="./inst/shiny-examples/comparison/flea.csv",row.names=FALSE)
 # save(df, file="./inst/shiny-examples/comparison/df.rda")
 
-### STATIC LINEAR PROJECTIONS
+### STATIC LINEAR PROJECTIONS ----
 staticProjection <- function(dat, method, col, pch) {
   if (method == "PCA") {
     library(ggfortify)
@@ -43,7 +43,7 @@ staticProjection <- function(dat, method, col, pch) {
 # staticProjection(dat, method, col, pch)
 ### END OF STATIC
 
-### PROJECTION PURSUIT
+### PROJECTION PURSUIT ----
 guidedTourOptions <- c("cmass", "holes", "Skinny", "Striated", "Convex", "Clumpy"
                        ,"splines2d", "dcor2d", "MIC", "TIC")
 scags <- function(scagMetricIndex) {

@@ -1,3 +1,5 @@
+# Preamble ------
+
 #' Shiny app for exploring multivariate data, comparing manual tours with 
 #' alternative techniques
 #' 
@@ -11,9 +13,8 @@
 source('global.R', local = TRUE)
 source('ui.R', local = TRUE)
 
-
 server <- function(input, output, session) {
-  
+  # Initialize ----
   data <- reactive({
       if (is.null(input$file)) {return(tourr::flea)}
       read.csv(input$file$datapath, stringsAsFactors = FALSE)
@@ -27,7 +28,7 @@ server <- function(input, output, session) {
   colToSelect <- reactive(min(ncol(numericDat()), 6))
   output$str_data <- renderPrint({str(data())})
   
-  ##### Radial tab
+  ##### Radial tab ----
   ### Initialize input 
   selected_dat <- reactive({
     x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
@@ -104,7 +105,7 @@ server <- function(input, output, session) {
   })
   ##### End of radial tab
   
-  ##### Static tab
+  ##### Static tab ----
   observeEvent(input$static_button, {
     output$static_plot <- renderPlot({
       staticProjection(dat = selected_dat(),
@@ -116,7 +117,7 @@ server <- function(input, output, session) {
   })
   ##### End of static tab
   
-  ##### Oblique tab
+  ##### Oblique tab ----
   ### Initialize oblique input 
   obl_manip_var <- reactive(which(colnames(numericDat()) == input$obl_manip_var)) # number
   obl_basis <- reactive({
@@ -134,19 +135,30 @@ server <- function(input, output, session) {
   
   ### Oblique output
   observeEvent(input$obl_button, {
+    ## Initialize graph
+    m_sp <- create_manip_space(obl_basis(), obl_manip_var())
+    x_zero <- atan(m_sp[obl_manip_var(), 3] / m_sp[obl_manip_var(), 1])
+    x_i <- -x_zero / (pi/2)
+    
+    updateSliderInput(session,
+                      "obl_x_slider",
+                      value = x_i)
+    #
+    phi <- input$obl_x_slider * pi/2 + x_zero
+    
     # Basis
     output$obl_basis_out <- renderTable(
       oblique_basis(basis = obl_basis(),
-                    manip_var = obl_manip_var(), 
-                    theta = NULL, #TODO: fix phi and theta #obl_x_slider
-                    phi = NULL))
-    # Frame
-    output$obl_plotlyAnim <- renderPlot({
-      oblique_frame(data = selected_dat(),
-                    basis = obl_basis(), 
                     manip_var = obl_manip_var(),
-                    theta = NULL, #TODO: fix phi and theta #obl_x_slider
-                    phi = NULL,
+                    theta = 0,
+                    phi = 0))
+    # Frame
+    output$obl_ggplot_out <- renderPlot({
+      oblique_frame(data = selected_dat(),
+                    basis = obl_basis(),
+                    manip_var = obl_manip_var(),
+                    theta = 0,
+                    phi = 0,
                     col = col_of(col_var()),
                     pch = pch_of(pch_var()),
                     axes = input$axes)
@@ -162,15 +174,3 @@ server <- function(input, output, session) {
 }
 shinyApp(ui, server)
 
-
-##### DEPRICATING OBLIQUE
-### Oblique: this gives 1 frame at phi1, cannot change phi1
-### but will need to use some of the earlier internal functions to change theta and phi
-# flea_std <- tourr::rescale(tourr::flea[,1:6])
-# basis <- tourr::basis_random(n = ncol(flea_std))
-# manip_var <- 4
-# phi1 <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-# 
-# play_manual_tour(data = flea_std, basis = basis, manip_var = 4, 
-#                  phi_min = phi1, phi_max = phi1)
-#####
