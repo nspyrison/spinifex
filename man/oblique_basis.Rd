@@ -21,7 +21,7 @@ the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, no default.}
 }
 \value{
-(p, 2) data frame of the rotated basis
+(p, 2) matrix of the rotated basis
 }
 \description{
 Rotates a basis returning (p, 2) basis describing \code{oblique_frame()}

@@ -1,4 +1,5 @@
 # Preamble ------
+# options(shiny.error = browser)
 
 #' Shiny app for exploring multivariate data, comparing manual tours with 
 #' alternative techniques
@@ -120,60 +121,35 @@ server <- function(input, output, session) {
   ##### Oblique tab ----
   ### Initialize oblique input 
   obl_manip_var <- reactive(which(colnames(numericDat()) == input$obl_manip_var)) # number
-  obl_basis <- reactive({
+  obl_INIT_basis <- reactive({
     if (input$obl_basis_init == "Random") x <- tourr::basis_random(n = n(), d = 2)
     if (input$obl_basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
     return(x)
   })
-  # x motion reactives
-  obl_basis_x <- reactive({
-    theta <- 0
-    mv_sp <- create_manip_space(obl_basis(), obl_manip_var())[obl_manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-    phi <- input$obl_x_slider * pi/2 + phi.x_zero
-    oblique_basis(basis = obl_basis(),
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi)
-  })
-  obl_frame_x <- reactive({
-    theta <- 0
-    mv_sp <- create_manip_space(obl_basis(), obl_manip_var())[obl_manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-    phi <- input$obl_x_slider * pi/2 + phi.x_zero
-    oblique_frame(data = selected_dat(),
-                  basis = obl_basis(),
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi,
-                  col = col_of(col_var()),
-                  pch = pch_of(pch_var()),
-                  axes = input$axes)
-  })
-  # y motion reactives
-  obl_basis_y <- reactive({
-    theta <- pi/2
-    mv_sp <- create_manip_space(obl_basis(), obl_manip_var())[obl_manip_var(), ]
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-    phi <- input$obl_y_slider * pi/2 + phi.y_zero
-    oblique_basis(basis = obl_basis(),
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi)
-  })
-  obl_frame_y <- reactive({
-    theta <- pi/2
-    mv_sp <- create_manip_space(obl_basis(), obl_manip_var())[obl_manip_var(), ]
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-    phi <- input$obl_y_slider * pi/2 + phi.y_zero
-    oblique_frame(data = selected_dat(),
-                  basis = obl_basis(),
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi,
-                  col = col_of(col_var()),
-                  pch = pch_of(pch_var()),
-                  axes = input$axes)
+  ## Initialize basis and graph and table 
+  rv <- reactiveValues() 
+  observeEvent(input$obl_button, {
+    rv$obl_basis <- obl_INIT_basis()
+    ## update sliders
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
+    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
+    x_i <- -phi.x_zero / (pi/2)
+    y_i <- -phi.y_zero / (pi/2)
+    updateSliderInput(session, "obl_x_slider", value = x_i)
+    updateSliderInput(session, "obl_y_slider", value = y_i)
+    
+    ## after button and init, then observe sliders
+    observeEvent(input$obl_x_slider, {
+      rv$obl_basis <- obl_basis_x()
+      output$obl_basis_out <- renderTable(obl_basis_x())
+      output$obl_ggplot_out <- renderPlot(obl_frame_x())
+    })
+    observeEvent(input$obl_y_slider, {
+      rv$obl_basis <- obl_basis_y()
+      output$obl_basis_out <- renderTable(obl_basis_y())
+      output$obl_ggplot_out <- renderPlot(obl_frame_y())
+    })
   })
   
   ### Update oblique inputs
@@ -183,35 +159,61 @@ server <- function(input, output, session) {
                       choices = input$variables)
   })
   
-  ### Initialize graphs and slider values
-  isolate({
-    ## outputs before updating sliders
-    output$obl_basis_out <- renderTable(obl_basis_x())
-    output$obl_ggplot_out <- renderPlot(obl_frame_x())
-   
-    ## update sliders
-    mv_sp <- create_manip_space(obl_basis(), obl_manip_var())[obl_manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
-    print(x_i <- -phi.x_zero / (pi/2))
-    print(y_i <- -phi.y_zero / (pi/2))
-    
-    updateSliderInput(session, "obl_x_slider", value = x_i)
-    updateSliderInput(session, "obl_y_slider", value = y_i)
+  ##x and y reactives for oblique_frame(), _basis()
+  # x motion reactives
+  obl_basis_x <- reactive({
+    theta <- 0
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+    phi <- input$obl_x_slider * pi/2 + phi.x_zero
+    oblique_basis(basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi)
   })
-  observeEvent(input$obl_x_slider, {
-    output$obl_basis_out <- renderTable(obl_basis_x())
-    output$obl_ggplot_out <- renderPlot(obl_frame_x())
+  obl_frame_x <- reactive({
+    theta <- 0
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+    phi <- input$obl_x_slider * pi/2 + phi.x_zero
+    oblique_frame(data = selected_dat(),
+                  basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi,
+                  col = col_of(col_var()),
+                  pch = pch_of(pch_var()),
+                  axes = input$obl_axes)
   })
-  observeEvent(input$obl_y_slider, {
-    output$obl_basis_out <- renderTable(obl_basis_y())
-    output$obl_ggplot_out <- renderPlot(obl_frame_y())
+  # y motion reactives
+  obl_basis_y <- reactive({
+    theta <- pi/2
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+    phi <- input$obl_y_slider * pi/2 + phi.y_zero
+    oblique_basis(basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi)
   })
-  
+  obl_frame_y <- reactive({
+    theta <- pi/2
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+    phi <- input$obl_y_slider * pi/2 + phi.y_zero
+    oblique_frame(data = selected_dat(),
+                  basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi,
+                  col = col_of(col_var()),
+                  pch = pch_of(pch_var()),
+                  axes = input$obl_axes)
+  })
   
   ### Development help -- uncomment message at bottom on ui.R to use
   output$devMessage <- renderPrint({
-    numericVars()
+    rv$obl_basis
     #paste("Development Message: nSelected(): ", head(numVars()))
   })
   

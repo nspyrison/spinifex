@@ -135,6 +135,6 @@ ui <- fluidPage(
     tabStatic,
     tabOblique
   )
-  # ,verbatimTextOutput("devMessage")
+   #,verbatimTextOutput("devMessage")
 )
 

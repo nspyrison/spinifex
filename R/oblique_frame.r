@@ -93,7 +93,7 @@ oblique_frame <- function(data,
 #' @param phi Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, no default.
-#' @return (p, 2) data frame of the rotated basis
+#' @return (p, 2) matrix of the rotated basis
 #' @import tourr
 #' @export
 #' @examples
@@ -109,9 +109,7 @@ oblique_basis <- function(basis       = NULL,
                           phi         = NULL) {
   
   m_sp <- create_manip_space(basis, manip_var)
-  r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
-  
-  ret <- as.data.frame(r_m_sp[, 1:2])
+  ret <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1:2]
   colnames(ret) <- c("x","y")
   
   ret
