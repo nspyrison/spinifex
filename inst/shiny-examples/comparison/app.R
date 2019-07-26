@@ -114,7 +114,7 @@ server <- function(input, output, session) {
   # Save button (radial)
   observeEvent(input$radial_save, {
     if (is.null(tour_path())) return()
-    out <- tour_path()[,, input$basistosave]
+    out <- tour_path()[,, input$basistosave] # no variable or column names
     # save(out, file = paste0("tour_basis_", input$basistosave, ".rda")) # .rda file
     write.csv2(out, row.names = FALSE, col.names = FALSE, 
                file = paste0("tour_basis_", input$basistosave, ".csv"))
@@ -158,7 +158,7 @@ server <- function(input, output, session) {
     }
     return(x)
   })
-  ## Initialize basis and graph and table 
+  ## Initialize basis and graph and table
   rv <- reactiveValues() 
   observeEvent(input$obl_button, {
     rv$obl_basis <- obl_INIT_basis()
@@ -246,7 +246,7 @@ server <- function(input, output, session) {
   ### Development help -- uncomment message at bottom on ui.R to use
   output$devMessage <- renderPrint({
     rv$obl_basis
-    #paste("Development Message: nSelected(): ", head(numVars()))
+    # paste("Development Message: nSelected(): ", head(numVars()))
   })
   
 }
