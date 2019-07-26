@@ -47,9 +47,25 @@ server <- function(input, output, session) {
   basis <- reactive({
     if (input$basis_init == "Random") x <- tourr::basis_random(n = n(), d = 2)
     if (input$basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
+    if (input$basis_init == "From file") {
+      path <- input$basispath$datapath
+      ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
+      if (ext == ".csv") x <- read.csv(path, stringsAsFactors = FALSE)
+      if (ext == ".rda"){ # load .rda object, not just name.
+        tmp <- new.env()
+        load(file = path, envir = tmp)
+        x <- tmp[[ls(tmp)[1]]]
+      }
+    }
+    if (input$basis_init == "Projection pursuit") {
+      tourFunc <- getGuidedTour(input$pp_type)
+      tourHist <- save_history(selected_dat(), tourFunc)
+      tourLen <- dim(tourHist)[3]
+      x <- matrix(as.numeric(tourHist[,, tourLen]), ncol = 2)
+    }
     return(x)
   })
-  # for saving a basis
+  # used for saving a basis
   tour_path <- reactive({manual_tour(basis = basis(),
                                      manip_var = manip_var(),
                                      angle = input$angle)
@@ -121,9 +137,25 @@ server <- function(input, output, session) {
   ##### Oblique tab ----
   ### Initialize oblique input 
   obl_manip_var <- reactive(which(colnames(numericDat()) == input$obl_manip_var)) # number
-  obl_INIT_basis <- reactive({
+  obl_INIT_basis <- reactive({  # current basis stored in rv$obl_basis
     if (input$obl_basis_init == "Random") x <- tourr::basis_random(n = n(), d = 2)
     if (input$obl_basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
+    if (input$obl_basis_init == "From file") {
+      path <- input$basispath$datapath
+      ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
+      if (ext == ".csv") x <- read.csv(path, stringsAsFactors = FALSE)
+      if (ext == ".rda"){ # load .rda object, not just name.
+        tmp <- new.env()
+        load(file = path, envir = tmp)
+        x <- tmp[[ls(tmp)[1]]]
+      }
+    }
+    if (input$obl_basis_init == "Projection pursuit") {
+      tourFunc <- getGuidedTour(input$pp_type)
+      tourHist <- save_history(selected_dat(), tourFunc)
+      tourLen <- dim(tourHist)[3]
+      x <- matrix(as.numeric(tourHist[,, tourLen]), ncol = 2)
+    }
     return(x)
   })
   ## Initialize basis and graph and table 
