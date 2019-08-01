@@ -17,7 +17,7 @@ tabInput <- tabPanel(
       # Point color, shape and rescale [0,1] data
       selectInput('col_var', 'Point color', "none"),
       selectInput('pch_var', 'Point shape', "none"),
-      checkboxInput("rescale_data", "Rescale values", value = TRUE)
+      checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
     ),
     mainPanel(h3("Data structure"),
               verbatimTextOutput("str_data")

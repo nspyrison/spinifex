@@ -76,7 +76,7 @@ server <- function(input, output, session) {
     updateCheckboxGroupInput(session,
                              "variables",
                              choices = names(numericDat()),
-                             selected = names(numericDat()[1:colToSelect()]))
+                             selected = names(numericDat()[1:colToSelect()])
     updateSelectInput(session,
                       "manip_var",
                       choices = input$variables)
@@ -91,10 +91,10 @@ server <- function(input, output, session) {
     } else { # list "none", if there are not character or factor vars.
       updateSelectInput(session,
                         "col_var",
-                        choices = c("None"))
+                        choices = c("<none>"))
       updateSelectInput(session,
                         "pch_var",
-                        choices = c("None"))
+                        choices = c("<none>"))
     }
   })
   
