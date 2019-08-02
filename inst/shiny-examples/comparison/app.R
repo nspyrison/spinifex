@@ -77,6 +77,7 @@ server <- function(input, output, session) {
                              "variables",
                              choices = names(numericDat()),
                              selected = names(numericDat()[1:colToSelect()])
+    )
     updateSelectInput(session,
                       "manip_var",
                       choices = input$variables)
@@ -163,13 +164,15 @@ server <- function(input, output, session) {
   observeEvent(input$obl_button, {
     rv$obl_basis <- obl_INIT_basis()
     ## update sliders
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
-    x_i <- -phi.x_zero / (pi/2)
-    y_i <- -phi.y_zero / (pi/2)
-    updateSliderInput(session, "obl_x_slider", value = x_i)
-    updateSliderInput(session, "obl_y_slider", value = y_i)
+    observeEvent(c(input$obl_button, input$obl_manip_var), {
+      mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
+      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
+      x_i <- round(-phi.x_zero / (pi/2), 1)
+      y_i <- round(-phi.y_zero / (pi/2), 1)
+      isolate(updateSliderInput(session, "obl_x_slider", value = x_i))
+      isolate(updateSliderInput(session, "obl_y_slider", value = y_i))
+    })
     
     ## after button and init, then observe sliders
     observeEvent(input$obl_x_slider, {
@@ -245,7 +248,7 @@ server <- function(input, output, session) {
   
   ### Development help -- uncomment message at bottom on ui.R to use
   output$devMessage <- renderPrint({
-    rv$obl_basis
+    print(output$obl_basis_out)
     # paste("Development Message: nSelected(): ", head(numVars()))
   })
   
