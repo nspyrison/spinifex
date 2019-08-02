@@ -7,8 +7,7 @@
 play_radial_tour(data, basis = NULL, manip_var, theta = NULL,
   phi_min = 0, phi_max = 0.5 * pi, angle = 0.05,
   manip_col = "blue", render_type = render_plotly, col = "black",
-  pch = 20, axes = "center", fps = 3, init_rescale_data = FALSE,
-  ...)
+  pch = 20, axes = "center", fps = 3, rescale_data = FALSE, ...)
 }
 \arguments{
 \item{data}{(n, p) dataset to project, consisting of numeric variables.}
@@ -46,7 +45,7 @@ to "center".}
 
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 
-\item{init_rescale_data}{When TRUE will apply \code{tourr::rescale()} on the data.
+\item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
 \item{...}{Optionally pass additional arguments to the \code{render_type} for

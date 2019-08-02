@@ -22,7 +22,7 @@ You can install spinifex from CRAN:
 install.packages("spinifex")
 ```
 
-Or you can install the development version on github using `remotes`:
+Or you can install the latest development version on github via `remotes`:
 
 ```
 remotes::install_github("nspyrison/spinifex")
@@ -30,11 +30,11 @@ remotes::install_github("nspyrison/spinifex")
 
 View the vignette to get started!
 ```
-library(spinifiex)
+library("spinifiex")
 vignette("spinifex_vignette")
 ```
 
-## bug reports/requests
+## reporting and issues
 
 Please submit all bug reports, errors, and feature requests to https://github.com/nspyrison/spinifex/issues  
 
