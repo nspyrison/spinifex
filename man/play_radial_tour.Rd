@@ -2,12 +2,20 @@
 % Please edit documentation in R/play_radial_tour.r
 \name{play_radial_tour}
 \alias{play_radial_tour}
+\alias{play_manual_tour}
 \title{Render display of a 2D radial manual tour}
 \usage{
 play_radial_tour(data, basis = NULL, manip_var, theta = NULL,
   phi_min = 0, phi_max = 0.5 * pi, angle = 0.05,
   manip_col = "blue", render_type = render_plotly, col = "black",
-  pch = 20, axes = "center", fps = 3, rescale_data = FALSE, ...)
+  pch = 20, axes = "center", fps = 3, rescale_data = FALSE,
+  alpha = alpha, ...)
+
+play_manual_tour(data, basis = NULL, manip_var, theta = NULL,
+  phi_min = 0, phi_max = 0.5 * pi, angle = 0.05,
+  manip_col = "blue", render_type = render_plotly, col = "black",
+  pch = 20, axes = "center", fps = 3, rescale_data = FALSE,
+  alpha = alpha, ...)
 }
 \arguments{
 \item{data}{(n, p) dataset to project, consisting of numeric variables.}
@@ -48,11 +56,13 @@ to "center".}
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
+\item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
+
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
 plotting options.}
 }
 \value{
-An animation of a manual tour.
+An animation of a radial tour.
 }
 \description{
 Performs the a 2D radial manual tour and returns an animation of \code{render_type}.

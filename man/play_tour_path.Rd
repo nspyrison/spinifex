@@ -6,10 +6,10 @@
 \usage{
 play_tour_path(tour_path, data = NULL, angle = 0.05,
   render_type = render_plotly, col = "black", pch = 20,
-  axes = "center", fps = 3, ...)
+  axes = "center", fps = 3, alpha = 1, ...)
 }
 \arguments{
-\item{tour_path}{The result of \code{tourr::save_history()} or \code{manual_tour()}.}
+\item{tour_path}{The result of \code{tourr::save_history()} or \code{radial_tour()}.}
 
 \item{data}{Optional, number of columns must match that of \code{tour_path}.}
 
@@ -27,10 +27,12 @@ to "center".}
 
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 
+\item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
+
 \item{...}{Optionally pass additional arguments to \code{render_type}.}
 }
 \description{
-Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interpolates
+Takes the result of \code{tourr::save_history()} or \code{radial_tour()}, interpolates
 over the path and renders into a selected \code{render_type}.
 }
 \examples{

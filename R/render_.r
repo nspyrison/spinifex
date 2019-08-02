@@ -10,6 +10,7 @@
 #' @param pch Point character of the projected points. Defaults to 20.
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
+#' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @return A ggplot2 object ready to be called by `render_plotly()` or 
 #'   `render_gganimate()`.
 #' @export
@@ -17,7 +18,7 @@
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
-#' mtour <- manual_tour(basis = rb, manip_var = 4)
+#' mtour <- radial_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_(slides = sshow)
 #' 
@@ -26,7 +27,8 @@ render_ <- function(slides,
                     manip_col = "blue",
                     col = "black", 
                     pch = 20,
-                    axes = "center"
+                    axes = "center",
+                    alpha = 1
 ) {
   # Initialize
   if (length(slides) == 2)
@@ -76,7 +78,7 @@ render_ <- function(slides,
     ## Projected data points
     suppressWarnings( # Suppress for unused aes "frame".
       ggplot2::geom_point( 
-        data = data_slides, size = .7, shape = pch, color = col,
+        data = data_slides, size = .7, shape = pch, color = col, alpha = alpha,
         mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
       )
     )

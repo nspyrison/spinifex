@@ -51,7 +51,7 @@ breastcancer <- data.frame(Id = d$Id, mat, Class = d$Class)
 \examples{
 str(breastcancer)
 \dontrun{
-play_manual_tour(data = breastcancer[, 2:9], manip_var = 3, rescale_data = TRUE)
+play_radial_tour(data = breastcancer[, 2:9], manip_var = 3, rescale_data = TRUE)
 }
 }
 \keyword{datasets}

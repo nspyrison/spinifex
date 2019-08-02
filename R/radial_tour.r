@@ -2,14 +2,16 @@
 #' of a projection
 #'
 #' Typically called by `array2af()`. An array of projections, 
-#' the manual tour of the `manip_var`, which is rotated from phi's starting 
+#' the radial tour of the `manip_var`, which is rotated from phi's starting 
 #' position to `phi_max`, to `phi_min`, and back to the start position.
 #'
+#' @name radial_tour
+#' @aliases manual_tour
 #' @param basis A (p, d) dim orthonormal matrix. Required, no default.
 #' @param manip_var Integer column number or string exact column name of the.
 #'   variable to manipulate. Required, no default.
 #' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
-#'   reference frame. Defaults to theta of the basis for a radial manual tour.
+#'   reference frame. Defaults to theta of the basis for a radial tour.
 #' @param phi_min Minimum value phi should move to. Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to 0.
@@ -17,7 +19,7 @@
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to pi/2.
 #' @param angle target distance (in radians) between bases.
-#' @return A (p, d, 4) history_array of the manual tour. The bases set for
+#' @return A (p, d, 4) history_array of the radial tour. The bases set for
 #'   phi_start, `phi_min`,  `phi_max`, and back to phi_start. To be called by
 #'   `tourr::interpolate()`.
 #' @export
@@ -26,12 +28,12 @@
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
 #' radial_tour(basis = rb, manip_var = 4)
-radial_tour <- function(basis = NULL,
+radial_tour <- function(basis   = NULL,
                         manip_var,
-                        theta = NULL,
+                        theta   = NULL,
                         phi_min = 0,
                         phi_max = .5 * pi,
-                        angle = .05
+                        angle   = .05
 ) {
   # Initalize
   basis <- as.matrix(basis)
@@ -76,3 +78,6 @@ radial_tour <- function(basis = NULL,
 
   basis_set
 }
+
+#' @rdname radial_tour
+manual_tour <- radial_tour

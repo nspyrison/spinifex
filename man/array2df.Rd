@@ -7,7 +7,7 @@
 array2df(array, data = NULL)
 }
 \arguments{
-\item{array}{A (p, d, n_slides) array of a tour, the output of \code{manual_tour()}.}
+\item{array}{A (p, d, n_slides) array of a tour, the output of \code{radial_tour()}.}
 
 \item{data}{Optional, (n, p) dataset to project, consisting of numeric variables.}
 }
@@ -16,15 +16,15 @@ A list containing the (p, d, n_slides) basis slides array, and
 the (n, d, n_slides) data slides array.
 }
 \description{
-Typically called by a wrapper function, \code{play_manual_tour} or
+Typically called by a wrapper function, \code{play_radial_tour} or
 \code{play_tour_path}. Takes the result of \code{tourr::save_history()} or
-\code{manual_tour()} and restuctures the data from an array to a long data frame
+\code{radial_tour()} and restuctures the data from an array to a long data frame
 for use in ggplots.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
 rb <- basis_random(n = ncol(flea_std))
-mtour <- manual_tour(basis = rb, manip_var = 4)
+mtour <- radial_tour(basis = rb, manip_var = 4)
 array2df(array = mtour, data = flea_std)
 }

@@ -87,7 +87,7 @@ view_manip_space(basis = flea_rb, manip_var = 3, labels = colnames(flea_std))
 Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
 
 ```{r, eval=F}
-play_manual_tour(data = flea_std, basis = flea_rb, manip_var = 3)
+play_radial_tour(data = flea_std, basis = flea_rb, manip_var = 3)
 ```
 
 *plotly animation not rendered in this vignette, but will display in viewer*
@@ -143,7 +143,7 @@ ggplot(rot_xy, aes(x=x, y=y)) + geom_point(size=0.3) +
 
 ## Example 3 - Rotation after holes guided tour
 
-Manual tours are often employed after an interesting feature has been identified. How the contributions of each variable impact the structure of resulting PCA, for example, might be interesting to explore. Alternatively, we can perform projection pursuit to maximize an objective function within the projection and performing a hill-climbing algorithm and explore what effect the contributions of the variables have there. Let's do just that, optimizing a Holes indexed guided tour using the package `tourr`.
+Radial tours are often employed after an interesting feature has been identified. How the contributions of each variable impact the structure of resulting PCA, for example, might be interesting to explore. Alternatively, we can perform projection pursuit to maximize an objective function within the projection and performing a hill-climbing algorithm and explore what effect the contributions of the variables have there. Let's do just that, optimizing a Holes indexed guided tour using the package `tourr`.
 
 ```{r}
 flea_std <- tourr::rescale(tourr::flea[,1:6])

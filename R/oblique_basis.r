@@ -22,10 +22,10 @@
 #' 
 #' oblique_basis(basis = rb, manip_var = 4, theta, phi)
 
-oblique_basis <- function(basis       = NULL,
+oblique_basis <- function(basis = NULL,
                           manip_var,
-                          theta       = NULL,
-                          phi         = NULL) {
+                          theta = NULL,
+                          phi   = NULL) {
   
   m_sp <- create_manip_space(basis, manip_var)
   ret <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1:2]

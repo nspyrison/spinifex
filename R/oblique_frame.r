@@ -22,6 +22,7 @@
 #'   to "center".
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #'   Defaults to FALSE.
+#' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #'   plotting options.
 #' @return a ggplot object of the rotated projection.
@@ -38,13 +39,14 @@
 oblique_frame <- function(data,
                           basis       = NULL,
                           manip_var,
-                          theta       = NULL,
-                          phi         = NULL,
-                          manip_col   = "blue",
-                          col         = "black", 
-                          pch         = 20,
-                          axes        = "center",
+                          theta        = NULL,
+                          phi          = NULL,
+                          manip_col    = "blue",
+                          col          = "black", 
+                          pch          = 20,
+                          axes         = "center",
                           rescale_data = FALSE,
+                          alpha        = 1,
                           ...) {
   if (rescale_data) data <- tourr::rescale(data)
   if (is.null(basis)) {
@@ -72,45 +74,9 @@ oblique_frame <- function(data,
     list(basis_slides = basis_slides, data_slides = data_slides)
   } else list(basis_slides = basis_slides)
   
-  gg <- render_(slides, manip_col, col, pch, axes, ...) +
+  gg <- render_(slides = slides, manip_col = manip_col, col = col, pch = pch, 
+                axes = axes, alpha = alpha, ...) +
     ggplot2::coord_fixed()
   
   gg
-}
-
-
-#' Return the basis of an oblique frame
-#'
-#' Rotates a basis returning (p, 2) basis describing `oblique_frame()` 
-#' Used to create an oblique tour by small changes to the rotation.
-#' 
-#' @param basis A (p, d) dim orthonormal numeric matrix. 
-#'   If it's left null, random basis will be used.
-#' @param manip_var Number of the column/dimension to rotate.
-#' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
-#'   reference frame. Required, no default.
-#'   If left NULL, will initialize the radial angle of the `manip_var`.`
-#' @param phi Phi is angle in radians of 
-#'   the "out-of-plane" rotation, the z-axis of the reference frame. 
-#'   Required, no default.
-#' @return (p, 2) matrix of the rotated basis
-#' @import tourr
-#' @export
-#' @examples
-#' rb <- tourr::basis_random(n = 6)
-#' theta <- runif(1, 0, 2*pi)
-#' phi <- runif(1, 0, 2*pi)
-#' 
-#' oblique_basis(basis = rb, manip_var = 4, theta, phi)
-
-oblique_basis <- function(basis       = NULL,
-                          manip_var,
-                          theta       = NULL,
-                          phi         = NULL) {
-  
-  m_sp <- create_manip_space(basis, manip_var)
-  ret <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1:2]
-  colnames(ret) <- c("x","y")
-  
-  ret
 }

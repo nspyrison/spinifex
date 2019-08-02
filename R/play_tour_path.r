@@ -1,9 +1,9 @@
 #' Render display of a provided tour path
 #'
-#' Takes the result of `tourr::save_history()` or `manual_tour()`, interpolates
+#' Takes the result of `tourr::save_history()` or `radial_tour()`, interpolates
 #' over the path and renders into a selected `render_type`.
 #'
-#' @param tour_path The result of `tourr::save_history()` or `manual_tour()`.
+#' @param tour_path The result of `tourr::save_history()` or `radial_tour()`.
 #' @param data Optional, number of columns must match that of `tour_path`.
 #' @param angle target distance (in radians) between bases.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
@@ -13,6 +13,7 @@
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
 #' @param fps Frames/slides shown per second. Defaults to 3.
+#' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @param ... Optionally pass additional arguments to `render_type`.
 #' @import tourr
 #' @export
@@ -28,13 +29,14 @@
 #' }
 
 play_tour_path <- function(tour_path,
-                           data = NULL,
+                           data  = NULL,
                            angle = .05,
                            render_type = render_plotly,
-                           col = "black", 
-                           pch = 20,
-                           axes = "center",
-                           fps = 3,
+                           col   = "black", 
+                           pch   = 20,
+                           axes  = "center",
+                           fps   = 3,
+                           alpha = 1,
                            ...) {
   # if data missing, but an attribute, use that.
   if(is.null(data) & !is.null(attributes(tour_path)$data)){ 
@@ -46,7 +48,8 @@ play_tour_path <- function(tour_path,
   attr(tour_path, "class") <- "array"
   slides    <- array2df(array = tour_path, data = data)
   disp      <- render_type(slides = slides, manip_col = manip_col, 
-                           col = col, pch = pch, axes = axes, fps = fps, ...)
+                           col = col, pch = pch, axes = axes, fps = fps,
+                           alpha = alpha, ...)
   
   disp
 }

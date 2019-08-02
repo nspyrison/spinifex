@@ -11,6 +11,7 @@
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
 #' @param fps Frames/slides shown per second. Defaults to 3.
+#' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @param ... Optional, pass addition arguments to 
 #'   `gganimate::transition_states()`.
 #' @export
@@ -19,7 +20,7 @@
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
-#' mtour <- manual_tour(basis = rb, manip_var = 4)
+#' mtour <- radial_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
 #' 
@@ -28,15 +29,17 @@
 #' }
 render_gganimate <- function(slides,
                              manip_col = "blue",
-                             col = "black", 
-                             pch = 20,
-                             axes = "center",
-                             fps = 3,
+                             col   = "black", 
+                             pch   = 20,
+                             axes  = "center",
+                             fps   = 3,
+                             alpha = 1,
                              ...) 
 {
   # Initialize
   gg <- render_(slides = slides, manip_col = manip_col, 
-                col = col, pch = pch, axes = axes) + ggplot2::coord_fixed()
+                col = col, pch = pch, axes = axes, alpha = alpha) + 
+    ggplot2::coord_fixed()
   
   gga <- gg + gganimate::transition_states(
     slide, transition_length = 0, state_length = 1 / fps, ...)

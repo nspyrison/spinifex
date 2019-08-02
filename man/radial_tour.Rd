@@ -2,10 +2,14 @@
 % Please edit documentation in R/radial_tour.r
 \name{radial_tour}
 \alias{radial_tour}
+\alias{manual_tour}
 \title{Produce the series of projection bases to rotate a variable into and out
 of a projection}
 \usage{
 radial_tour(basis = NULL, manip_var, theta = NULL, phi_min = 0,
+  phi_max = 0.5 * pi, angle = 0.05)
+
+manual_tour(basis = NULL, manip_var, theta = NULL, phi_min = 0,
   phi_max = 0.5 * pi, angle = 0.05)
 }
 \arguments{
@@ -15,7 +19,7 @@ radial_tour(basis = NULL, manip_var, theta = NULL, phi_min = 0,
 variable to manipulate. Required, no default.}
 
 \item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the
-reference frame. Defaults to theta of the basis for a radial manual tour.}
+reference frame. Defaults to theta of the basis for a radial tour.}
 
 \item{phi_min}{Minimum value phi should move to. Phi is angle in radians of
 the "out-of-plane" rotation, the z-axis of the reference frame.
@@ -28,13 +32,13 @@ Required, defaults to pi/2.}
 \item{angle}{target distance (in radians) between bases.}
 }
 \value{
-A (p, d, 4) history_array of the manual tour. The bases set for
+A (p, d, 4) history_array of the radial tour. The bases set for
 phi_start, \code{phi_min},  \code{phi_max}, and back to phi_start. To be called by
 \code{tourr::interpolate()}.
 }
 \description{
 Typically called by \code{array2af()}. An array of projections,
-the manual tour of the \code{manip_var}, which is rotated from phi's starting
+the radial tour of the \code{manip_var}, which is rotated from phi's starting
 position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 }
 \examples{

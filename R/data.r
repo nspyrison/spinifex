@@ -46,7 +46,7 @@
 #' @examples
 #' str(breastcancer)
 #' \dontrun{
-#' play_manual_tour(data = breastcancer[, 2:9], manip_var = 3, rescale_data = TRUE)
+#' play_radial_tour(data = breastcancer[, 2:9], manip_var = 3, rescale_data = TRUE)
 #' }
 "breastcancer"
 
@@ -114,7 +114,7 @@
 #' @examples
 #' str(weather)
 #' \dontrun{
-#' play_manual_tour(data = weather[, 2:17], manip_var = 5, rescale_data = TRUE)
+#' play_radial_tour(data = weather[, 2:17], manip_var = 5, rescale_data = TRUE)
 #' }
 "weather"
 
@@ -160,6 +160,6 @@
 #' @examples
 #' str(wine)
 #' \dontrun{
-#' play_manual_tour(data = wine[, 2:14], manip_var = 1, rescale_data = TRUE)
+#' play_radial_tour(data = wine[, 2:14], manip_var = 1, rescale_data = TRUE)
 #' }
 "wine"

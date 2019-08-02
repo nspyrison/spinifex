@@ -6,7 +6,7 @@
 \usage{
 oblique_frame(data, basis = NULL, manip_var, theta = NULL,
   phi = NULL, manip_col = "blue", col = "black", pch = 20,
-  axes = "center", rescale_data = FALSE, ...)
+  axes = "center", rescale_data = FALSE, alpha = 1, ...)
 }
 \arguments{
 \item{data}{(n, p) dataset to project, consisting of numeric variables.}
@@ -36,6 +36,8 @@ to "center".}
 
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
+
+\item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
 
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
 plotting options.}

@@ -5,7 +5,7 @@
 \title{Render the slides as a \emph{plotly} animation}
 \usage{
 render_plotly(slides, manip_col = "blue", col = "black", pch = 20,
-  axes = "center", fps = 3, ...)
+  axes = "center", fps = 3, alpha = 1, ...)
 }
 \arguments{
 \item{slides}{The result of \code{array2df()}, a long df of the projected frames.}
@@ -22,6 +22,8 @@ to "center".}
 
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 
+\item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
+
 \item{...}{Optional, pass addition arguments to \code{plotly::animation_opts()}
 and \code{plotly::layout()}.}
 }
@@ -34,7 +36,7 @@ Takes the result of \code{array2df()} and renders them into a
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
 rb <- basis_random(n = ncol(flea_std))
-mtour <- manual_tour(basis = rb, manip_var = 4)
+mtour <- radial_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 render_plotly(slides = sshow)
 

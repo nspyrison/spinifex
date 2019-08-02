@@ -3,6 +3,8 @@
 #' Performs the a 2D radial manual tour and returns an animation of `render_type`.
 #' For use with `tourr::save_history()` tour paths see `play_tour_path()`. 
 #' 
+#' @name play_radial_tour
+#' @aliases play_manual_tour
 #' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix. 
 #'   If it's left null, random basis will be used.
@@ -27,9 +29,10 @@
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #'   Defaults to FALSE.
+#' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #'   plotting options.
-#' @return An animation of a manual tour.
+#' @return An animation of a radial tour.
 #' @import tourr
 #' @export
 #' @examples
@@ -56,6 +59,7 @@ play_radial_tour <- function(data,
                              axes        = "center",
                              fps         = 3,
                              rescale_data = FALSE,
+                             alpha = alpha,
                              ...) {
   if (rescale_data) data <- tourr::rescale(data)
   if (is.null(basis)) {
@@ -63,12 +67,16 @@ play_radial_tour <- function(data,
     basis <- tourr::basis_random(n = ncol(data))
   }
   
-  m_tour <- manual_tour(basis = basis, manip_var = manip_var, angle = angle,
+  m_tour <- radial_tour(basis = basis, manip_var = manip_var, angle = angle,
                         theta = theta, phi_min = phi_min, phi_max = phi_max)
   
   slides <- array2df(array = m_tour, data = data)
   disp   <- render_type(slides = slides, manip_col = manip_col,
-                        col = col, pch = pch, axes = axes, fps = fps, ...)
+                        col = col, pch = pch, axes = axes, fps = fps,
+                        alpha = alpha, ...)
   
   disp
 }
+
+#' @rdname play_radial_tour
+play_manual_tour <- play_radial_tour
