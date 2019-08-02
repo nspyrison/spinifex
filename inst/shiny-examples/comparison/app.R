@@ -24,9 +24,11 @@ server <- function(input, output, session) {
   ### Data initialize
   numericVars <- reactive(sapply(data(), is.numeric))
   groupVars   <- reactive(sapply(data(), function(x) is.character(x)|is.factor(x)))
-  numericDat  <- reactive(data()[numericVars()]) # d is only numeric vars
+  numericDat  <- reactive(data()[numericVars()])
   groupDat    <- reactive(data()[groupVars()])
   colToSelect <- reactive(min(ncol(numericDat()), 6))
+  n <- reactive(nrow(selected_dat()))
+  p <- reactive(ncol(selected_dat()))
   output$str_data <- renderPrint({str(data())})
   
   ##### Radial tab ----
@@ -36,16 +38,17 @@ server <- function(input, output, session) {
     if (input$rescale_data) x <- tourr::rescale(x)
     return(x)
   })
-  col_var <- reactive({ # a column
-    groupDat()[, which(colnames(groupDat()) == input$col_var)] 
+  col_var <- reactive({
+    if (input$col_var == "<none>") {rep("a", n())
+    } else {groupDat()[, which(colnames(groupDat()) == input$col_var)]} # a column
   })
   pch_var <- reactive({
-    groupDat()[, which(colnames(groupDat()) == input$pch_var)] # a column
+    if (input$pch_var == "<none>") {rep("a", n())
+    } else {groupDat()[, which(colnames(groupDat()) == input$pch_var)]} # a column
   })
-  n <- reactive(ncol(selected_dat()))
   manip_var <- reactive(which(colnames(numericDat()) == input$manip_var)) # number
   basis <- reactive({
-    if (input$basis_init == "Random") x <- tourr::basis_random(n = n(), d = 2)
+    if (input$basis_init == "Random") x <- tourr::basis_random(n = p(), d = 2)
     if (input$basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
     if (input$basis_init == "From file") {
       path <- input$basispath$datapath
@@ -85,10 +88,10 @@ server <- function(input, output, session) {
     if (length(groupDat()) >= 1) {
       updateSelectInput(session,
                         "col_var",
-                        choices = names(groupDat()))
+                        choices = c(names(groupDat()), "<none>"))
       updateSelectInput(session,
                         "pch_var",
-                        choices = names(groupDat()))
+                        choices = c(names(groupDat()), "<none>"))
     } else { # list "none", if there are not character or factor vars.
       updateSelectInput(session,
                         "col_var",
@@ -126,7 +129,7 @@ server <- function(input, output, session) {
   ##### Static tab ----
   observeEvent(input$static_button, {
     output$static_plot <- renderPlot({
-      staticProjection(dat = selected_dat(),
+      staticProjection(dat = selected_dat(), # legwork is a function in global.R
                        method = input$static_method, 
                        col = col_var(), 
                        pch = pch_var()
@@ -139,7 +142,7 @@ server <- function(input, output, session) {
   ### Initialize oblique input 
   obl_manip_var <- reactive(which(colnames(numericDat()) == input$obl_manip_var)) # number
   obl_INIT_basis <- reactive({  # current basis stored in rv$obl_basis
-    if (input$obl_basis_init == "Random") x <- tourr::basis_random(n = n(), d = 2)
+    if (input$obl_basis_init == "Random") x <- tourr::basis_random(n = p(), d = 2)
     if (input$obl_basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
     if (input$obl_basis_init == "From file") {
       path <- input$basispath$datapath
@@ -248,7 +251,7 @@ server <- function(input, output, session) {
   
   ### Development help -- uncomment message at bottom on ui.R to use
   output$devMessage <- renderPrint({
-    print(output$obl_basis_out)
+    print(pch_var)
     # paste("Development Message: nSelected(): ", head(numVars()))
   })
   

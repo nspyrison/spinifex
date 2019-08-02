@@ -73,8 +73,8 @@ tabStatic <- tabPanel(
   "Static projections", fluidPage(
     sidebarPanel(
       actionButton("static_button", "Run"),
-      radioButtons("static_method", "Linear projection technique",
-                   choices = c("PCA", "LDA (holder)", "SPLOM"),
+      radioButtons("static_method", "Projection",
+                   choices = c("PCA", "SPLOM"), # others to consider: k-means, LDA, MDS, TNSE, Sammon's mapping, etc
                    selected = "PCA")
     ),
     mainPanel(
