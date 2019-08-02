@@ -12,11 +12,12 @@ tabInput <- tabPanel(
       checkboxGroupInput(
         "variables",
         label = "Variables to include",
-        choices = "none"
+        choices = names(tourr::flea[, 1:6]),
+        selected = names(tourr::flea[, 1:6])
       ),
       # Point color, shape and rescale [0,1] data
-      selectInput('col_var', 'Point color', "none"),
-      selectInput('pch_var', 'Point shape', "none"),
+      selectInput('col_var', 'Point color', "<none>"),
+      selectInput('pch_var', 'Point shape', "<none>"),
       checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
     ),
     mainPanel(h3("Data structure"),
@@ -28,9 +29,9 @@ tabInput <- tabPanel(
 )
 
 
-### Radial tab ----
+### Animation tab (radial) ----
 tabRadial <-  tabPanel(
-  "Radial", fluidPage(
+  "Animation", fluidPage(
     sidebarPanel(
       # generate tour button
       actionButton("radial_button", "Run"),
@@ -83,9 +84,9 @@ tabStatic <- tabPanel(
   )
 )
 
-### Oblique tab ----
+### Interation tab (oblique) ----
 tabOblique <- tabPanel(
-  "Oblique", fluidPage(
+  "Interaction", fluidPage(
     sidebarPanel(
       # generate tour button
       actionButton("obl_button", "Run"),

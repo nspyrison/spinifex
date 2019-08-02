@@ -30,11 +30,9 @@ staticProjection <- function(dat, method, col, pch) {
   }
 }
 ## TEST STATIC
-#dat <- tourr::flea[,1:6]; method <- "SPLOM"
-#c <- p <- rep("<none>",nrow(flea))
-#col <- col_of(c); pch<-pch_of(p)
-#col <- col_of(tourr::flea[,7]); pch <- pch_of(tourr::flea[,7])
-staticProjection(dat, method, col, pch)
+# dat <- tourr::flea[,1:6]; method <- "SPLOM"
+# col <- col_of(tourr::flea[,7]); pch <- pch_of(tourr::flea[,7])
+# staticProjection(dat, method, col, pch)
 ### END OF STATIC
 
 ### PROJECTION PURSUIT ----

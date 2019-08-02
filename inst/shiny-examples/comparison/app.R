@@ -31,7 +31,7 @@ server <- function(input, output, session) {
   p <- reactive(ncol(selected_dat()))
   output$str_data <- renderPrint({str(data())})
   
-  ##### Radial tab ----
+  ##### Animation tab (radial) ----
   ### Initialize input 
   selected_dat <- reactive({
     x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
@@ -75,12 +75,14 @@ server <- function(input, output, session) {
   })
   
   ### Update inputs
-  observe({
+  observeEvent(input$radial_button,{
     updateCheckboxGroupInput(session,
                              "variables",
                              choices = names(numericDat()),
                              selected = names(numericDat()[1:colToSelect()])
     )
+  })
+  observe({
     updateSelectInput(session,
                       "manip_var",
                       choices = input$variables)
@@ -138,7 +140,7 @@ server <- function(input, output, session) {
   })
   ##### End of static tab
   
-  ##### Oblique tab ----
+  ##### Interactive tab (oblique) ----
   ### Initialize oblique input 
   obl_manip_var <- reactive(which(colnames(numericDat()) == input$obl_manip_var)) # number
   obl_INIT_basis <- reactive({  # current basis stored in rv$obl_basis
@@ -251,7 +253,7 @@ server <- function(input, output, session) {
   
   ### Development help -- uncomment message at bottom on ui.R to use
   output$devMessage <- renderPrint({
-    print(pch_var)
+    "dev msg"
     # paste("Development Message: nSelected(): ", head(numVars()))
   })
   
