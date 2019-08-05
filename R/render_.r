@@ -78,7 +78,7 @@ render_ <- function(slides,
     ## Projected data points
     suppressWarnings( # Suppress for unused aes "frame".
       ggplot2::geom_point( 
-        data = data_slides, size = .7, shape = pch, color = col, alpha = alpha,
+        data = data_slides, size = 2, shape = pch, color = col, fill = col, alpha = alpha,
         mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
       )
     )

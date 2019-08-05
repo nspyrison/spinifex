@@ -53,6 +53,7 @@ tabRadial <-  tabPanel(
       selectInput('manip_var', 'Manip var', "none"),
       selectInput('axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
                   'center',  multiple = FALSE),
+      sliderInput('alpha', "Alpha opacity", min = 0, max = 1, value = 1, step = .1),
       sliderInput('angle', 'Angle step size', value = .05, min = .01, max = .3),
       numericInput("basistosave", "Basis to save (.csv)", 1,
                    min = 1, max = 1000),
@@ -76,7 +77,8 @@ tabStatic <- tabPanel(
       actionButton("static_button", "Run"),
       radioButtons("static_method", "Projection",
                    choices = c("PCA", "SPLOM"), # others to consider: k-means, LDA, MDS, TNSE, Sammon's mapping, etc
-                   selected = "PCA")
+                   selected = "PCA"),
+      sliderInput("static_alpha", "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
     ),
     mainPanel(
       plotOutput("static_plot")
@@ -84,9 +86,9 @@ tabStatic <- tabPanel(
   )
 )
 
-### Interation tab (oblique) ----
+### Interative tab (oblique) ----
 tabOblique <- tabPanel(
-  "Interaction", fluidPage(
+  "Interactive", fluidPage(
     sidebarPanel(
       # generate tour button
       actionButton("obl_button", "Run"),
@@ -104,10 +106,12 @@ tabOblique <- tabPanel(
         fileInput("basispath", "Basis file (.csv or .rda, [p x 2] matrix)",
                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
       ),
-      # manip var, ref axes placement
+      # manip var, ref axes placement, alpha opacity
       selectInput('obl_manip_var', 'Manip var', "none"),
       selectInput('obl_axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
                   'center',  multiple = FALSE),
+      sliderInput("obl_alpha", "Alpha opacity", min = 0, max = 1, value = 1, step = .1),
+      
       # Slider controls
       sliderInput("obl_x_slider", "X contribution", min = -1, max = 1, value = 0, step = .1),
       sliderInput("obl_y_slider", "Y contribution", min = -1, max = 1, value = 0, step = .1),

@@ -45,38 +45,36 @@
 #' play_radial_tour(data = flea_std, basis = rb, manip_var = 6, 
 #'   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
 #' }
-play_radial_tour <- function(data,
-                             basis       = NULL,
-                             manip_var,
-                             theta       = NULL,
-                             phi_min     = 0,
-                             phi_max     = .5 * pi,
-                             angle       = .05,
-                             manip_col   = "blue",
-                             render_type = render_plotly,
-                             col         = "black", 
-                             pch         = 20,
-                             axes        = "center",
-                             fps         = 3,
-                             rescale_data = FALSE,
-                             alpha = alpha,
-                             ...) {
-  if (rescale_data) data <- tourr::rescale(data)
-  if (is.null(basis)) {
-    message("NULL basis passed. Initializing random basis.")
-    basis <- tourr::basis_random(n = ncol(data))
+play_radial_tour <- play_manual_tour <-
+  function(data,
+           basis       = NULL,
+           manip_var,
+           theta       = NULL,
+           phi_min     = 0,
+           phi_max     = .5 * pi,
+           angle       = .05,
+           manip_col   = "blue",
+           render_type = render_plotly,
+           col         = "black", 
+           pch         = 20,
+           axes        = "center",
+           fps         = 3,
+           rescale_data = FALSE,
+           alpha = alpha,
+           ...) {
+    if (rescale_data) data <- tourr::rescale(data)
+    if (is.null(basis)) {
+      message("NULL basis passed. Initializing random basis.")
+      basis <- tourr::basis_random(n = ncol(data))
+    }
+    
+    m_tour <- radial_tour(basis = basis, manip_var = manip_var, angle = angle,
+                          theta = theta, phi_min = phi_min, phi_max = phi_max)
+    
+    slides <- array2df(array = m_tour, data = data)
+    disp   <- render_type(slides = slides, manip_col = manip_col,
+                          col = col, pch = pch, axes = axes, fps = fps,
+                          alpha = alpha, ...)
+    
+    disp
   }
-  
-  m_tour <- radial_tour(basis = basis, manip_var = manip_var, angle = angle,
-                        theta = theta, phi_min = phi_min, phi_max = phi_max)
-  
-  slides <- array2df(array = m_tour, data = data)
-  disp   <- render_type(slides = slides, manip_col = manip_col,
-                        col = col, pch = pch, axes = axes, fps = fps,
-                        alpha = alpha, ...)
-  
-  disp
-}
-
-#' @rdname play_radial_tour
-play_manual_tour <- play_radial_tour

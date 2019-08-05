@@ -10,12 +10,6 @@ play_radial_tour(data, basis = NULL, manip_var, theta = NULL,
   manip_col = "blue", render_type = render_plotly, col = "black",
   pch = 20, axes = "center", fps = 3, rescale_data = FALSE,
   alpha = alpha, ...)
-
-play_manual_tour(data, basis = NULL, manip_var, theta = NULL,
-  phi_min = 0, phi_max = 0.5 * pi, angle = 0.05,
-  manip_col = "blue", render_type = render_plotly, col = "black",
-  pch = 20, axes = "center", fps = 3, rescale_data = FALSE,
-  alpha = alpha, ...)
 }
 \arguments{
 \item{data}{(n, p) dataset to project, consisting of numeric variables.}

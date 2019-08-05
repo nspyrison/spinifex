@@ -107,13 +107,14 @@ server <- function(input, output, session) {
   ### Radial tour animation
   observeEvent(input$radial_button, {
     output$plotlyAnim <- renderPlotly({
-      play_manual_tour(data = selected_dat(),
+      play_radial_tour(data = selected_dat(),
                        basis = basis(),
                        manip_var = manip_var(),
                        col = col_of(col_var()),
                        pch = pch_of(pch_var()),
                        axes = input$axes,
-                       angle = input$angle
+                       angle = input$angle,
+                       alpha = input$alpha
       )
     })
   })
@@ -134,7 +135,8 @@ server <- function(input, output, session) {
       staticProjection(dat = selected_dat(), # legwork is a function in global.R
                        method = input$static_method, 
                        col = col_var(), 
-                       pch = pch_var()
+                       pch = pch_var(),
+                       alpha = input$static_alpha
       )
     })
   })
@@ -164,12 +166,12 @@ server <- function(input, output, session) {
     }
     return(x)
   })
-  ## Initialize basis and graph and table
+  ## Initialize basis and graph
   rv <- reactiveValues() 
   observeEvent(input$obl_button, {
     rv$obl_basis <- obl_INIT_basis()
-    ## update sliders
-    observeEvent(c(input$obl_button, input$obl_manip_var), {
+    ## after button, update sliders
+    observeEvent(input$obl_manip_var, {
       mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
       phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
       phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
@@ -178,8 +180,7 @@ server <- function(input, output, session) {
       isolate(updateSliderInput(session, "obl_x_slider", value = x_i))
       isolate(updateSliderInput(session, "obl_y_slider", value = y_i))
     })
-    
-    ## after button and init, then observe sliders
+    ## after button, observe sliders
     observeEvent(input$obl_x_slider, {
       rv$obl_basis <- obl_basis_x()
       output$obl_basis_out <- renderTable(obl_basis_x())
@@ -223,7 +224,8 @@ server <- function(input, output, session) {
                   phi,
                   col = col_of(col_var()),
                   pch = pch_of(pch_var()),
-                  axes = input$obl_axes)
+                  axes = input$obl_axes,
+                  alpha = input$obl_alpha)
   })
   # y motion reactives
   obl_basis_y <- reactive({
@@ -248,7 +250,8 @@ server <- function(input, output, session) {
                   phi,
                   col = col_of(col_var()),
                   pch = pch_of(pch_var()),
-                  axes = input$obl_axes)
+                  axes = input$obl_axes,
+                  alpha = input$obl_alpha)
   })
   
   ### Development help -- uncomment message at bottom on ui.R to use

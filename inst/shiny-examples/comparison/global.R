@@ -12,12 +12,12 @@ library(minerva) #MIC, TIC
 # save(df, file="./inst/shiny-examples/comparison/df.rda")
 
 ### STATIC LINEAR PROJECTIONS ----
-staticProjection <- function(dat, method, col, pch) {
+staticProjection <- function(dat, method, col, pch, alpha) {
   if (method == "PCA") {
     library(ggfortify)
     return(suppressWarnings(
       autoplot(prcomp(dat), colour = col_of(col), shape = pch_of(pch) + 15,
-               loadings = T, loadings.label = T,
+               alpha = alpha, loadings = T, loadings.label = T,
                loadings.colour = 'gray50', loadings.label.colour = 'gray30')
     ))
   }
@@ -25,19 +25,21 @@ staticProjection <- function(dat, method, col, pch) {
     library(GGally)
     splom_pch <- as.character(pch)
     return(
-      GGally::ggpairs(data = dat, aes(colour = col, shape = splom_pch, alpha=.2))
+      GGally::ggpairs(data = dat, alpha = min(alpha/5, .2),
+                      aes(colour = col, shape = splom_pch)
+      )
     )
   }
 }
 ## TEST STATIC
-# dat <- tourr::flea[,1:6]; method <- "SPLOM"
-# col <- col_of(tourr::flea[,7]); pch <- pch_of(tourr::flea[,7])
-# staticProjection(dat, method, col, pch)
+# dat <- tourr::flea[,1:6]; method <- "PCA"
+# col <- col_of(tourr::flea[,7]); pch <- pch_of(tourr::flea[,7]); alpha=.5
+# staticProjection(dat, method, col, pch, alpha)
 ### END OF STATIC
 
 ### PROJECTION PURSUIT ----
-guidedTourOptions <- c("cmass", "holes", "Skinny", "Striated", "Convex", "Clumpy"
-                       ,"splines2d", "dcor2d", "MIC", "TIC")
+guidedTourOptions <- c("cmass", "holes", "Skinny", "Striated", "Convex", 
+                       "Clumpy", "splines2d", "dcor2d", "MIC", "TIC")
 scags <- function(scagMetricIndex) {
   function(mat) {return (scagnostics(mat)[scagMetricIndex])}
 }
