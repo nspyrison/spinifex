@@ -115,6 +115,7 @@ tabOblique <- tabPanel(
       # Slider controls
       sliderInput("obl_x_slider", "X contribution", min = -1, max = 1, value = 0, step = .1),
       sliderInput("obl_y_slider", "Y contribution", min = -1, max = 1, value = 0, step = .1),
+      sliderInput("obl_rad_slider", "Radius contribution", min = 0, max = 1, value = .5, step = .05),
       h5("Save current basis (.csv)"),
       actionButton("obl_save", "Save")
     ),
