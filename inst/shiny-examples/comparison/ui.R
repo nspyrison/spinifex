@@ -113,9 +113,10 @@ tabOblique <- tabPanel(
       sliderInput("obl_alpha", "Alpha opacity", min = 0, max = 1, value = 1, step = .1),
       
       # Slider controls
-      sliderInput("obl_x_slider", "X contribution", min = -1, max = 1, value = 0, step = .1),
-      sliderInput("obl_y_slider", "Y contribution", min = -1, max = 1, value = 0, step = .1),
-      sliderInput("obl_rad_slider", "Radius contribution", min = 0, max = 1, value = .5, step = .05),
+      sliderInput("obl_x_slider", "X", min = -1, max = 1, value = 0, step = .1),
+      sliderInput("obl_y_slider", "Y", min = -1, max = 1, value = 0, step = .1),
+      sliderInput("obl_rad_slider", "Radius", min = 0, max = 1, value = .5, step = .05),
+      sliderInput("obl_theta_slider", "Theta", min = 0, max = 360, value = 180, step = 15),
       h5("Save current basis (.csv)"),
       actionButton("obl_save", "Save")
     ),
@@ -138,6 +139,6 @@ ui <- fluidPage(
     tabOblique,
     tabStatic
   )
-   #,verbatimTextOutput("devMessage")
+   ,verbatimTextOutput("devMessage")
 )
 
