@@ -32,7 +32,7 @@ tabRadial <-  tabPanel(
   "Animation", fluidPage(
     sidebarPanel(
       # generate tour button
-      actionButton("button", "Run"),
+      actionButton("button", "Run animation"),
       # basis init
       radioButtons("basis_init", "Start basis",
                    choices = c("Random", "PCA", "Projection pursuit", "From file"),
@@ -89,7 +89,7 @@ tabOblique <- tabPanel(
   "Interactive", fluidPage(
     sidebarPanel(
       # generate tour button
-      actionButton("obl_button", "Run"),
+      actionButton("obl_button", "Run interactive"),
       # basis init and rescale
       radioButtons("obl_basis_init", "Start basis",
                    choices = c("Random", "PCA", "Projection pursuit", "From file"),
@@ -106,15 +106,25 @@ tabOblique <- tabPanel(
       ),
       # manip var, ref axes placement, alpha opacity
       selectInput('obl_manip_var', 'Manip var', "none"),
-      selectInput('obl_axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
+      selectInput('obl_manip_type', "Manipulation type", 
+                  c("horizontal", "vertical", "radial")),
+      # Slider controls
+      conditionalPanel("input.obl_manip_type == 'horizontal'",
+                       sliderInput("obl_x_slider", "Horizontal", 
+                                   min = -1, max = 1, value = 0, step = .1)
+      ),
+      conditionalPanel("input.obl_manip_type == 'vertical'",
+                       sliderInput("obl_y_slider", "Vertical", 
+                                   min = -1, max = 1, value = 0, step = .1)
+      ),
+      conditionalPanel("input.obl_manip_type == 'radial'",
+                       sliderInput("obl_rad_slider", "Radial", 
+                                   min = 0, max = 1, value = .5, step = .05)
+      ),
+      selectInput('obl_axes', 'Reference axes location', 
+                  c('center', 'bottomleft', 'off'),
                   'center',  multiple = FALSE),
       sliderInput("obl_alpha", "Alpha opacity", min = 0, max = 1, value = 1, step = .1),
-      
-      # Slider controls
-      sliderInput("obl_x_slider", "X", min = -1, max = 1, value = 0, step = .1),
-      sliderInput("obl_y_slider", "Y", min = -1, max = 1, value = 0, step = .1),
-      # sliderInput("obl_rad_slider", "Radius", min = 0, max = 1, value = .5, step = .05),
-      # sliderInput("obl_theta_slider", "Theta", min = 0, max = 360, value = 180, step = 15),
       h5("Save current basis (.csv)"),
       actionButton("obl_save", "Save")
     ),
