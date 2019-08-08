@@ -34,7 +34,7 @@ tabRadial <-  tabPanel(
   "Animation", fluidPage(
     sidebarPanel(
       # generate tour button
-      actionButton("radial_button", "Run"),
+      actionButton("button", "Run"),
       # basis init
       radioButtons("basis_init", "Start basis",
                    choices = c("Random", "PCA", "Projection pursuit", "From file"),

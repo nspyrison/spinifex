@@ -17,8 +17,8 @@ source('ui.R', local = TRUE)
 server <- function(input, output, session) {
   # Initialize ----
   data <- reactive({
-      if (is.null(input$file)) {return(tourr::flea)}
-      read.csv(input$file$datapath, stringsAsFactors = FALSE)
+    if (is.null(input$file)) {return(tourr::flea)}
+    read.csv(input$file$datapath, stringsAsFactors = FALSE)
   })
   
   ### Data initialize
@@ -75,37 +75,26 @@ server <- function(input, output, session) {
   })
   
   ### Update inputs
-  observeEvent(input$radial_button,{
+  observe({
     updateCheckboxGroupInput(session,
                              "variables",
                              choices = names(numericDat()),
-                             selected = names(numericDat()[1:colToSelect()])
-    )
+                             selected = names(numericDat()[1:colToSelect()]))
   })
   observe({
     updateSelectInput(session,
                       "manip_var",
                       choices = input$variables)
-    
-    if (length(groupDat()) >= 1) {
-      updateSelectInput(session,
-                        "col_var",
-                        choices = c(names(groupDat()), "<none>"))
-      updateSelectInput(session,
-                        "pch_var",
-                        choices = c(names(groupDat()), "<none>"))
-    } else { # list "none", if there are not character or factor vars.
-      updateSelectInput(session,
-                        "col_var",
-                        choices = c("<none>"))
-      updateSelectInput(session,
-                        "pch_var",
-                        choices = c("<none>"))
-    }
+    updateSelectInput(session,
+                      "col_var",
+                      choices = c(names(groupDat()), "<none>"))
+    updateSelectInput(session,
+                      "pch_var",
+                      choices = c(names(groupDat()), "<none>"))
   })
   
   ### Radial tour animation
-  observeEvent(input$radial_button, {
+  observeEvent(input$button, {
     output$plotlyAnim <- renderPlotly({
       play_radial_tour(data = selected_dat(),
                        basis = basis(),
@@ -143,7 +132,7 @@ server <- function(input, output, session) {
   ##### End of static tab
   
   ##### Interactive tab (oblique) ----
-  ### Initialize oblique input 
+  ### Initialize and reactives (oblique) ====
   obl_manip_var <- reactive(which(colnames(numericDat()) == input$obl_manip_var)) # number
   obl_INIT_basis <- reactive({  # current basis stored in rv$obl_basis
     if (input$obl_basis_init == "Random") x <- tourr::basis_random(n = p(), d = 2)
@@ -166,8 +155,139 @@ server <- function(input, output, session) {
     }
     return(x)
   })
-  ## Initialize basis and graph
-  rv <- reactiveValues() 
+  
+  ## how to update all sliders
+  update_sliders <- reactive({
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
+    x_i <- -phi.x_zero / (pi/2)
+    updateSliderInput(session, "obl_x_slider", value = x_i)
+    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
+    y_i <- -phi.y_zero / (pi/2)
+    updateSliderInput(session, "obl_y_slider", value = y_i)
+    phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+    rad_i <- cos(phi_i)
+    updateSliderInput(session, "obl_rad_slider", value = rad_i)
+    theta_i <- atan(mv_sp[2] / mv_sp[1]) # radians
+    theta_i <- (theta_i * (180 / pi) + 360) %% 360 # positive degrees [0,360]
+    updateSliderInput(session, "obl_theta_slider", value = theta_i)
+  })
+  
+  ### x, y, radius, theta reactives for oblique_frame(), _basis()
+  # x motion 
+  obl_basis_x <- reactive({
+    theta <- 0
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+    phi <- input$obl_x_slider * pi/2 + phi.x_zero
+    oblique_basis(basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi)
+  })
+  obl_frame_x <- reactive({
+    theta <- 0
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+    phi <- input$obl_x_slider * pi/2 + phi.x_zero
+    oblique_frame(data = selected_dat(),
+                  basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi,
+                  col = col_of(col_var()),
+                  pch = pch_of(pch_var()),
+                  axes = input$obl_axes,
+                  alpha = input$obl_alpha)
+  })
+  # y motion
+  obl_basis_y <- reactive({
+    theta <- pi/2
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+    phi <- input$obl_y_slider * pi/2 + phi.y_zero
+    oblique_basis(basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi)
+  })
+  obl_frame_y <- reactive({
+    theta <- pi/2
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+    phi <- input$obl_y_slider * pi/2 + phi.y_zero
+    oblique_frame(data = selected_dat(),
+                  basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi,
+                  col = col_of(col_var()),
+                  pch = pch_of(pch_var()),
+                  axes = input$obl_axes,
+                  alpha = input$obl_alpha)
+  })
+  # Radius motion
+  obl_basis_rad <- reactive({
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    theta <- atan(mv_sp[2] / mv_sp[1])
+    phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[1]^2))
+    phi <- acos(input$obl_rad_slider) - phi_start
+    oblique_basis(basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi)
+  })
+  obl_frame_rad <- reactive({
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    theta <- atan(mv_sp[2] / mv_sp[1])
+    phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[1]^2))
+    phi <- acos(input$obl_rad_slider) - phi_start
+    oblique_frame(data = selected_dat(),
+                  basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi,
+                  col = col_of(col_var()),
+                  pch = pch_of(pch_var()),
+                  axes = input$obl_axes,
+                  alpha = input$obl_alpha)
+  })
+  #TODO: See zObliquePolarDev.R as well. make
+  # Theta motion 
+  obl_basis_theta <- reactive({
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+    theta_start <- atan(mv_sp[2] / mv_sp[1])
+    theta <- 0 #TODO: AS A FUNCTION OF SLIDER AND THETA_START
+    oblique_basis(basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi)
+  })
+  #TODO: change below to theta
+  obl_frame_theta <- reactive({
+    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
+    phi <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+    theta_start <- atan(mv_sp[2] / mv_sp[1])
+    theta <- 0 #TODO: AS A FUNCTION OF SLIDER AND THETA_START
+    oblique_frame(data = selected_dat(),
+                  basis = rv$obl_basis,
+                  manip_var = obl_manip_var(),
+                  theta,
+                  phi,
+                  col = col_of(col_var()),
+                  pch = pch_of(pch_var()),
+                  axes = input$obl_axes,
+                  alpha = input$obl_alpha)
+  })
+  
+  ## Observers, update parameters (oblique) ====
+  observe({
+    updateSelectInput(session, "obl_manip_var", choices = input$variables)
+  })
+  
+  rv <- reactiveValues()
+  ### Running oblique tours 
   observeEvent(input$obl_button, {
     rv$obl_basis <- obl_INIT_basis()
     update_sliders()
@@ -203,135 +323,8 @@ server <- function(input, output, session) {
     })
   })
   
-  ### Update oblique inputs
-  observe({
-    updateSelectInput(session, "obl_manip_var", choices = input$variables)
-  })
   
-  ## after button, update sliders reactive expression
-  update_sliders <- reactive({
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
-    x_i <- -phi.x_zero / (pi/2)
-    y_i <- -phi.y_zero / (pi/2)
-    updateSliderInput(session, "obl_x_slider", value = x_i)
-    updateSliderInput(session, "obl_y_slider", value = y_i)
-    phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2)) ##issue here, acos(1.136, is NaN)
-    rad_i <- cos(phi_i)
-    updateSliderInput(session, "obl_rad_slider", value = rad_i)
-    theta_i <- atan(mv_sp[2] / mv_sp[1]) # radians
-    theta_i <- (theta_i * (180 / pi) + 360) %% 360 # positive degrees [0,360]
-    updateSliderInput(session, "obl_theta_slider", value = theta_i)
-  })
   
-  ##x and y reactives for oblique_frame(), _basis()
-  # x motion reactives
-  obl_basis_x <- reactive({
-    theta <- 0
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-    phi <- input$obl_x_slider * pi/2 + phi.x_zero
-    oblique_basis(basis = rv$obl_basis,
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi)
-  })
-  obl_frame_x <- reactive({
-    theta <- 0
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-    phi <- input$obl_x_slider * pi/2 + phi.x_zero
-    oblique_frame(data = selected_dat(),
-                  basis = rv$obl_basis,
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi,
-                  col = col_of(col_var()),
-                  pch = pch_of(pch_var()),
-                  axes = input$obl_axes,
-                  alpha = input$obl_alpha)
-  })
-  # y motion reactives
-  obl_basis_y <- reactive({
-    theta <- pi/2
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-    phi <- input$obl_y_slider * pi/2 + phi.y_zero
-    oblique_basis(basis = rv$obl_basis,
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi)
-  })
-  obl_frame_y <- reactive({
-    theta <- pi/2
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-    phi <- input$obl_y_slider * pi/2 + phi.y_zero
-    oblique_frame(data = selected_dat(),
-                  basis = rv$obl_basis,
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi,
-                  col = col_of(col_var()),
-                  pch = pch_of(pch_var()),
-                  axes = input$obl_axes,
-                  alpha = input$obl_alpha)
-  })
-  ## Radius motion reactives
-  obl_basis_rad <- reactive({
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    theta <- atan(mv_sp[2] / mv_sp[1])
-    phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[1]^2))
-    phi <- acos(input$obl_rad_slider) - phi_start
-    oblique_basis(basis = rv$obl_basis,
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi)
-  })
-  obl_frame_rad <- reactive({
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    theta <- atan(mv_sp[2] / mv_sp[1])
-    phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[1]^2))
-    phi <- acos(input$obl_rad_slider) - phi_start
-    oblique_frame(data = selected_dat(),
-                  basis = rv$obl_basis,
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi,
-                  col = col_of(col_var()),
-                  pch = pch_of(pch_var()),
-                  axes = input$obl_axes,
-                  alpha = input$obl_alpha)
-  })
-  #TODO: See zObliquePolarDev.R as well. make
-  # Theta motion reactives
-  obl_basis_theta <- reactive({
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    phi <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    theta_start <- atan(mv_sp[2] / mv_sp[1])
-    theta <- 0 #TODO: AS A FUNCTION OF SLIDER AND THETA_START
-    oblique_basis(basis = rv$obl_basis,
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi)
-  })
-  #TODO: change below to theta
-  obl_frame_theta <- reactive({
-    mv_sp <- create_manip_space(rv$obl_basis, obl_manip_var())[obl_manip_var(), ]
-    phi <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    theta_start <- atan(mv_sp[2] / mv_sp[1])
-    theta <- 0 #TODO: AS A FUNCTION OF SLIDER AND THETA_START
-    oblique_frame(data = selected_dat(),
-                  basis = rv$obl_basis,
-                  manip_var = obl_manip_var(),
-                  theta,
-                  phi,
-                  col = col_of(col_var()),
-                  pch = pch_of(pch_var()),
-                  axes = input$obl_axes,
-                  alpha = input$obl_alpha)
-  })
   
   ### Development help -- uncomment message at bottom on ui.R to use
   output$devMessage <- renderPrint({
