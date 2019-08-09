@@ -27,12 +27,13 @@ tabInput <- tabPanel(
 )
 
 
-### Animation tab (radial) ----
-tabRadial <-  tabPanel(
-  "Animation", fluidPage(
+### Manual tab (radial) ----
+tabManual <-  tabPanel(
+  "Tours", fluidPage(
     sidebarPanel(
       # generate tour button
       actionButton("button", "Run animation"),
+      actionButton("obl_button", "Run interactive"),
       # basis init
       radioButtons("basis_init", "Start basis",
                    choices = c("Random", "PCA", "Projection pursuit", "From file"),
@@ -49,17 +50,40 @@ tabRadial <-  tabPanel(
       ),
       # manip var, axes, angle, save
       selectInput('manip_var', 'Manip var', "none"),
-      selectInput('axes', 'Reference axes location', c('center', 'bottomleft', 'off'),
-                  'center',  multiple = FALSE),
+      selectInput('manip_type', "Manipulation type",
+                  c("horizontal", "vertical", "radial")
+      ),
+      # Slider controls
+      conditionalPanel("input.manip_type == 'horizontal'",
+                       sliderInput("x_slider", "Horizontal",
+                                   min = -1, max = 1, value = 0, step = .1)
+      ),
+      conditionalPanel("input.manip_type == 'vertical'",
+                       sliderInput("y_slider", "Vertical",
+                                   min = -1, max = 1, value = 0, step = .1)
+      ),
+      conditionalPanel("input.manip_type == 'radial'",
+                       sliderInput("rad_slider", "Radial",
+                                   min = 0, max = 1, value = .5, step = .05)
+      ),
+      selectInput('axes', 'Reference axes location', 
+                  c('center', 'bottomleft', 'off'),
+                  'center',  multiple = FALSE
+      ),
       sliderInput('alpha', "Alpha opacity", min = 0, max = 1, value = 1, step = .1),
-      sliderInput('angle', 'Angle step size', value = .05, min = .01, max = .3),
+      sliderInput('angle', 'Angle step size (animation only)', value = .05, min = .01, max = .3),
       numericInput("basistosave", "Basis to save (.csv)", 1,
                    min = 1, max = 1000),
-      actionButton("radial_save", "Save")
+      actionButton("radial_save", "Save"),
+      h5("Save current basis (.csv)"),
+      actionButton("obl_save", "Save")
     ),
     # Output display
     mainPanel(
-      plotlyOutput("plotlyAnim"),
+      plotlyOutput("main_plot"),
+      plotOutput("main_plot2"),
+      h4("Current basis"),
+      tableOutput("curr_basis_out"),
       conditionalPanel("input.radial_save",
                        h4("Last basis saved"),
                        tableOutput("last_save")
@@ -84,68 +108,14 @@ tabStatic <- tabPanel(
   )
 )
 
-### Interative tab (oblique) ----
-tabOblique <- tabPanel(
-  "Interactive", fluidPage(
-    sidebarPanel(
-      # generate tour button
-      actionButton("obl_button", "Run interactive"),
-      # basis init and rescale
-      radioButtons("obl_basis_init", "Start basis",
-                   choices = c("Random", "PCA", "Projection pursuit", "From file"),
-                   selected = "Random"),
-      ## Projection pursuit options
-      conditionalPanel("input.obl_basis_init == 'Projection pursuit'",
-                       selectInput("pp_type", "Pursuit index", guidedTourOptions)
-      ),
-      ## Basis From file select
-      conditionalPanel(
-        "input.obl_basis_init == 'From file'",
-        fileInput("basispath", "Basis file (.csv or .rda, [p x 2] matrix)",
-                  accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
-      ),
-      # manip var, ref axes placement, alpha opacity
-      selectInput('obl_manip_var', 'Manip var', "none"),
-      selectInput('obl_manip_type', "Manipulation type", 
-                  c("horizontal", "vertical", "radial")),
-      # Slider controls
-      conditionalPanel("input.obl_manip_type == 'horizontal'",
-                       sliderInput("obl_x_slider", "Horizontal", 
-                                   min = -1, max = 1, value = 0, step = .1)
-      ),
-      conditionalPanel("input.obl_manip_type == 'vertical'",
-                       sliderInput("obl_y_slider", "Vertical", 
-                                   min = -1, max = 1, value = 0, step = .1)
-      ),
-      conditionalPanel("input.obl_manip_type == 'radial'",
-                       sliderInput("obl_rad_slider", "Radial", 
-                                   min = 0, max = 1, value = .5, step = .05)
-      ),
-      selectInput('obl_axes', 'Reference axes location', 
-                  c('center', 'bottomleft', 'off'),
-                  'center',  multiple = FALSE),
-      sliderInput("obl_alpha", "Alpha opacity", min = 0, max = 1, value = 1, step = .1),
-      h5("Save current basis (.csv)"),
-      actionButton("obl_save", "Save")
-    ),
-    
-    mainPanel(
-      plotOutput("obl_ggplot_out"),
-      h4("Current basis"),
-      tableOutput("obl_basis_out")
-    )
-  )
-)
-
 
 ### Tabs combined ----
 ui <- fluidPage(
   navbarPage(
     "Manual tours -- comparison",
-    tabInput,
-    tabRadial,
-    tabOblique,
-    tabStatic
+    tabManual,
+    tabInput
+    #tabStatic
   )
    ,verbatimTextOutput("devMessage")
 )
