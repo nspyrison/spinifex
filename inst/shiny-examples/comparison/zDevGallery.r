@@ -28,8 +28,12 @@ shinyApp(
     
     df <- reactive({
       data = data.frame(
+        Plot = shinyInput(actionButton, nrow(values$data), 'button_', label = "Plot", 
+                            onclick = 'Shiny.onInputChange(\"plot_button\",  this.id)'),
+        SaveToFile = shinyInput(actionButton, nrow(values$data), 'button_', label = "SaveToFile", 
+                            onclick = 'Shiny.onInputChange(\"save_button\",  this.id)'),
         Delete = shinyInput(actionButton, nrow(values$data), 'button_', label = "Remove", 
-                            onclick = 'Shiny.onInputChange(\"select_button\",  this.id)'),
+                            onclick = 'Shiny.onInputChange(\"delete_button\",  this.id)'),
         as.data.frame(values$data),
         stringsAsFactors = FALSE,
         row.names = 1:nrow(values$data)
@@ -41,8 +45,8 @@ shinyApp(
       df(), server = FALSE, escape = FALSE, selection = 'none'
     )
     
-    observeEvent(input$select_button, {
-      selectedRow <- as.numeric(strsplit(input$select_button, "_")[[1]][2])
+    observeEvent(input$delete_button, {
+      selectedRow <- as.numeric(strsplit(input$delete_button, "_")[[1]][2])
       rows_to_remove(c(rows_to_remove(),selectedRow)) # update the rows to remove
     })
     
