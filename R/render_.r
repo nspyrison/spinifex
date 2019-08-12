@@ -69,16 +69,21 @@ render_ <- function(slides,
     pch <- rep_len(pch, nrow(data_slides))
   }
   
+  xy_min <- min(circ[, 1:2], data_slides[, 1:2]) -.1
+  xy_max <- max(circ[, 1:2], data_slides[, 1:2]) +.1
   gg <- 
     ## ggplot settings
     ggplot2::ggplot() +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
     ggplot2::scale_color_brewer(palette = "Dark2") +
+    ggplot2::xlim(xy_min, xy_max) +
+    ggplot2::ylim(xy_min, xy_max) +
     ## Projected data points
     suppressWarnings( # Suppress for unused aes "frame".
       ggplot2::geom_point( 
-        data = data_slides, size = 2, shape = pch, color = col, fill = col, alpha = alpha,
+        data = data_slides, size = 2, 
+        shape = pch, color = col, fill = col, alpha = alpha,
         mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
       )
     )

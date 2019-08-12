@@ -5,8 +5,8 @@
 \title{Render display of a provided tour path}
 \usage{
 play_tour_path(tour_path, data = NULL, angle = 0.05,
-  render_type = render_plotly, col = "black", pch = 20,
-  axes = "center", fps = 3, alpha = 1, ...)
+  render_type = render_plotly, col = "black", pch = 20, axes = "center",
+  fps = 3, alpha = 1, ...)
 }
 \arguments{
 \item{tour_path}{The result of \code{tourr::save_history()} or \code{radial_tour()}.}
