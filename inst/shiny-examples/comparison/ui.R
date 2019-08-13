@@ -13,14 +13,13 @@ tabInput <- tabPanel(
         choices = names(tourr::flea[, 1:6]),
         selected = names(tourr::flea[, 1:6])
       ),
-      # Point color, shape and rescale [0,1] data
+      # Point color, shape and rescale
       fluidRow(column(6, selectInput('col_var', 'Point color', "<none>")),
                column(6, selectInput('pch_var', 'Point shape', "<none>"))),
       checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
     ),
     mainPanel(h3("Data structure"),
               verbatimTextOutput("str_data")
-              #,verbatimTextOutput("devMessage3")
     )
   )
 )
@@ -35,17 +34,16 @@ tabManual <-
       ### General tour settings
       fluidRow(
         column(6, fluidRow(
-          selectInput("basis_init", "Start basis",
+          radioButtons("basis_init", "Start basis",
                        choices = c("Random", "PCA", "Projection pursuit", "From file"),
                        selected = "Random"),
           conditionalPanel("input.basis_init == 'Projection pursuit'",
                            selectInput("pp_type", "Pursuit index", guidedTourOptions)),
           conditionalPanel("input.basis_init == 'From file'",
                            fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
-                                     accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")))
-        )),
-        column(6, selectInput('manip_var', 'Manip var', "none"))
-      ),
+                                     accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))))
+        ),
+        column(6, selectInput('manip_var', 'Manip var', "none"))),
       hr(),
       ### Interactive specific settings
       h4("Interactive"),

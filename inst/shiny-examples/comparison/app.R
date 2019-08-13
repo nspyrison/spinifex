@@ -101,7 +101,7 @@ server <- function(input, output, session) {
                            theta,
                            phi)
     
-    #TODO: manual logging mirate to proper logging
+    #TODO: manual logging migrate to proper logging
     print(paste0("basis_x, input$x_slider: ", input$x_slider, ", new basis:"))
     print(basis)
     return(basis)
@@ -117,7 +117,7 @@ server <- function(input, output, session) {
                            theta,
                            phi)
     
-    #TODO: manual logging mirate to proper logging
+    #TODO: manual logging migrate to proper logging
     print(paste0("basis_y, input$y_slider: ", input$y_slider, ", new basis:"))
     print(basis)
     return(basis)
@@ -133,13 +133,14 @@ server <- function(input, output, session) {
                            theta,
                            phi)
     
-    #TODO: manual logging mirate to proper logging
+    #TODO: manual logging migrate to proper logging
     print(paste0("basis_rad, input$rad_slider: ", input$rad_slider, ", new basis:"))
     print(basis)
   })
   
   ### How to update sliders
-  update_sliders <- reactive({
+  observe({
+    if (is.null(rv$curr_basis)) return()
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
     x_i <- -phi.x_zero / (pi/2)
@@ -151,21 +152,21 @@ server <- function(input, output, session) {
     rad_i <- cos(phi_i)
     isolate(updateSliderInput(session, "rad_slider", value = rad_i))
     
-    #TODO: manual logging mirate to proper logging
-    print("update_sliders:")
-    print(paste0("x: ", x_i, ", y: ", y_i, ", rad: ", rad_i))#, ", theta: ", theta_i))
+    #TODO: manual logging migrate to proper logging
+   # print("update_sliders:")
+   # print(paste0("x: ", x_i, ", y: ", y_i, ", rad: ", rad_i))#, ", theta: ", theta_i))
   })
 
   ### __Update inputs (interactive) ----
   #TODO
-  #observe({isolate(update_sliders())})
+
   ### Display interactive
   observeEvent(input$obl_run, {
-    #TODO: manual logging mirate to proper logging
+    #TODO: manual logging migrate to proper logging
     print("obl_run start")
     rv$curr_basis <- basis()
-    isolate(update_sliders())
-    output$obl_plot <- renderPlot(
+    output$obl_plot <- renderPlot({
+      #isolate(update_sliders())
       oblique_frame(data = selected_dat(),
                     basis = rv$curr_basis,
                     manip_var = manip_var(),
@@ -175,25 +176,26 @@ server <- function(input, output, session) {
                     pch = pch_of(pch_var()),
                     axes = input$axes,
                     alpha = input$alpha)
-    )
+    })
+    #observe({isolate(update_sliders())})
     ### After run button, observe sliders
     observeEvent(input$x_slider, {
-      rv$curr_basis <- basis_x()
-      isolate(update_sliders())
+      rv$curr_basis <- isolate(basis_x())
+      #isolate(update_sliders())
       output$curr_basis_out <- renderTable(rv$curr_basis)
     })
     observeEvent(input$y_slider, {
-      rv$curr_basis <- basis_y()
-      isolate(update_sliders())
+      rv$curr_basis <- isolate(basis_y())
+      #isolate(update_sliders())
       output$curr_basis_out <- renderTable(rv$curr_basis)
     })
     observeEvent(input$rad_slider, {
-      rv$curr_basis <- basis_rad()
-      isolate(update_sliders())
+      rv$curr_basis <- isolate(basis_rad())
+      #isolate(update_sliders())
       output$curr_basis_out <- renderTable(rv$curr_basis)
     })
     
-    #TODO: manual logging mirate to proper logging
+    #TODO: manual logging migrate to proper logging
     print("obl_run end")
   })
   
