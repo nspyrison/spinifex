@@ -4,9 +4,9 @@
 \alias{oblique_frame}
 \title{Plot a single frame of a manual tour}
 \usage{
-oblique_frame(data, basis = NULL, manip_var, theta = NULL,
-  phi = NULL, manip_col = "blue", col = "black", pch = 20,
-  axes = "center", rescale_data = FALSE, alpha = 1, ...)
+oblique_frame(data, basis = NULL, manip_var, theta = NULL, phi = NULL,
+  manip_col = "blue", col = "black", pch = 20, axes = "center",
+  rescale_data = FALSE, alpha = 1, ...)
 }
 \arguments{
 \item{data}{(n, p) dataset to project, consisting of numeric variables.}
