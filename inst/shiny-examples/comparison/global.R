@@ -1,11 +1,12 @@
+##### Preamble ----
 library(shiny)
 library(plotly)
 library(spinifex)
 library(dplyr)
-### Projection Pursuit
+### Projection pursuit indices
 library(scagnostics) # "Skinny", "Striated", "Convex", "Clumpy" 
-library(mbgraphic) #splines2d, dcor2d
-library(minerva) #MIC, TIC
+library(mbgraphic)   # splines2d, dcor2d
+library(minerva)     # MIC, TIC
 
 ## for saving files:
 # write.csv(tourr::flea, file="./inst/shiny-examples/comparison/flea.csv",row.names=FALSE)

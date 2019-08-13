@@ -16,6 +16,11 @@
 # For adjusting or adding more apps it may be useful to read: 
 # https://deanattali.com/2015/04/21/r-package-shiny-app/
 run_app <- function(example) {
+  # required for running some projection pursuit indices.
+  require("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
+  require("mbgraphic")   # splines2d, dcor2d
+  require("minerva")     # MIC, TIC
+  
   # locate all the shiny app examples that exist
   validExamples <- list.files(system.file("shiny-examples", package = "spinifex"))
   
