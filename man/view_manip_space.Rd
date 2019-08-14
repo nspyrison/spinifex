@@ -4,8 +4,8 @@
 \alias{view_manip_space}
 \title{Plot projection frame and return the axes table.}
 \usage{
-view_manip_space(basis, manip_var, manip_col = "blue", tilt = 5/12 * pi,
-  z_col = "red", labels = paste0("V", 1:nrow(basis)))
+view_manip_space(basis, manip_var, manip_col = "blue", tilt = 5/12 *
+  pi, z_col = "red", labels = paste0("V", 1:nrow(basis)))
 }
 \arguments{
 \item{basis}{A (p, d) basis, XY linear combination of each dimension

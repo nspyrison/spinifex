@@ -1,12 +1,17 @@
 ##### Preamble ----
-library(shiny)
-library(plotly)
-library(spinifex)
-library(dplyr)
+library("shiny")
+library("plotly")
+library("spinifex")
+library("dplyr")
+require("DT")
+library("DT")          # for gallery table
 ### Projection pursuit indices
-library(scagnostics) # "Skinny", "Striated", "Convex", "Clumpy" 
-library(mbgraphic)   # splines2d, dcor2d
-library(minerva)     # MIC, TIC
+require("scagnostics")
+require("mbgraphic")
+require("minerva")
+library("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
+library("mbgraphic")   # splines2d, dcor2d
+library("minerva")     # MIC, TIC
 
 ## for saving files:
 # write.csv(tourr::flea, file="./inst/shiny-examples/comparison/flea.csv",row.names=FALSE)
@@ -51,8 +56,17 @@ getGuidedTour <- function(indexName, grId=NA){ # reurtns a tour function
   if(indexName == "splines2d"){return(guided_tour(splineIndex()))}
   if(indexName == "dcor2d"){return(guided_tour(dcorIndex()))}
   if(indexName %in% c("MIC", "TIC")){return(guided_tour(mineIndex(indexName)))}
-  if(indexName == "lda_pp"){return(guided_tour(lda_pp(grId)))} #TODO:no grID
-  if(indexName == "pda_pp"){return(guided_tour(pda_pp(grId)))} # as of now
+  if(indexName == "lda_pp"){return(guided_tour(lda_pp(grId)))}
+  if(indexName == "pda_pp"){return(guided_tour(pda_pp(grId)))}
   else return(guided_tour(holes()))
 }
 ### END OF PROJECTION PURSUIT
+
+##### GALLERY ----
+shinyInput <- function(FUN, len, id, ...) {
+  inputs <- character(len)
+  for (i in seq_len(len)) {
+    inputs[i] <- as.character(FUN(paste0(id, i), ...))
+  }
+  inputs
+}

@@ -4,7 +4,6 @@
 \name{spinifex}
 \alias{spinifex}
 \alias{spinifex-package}
-\alias{spinifex-package}
 \title{spinifex}
 \description{
 spinifex is a package that extends the package \code{tourr}.

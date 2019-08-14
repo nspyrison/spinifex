@@ -40,6 +40,7 @@ Suggests:
     png,
     rmarkdown,
     RColorBrewer,
+    DT,
     scagnostics,
     mbgraphic,
     minerva

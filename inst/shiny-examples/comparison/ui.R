@@ -50,23 +50,25 @@ tabManual <-
       selectInput('manip_type', "Manipulation type",
                   c("horizontal", "vertical", "radial")),
       conditionalPanel("input.manip_type == 'horizontal'",
-                       sliderInput("x_slider", "Horizontal",
+                       sliderInput("x_slider", "X contribution",
                                    min = -1, max = 1, value = 0, step = .1)),
       conditionalPanel("input.manip_type == 'vertical'",
-                       sliderInput("y_slider", "Vertical",
+                       sliderInput("y_slider", "Y contribution",
                                    min = -1, max = 1, value = 0, step = .1)),
       conditionalPanel("input.manip_type == 'radial'",
-                       sliderInput("rad_slider", "Radial",
+                       sliderInput("rad_slider", "Radial contribution",
                                    min = 0, max = 1, value = .5, step = .05)),
-      fluidRow(column(6, actionButton("obl_run", "Run")),
-               column(6, actionButton("obl_save", "Save (csv & png)"))),
-      verbatimTextOutput("obl_save_msg"),    
+      fluidRow(column(4, actionButton("obl_run", "Run")),
+               column(4, actionButton("obl_save", "Save (csv & png)")),
+               column(4, actionButton("obl_to_gallery", "Send to gallery"))
+      ),
+      verbatimTextOutput("obl_save_msg"),
       hr(),
       ### Animation settings
       h4("Animation"),
       sliderInput('angle', 'Angle step size (animation only)', value = .05, min = .01, max = .3),
-      fluidRow(column(6, actionButton("anim_run", "Run")),
-               column(6, actionButton("anim_save", "Save (gif)"))),
+      fluidRow(column(4, actionButton("anim_run", "Run")),
+               column(8, actionButton("anim_save", "Save (gif)"))),
       verbatimTextOutput("anim_save_msg"),
       hr(),
       ### Optional settings
@@ -91,8 +93,8 @@ tabManual <-
       h3("Animation"),
       column(9, plotlyOutput("anim_plot"))
     )
-  )
-)
+  ))
+
 
 ##### Static tab ----
 tabStatic <- tabPanel(
@@ -110,6 +112,15 @@ tabStatic <- tabPanel(
   )
 )
 
+##### Gallery -----
+tabGallery <- tabPanel(
+  "Gallery", fluidPage(
+    mainPanel(
+      DT::dataTableOutput("gallery")
+      , verbatimTextOutput("gallery_msg")
+    )
+  )
+)
 
 ###### Tabs combined ----
 ui <- fluidPage(
@@ -118,7 +129,8 @@ ui <- fluidPage(
     tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
   navbarPage("Manual tours -- comparison",
              tabInput,
-             tabManual
+             tabManual,
+             tabGallery
              #, tabStatic
   )
   , verbatimTextOutput("dev_msg")

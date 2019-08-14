@@ -16,6 +16,10 @@ source('ui.R', local = TRUE)
 
 server <- function(input, output, session) {
   ##### Initialize ----
+  rv <- reactiveValues() # rv needed for x,y,r sliders and gallery
+  rv$curr_basis <- NULL
+  rv$gallery_bases <- NULL
+  rv$gallery_n_saved <- 0
 
   ### Initialize data reactives (global)
   data <- reactive({
@@ -43,6 +47,7 @@ server <- function(input, output, session) {
     if (input$pch_var == "<none>") {rep("a", n())
     } else {groupDat()[, which(colnames(groupDat()) == input$col_var)]}
   })
+  
   
   ##### Manual tour tab ----
   ### Initialize tour reactives 
@@ -82,13 +87,10 @@ server <- function(input, output, session) {
     updateSelectInput(session, "pch_var", choices = cat_names)
   })
   
-
-  ##### _Interactive specific ----
-  ### Interactive uses oblique manipulation, commonly has obl_ prefix.
-  rv <- reactiveValues() # reactive values needed for x,y,r sliders and saves
-  rv$curr_basis <- NULL
   
-  ##### __Initialize reactives (interactive) ----
+  ##### _Interactive reactives ----
+  ### Interactive uses oblique manipulation, commonly has obl_ prefix.
+  
   ### x, y, radius reactives
   # x motion 
   basis_x <- reactive({
@@ -127,7 +129,7 @@ server <- function(input, output, session) {
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     theta <- atan(mv_sp[2] / mv_sp[1])
     phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    phi <- acos(input$rad_slider) - phi_start
+    phi <- (acos(input$rad_slider) - phi_start) * -sign(mv_sp[1])
     basis <- oblique_basis(basis = rv$curr_basis,
                            manip_var = manip_var(),
                            theta,
@@ -144,29 +146,28 @@ server <- function(input, output, session) {
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
     x_i <- -phi.x_zero / (pi/2)
-    isolate(updateSliderInput(session, "x_slider", value = x_i))
+    (updateSliderInput(session, "x_slider", value = x_i))
     phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
     y_i <- -phi.y_zero / (pi/2)
-    isolate(updateSliderInput(session, "y_slider", value = y_i))
+    (updateSliderInput(session, "y_slider", value = y_i))
     phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
     rad_i <- cos(phi_i)
-    isolate(updateSliderInput(session, "rad_slider", value = rad_i))
+    (updateSliderInput(session, "rad_slider", value = rad_i))
     
     #TODO: manual logging migrate to proper logging
-   # print("update_sliders:")
-   # print(paste0("x: ", x_i, ", y: ", y_i, ", rad: ", rad_i))#, ", theta: ", theta_i))
+    # print("update_sliders:")
+    # print(paste0("x: ", x_i, ", y: ", y_i, ", rad: ", rad_i))#, ", theta: ", theta_i))
   })
-
-  ### __Update inputs (interactive) ----
-  #TODO
-
+  
+  ### _Interactive observes ----
+  #TODO: Fix 
+  
   ### Display interactive
   observeEvent(input$obl_run, {
     #TODO: manual logging migrate to proper logging
     print("obl_run start")
     rv$curr_basis <- basis()
     output$obl_plot <- renderPlot({
-      #isolate(update_sliders())
       oblique_frame(data = selected_dat(),
                     basis = rv$curr_basis,
                     manip_var = manip_var(),
@@ -177,21 +178,18 @@ server <- function(input, output, session) {
                     axes = input$axes,
                     alpha = input$alpha)
     })
-    #observe({isolate(update_sliders())})
+    
     ### After run button, observe sliders
     observeEvent(input$x_slider, {
-      rv$curr_basis <- isolate(basis_x())
-      #isolate(update_sliders())
+      rv$curr_basis <- basis_x()
       output$curr_basis_out <- renderTable(rv$curr_basis)
     })
     observeEvent(input$y_slider, {
-      rv$curr_basis <- isolate(basis_y())
-      #isolate(update_sliders())
+      rv$curr_basis <- basis_y()
       output$curr_basis_out <- renderTable(rv$curr_basis)
     })
     observeEvent(input$rad_slider, {
-      rv$curr_basis <- isolate(basis_rad())
-      #isolate(update_sliders())
+      rv$curr_basis <- basis_rad()
       output$curr_basis_out <- renderTable(rv$curr_basis)
     })
     
@@ -202,7 +200,7 @@ server <- function(input, output, session) {
   ### Save current basis (interactive)
   observeEvent(input$obl_save, {
     if (is.null(rv$curr_basis)) return()
-    save_file <- sprintf("tour_basis%03d", 1)
+    save_file <- sprintf("tour_basis%03d", input$olb_save + rv$gallery_n_saved)
     write.csv(rv$curr_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
     gg_out <- oblique_frame(data = selected_dat(),
                             basis = rv$curr_basis,
@@ -214,10 +212,26 @@ server <- function(input, output, session) {
                             axes = input$axes,
                             alpha = input$alpha)
     ggplot2::ggsave(paste0(save_file,".png"), gg_out)
-    output$obl_save_msg <- renderPrint(paste0("Basis saved as ", save_file))
+    output$obl_save_msg <- renderPrint(paste0("Basis saved as ", save_file, "."))
   })
   
-  ##### _Animimation specific ----
+  ### Send current basis to gallery
+  observeEvent(input$obl_to_gallery, {
+    if (is.null(rv$curr_basis)) return()
+    gallery_info <- data.frame(`Manip var`  = input$manip_var, 
+                               `Manip type` = input$manip_type, 
+                               `Time saved` = substr(Sys.time(), 12,19))
+    basis_row <- t(data.frame(as.vector(rv$curr_basis)))
+    colnames(basis_row) <- c(paste0("x", 1:p()), paste0("y", 1:p()))
+    
+    gallery_row <- data.frame(cbind(gallery_info, basis_row))
+    rv$gallery_bases <- rbind(rv$gallery_bases, gallery_row)
+    
+    output$obl_save_msg <- renderPrint(paste0("Basis sent to the gallery."))
+  })
+  
+  
+  ##### _Animimation ----
   ### Plot the animation
   observeEvent(input$anim_run, {
     output$anim_plot <- renderPlotly({
@@ -228,27 +242,97 @@ server <- function(input, output, session) {
                        alpha = input$alpha)
     })
   })
+  
   ### Save the animation
   observeEvent(input$anim_save, {
-    if (is.null(output$anim_plot)) return()
+    if (input$anim_run == 0) return()
     output$anim_save_msg <- renderPrint("Saving gif...")
-    anim <- play_radial_tour(selected_dat(), basis(), manip_var(),
+    anim <- play_radial_tour(selectned_dat(), basis(), manip_var(),
                              col = col_of(col_var()), pch = pch_of(pch_var()),
                              axes = input$axes,
                              angle = input$angle,
                              alpha = input$alpha,
                              render_type = render_gganimate)
-    save_file <- sprintf("tour_animation%03d.gif", 1)
+    save_file <- sprintf("tour_animation%03d.gif", input$anim_save)
     gganimate::anim_save(save_file, anim)
-    output$anim_save_msg <- renderPrint(paste0("Animation saved as ", save_file))
+    output$anim_save_msg <- renderPrint(paste0("Animation saved as ", save_file, "."))
+  })
+  
+  ##### Gallery tab ----
+  ### Saved bases before buttons added
+  # TODO: remove this holder after dev.
+  isolate(dummy_row <- t(data.frame(1:(2*p()) )))
+  isolate(colnames(dummy_row) <- c(paste0("x", 1:p()), paste0("y", 1:p())))
+  rv$gallery_bases <- data.frame(
+    `Manip var`  = c(4, 2, 5, 777),
+    `Manip type` = c("horizontal", "vertical", "radial", "not real data"),
+    `Time saved` = c("12:56:30", "13:33:33", "14:00:00", "77:77:77"), # substr(Sys.time(), 12,19)
+    dummy_row)
+  
+  ### Display table with buttons
+  rows_to_remove <- reactiveVal()
+  gallery_disp <- reactive({
+    df = data.frame(
+      Plot = shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Plot", 
+                        onclick = 'Shiny.onInputChange(\"gallery_plot\",  this.id)'),
+      `Save (csv & png)` = shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "SaveToFile", 
+                              onclick = 'Shiny.onInputChange(\"gallery_save\",  this.id)'),
+      Delete = shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Remove", 
+                          onclick = 'Shiny.onInputChange(\"gallery_delete\",  this.id)'),
+      as.data.frame(rv$gallery_bases),
+      stringsAsFactors = FALSE,
+      row.names = 1:nrow(rv$gallery_bases)
+    )
+    df[!rownames(df) %in% rows_to_remove(), ]
+  })
+  
+  output$gallery <- DT::renderDataTable(
+    gallery_disp(), server = FALSE, escape = FALSE, selection = 'none'
+  )
+  
+  ### Plot button (gallery)
+  observeEvent(input$gallery_plot, {
+    selectedRow <- as.numeric(strsplit(input$gallery_save, "_")[[1]][2])
+    gallery_basis_v <- rv$gallery_bases[selectedRow, 4:(4 + 2*p() - 1)]
+    
+    rv$curr_basis <- matrix(gallery_basis_v, ncol=2, byrow = F)
+    output$gallery_msg <- renderText(paste0("Row ", selectedRow, "is now the current basis."))
+  })
+  
+  ### Save button (gallery)
+  observeEvent(input$gallery_save, {
+    selectedRow <- as.numeric(strsplit(input$gallery_save, "_")[[1]][2])
+    rv$gallery_n_saved <- rv$gallery_n_saved + 1
+    save_file <- sprintf("tour_basis%03d", input$olb_save + rv$gallery_n_saved)
+    gallery_basis_v <- rv$gallery_bases[selectedRow, 4:(4 + 2*p() - 1)]
+    gallery_basis <- matrix(gallery_basis_v, ncol=2, byrow = F)
+    
+    write.csv(gallery_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
+    gg_out <- oblique_frame(data = selected_dat(),
+                            basis = gallery_basis,
+                            manip_var = manip_var(),
+                            theta = 0,
+                            phi = 0,
+                            col = col_of(col_var()),
+                            pch = pch_of(pch_var()),
+                            axes = input$axes,
+                            alpha = input$alpha)
+    ggplot2::ggsave(paste0(save_file,".png"), gg_out)
+    output$gallery_msg <- renderText(paste0("saved row ", selectedRow, " as ", save_file)) 
+  })
+  
+  ### Delete button (gallery)
+  observeEvent(input$gallery_delete, {
+    selectedRow <- as.numeric(strsplit(input$gallery_delete, "_")[[1]][2])
+    rows_to_remove(c(rows_to_remove(), selectedRow)) # updates the rows to remove
   })
   
   ##### Static tab ----
   observeEvent(input$static_run, {
     output$static_plot <- renderPlot({
-      staticProjection(dat = selected_dat(), # legwork is a function in global.R
-                       method = input$static_method, 
-                       col = col_var(), 
+      staticProjection(dat = selected_dat(),
+                       method = input$static_method,
+                       col = col_var(),
                        pch = pch_var(),
                        alpha = input$static_alpha
       )
@@ -258,9 +342,11 @@ server <- function(input, output, session) {
   ### Development help -- uncomment message at bottom on ui to use
   output$dev_msg <- renderPrint({
     cat("Dev msg --\n",
-           "obl_run: ", input$obl_run, "\n",
-           "anim_run: ", input$anim_run
-           )
+        "obl_run: ", input$obl_run, "\n",
+        "obl_save: ", input$obl_save, "\n",
+        "anim_run: ", input$anim_run, "\n",
+        "anim_save: ", input$anim_save, "\n"
+    )
   })
   
 }
