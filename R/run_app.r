@@ -20,7 +20,8 @@ run_app <- function(example) {
     requireNamespace("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
     requireNamespace("mbgraphic")   # splines2d, dcor2d
     requireNamespace("minerva")     # MIC, TIC
-    requireNamespace("DT") # For Gallery tab
+    requireNamespace("DT")          # Gallery table
+    requireNamespace("reactlog")    # Logging
   }
   
   # locate all the shiny app examples that exist

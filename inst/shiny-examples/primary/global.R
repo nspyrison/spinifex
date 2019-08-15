@@ -1,14 +1,14 @@
 ##### Preamble ----
+options(shiny.reactlog = TRUE) # Logging with reactlog
+
 library("shiny")
 library("plotly")
 library("spinifex")
 library("dplyr")
-requireNamespace("DT")
-library("DT")          # for gallery table
+##### include in requireNamespace() in run_app:
+library("DT")          # Gallery table
+library("reactlog")    # Logging
 ### Projection pursuit indices
-requireNamespace("scagnostics")
-requireNamespace("mbgraphic")
-requireNamespace("minerva")
 library("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
 library("mbgraphic")   # splines2d, dcor2d
 library("minerva")     # MIC, TIC
