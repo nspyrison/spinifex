@@ -1,10 +1,9 @@
-#' Render display of a 2D radial manual tour
+#' Animate a manual tour
 #'
-#' Performs the a 2D radial manual tour and returns an animation of `render_type`.
+#' Performs the a manual tour and returns an animation of `render_type`.
 #' For use with `tourr::save_history()` tour paths see `play_tour_path()`. 
 #' 
 #' @name play_radial_tour
-#' @aliases play_manual_tour
 #' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix. 
 #'   If it's left null, random basis will be used.
@@ -45,36 +44,35 @@
 #' play_radial_tour(data = flea_std, basis = rb, manip_var = 6, 
 #'   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
 #' }
-play_radial_tour <- play_manual_tour <-
-  function(data,
-           basis       = NULL,
-           manip_var,
-           theta       = NULL,
-           phi_min     = 0,
-           phi_max     = .5 * pi,
-           angle       = .05,
-           manip_col   = "blue",
-           render_type = render_plotly,
-           col         = "black", 
-           pch         = 20,
-           axes        = "center",
-           fps         = 3,
-           rescale_data = FALSE,
-           alpha = alpha,
-           ...) {
-    if (rescale_data) data <- tourr::rescale(data)
-    if (is.null(basis)) {
-      message("NULL basis passed. Initializing random basis.")
-      basis <- tourr::basis_random(n = ncol(data))
-    }
-    
-    m_tour <- radial_tour(basis = basis, manip_var = manip_var, angle = angle,
-                          theta = theta, phi_min = phi_min, phi_max = phi_max)
-    
-    slides <- array2df(array = m_tour, data = data)
-    disp   <- render_type(slides = slides, manip_col = manip_col,
-                          col = col, pch = pch, axes = axes, fps = fps,
-                          alpha = alpha, ...)
-    
-    disp
+play_manual_tour <- function(data,
+                             basis       = NULL,
+                             manip_var,
+                             theta       = NULL,
+                             phi_min     = 0,
+                             phi_max     = .5 * pi,
+                             angle       = .05,
+                             manip_col   = "blue",
+                             render_type = render_plotly,
+                             col         = "black", 
+                             pch         = 20,
+                             axes        = "center",
+                             fps         = 3,
+                             rescale_data = FALSE,
+                             alpha = alpha,
+                             ...) {
+  if (rescale_data) data <- tourr::rescale(data)
+  if (is.null(basis)) {
+    message("NULL basis passed. Initializing random basis.")
+    basis <- tourr::basis_random(n = ncol(data))
   }
+  
+  m_tour <- radial_tour(basis = basis, manip_var = manip_var, angle = angle,
+                        theta = theta, phi_min = phi_min, phi_max = phi_max)
+  
+  slides <- array2df(array = m_tour, data = data)
+  disp   <- render_type(slides = slides, manip_col = manip_col,
+                        col = col, pch = pch, axes = axes, fps = fps,
+                        alpha = alpha, ...)
+  
+  disp
+}
