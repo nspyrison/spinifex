@@ -3,7 +3,7 @@
 #' Performs the a manual tour and returns an animation of `render_type`.
 #' For use with `tourr::save_history()` tour paths see `play_tour_path()`. 
 #' 
-#' @name play_radial_tour
+#' @name play_manual_tour
 #' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix. 
 #'   If it's left null, random basis will be used.
@@ -39,9 +39,9 @@
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' 
-#' play_radial_tour(data = flea_std, basis = rb, manip_var = 4)
+#' play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
 #' 
-#' play_radial_tour(data = flea_std, basis = rb, manip_var = 6, 
+#' play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
 #'   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
 #' }
 play_manual_tour <- function(data,
@@ -66,7 +66,7 @@ play_manual_tour <- function(data,
     basis <- tourr::basis_random(n = ncol(data))
   }
   
-  m_tour <- radial_tour(basis = basis, manip_var = manip_var, angle = angle,
+  m_tour <- manual_tour(basis = basis, manip_var = manip_var, angle = angle,
                         theta = theta, phi_min = phi_min, phi_max = phi_max)
   
   slides <- array2df(array = m_tour, data = data)

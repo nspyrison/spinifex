@@ -20,7 +20,7 @@ manip_var.}
 A (p, d+1) orthonormal matrix of the rotated (manipulation) space.
 }
 \description{
-Typically called by \code{radial_tour()}. Rotates a (p, d+1) manipulation space
+Typically called by \code{manual_tour()}. Rotates a (p, d+1) manipulation space
 matrix by (d+1, d+1) rotation matrix, returning (p, d+1) matrix rotation
 space. The first 2 variables of which are the linear combination of the
 variables for a 2d projection.

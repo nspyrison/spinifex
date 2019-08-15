@@ -20,7 +20,7 @@
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
-#' mtour <- radial_tour(basis = rb, manip_var = 4)
+#' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
 #' 

@@ -9,7 +9,7 @@ play_tour_path(tour_path, data = NULL, angle = 0.05,
   axes = "center", fps = 3, alpha = 1, ...)
 }
 \arguments{
-\item{tour_path}{The result of \code{tourr::save_history()} or \code{radial_tour()}.}
+\item{tour_path}{The result of \code{tourr::save_history()} or \code{manual_tour()}.}
 
 \item{data}{Optional, number of columns must match that of \code{tour_path}.}
 
@@ -32,7 +32,7 @@ to "center".}
 \item{...}{Optionally pass additional arguments to \code{render_type}.}
 }
 \description{
-Takes the result of \code{tourr::save_history()} or \code{radial_tour()}, interpolates
+Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interpolates
 over the path and renders into a selected \code{render_type}.
 }
 \examples{

@@ -1,9 +1,9 @@
 #' Render display of a provided tour path
 #'
-#' Takes the result of `tourr::save_history()` or `radial_tour()`, interpolates
+#' Takes the result of `tourr::save_history()` or `manual_tour()`, interpolates
 #' over the path and renders into a selected `render_type`.
 #'
-#' @param tour_path The result of `tourr::save_history()` or `radial_tour()`.
+#' @param tour_path The result of `tourr::save_history()` or `manual_tour()`.
 #' @param data Optional, number of columns must match that of `tour_path`.
 #' @param angle target distance (in radians) between bases.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 

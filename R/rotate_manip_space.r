@@ -1,6 +1,6 @@
 #' Rotate and return the manipulation space
 #'
-#' Typically called by `radial_tour()`. Rotates a (p, d+1) manipulation space 
+#' Typically called by `manual_tour()`. Rotates a (p, d+1) manipulation space 
 #' matrix by (d+1, d+1) rotation matrix, returning (p, d+1) matrix rotation 
 #' space. The first 2 variables of which are the linear combination of the 
 #' variables for a 2d projection.

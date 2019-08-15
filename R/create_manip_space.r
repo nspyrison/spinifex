@@ -1,6 +1,6 @@
 #' Create a manipulation space
 #'
-#' Typically called by `radial_tour()`. Creates a (p, d) orthonormal matrix,
+#' Typically called by `manual_tour()`. Creates a (p, d) orthonormal matrix,
 #' the manipulation space from the given basis right concatenated with a zero 
 #' vector, with manip_var set to 1.
 #'

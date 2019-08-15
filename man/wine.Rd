@@ -46,7 +46,7 @@ wine
 \examples{
 str(wine)
 \dontrun{
-play_radial_tour(data = wine[, 2:14], manip_var = 1, rescale_data = TRUE)
+play_manual_tour(data = wine[, 2:14], manip_var = 1, rescale_data = TRUE)
 }
 }
 \keyword{datasets}

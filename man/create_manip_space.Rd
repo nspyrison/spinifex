@@ -15,7 +15,7 @@ create_manip_space(basis, manip_var)
 A (p, d+1) orthonormal matrix, the manipulation space.
 }
 \description{
-Typically called by \code{radial_tour()}. Creates a (p, d) orthonormal matrix,
+Typically called by \code{manual_tour()}. Creates a (p, d) orthonormal matrix,
 the manipulation space from the given basis right concatenated with a zero
 vector, with manip_var set to 1.
 }

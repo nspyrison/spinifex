@@ -26,7 +26,7 @@
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' 
 #' rb <- basis_random(n = ncol(flea_std))
-#' radial_tour(basis = rb, manip_var = 4)
+#' manual_tour(basis = rb, manip_var = 4)
 manual_tour <- function(basis   = NULL,
                         manip_var,
                         theta   = NULL,

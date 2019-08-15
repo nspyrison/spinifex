@@ -87,7 +87,7 @@ view_manip_space(basis = flea_rb, manip_var = 3, labels = colnames(flea_std))
 Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
 
 ```{r, eval=F}
-play_radial_tour(data = flea_std, basis = flea_rb, manip_var = 3)
+play_manual_tour(data = flea_std, basis = flea_rb, manip_var = 3)
 ```
 
 *plotly animation not rendered in this vignette, but will display in viewer*

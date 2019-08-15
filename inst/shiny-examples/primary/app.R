@@ -239,7 +239,7 @@ server <- function(input, output, session) {
   ### Plot the animation
   observeEvent(input$anim_run, {
     output$anim_plot <- renderPlotly({
-      play_radial_tour(selected_dat(), basis(), manip_var(),
+      play_manual_tour(selected_dat(), basis(), manip_var(),
                        col = col_of(col_var()), pch = pch_of(pch_var()),
                        axes = input$axes,
                        angle = input$angle,
@@ -255,7 +255,7 @@ server <- function(input, output, session) {
       return()
       }
     output$anim_save_msg <- renderPrint("Saving gif...")
-    anim <- play_radial_tour(selectned_dat(), basis(), manip_var(),
+    anim <- play_manual_tour(selectned_dat(), basis(), manip_var(),
                              col = col_of(col_var()), pch = pch_of(pch_var()),
                              axes = input$axes,
                              angle = input$angle,
