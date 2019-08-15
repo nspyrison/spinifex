@@ -3,12 +3,12 @@ library("shiny")
 library("plotly")
 library("spinifex")
 library("dplyr")
-require("DT")
+requireNamespace("DT")
 library("DT")          # for gallery table
 ### Projection pursuit indices
-require("scagnostics")
-require("mbgraphic")
-require("minerva")
+requireNamespace("scagnostics")
+requireNamespace("mbgraphic")
+requireNamespace("minerva")
 library("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
 library("mbgraphic")   # splines2d, dcor2d
 library("minerva")     # MIC, TIC

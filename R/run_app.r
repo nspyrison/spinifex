@@ -3,23 +3,25 @@
 #' Runs a local shiny app that demonstrates manual tour and comparable 
 #' traditional techniques for static projections of multivariate data sets.
 #' 
-#' @param example name of the shiny app to run. Expects "intro" or "comparison"
+#' @param example name of the shiny app to run. Expects "intro" or "primary".
 #' @return opens a local shiny app
 #' @export
 #' @examples 
 #' \dontrun{
 #' run_app(example = "intro")
-#' run_app(example = "comparison")
+#' run_app(example = "primary")
 #' }
 
 
 # For adjusting or adding more apps it may be useful to read: 
 # https://deanattali.com/2015/04/21/r-package-shiny-app/
 run_app <- function(example) {
-  # required for running some projection pursuit indices.
-  require("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
-  require("mbgraphic")   # splines2d, dcor2d
-  require("minerva")     # MIC, TIC
+  if (example == "primary") {
+    requireNamespace("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
+    requireNamespace("mbgraphic")   # splines2d, dcor2d
+    requireNamespace("minerva")     # MIC, TIC
+    requireNamespace("DT") # For Gallery tab
+  }
   
   # locate all the shiny app examples that exist
   validExamples <- list.files(system.file("shiny-examples", package = "spinifex"))

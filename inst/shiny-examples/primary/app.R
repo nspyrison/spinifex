@@ -20,7 +20,11 @@ server <- function(input, output, session) {
   rv$curr_basis <- NULL
   rv$gallery_bases <- NULL
   rv$gallery_n_saved <- 0
-
+  
+  obl_save_cnt <- reactive({
+    if (is.null(input$olb_save)) {return(rv$gallery_n_saved) # NULL is 0
+      } else {input$olb_save + rv$gallery_n_saved} 
+    }) 
   ### Initialize data reactives (global)
   data <- reactive({
     if (is.null(input$data_file)) {return(tourr::flea)}
@@ -200,7 +204,7 @@ server <- function(input, output, session) {
   ### Save current basis (interactive)
   observeEvent(input$obl_save, {
     if (is.null(rv$curr_basis)) return()
-    save_file <- sprintf("tour_basis%03d", input$olb_save + rv$gallery_n_saved)
+    save_file <- sprintf("tour_basis%03d", obl_save_cnt())
     write.csv(rv$curr_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
     gg_out <- oblique_frame(data = selected_dat(),
                             basis = rv$curr_basis,
@@ -244,8 +248,12 @@ server <- function(input, output, session) {
   })
   
   ### Save the animation
+  #TODO: saving/generating gif message fix.
   observeEvent(input$anim_save, {
-    if (input$anim_run == 0) return()
+    if (input$anim_run == 0) {
+      output$anim_save_msg <- renderPrint("Saving gif...") #TODO fix this
+      return()
+      }
     output$anim_save_msg <- renderPrint("Saving gif...")
     anim <- play_radial_tour(selectned_dat(), basis(), manip_var(),
                              col = col_of(col_var()), pch = pch_of(pch_var()),
@@ -259,19 +267,14 @@ server <- function(input, output, session) {
   })
   
   ##### Gallery tab ----
-  ### Saved bases before buttons added
-  # TODO: remove this holder after dev.
-  isolate(dummy_row <- t(data.frame(1:(2*p()) )))
-  isolate(colnames(dummy_row) <- c(paste0("x", 1:p()), paste0("y", 1:p())))
-  rv$gallery_bases <- data.frame(
-    `Manip var`  = c(4, 2, 5, 777),
-    `Manip type` = c("horizontal", "vertical", "radial", "not real data"),
-    `Time saved` = c("12:56:30", "13:33:33", "14:00:00", "77:77:77"), # substr(Sys.time(), 12,19)
-    dummy_row)
   
   ### Display table with buttons
   rows_to_remove <- reactiveVal()
   gallery_disp <- reactive({
+    if (is.null(rv$gallery_bases)) {
+      output$gallery_msg <- renderPrint("Send a basis to the gallery.")
+      return()
+    }
     df = data.frame(
       Plot = shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Plot", 
                         onclick = 'Shiny.onInputChange(\"gallery_plot\",  this.id)'),
@@ -292,18 +295,19 @@ server <- function(input, output, session) {
   
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {
-    selectedRow <- as.numeric(strsplit(input$gallery_save, "_")[[1]][2])
+
+    selectedRow <- as.numeric(strsplit(input$gallery_plot, "_")[[1]][2])
     gallery_basis_v <- rv$gallery_bases[selectedRow, 4:(4 + 2*p() - 1)]
     
     rv$curr_basis <- matrix(gallery_basis_v, ncol=2, byrow = F)
-    output$gallery_msg <- renderText(paste0("Row ", selectedRow, "is now the current basis."))
+    output$gallery_msg <- renderText(paste0("Row ", selectedRow, " is now the current basis."))
   })
   
   ### Save button (gallery)
   observeEvent(input$gallery_save, {
     selectedRow <- as.numeric(strsplit(input$gallery_save, "_")[[1]][2])
     rv$gallery_n_saved <- rv$gallery_n_saved + 1
-    save_file <- sprintf("tour_basis%03d", input$olb_save + rv$gallery_n_saved)
+    save_file <- sprintf("tour_basis%03d", obl_save_cnt())
     gallery_basis_v <- rv$gallery_bases[selectedRow, 4:(4 + 2*p() - 1)]
     gallery_basis <- matrix(gallery_basis_v, ncol=2, byrow = F)
     
@@ -318,7 +322,7 @@ server <- function(input, output, session) {
                             axes = input$axes,
                             alpha = input$alpha)
     ggplot2::ggsave(paste0(save_file,".png"), gg_out)
-    output$gallery_msg <- renderText(paste0("saved row ", selectedRow, " as ", save_file)) 
+    output$gallery_msg <- renderText(paste0("Saved row ", selectedRow, " as ", save_file, ".")) 
   })
   
   ### Delete button (gallery)

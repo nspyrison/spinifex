@@ -37,7 +37,7 @@ render_gganimate <- function(slides,
                              ...) 
 {
   # Initialize
-  require("gganimate")
+  requireNamespace("gganimate")
   
   gg <- render_(slides = slides, manip_col = manip_col, 
                 col = col, pch = pch, axes = axes, alpha = alpha) + 

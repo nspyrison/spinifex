@@ -7,7 +7,7 @@
 run_app(example)
 }
 \arguments{
-\item{example}{name of the shiny app to run. Expects "intro" or "comparison"}
+\item{example}{name of the shiny app to run. Expects "intro" or "primary".}
 }
 \value{
 opens a local shiny app
@@ -19,6 +19,6 @@ traditional techniques for static projections of multivariate data sets.
 \examples{
 \dontrun{
 run_app(example = "intro")
-run_app(example = "comparison")
+run_app(example = "primary")
 }
 }

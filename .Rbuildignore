@@ -8,3 +8,7 @@
 
 
 ^inst/shiny-examples/devExamples/.*$
+^inst/shiny-examples/study/.*$
+
+^inst/shiny-examples/primary/.*\.png$
+^inst/shiny-examples/primary/.*\.csv$

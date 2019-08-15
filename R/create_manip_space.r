@@ -18,9 +18,11 @@ create_manip_space <- function(basis,
                                manip_var) {
   if (!is.matrix(basis)) as.matrix(basis)
   
-  e            <- rep(0, len = nrow(basis))
-  e[manip_var] <- 1
-  manip_space  <- tourr::orthonormalise(cbind(basis, e))
+  manip_space <- cbind(basis, rep(0, len = nrow(basis) ))
+  manip_space[manip_var, 3] <- 1
+  manip_space <- apply(manip_space, 2, as.numeric)
+  
+  manip_space  <- tourr::orthonormalise(manip_space)
   colnames(manip_space) <- NULL
   
   manip_space
