@@ -38,5 +38,6 @@ mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 render_(slides = sshow)
 
-render_(slides = sshow, axes = "bottomleft")
+render_(slides = sshow, axes = "bottomleft", 
+        col = flea$species, pch = flea$species)
 }

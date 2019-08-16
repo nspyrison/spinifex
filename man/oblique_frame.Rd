@@ -4,8 +4,8 @@
 \alias{oblique_frame}
 \title{Plot a single frame of a manual tour}
 \usage{
-oblique_frame(data, basis = NULL, manip_var, theta = NULL,
-  phi = NULL, manip_col = "blue", col = "black", pch = 20,
+oblique_frame(data = NULL, basis = NULL, manip_var, theta = 0,
+  phi = 0, manip_col = "blue", col = "black", pch = 20,
   axes = "center", rescale_data = FALSE, alpha = 1, ...)
 }
 \arguments{

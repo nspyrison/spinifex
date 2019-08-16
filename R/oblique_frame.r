@@ -36,11 +36,11 @@
 #' 
 #' oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
 
-oblique_frame <- function(data,
-                          basis       = NULL,
+oblique_frame <- function(data         = NULL, #TODO: data is ~.16 why not NULL?
+                          basis        = NULL,
                           manip_var,
-                          theta        = NULL,
-                          phi          = NULL,
+                          theta        = 0,
+                          phi          = 0,
                           manip_col    = "blue",
                           col          = "black", 
                           pch          = 20,
@@ -48,8 +48,8 @@ oblique_frame <- function(data,
                           rescale_data = FALSE,
                           alpha        = 1,
                           ...) {
-  if (rescale_data) data <- tourr::rescale(data)
-  if (is.null(basis)) {
+
+  if (is.null(basis) & !is.null(data)) {
     message("NULL basis passed. Initializing random basis.")
     basis <- tourr::basis_random(n = ncol(data))
   }
@@ -58,11 +58,13 @@ oblique_frame <- function(data,
   m_sp <- create_manip_space(basis, manip_var)
   r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
   
-  # misnomer, but following array2df names:
   basis_slides <- cbind(as.data.frame(r_m_sp), slide = 1)
-  data_slides  <- cbind(as.data.frame(data %*% r_m_sp), slide = 1)
-  data_slides[, 1] <- scale(data_slides[, 1], scale = FALSE)
-  data_slides[, 2] <- scale(data_slides[, 2], scale = FALSE)
+  if(!is.null(data)){
+    if (rescale_data) {data <- tourr::rescale(data)}
+    data_slides  <- cbind(as.data.frame(data %*% r_m_sp), slide = 1)
+    data_slides[, 1] <- scale(data_slides[, 1], scale = FALSE)
+    data_slides[, 2] <- scale(data_slides[, 2], scale = FALSE)
+  }
   
   # Add labels, attribute, and list
   basis_slides$lab_abbr <- if(!is.null(data)) {abbreviate(colnames(data), 3)

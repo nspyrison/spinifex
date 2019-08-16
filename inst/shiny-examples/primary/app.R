@@ -384,7 +384,9 @@ server <- function(input, output, session) {
   
   ### Create log file.
   dput(shiny::reactlog(), 
-       file = paste0("reactlog_", substr(Sys.time(), 1, 16), ".txt")
+       file = paste0("reactlog_", 
+                     substr(gsub(":", "_", Sys.time()), 1, 16), 
+                     ".txt")
   )
 }
 

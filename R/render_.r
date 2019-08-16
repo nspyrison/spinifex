@@ -22,7 +22,8 @@
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_(slides = sshow)
 #' 
-#' render_(slides = sshow, axes = "bottomleft")
+#' render_(slides = sshow, axes = "bottomleft", 
+#'         col = flea$species, pch = flea$species)
 render_ <- function(slides,
                     manip_col = "blue",
                     col = "black", 
@@ -109,8 +110,7 @@ render_ <- function(slides,
       suppressWarnings( # Suppress for unused aes "frame".
         ggplot2::geom_text(
           data = basis_slides, 
-          mapping = ggplot2::aes(x = V1,
-                                 y = V2, 
+          mapping = ggplot2::aes(x = V1, y = V2, 
                                  frame = slide, label = lab_abbr),
           colour = axes_col, size = 4, vjust = "outward", hjust = "outward")
       )

@@ -44,7 +44,6 @@ set_axes_position <- function(x, axes) {
 #' view_basis(basis = rb)
 #' 
 #' flea_std <- tourr::rescale(tourr::flea[, 1:4])
-#' view_basis(basis = rb, data = flea_std)
 #' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 #' @export
 view_basis <- function(basis,
