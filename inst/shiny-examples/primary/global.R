@@ -17,6 +17,7 @@ library("minerva")     # MIC, TIC
 # write.csv(tourr::flea, file="./inst/shiny-examples/comparison/flea.csv",row.names=FALSE)
 # save(df, file="./inst/shiny-examples/comparison/df.rda")
 
+
 ### STATIC LINEAR PROJECTIONS ----
 staticProjection <- function(dat, method, col, pch, alpha) {
   if (method == "PCA") {
@@ -44,8 +45,6 @@ staticProjection <- function(dat, method, col, pch, alpha) {
 ### END OF STATIC
 
 ### PROJECTION PURSUIT ----
-guidedTourOptions <- c("cmass", "holes", "Skinny", "Striated", "Convex", 
-                       "Clumpy", "splines2d", "dcor2d", "MIC", "TIC")
 scags <- function(scagMetricIndex) {
   function(mat) {return (scagnostics(mat)[scagMetricIndex])}
 }
@@ -58,7 +57,7 @@ getGuidedTour <- function(indexName, grId=NA){ # reurtns a tour function
   if(indexName %in% c("MIC", "TIC")){return(guided_tour(mineIndex(indexName)))}
   if(indexName == "lda_pp"){return(guided_tour(lda_pp(grId)))}
   if(indexName == "pda_pp"){return(guided_tour(pda_pp(grId)))}
-  else return(guided_tour(holes()))
+  else return(error("index not found"))
 }
 ### END OF PROJECTION PURSUIT
 

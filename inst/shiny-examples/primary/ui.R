@@ -28,34 +28,34 @@ tabInput <- tabPanel(
 ##### Manual tab ----
 tabManual <-
   tabPanel("Manual tour", fluidPage(
-    ##### __Sidebar inputs ----
-    ### Flow: general, interactive, animation, optional settings 
+    ##### _Sidebar tour inputs ----
     sidebarPanel(
-      ### General tour settings
       fluidRow(
         column(6, fluidRow(
           radioButtons("basis_init", "Start basis",
                        choices = c("Random", "PCA", "Projection pursuit", "From file"),
                        selected = "Random"),
           conditionalPanel("input.basis_init == 'Projection pursuit'",
-                           selectInput("pp_type", "Pursuit index", guidedTourOptions)),
+                           selectInput("pp_type", "Pursuit index", 
+                                       c("cmass", "holes", "Skinny", "Striated", "Convex", 
+                                         "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
           conditionalPanel("input.basis_init == 'From file'",
                            fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
                                      accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))))
         ),
         column(6, selectInput('manip_var', 'Manip var', "none"))),
       hr(),
-      ### Interactive specific settings
+      ##### _Sidebar interactive inputs ----
       h4("Interactive"),
       selectInput('manip_type', "Manipulation type",
-                  c("horizontal", "vertical", "radial")),
-      conditionalPanel("input.manip_type == 'horizontal'",
+                  c("Horizontal", "Vertical", "Radial")),
+      conditionalPanel("input.manip_type == 'Horizontal'",
                        sliderInput("x_slider", "X contribution",
                                    min = -1, max = 1, value = 0, step = .1)),
-      conditionalPanel("input.manip_type == 'vertical'",
+      conditionalPanel("input.manip_type == 'Vertical'",
                        sliderInput("y_slider", "Y contribution",
                                    min = -1, max = 1, value = 0, step = .1)),
-      conditionalPanel("input.manip_type == 'radial'",
+      conditionalPanel("input.manip_type == 'Radial'",
                        sliderInput("rad_slider", "Radial contribution",
                                    min = 0, max = 1, value = .5, step = .05)),
       fluidRow(column(4, actionButton("obl_run", "Run")),
@@ -64,14 +64,23 @@ tabManual <-
       ),
       verbatimTextOutput("obl_save_msg"),
       hr(),
-      ### Animation settings
+      ##### _Sidebar animation inputs ----
       h4("Animation"),
-      sliderInput('angle', 'Angle step size (animation only)', value = .05, min = .01, max = .3),
+      selectInput('anim_type', 'Tour type', 
+                  c("Radial", "Horizontal", "Vertical", "Grand (8 bases)", 
+                    "Little (8 bases)", "Projection pursuit")),
+      conditionalPanel("anim_type == 'Projection pursuit'",
+                       selectInput("anim_pp_type", "Pursuit index", 
+                                   c("cmass", "holes", "Skinny", "Striated", "Convex", 
+                                     "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
+      sliderInput('anim_angle', 'Angle step size', value = .05, min = .01, max = .3),
+      sliderInput('anim_fps', 'Frames per second', 
+                  value = 3, min = .5, max = 5, step = .5),
       fluidRow(column(4, actionButton("anim_run", "Run")),
                column(8, actionButton("anim_save", "Save (gif)"))),
       verbatimTextOutput("anim_save_msg"),
       hr(),
-      ### Optional settings
+      ##### _Sidebar optional inputs ----
       h5("Optional Settings"),
       selectInput('axes', 'Reference axes location', 
                   c('center', 'bottomleft', 'off'),
@@ -79,7 +88,7 @@ tabManual <-
       sliderInput('alpha', "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
     ),
     
-    ##### __Display plots ----
+    ##### _Plot display ----
     mainPanel(
       h3("Interactive"),
       fluidRow(

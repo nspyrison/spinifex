@@ -38,7 +38,7 @@ over the path and renders into a selected \code{render_type}.
 \examples{
 \dontrun{
 flea_std <- rescale(tourr::flea[,1:6])
-tpath    <- save_history(flea_std, max = 3)
+tpath    <- save_history(flea_std, tour_path = grand_tour(),max = 3)
 
 play_tour_path(tour_path = tpath, data = flea_std, angle = .15)
 

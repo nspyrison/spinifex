@@ -132,6 +132,7 @@ server <- function(input, output, session) {
   
   ### How to update sliders
   observe({
+    if (is.null(rv$curr_basis)) return()
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
     x_i <- -phi.x_zero / (pi/2)
@@ -208,7 +209,7 @@ server <- function(input, output, session) {
     gallery_row <- data.frame(cbind(gallery_info, basis_row))
     rv$gallery_bases <- rbind(rv$gallery_bases, gallery_row)
     
-    output$obl_save_msg <- renderPrint(paste0("Basis sent to the gallery."))
+    output$obl_save_msg <- renderPrint(cat("Basis sent to the gallery."))
   })
   
   
@@ -218,13 +219,57 @@ server <- function(input, output, session) {
   observeEvent(input$anim_run, {
     ### Runing message, gif
     withProgress(message = 'Rendering animation ...', value = 0, {
-      output$anim_plot <- renderPlotly({
-        play_manual_tour(selected_dat(), basis(), manip_var(),
-                         col = col_of(col_var()), pch = pch_of(pch_var()),
-                         axes = input$axes,
-                         angle = input$angle,
-                         alpha = input$alpha)
-      })
+      
+      ### manual tour animation
+      if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
+        if (input$anim_type == "Radial") {.theta <- NULL} # default to radial
+        if (input$anim_type == "Horizontal") {.theta <- 0} # default to radial
+        if (input$anim_type == "Vertical") {.theta <- pi/2} # default to radial
+        
+        anim <- play_manual_tour(selected_dat(), basis(), manip_var(),
+                                 col = col_of(col_var()), pch = pch_of(pch_var()),
+                                 theta = .theta,
+                                 axes = input$axes,
+                                 angle = input$anim_angle,
+                                 alpha = input$alpha)
+      }
+      
+      ### Projection pursuit
+      if (input$anim_type == "Projection pursuit") {
+        tour_func <- getGuidedTour(input$pp_type)
+        tour_hist <- save_history(selected_dat(), tour_func)
+        
+        anim <- play_tour_path(tour_path = tour_hist,
+                               data = selected_dat(),
+                               angle = input$anim_angle,
+                               col = col_of(col_var()), pch = pch_of(pch_var()),
+                               axes = input$axes,
+                               fps = input$anim_fps,
+                               alpha = input$alpha)
+      }
+      
+      ### Grand and Little tours
+      if (input$anim_type %in% c("Grand (8 bases)", "Little (8 bases)")) {
+        if(input$anim_type == "Grand (8 bases)") {
+          tour_hist <- save_history(selected_dat(), 
+                                    tour_path = grand_tour(), max_bases = 8)
+        }
+        
+        if(input$anim_type == "Little (8 bases)") {
+          tour_hist <- save_history(selected_dat(), 
+                                    tour_path = little_tour(), max_bases = 8)
+        }
+        
+        anim <- play_tour_path(tour_path = tour_hist,
+                               data = selected_dat(),
+                               angle = input$anim_angle,
+                               col = col_of(col_var()), pch = pch_of(pch_var()),
+                               axes = input$axes,
+                               fps = input$anim_fps,
+                               alpha = input$alpha)
+      }
+      
+      output$anim_plot <- renderPlotly(anim)
     })
     setProgress(1)
   })
