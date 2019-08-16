@@ -102,15 +102,10 @@ server <- function(input, output, session) {
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
     phi <- input$x_slider * pi/2 + phi.x_zero
-    basis <- oblique_basis(basis = rv$curr_basis,
-                           manip_var = manip_var(),
-                           theta,
-                           phi)
-    
-    #TODO: manual logging migrate to proper logging
-    print(paste0("basis_x, input$x_slider: ", input$x_slider, ", new basis:"))
-    print(basis)
-    return(basis)
+    oblique_basis(basis = rv$curr_basis,
+                  manip_var = manip_var(),
+                  theta,
+                  phi)
   })
   # y motion
   basis_y <- reactive({
@@ -118,15 +113,10 @@ server <- function(input, output, session) {
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
     phi <- input$y_slider * pi/2 + phi.y_zero
-    basis <- oblique_basis(basis = rv$curr_basis,
-                           manip_var = manip_var(),
-                           theta,
-                           phi)
-    
-    #TODO: manual logging migrate to proper logging
-    print(paste0("basis_y, input$y_slider: ", input$y_slider, ", new basis:"))
-    print(basis)
-    return(basis)
+    oblique_basis(basis = rv$curr_basis,
+                  manip_var = manip_var(),
+                  theta,
+                  phi)
   })
   # Radial motion
   basis_rad <- reactive({
@@ -134,19 +124,14 @@ server <- function(input, output, session) {
     theta <- atan(mv_sp[2] / mv_sp[1])
     phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
     phi <- (acos(input$rad_slider) - phi_start) * -sign(mv_sp[1])
-    basis <- oblique_basis(basis = rv$curr_basis,
-                           manip_var = manip_var(),
-                           theta,
-                           phi)
-    
-    #TODO: manual logging migrate to proper logging
-    print(paste0("basis_rad, input$rad_slider: ", input$rad_slider, ", new basis:"))
-    print(basis)
+    oblique_basis(basis = rv$curr_basis,
+                  manip_var = manip_var(),
+                  theta,
+                  phi)
   })
   
   ### How to update sliders
   observe({
-    if (is.null(rv$curr_basis)) return()
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
     x_i <- -phi.x_zero / (pi/2)
@@ -157,18 +142,13 @@ server <- function(input, output, session) {
     phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
     rad_i <- cos(phi_i)
     (updateSliderInput(session, "rad_slider", value = rad_i))
-    
-    #TODO: manual logging migrate to proper logging
-    # print("update_sliders:")
-    # print(paste0("x: ", x_i, ", y: ", y_i, ", rad: ", rad_i))#, ", theta: ", theta_i))
   })
   
   ### _Interactive observes ----
-  #TODO: Fix 
+  #TODO: Fix sliders not yielding control on re-run
   
   ### Display interactive
   observeEvent(input$obl_run, {
-    #TODO: manual logging migrate to proper logging
     print("obl_run start")
     rv$curr_basis <- basis()
     output$obl_plot <- renderPlot({
@@ -196,9 +176,6 @@ server <- function(input, output, session) {
       rv$curr_basis <- basis_rad()
       output$curr_basis_out <- renderTable(rv$curr_basis)
     })
-    
-    #TODO: manual logging migrate to proper logging
-    print("obl_run end")
   })
   
   ### Save current basis (interactive)
@@ -237,25 +214,28 @@ server <- function(input, output, session) {
   
   ##### _Animimation ----
   ### Plot the animation
+  
   observeEvent(input$anim_run, {
-    output$anim_plot <- renderPlotly({
-      play_manual_tour(selected_dat(), basis(), manip_var(),
-                       col = col_of(col_var()), pch = pch_of(pch_var()),
-                       axes = input$axes,
-                       angle = input$angle,
-                       alpha = input$alpha)
+    ### Runing message, gif
+    withProgress(message = 'Rendering animation ...', value = 0, {
+      output$anim_plot <- renderPlotly({
+        play_manual_tour(selected_dat(), basis(), manip_var(),
+                         col = col_of(col_var()), pch = pch_of(pch_var()),
+                         axes = input$axes,
+                         angle = input$angle,
+                         alpha = input$alpha)
+      })
     })
+    setProgress(1)
   })
   
   ### Save the animation
-  #TODO: saving/generating gif message fix.
   observeEvent(input$anim_save, {
-    if (input$anim_run == 0) {
-      output$anim_save_msg <- renderPrint("Saving gif...") #TODO fix this
-      return()
-      }
-    output$anim_save_msg <- renderPrint("Saving gif...")
-    anim <- play_manual_tour(selectned_dat(), basis(), manip_var(),
+    if (input$anim_run == 0) {return()}
+    
+    
+    withProgress(message = 'Rendering animation ...', value = 0, {
+    anim <- play_manual_tour(selected_dat(), basis(), manip_var(),
                              col = col_of(col_var()), pch = pch_of(pch_var()),
                              axes = input$axes,
                              angle = input$angle,
@@ -263,7 +243,10 @@ server <- function(input, output, session) {
                              render_type = render_gganimate)
     save_file <- sprintf("tour_animation%03d.gif", input$anim_save)
     gganimate::anim_save(save_file, anim)
-    output$anim_save_msg <- renderPrint(paste0("Animation saved as ", save_file, "."))
+    })
+    setProgress(1)
+    
+    output$anim_save_msg <- renderPrint(cat("Animation saved as ", save_file, ".", sep=""))
   })
   
   ##### Gallery tab ----
@@ -300,7 +283,7 @@ server <- function(input, output, session) {
     gallery_basis_v <- rv$gallery_bases[selectedRow, 4:(4 + 2*p() - 1)]
     
     rv$curr_basis <- matrix(gallery_basis_v, ncol=2, byrow = F)
-    output$gallery_msg <- renderText(paste0("Row ", selectedRow, " is now the current basis."))
+    output$gallery_msg <- renderText(cat("Row ", selectedRow, " is now the current basis.", sep = ""))
   })
   
   ### Save button (gallery)
@@ -322,7 +305,7 @@ server <- function(input, output, session) {
                             axes = input$axes,
                             alpha = input$alpha)
     ggplot2::ggsave(paste0(save_file,".png"), gg_out)
-    output$gallery_msg <- renderText(paste0("Saved row ", selectedRow, " as ", save_file, ".")) 
+    output$gallery_msg <- renderText(cat("Saved row ", selectedRow, " as ", save_file, ".", sep="")) 
   })
   
   ### Delete button (gallery)
@@ -349,7 +332,8 @@ server <- function(input, output, session) {
         "obl_run: ", input$obl_run, "\n",
         "obl_save: ", input$obl_save, "\n",
         "anim_run: ", input$anim_run, "\n",
-        "anim_save: ", input$anim_save, "\n"
+        "anim_save: ", input$anim_save, "\n",
+        sep = ""
     )
   })
   
@@ -358,5 +342,6 @@ server <- function(input, output, session) {
        file = paste0("reactlog_", substr(Sys.time(), 1, 16), ".txt")
   )
 }
+
 shinyApp(ui, server)
 
