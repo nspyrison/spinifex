@@ -125,8 +125,8 @@ view_basis <- function(basis,
 #' @export
 view_manip_space <- function(basis,
                              manip_var,
-                             manip_col = "blue",
-                             tilt = 5/12 * pi,
+                             manip_col = "blue", # "#1B9E77"
+                             tilt = 5/12 * pi,   # "#D95F02"
                              z_col = "red",
                              labels = paste0("V", 1:nrow(basis))
 ) {
@@ -156,17 +156,23 @@ view_manip_space <- function(basis,
   xyz <- function(df) {colnames(df) <- c("x", "y", "z"); as.data.frame(df)}
   ## rotated spaces
   circ_r <- xyz(make_circ() %*% rot)
-  m_sp_r <- xyz(m_sp %*% rot)
+  m_sp_r <- xyz(m_sp %*% rot) # rotated manip sp
   m_sp_z <- data.frame(x = m_sp[manip_var, 1],
                        y = m_sp[manip_var, 2],
-                       z = m_sp[manip_var, 3] * s,
+                       z = m_sp[manip_var, 3],
                        xend = m_sp_r[manip_var, "x"],
                        yend = m_sp_r[manip_var, "y"],
                        lab = labels[manip_var])
   ## rotate angle curves, phi & theta
   theta_curve <- xyz(make_circ(0, theta) %*% rot)
-  phi_curve   <- xyz(make_circ(theta, theta + phi))
-  phi_curve$y <- phi_curve$y * s #really the z direction
+  phi_curve   <- xyz(make_circ(0, phi))
+  phi_curve$y <- phi_curve$y # * sign(m_sp[manip_var, 2])
+  phi_curve$x <- phi_curve$x # * sign(m_sp[manip_var, 1])
+  .x <- phi_curve$x
+  .y <- phi_curve$y
+  ang   <- theta + phi # * sign(m_sp[manip_var, 1])
+  phi_curve$x <- .x * cos(ang) - .y * sin(ang)
+  phi_curve$y <- .x * sin(ang) + .y * cos(ang)
   mid_theta   <- round(nrow(theta_curve)/2)
   mid_phi     <- round(nrow(phi_curve)/2)
   
