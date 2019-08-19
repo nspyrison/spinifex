@@ -57,7 +57,7 @@ tabManual <-
                                    min = -1, max = 1, value = 0, step = .1)),
       conditionalPanel("input.manip_type == 'Radial'",
                        sliderInput("rad_slider", "Radial contribution",
-                                   min = 0, max = 1, value = .5, step = .05)),
+                                   min = 0, max = 1, value = 0, step = .1)),
       fluidRow(column(4, actionButton("obl_run", "Run")),
                column(4, actionButton("obl_save", "Save (csv & png)")),
                column(4, actionButton("obl_to_gallery", "Send to gallery"))
@@ -96,7 +96,7 @@ tabManual <-
         column(3,
                fluidRow(
                  h4("Current basis"),
-                 tableOutput("curr_basis_out")))
+                 tableOutput("curr_basis_tbl")))
       ),
       hr(),
       h3("Animation"),

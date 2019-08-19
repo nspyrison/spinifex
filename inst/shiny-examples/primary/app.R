@@ -94,90 +94,85 @@ server <- function(input, output, session) {
   
   ##### _Interactive reactives ----
   ### Interactive uses oblique manipulation, commonly has obl_ prefix.
+  obl_plot <- reactive({
+    oblique_frame(data = selected_dat(),
+                  basis = rv$curr_basis,
+                  manip_var = manip_var(),
+                  theta = 0,
+                  phi = 0,
+                  col = col_of(col_var()),
+                  pch = pch_of(pch_var()),
+                  axes = input$axes,
+                  alpha = input$alpha)
+  })
   
   ### x, y, radius reactives
   # x motion 
   basis_x <- reactive({
-    theta <- 0
+    .theta <- 0
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-    phi <- input$x_slider * pi/2 + phi.x_zero
-    oblique_basis(basis = rv$curr_basis,
-                  manip_var = manip_var(),
-                  theta,
-                  phi)
+    .phi <- input$x_slider * pi/2 + phi.x_zero
+    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                  theta = .theta, phi = .phi)
   })
   # y motion
   basis_y <- reactive({
-    theta <- pi/2
+    .theta <- pi/2
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-    phi <- input$y_slider * pi/2 + phi.y_zero
-    oblique_basis(basis = rv$curr_basis,
-                  manip_var = manip_var(),
-                  theta,
-                  phi)
+    .phi <- input$y_slider * pi/2 + phi.y_zero
+    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                  theta = .theta, phi = .phi)
   })
   # Radial motion
   basis_rad <- reactive({
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    theta <- atan(mv_sp[2] / mv_sp[1])
+    .theta <- atan(mv_sp[2] / mv_sp[1])
     phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    phi <- (acos(input$rad_slider) - phi_start) * -sign(mv_sp[1])
-    oblique_basis(basis = rv$curr_basis,
-                  manip_var = manip_var(),
-                  theta,
-                  phi)
-  })
-  
-  ### How to update sliders
-  observe({
-    if (is.null(rv$curr_basis)) return()
-    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
-    x_i <- -phi.x_zero / (pi/2)
-    (updateSliderInput(session, "x_slider", value = x_i))
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
-    y_i <- -phi.y_zero / (pi/2)
-    (updateSliderInput(session, "y_slider", value = y_i))
-    phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    rad_i <- cos(phi_i)
-    (updateSliderInput(session, "rad_slider", value = rad_i))
+    .phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
+    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                  theta = .theta, phi = .phi)
   })
   
   ### _Interactive observes ----
   #TODO: Fix sliders not yielding control on re-run
   
-  ### Display interactive
+  ### Run button, interative initialize
   observeEvent(input$obl_run, {
-    print("obl_run start")
+    #rv$curr_basis <- NULL
     rv$curr_basis <- basis()
-    output$obl_plot <- renderPlot({
-      oblique_frame(data = selected_dat(),
-                    basis = rv$curr_basis,
-                    manip_var = manip_var(),
-                    theta = 0,
-                    phi = 0,
-                    col = col_of(col_var()),
-                    pch = pch_of(pch_var()),
-                    axes = input$axes,
-                    alpha = input$alpha)
+
+    
+    ### How to update sliders
+    observe({
+      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
+      x_i <- round(-phi.x_zero / (pi/2), 1)
+      (updateSliderInput(session, "x_slider", value = x_i))
+      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
+      y_i <- round(-phi.y_zero / (pi/2), 1)
+      (updateSliderInput(session, "y_slider", value = y_i))
+      phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+      rad_i <- round(cos(phi_i), 1)
+      (updateSliderInput(session, "rad_slider", value = rad_i))
     })
     
-    ### After run button, observe sliders
+    ### Observe slider values
     observeEvent(input$x_slider, {
       rv$curr_basis <- basis_x()
-      output$curr_basis_out <- renderTable(rv$curr_basis)
     })
     observeEvent(input$y_slider, {
       rv$curr_basis <- basis_y()
-      output$curr_basis_out <- renderTable(rv$curr_basis)
     })
     observeEvent(input$rad_slider, {
       rv$curr_basis <- basis_rad()
-      output$curr_basis_out <- renderTable(rv$curr_basis)
     })
+    
+    output$curr_basis_tbl <- renderTable(rv$curr_basis)
+    output$obl_plot <- renderPlot({obl_plot()})
   })
+  
   
   ### Save current basis (interactive)
   observeEvent(input$obl_save, {
@@ -382,12 +377,12 @@ server <- function(input, output, session) {
     )
   })
   
-  ### Create log file.
-  dput(shiny::reactlog(), 
-       file = paste0("reactlog_", 
-                     substr(gsub(":", "_", Sys.time()), 1, 16), 
-                     ".txt")
-  )
+  # ### Create log file.
+  # dput(shiny::reactlog(), 
+  #      file = paste0("reactlog_", 
+  #                    substr(gsub(":", "_", Sys.time()), 1, 16), 
+  #                    ".txt")
+  # )
 }
 
 shinyApp(ui, server)
