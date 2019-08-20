@@ -8,6 +8,8 @@ library("dplyr")
 ##### include in requireNamespace() in run_app:
 library("DT")          # Gallery table
 library("reactlog")    # Logging
+library("gt")          # Gallery sparkplots
+library("purrr")       # sparkplot prep
 ### Projection pursuit indices
 library("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
 library("mbgraphic")   # splines2d, dcor2d

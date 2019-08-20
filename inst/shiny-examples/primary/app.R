@@ -315,6 +315,8 @@ server <- function(input, output, session) {
   output$gallery <- DT::renderDataTable(
     gallery_disp(), server = FALSE, escape = FALSE, selection = 'none'
   )
+  output$gt <- gt::render_gt(gt(gallery_disp()))
+
   
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {

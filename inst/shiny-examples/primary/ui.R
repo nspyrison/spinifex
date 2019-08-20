@@ -126,6 +126,7 @@ tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
       DT::dataTableOutput("gallery")
+      , gt::gt_output('gt')
       , verbatimTextOutput("gallery_msg")
     )
   )

@@ -41,6 +41,8 @@ Suggests:
     rmarkdown,
     RColorBrewer,
     DT,
+    gt,
+    purrr,
     reactlog,
     scagnostics,
     mbgraphic,
