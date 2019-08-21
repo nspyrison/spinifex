@@ -4,30 +4,19 @@
 \alias{play_tour_path}
 \title{Render display of a provided tour path}
 \usage{
-play_tour_path(tour_path, data = NULL, angle = 0.05,
-  render_type = render_plotly, col = "black", pch = 20,
-  axes = "center", fps = 3, alpha = 1, ...)
+play_tour_path(tour_path, data = NULL, render_type = render_plotly,
+  rescale_data = FALSE, ...)
 }
 \arguments{
 \item{tour_path}{The result of \code{tourr::save_history()} or \code{manual_tour()}.}
 
 \item{data}{Optional, number of columns must match that of \code{tour_path}.}
 
-\item{angle}{target distance (in radians) between bases.}
-
 \item{render_type}{Which graphics to render to. Defaults to render_plotly,
 alternative use render_gganimate.}
 
-\item{col}{Color of the projected points. Defaults to "black".}
-
-\item{pch}{Point character of the projected points. Defaults to 20.}
-
-\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
-to "center".}
-
-\item{fps}{Frames/slides shown per second. Defaults to 3.}
-
-\item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
+\item{rescale_data}{When TRUE scales the data to between 0 and 1.
+Defaults to FALSE.}
 
 \item{...}{Optionally pass additional arguments to \code{render_type}.}
 }

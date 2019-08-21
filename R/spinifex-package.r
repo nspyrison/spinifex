@@ -35,8 +35,8 @@ globalVariables(c("col",
                   "manip_col",
                   "manip_type",
                   "n_slides",
-                  "slide",
-                  "theta")
+                  "theta",
+                  "angle")
 )
 
 # ggplot aes globals:

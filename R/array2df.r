@@ -16,7 +16,8 @@
 #' rb <- basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' array2df(array = mtour, data = flea_std)
-array2df <- function(array, data = NULL) {
+array2df <- function(array, 
+                     data = NULL) {
   # Initialize
   manip_var <- attributes(array)$manip_var
   p <- nrow(array[,, 1])

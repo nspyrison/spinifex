@@ -11,6 +11,7 @@
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
 #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
+#' @param ... Recieves arguments from `play_manual_tour()` and `play_tour_path()`
 #' @return A ggplot2 object ready to be called by `render_plotly()` or 
 #'   `render_gganimate()`.
 #' @export
@@ -29,8 +30,8 @@ render_ <- function(slides,
                     col = "black", 
                     pch = 20,
                     axes = "center",
-                    alpha = 1
-) {
+                    alpha = 1,
+                    ...) {
   # Initialize
   if (length(slides) == 2)
     data_slides  <- data.frame(slides[[2]])
@@ -83,7 +84,7 @@ render_ <- function(slides,
     ## Projected data points
     suppressWarnings( # Suppress for unused aes "frame".
       ggplot2::geom_point( 
-        data = data_slides, size = 3, 
+        data = data_slides, size = 1, 
         shape = pch, color = col, fill = col, alpha = alpha,
         mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
       )

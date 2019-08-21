@@ -5,7 +5,7 @@
 \title{Render the ggplot before the animation package}
 \usage{
 render_(slides, manip_col = "blue", col = "black", pch = 20,
-  axes = "center", alpha = 1)
+  axes = "center", alpha = 1, ...)
 }
 \arguments{
 \item{slides}{The result of \code{array2df()}, a long df of the projected frames.}
@@ -21,6 +21,8 @@ Defaults to "blue".}
 to "center".}
 
 \item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
+
+\item{...}{Recieves arguments from \code{play_manual_tour()} and \code{play_tour_path()}}
 }
 \value{
 A ggplot2 object ready to be called by \code{render_plotly()} or

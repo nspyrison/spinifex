@@ -35,6 +35,7 @@ Imports:
     magrittr
 Suggests: 
     gganimate,
+    animation,
     gifski,
     knitr,
     png,

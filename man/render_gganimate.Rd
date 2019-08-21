@@ -4,25 +4,10 @@
 \alias{render_gganimate}
 \title{Render the slides as a \emph{gganimate} animation}
 \usage{
-render_gganimate(slides, manip_col = "blue", col = "black", pch = 20,
-  axes = "center", fps = 3, alpha = 1, ...)
+render_gganimate(fps = 3, ...)
 }
 \arguments{
-\item{slides}{The result of \code{array2df()}, a long df of the projected frames.}
-
-\item{manip_col}{String of the color to highlight the \code{manip_var}.
-Defaults to "blue".}
-
-\item{col}{Color of the projected points. Defaults to "black".}
-
-\item{pch}{Point character of the projected points. Defaults to 20.}
-
-\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
-to "center".}
-
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
-
-\item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
 
 \item{...}{Optional, pass addition arguments to
 \code{gganimate::transition_states()}.}

@@ -6,7 +6,7 @@
 of a projection}
 \usage{
 manual_tour(basis = NULL, manip_var, theta = NULL, phi_min = 0,
-  phi_max = 0.5 * pi, angle = 0.05)
+  phi_max = 0.5 * pi, angle = 0.05, ...)
 }
 \arguments{
 \item{basis}{A (p, d) dim orthonormal matrix. Required, no default.}
@@ -26,6 +26,8 @@ the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
 
 \item{angle}{target distance (in radians) between bases.}
+
+\item{...}{Recieves arguments from \code{play_manual_tour()} and \code{play_tour_path()}}
 }
 \value{
 A (p, d, 4) history_array of the radial tour. The bases set for

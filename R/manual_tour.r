@@ -18,6 +18,7 @@
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to pi/2.
 #' @param angle target distance (in radians) between bases.
+#' @param ... Recieves arguments from `play_manual_tour()` and `play_tour_path()`
 #' @return A (p, d, 4) history_array of the radial tour. The bases set for
 #'   phi_start, `phi_min`, `phi_max`, and back to phi_start. To be called by
 #'   `tourr::interpolate()`.
@@ -32,8 +33,8 @@ manual_tour <- function(basis   = NULL,
                         theta   = NULL,
                         phi_min = 0,
                         phi_max = .5 * pi,
-                        angle   = .05
-) {
+                        angle   = .05,
+                        ...) {
     # Initalize
     basis <- as.matrix(basis)
     p     <- nrow(basis)
