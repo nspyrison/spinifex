@@ -17,14 +17,12 @@ source('ui.R', local = TRUE)
 server <- function(input, output, session) {
   ##### Initialize ----
   rv <- reactiveValues() # rv needed for x,y,r sliders and gallery
-  rv$curr_basis <- NULL
+  rv$curr_basis    <- NULL
   rv$gallery_bases <- NULL
-  rv$gallery_n_saved <- 0
+  rv$png_save_cnt  <- 0
+  rv$gif_save_cnt  <- 0
+  rv$gallery_n_rows <- 0
   
-  obl_save_cnt <- reactive({
-    if (is.null(input$olb_save)) {return(rv$gallery_n_saved) # NULL is 0
-      } else {input$olb_save + rv$gallery_n_saved} 
-    }) 
   ### Initialize data reactives (global)
   data <- reactive({
     if (is.null(input$data_file)) {return(tourr::flea)}
@@ -37,7 +35,8 @@ server <- function(input, output, session) {
   colToSelect <- reactive(min(ncol(numericDat()), 6))
   n <- reactive(nrow(selected_dat()))
   p <- reactive(ncol(selected_dat()))
-  output$str_data <- renderPrint({str(data())})
+  output$data_str <- renderPrint({str(data())})
+  output$data_summary <- renderPrint({summary(data())})
   selected_dat <- reactive({
     x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
     if (input$rescale_data) x <- tourr::rescale(x)
@@ -177,7 +176,8 @@ server <- function(input, output, session) {
   ### Save current basis (interactive)
   observeEvent(input$obl_save, {
     if (is.null(rv$curr_basis)) return()
-    save_file <- sprintf("tour_basis%03d", obl_save_cnt())
+    rv$png_save_cnt <- rv$png_save_cnt + 1
+    save_file <- sprintf("tour_basis%03d", rv$png_save_cnt)
     write.csv(rv$curr_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
     gg_out <- oblique_frame(data = selected_dat(),
                             basis = rv$curr_basis,
@@ -195,73 +195,65 @@ server <- function(input, output, session) {
   ### Send current basis to gallery
   observeEvent(input$obl_to_gallery, {
     if (is.null(rv$curr_basis)) return()
-    gallery_info <- data.frame(`Manip var`  = input$manip_var, 
-                               `Manip type` = input$manip_type, 
-                               `Time saved` = substr(Sys.time(), 12,19))
-    basis_row <- t(data.frame(as.vector(rv$curr_basis)))
-    colnames(basis_row) <- c(paste0("x", 1:p()), paste0("y", 1:p()))
+    rv$gallery_n_rows <- rv$gallery_n_rows + 1
+    gallery_row <- data.frame(Id = rv$gallery_n_rows,
+                           `Manip var`  = input$manip_var, 
+                           `Manip type` = input$manip_type, 
+                           `Time saved` = substr(Sys.time(), 12,19),
+                           check.names = FALSE)
     
-    gallery_row <- data.frame(cbind(gallery_info, basis_row))
+    gallery_row$basis <- list(rv$curr_basis)
     rv$gallery_bases <- rbind(rv$gallery_bases, gallery_row)
     
-    output$obl_save_msg <- renderPrint(cat("Basis sent to the gallery."))
+    output$obl_save_msg <- renderPrint(paste0("Basis sent to the gallery."))
   })
   
   
   ##### _Animimation ----
-  ### Plot the animation
-  
   observeEvent(input$anim_run, {
-    ### Runing message, gif
+    ### Processing message for gif
     withProgress(message = 'Rendering animation ...', value = 0, {
-      
-      ### manual tour animation
-      if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
-        if (input$anim_type == "Radial") {.theta <- NULL} # default to radial
-        if (input$anim_type == "Horizontal") {.theta <- 0} # default to radial
-        if (input$anim_type == "Vertical") {.theta <- pi/2} # default to radial
-        
-        anim <- play_manual_tour(selected_dat(), basis(), manip_var(),
-                                 col = col_of(col_var()), pch = pch_of(pch_var()),
-                                 theta = .theta,
+      ### Manual tour animation
+      this_anim <- function(...) { # to handle variable theta.
+        anim <- play_manual_tour(basis = basis(), 
+                                 data = selected_dat(), 
+                                 manip_var = manip_var(),
+                                 col = col_of(col_var()), 
+                                 pch = pch_of(pch_var()),
                                  axes = input$axes,
                                  angle = input$anim_angle,
-                                 alpha = input$alpha)
+                                 alpha = input$alpha,
+                                 ...) 
       }
-      
-      ### Projection pursuit
-      if (input$anim_type == "Projection pursuit") {
-        tour_func <- getGuidedTour(input$pp_type)
-        tour_hist <- save_history(selected_dat(), tour_func)
-        
-        anim <- play_tour_path(tour_path = tour_hist,
-                               data = selected_dat(),
-                               angle = input$anim_angle,
-                               col = col_of(col_var()), pch = pch_of(pch_var()),
-                               axes = input$axes,
-                               fps = input$anim_fps,
-                               alpha = input$alpha)
-      }
-      
-      ### Grand and Little tours
-      if (input$anim_type %in% c("Grand (8 bases)", "Little (8 bases)")) {
-        if(input$anim_type == "Grand (8 bases)") {
-          tour_hist <- save_history(selected_dat(), 
-                                    tour_path = grand_tour(), max_bases = 8)
-        }
-        
-        if(input$anim_type == "Little (8 bases)") {
-          tour_hist <- save_history(selected_dat(), 
-                                    tour_path = little_tour(), max_bases = 8)
-        }
-        
-        anim <- play_tour_path(tour_path = tour_hist,
-                               data = selected_dat(),
-                               angle = input$anim_angle,
-                               col = col_of(col_var()), pch = pch_of(pch_var()),
-                               axes = input$axes,
-                               fps = input$anim_fps,
-                               alpha = input$alpha)
+      if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
+        if (input$anim_type == "Radial")     {anim <- this_anim()} # default theta to radial
+        if (input$anim_type == "Horizontal") {anim <- this_anim(theta = 0)}
+        if (input$anim_type == "Vertical")   {anim <- this_anim(theta = pi/2)}
+      } else {
+      # TODO: trouble shoot PP and tourr paths.
+      #   ### Projection pursuit
+      #   if (input$anim_type == "Projection pursuit") {
+      #     tour_func <- getGuidedTour(input$pp_type)
+      #     tour_hist <- save_history(selected_dat(), tour_func)
+      #   }
+      #   ### Grand, little and local tours
+      #   if(input$anim_type == "Grand (8 bases)") {
+      #     tour_hist <- save_history(selected_dat(), 
+      #                               tour_path = grand_tour(), max_bases = 8)}
+      #   if(input$anim_type == "Little (8 bases)") {
+      #     tour_hist <- save_history(selected_dat(), 
+      #                               tour_path = little_tour(), max_bases = 8)}
+      #   if(input$anim_type == "Local (8 bases)") {
+      #     tour_hist <- save_history(selected_dat(), 
+      #                               tour_path = local_tour(), max_bases = 8)}
+      #   anim <- play_tour_path(tour_path = tour_hist,
+      #                          data = selected_dat(),
+      #                          angle = input$anim_angle,
+      #                          col = col_of(col_var()), 
+      #                          pch = pch_of(pch_var()),
+      #                          axes = input$axes,
+      #                          # fps = input$anim_fps,
+      #                          alpha = input$alpha)
       }
       
       output$anim_plot <- renderPlotly(anim)
@@ -272,7 +264,7 @@ server <- function(input, output, session) {
   ### Save the animation
   observeEvent(input$anim_save, {
     if (input$anim_run == 0) {return()}
-    
+    rv$gif_save_cnt <- rv$gif_save_cnt + 1
     
     withProgress(message = 'Rendering animation ...', value = 0, {
     anim <- play_manual_tour(selected_dat(), basis(), manip_var(),
@@ -286,59 +278,86 @@ server <- function(input, output, session) {
     })
     setProgress(1)
     
-    output$anim_save_msg <- renderPrint(cat("Animation saved as ", save_file, ".", sep=""))
+    output$anim_save_msg <- renderPrint(paste0("Animation saved as ", save_file, ".", sep=""))
   })
   
   ##### Gallery tab ----
   
   ### Display table with buttons
   rows_to_remove <- reactiveVal()
-  gallery_disp <- reactive({
+  gallery_disp <- reactive({ # disp for display table
     if (is.null(rv$gallery_bases)) {
       output$gallery_msg <- renderPrint("Send a basis to the gallery.")
       return()
     }
-    df = data.frame(
-      Plot = shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Plot", 
-                        onclick = 'Shiny.onInputChange(\"gallery_plot\",  this.id)'),
-      `Save (csv & png)` = shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "SaveToFile", 
-                              onclick = 'Shiny.onInputChange(\"gallery_save\",  this.id)'),
-      Delete = shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Remove", 
-                          onclick = 'Shiny.onInputChange(\"gallery_delete\",  this.id)'),
-      as.data.frame(rv$gallery_bases),
+    
+    disp = data.frame(
+      Label = shinyInput(textInput, nrow(rv$gallery_bases), 'text_', label = "",
+                         placeholder = "user label", width = '108px'),
+      Plot = 
+        shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Plot", 
+                   onclick = 'Shiny.onInputChange(\"gallery_plot\",  this.id)'),
+      `Save (csv & png)` = 
+        shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Save", 
+                   onclick = 'Shiny.onInputChange(\"gallery_save\",  this.id)'),
+      Delete = 
+        shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Remove", 
+                   onclick = 'Shiny.onInputChange(\"gallery_delete\",  this.id)'),
+      rv$gallery_bases[, -which(colnames(rv$gallery_bases) == "basis")],
       stringsAsFactors = FALSE,
-      row.names = 1:nrow(rv$gallery_bases)
+      row.names = NULL,
+      check.names = FALSE
     )
-    df[!rownames(df) %in% rows_to_remove(), ]
+    disp <- disp[!rownames(disp) %in% rows_to_remove(), ]
+    
+    disp
   })
   
   output$gallery <- DT::renderDataTable(
-    gallery_disp(), server = FALSE, escape = FALSE, selection = 'none'
+    rv$gallery_bases[, which(colnames(rv$gallery_bases) == "basis")],
+    gallery_disp(), server = FALSE, escape = FALSE, selection = 'none', 
+    options = list(dom = 't', pageLength = 100)
   )
-  output$gt <- gt::render_gt(gt(gallery_disp()))
-
+  ### TODO: ADD icon ggplot here.
+  gallery_icons <- reactive({
+    row_info <- rv$gallery_bases[, -which(colnames(rv$gallery_bases) == "basis")]
+    bases <- rv$gallery_bases[, which(colnames(rv$gallery_bases) == "basis")]
+    
+    
+    bases_df <- NULL
+    for (i in 1:length(bases_ls)){
+      this_basis <- bases_ls[[i]]
+      this_basis_df <- data.frame(basis_num = i, this_basis)
+      bases_df <- cbind(bases_df, this_basis_df)
+    }
+    colnames(bases_df) <- c("basis_num","X","Y")
+    
+    ggplot(bases_df) + 
+      geom_segment(mapping = aes(x = X, y = Y, xend = 0, yend = 0))
+    
+  })
+  
   
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {
-
     selectedRow <- as.numeric(strsplit(input$gallery_plot, "_")[[1]][2])
-    gallery_basis_v <- rv$gallery_bases[selectedRow, 4:(4 + 2*p() - 1)]
-    
-    rv$curr_basis <- matrix(gallery_basis_v, ncol=2, byrow = F)
-    output$gallery_msg <- renderText(cat("Row ", selectedRow, " is now the current basis.", sep = ""))
+    rv$curr_basis <- 
+      rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
+    output$gallery_msg <- renderText(
+      paste0("Row ", selectedRow, " is now the current basis.", sep = ""))
   })
   
   ### Save button (gallery)
   observeEvent(input$gallery_save, {
+    rv$png_save_cnt <- rv$png_save_cnt + 1
     selectedRow <- as.numeric(strsplit(input$gallery_save, "_")[[1]][2])
-    rv$gallery_n_saved <- rv$gallery_n_saved + 1
-    save_file <- sprintf("tour_basis%03d", obl_save_cnt())
-    gallery_basis_v <- rv$gallery_bases[selectedRow, 4:(4 + 2*p() - 1)]
-    gallery_basis <- matrix(gallery_basis_v, ncol=2, byrow = F)
+    save_file <- sprintf("tour_basis%03d", rv$png_save_cnt)
+    save_basis <- 
+      rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
     
-    write.csv(gallery_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
+    write.csv(save_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
     gg_out <- oblique_frame(data = selected_dat(),
-                            basis = gallery_basis,
+                            basis = save_basis,
                             manip_var = manip_var(),
                             theta = 0,
                             phi = 0,
@@ -347,13 +366,13 @@ server <- function(input, output, session) {
                             axes = input$axes,
                             alpha = input$alpha)
     ggplot2::ggsave(paste0(save_file,".png"), gg_out)
-    output$gallery_msg <- renderText(cat("Saved row ", selectedRow, " as ", save_file, ".", sep="")) 
+    output$gallery_msg <- renderText(paste0("Saved row ", selectedRow, " as ", save_file, ".", sep="")) 
   })
   
   ### Delete button (gallery)
   observeEvent(input$gallery_delete, {
     selectedRow <- as.numeric(strsplit(input$gallery_delete, "_")[[1]][2])
-    rows_to_remove(c(rows_to_remove(), selectedRow)) # updates the rows to remove
+    rows_to_remove(c(rows_to_remove(), selectedRow))
   })
   
   ##### Static tab ----
@@ -370,7 +389,7 @@ server <- function(input, output, session) {
   
   ### Development help -- uncomment message at bottom on ui to use
   output$dev_msg <- renderPrint({
-    cat("Dev msg --\n",
+    paste0("Dev msg --\n",
         "obl_run: ", input$obl_run, "\n",
         "obl_save: ", input$obl_save, "\n",
         "anim_run: ", input$anim_run, "\n",

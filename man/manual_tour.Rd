@@ -25,7 +25,7 @@ Required, defaults to 0.}
 the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
 
-\item{angle}{target distance (in radians) between bases.}
+\item{angle}{Target distance (in radians) between steps. Defaults to .05.}
 
 \item{...}{Recieves arguments from \code{play_manual_tour()} and \code{play_tour_path()}}
 }

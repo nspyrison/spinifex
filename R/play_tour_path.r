@@ -5,12 +5,12 @@
 #'
 #' @param tour_path The result of `tourr::save_history()` or `manual_tour()`.
 #' @param data Optional, number of columns must match that of `tour_path`.
-#' @param render_type Which graphics to render to. Defaults to render_plotly, 
+#' @param angle Target distance (in radians) between steps. Defaults to .05.
+#' @param render_type Graphics to render to. Defaults to render_plotly, 
 #'   alternative use render_gganimate.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #'   Defaults to FALSE.
 #' @param ... Optionally pass additional arguments to `render_type`.
-### #' @param angle target distance (in radians) between bases.
 ### #' @param col Color of the projected points. Defaults to "black".
 ### #' @param pch Point character of the projected points. Defaults to 20.
 ### #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
@@ -32,6 +32,7 @@
 
 play_tour_path <- function(tour_path,
                            data  = NULL,
+                           angle = .05,
                            render_type = render_plotly,
                            rescale_data = FALSE,
                            ...) {

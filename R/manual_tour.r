@@ -17,7 +17,7 @@
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, defaults to pi/2.
-#' @param angle target distance (in radians) between bases.
+#' @param angle Target distance (in radians) between steps. Defaults to .05.
 #' @param ... Recieves arguments from `play_manual_tour()` and `play_tour_path()`
 #' @return A (p, d, 4) history_array of the radial tour. The bases set for
 #'   phi_start, `phi_min`, `phi_max`, and back to phi_start. To be called by
@@ -41,7 +41,7 @@ manual_tour <- function(basis   = NULL,
     d     <- ncol(basis)
     manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
     if (is.null(theta)) theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
-    phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2)) 
+    phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
     stopifnot(phi_min <= phi_start & phi_max >= phi_start)
     
     # Find phi's path

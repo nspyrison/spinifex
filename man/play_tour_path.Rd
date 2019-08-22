@@ -4,15 +4,17 @@
 \alias{play_tour_path}
 \title{Render display of a provided tour path}
 \usage{
-play_tour_path(tour_path, data = NULL, render_type = render_plotly,
-  rescale_data = FALSE, ...)
+play_tour_path(tour_path, data = NULL, angle = 0.05,
+  render_type = render_plotly, rescale_data = FALSE, ...)
 }
 \arguments{
 \item{tour_path}{The result of \code{tourr::save_history()} or \code{manual_tour()}.}
 
 \item{data}{Optional, number of columns must match that of \code{tour_path}.}
 
-\item{render_type}{Which graphics to render to. Defaults to render_plotly,
+\item{angle}{Target distance (in radians) between steps. Defaults to .05.}
+
+\item{render_type}{Graphics to render to. Defaults to render_plotly,
 alternative use render_gganimate.}
 
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.

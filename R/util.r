@@ -13,7 +13,6 @@
 set_axes_position <- function(x, axes) {
   position <- match.arg(axes, c("center", "bottomleft", "off"))
   if (position == "off") return()
-  
   if (position == "center") {
     axis_scale <- 2 / 3
     axis_pos   <- 0
