@@ -22,6 +22,8 @@ run_app <- function(example) {
     requireNamespace("minerva")     # MIC, TIC
     requireNamespace("DT")          # Gallery table
     requireNamespace("reactlog")    # Logging
+    requireNamespace("ggfortify")   # PCA
+    requireNamespace("GGally")      # SPLOM
   }
   
   # locate all the shiny app examples that exist

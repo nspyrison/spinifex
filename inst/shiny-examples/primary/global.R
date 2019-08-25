@@ -8,7 +8,6 @@ library("dplyr")
 ##### include in requireNamespace() in run_app:
 library("DT")          # Gallery table
 library("reactlog")    # Logging
-library("gt")          # Gallery sparkplots
 library("purrr")       # sparkplot prep
 ### Projection pursuit indices
 library("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
@@ -23,15 +22,13 @@ library("minerva")     # MIC, TIC
 ### STATIC LINEAR PROJECTIONS ----
 staticProjection <- function(dat, method, col, pch, alpha) {
   if (method == "PCA") {
-    library(ggfortify)
     return(suppressWarnings(
-      autoplot(prcomp(dat), colour = col_of(col), shape = pch_of(pch) + 15,
-               alpha = alpha, loadings = T, loadings.label = T,
-               loadings.colour = 'gray50', loadings.label.colour = 'gray30')
+      ggfortify::autoplot(prcomp(dat), colour = col_of(col), shape = pch_of(pch) + 15,
+                          alpha = alpha, loadings = T, loadings.label = T,
+                          loadings.colour = 'gray50', loadings.label.colour = 'gray30')
     ))
   }
   if (method == "SPLOM") {
-    library(GGally)
     splom_pch <- as.character(pch)
     return(
       GGally::ggpairs(data = dat, alpha = min(alpha/5, .2),

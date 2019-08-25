@@ -22,6 +22,7 @@ server <- function(input, output, session) {
   rv$png_save_cnt  <- 0
   rv$gif_save_cnt  <- 0
   rv$gallery_n_rows <- 0
+  rv$tour_array <- NULL
   
   ### Initialize data reactives (global)
   data <- reactive({
@@ -214,51 +215,71 @@ server <- function(input, output, session) {
     ### Processing message for gif
     withProgress(message = 'Rendering animation ...', value = 0, {
       ### Manual tour animation
-      this_anim <- function(...) { # to handle variable theta.
-        anim <- play_manual_tour(basis = basis(), 
-                                 data = selected_dat(), 
-                                 manip_var = manip_var(),
-                                 col = col_of(col_var()), 
-                                 pch = pch_of(pch_var()),
-                                 axes = input$axes,
-                                 angle = input$anim_angle,
-                                 alpha = input$alpha,
-                                 ...) 
+      app_tour_array <- function(...) { # for code reduction, handle theta.
+        rv$tour_array <- manual_tour(basis = basis(), 
+                                     data = selected_dat(), 
+                                     manip_var = manip_var(),
+                                     col = col_of(col_var()), 
+                                     pch = pch_of(pch_var()),
+                                     axes = input$axes,
+                                     angle = input$anim_angle,
+                                     alpha = input$alpha,
+                                     ...) # Allows theta to vary
       }
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
-        if (input$anim_type == "Radial")     {anim <- this_anim()} # default theta to radial
-        if (input$anim_type == "Horizontal") {anim <- this_anim(theta = 0)}
-        if (input$anim_type == "Vertical")   {anim <- this_anim(theta = pi/2)}
+        if (input$anim_type == "Radial")     {rv$tour_array <- app_tour_array()} # default theta to radial
+        if (input$anim_type == "Horizontal") {rv$tour_array <- app_tour_array(theta = 0)}
+        if (input$anim_type == "Vertical")   {rv$tour_array <- app_tour_array(theta = pi/2)}
       } else {
-      # TODO: trouble shoot PP and tourr paths.
-      #   ### Projection pursuit
-      #   if (input$anim_type == "Projection pursuit") {
-      #     tour_func <- getGuidedTour(input$pp_type)
-      #     tour_hist <- save_history(selected_dat(), tour_func)
-      #   }
-      #   ### Grand, little and local tours
-      #   if(input$anim_type == "Grand (8 bases)") {
-      #     tour_hist <- save_history(selected_dat(), 
-      #                               tour_path = grand_tour(), max_bases = 8)}
-      #   if(input$anim_type == "Little (8 bases)") {
-      #     tour_hist <- save_history(selected_dat(), 
-      #                               tour_path = little_tour(), max_bases = 8)}
-      #   if(input$anim_type == "Local (8 bases)") {
-      #     tour_hist <- save_history(selected_dat(), 
-      #                               tour_path = local_tour(), max_bases = 8)}
-      #   anim <- play_tour_path(tour_path = tour_hist,
-      #                          data = selected_dat(),
-      #                          angle = input$anim_angle,
-      #                          col = col_of(col_var()), 
-      #                          pch = pch_of(pch_var()),
-      #                          axes = input$axes,
-      #                          # fps = input$anim_fps,
-      #                          alpha = input$alpha)
+        # TODO: trouble shoot PP and tourr paths.
+        ### Projection pursuit
+        if (input$anim_type == "Projection pursuit") {
+          tour_func <- getGuidedTour(input$pp_type)
+          tour_hist <- save_history(selected_dat(), tour_func)
+        }
+        ### Grand, little and local tours
+        if(input$anim_type == "Grand (8 bases)") {
+          rv$tour_array <- save_history(selected_dat(), tour_path = grand_tour(), 
+                                        max_bases = 8, angle = input$anim_angle)}
+        if(input$anim_type == "Little (8 bases)") {
+          rv$tour_array <- save_history(selected_dat(), tour_path = little_tour(), 
+                                        max_bases = 8, angle = input$anim_angle)}
+        if(input$anim_type == "Local (8 bases)") {
+          rv$tour_array <- save_history(selected_dat(), tour_path = local_tour(), 
+                                        max_bases = 8, angle = input$anim_angle)}
       }
       
-      output$anim_plot <- renderPlotly(anim)
+      this_frame <- oblique_frame(basis = rv$tour_array[,, input$anim_slider], 
+                                  data = selected_dat(), 
+                                  manip_var = manip_var(),
+                                  col = col_of(col_var()), 
+                                  pch = pch_of(pch_var()),
+                                  axes = input$axes,
+                                  angle = input$anim_angle,
+                                  alpha = input$alpha) 
+      
+      updateSliderInput(session, "anim_slider", value = 1, max = dim(rv$tour_array)[3])
+      rv$curr_basis <- rv$tour_array[,, input$anim_slider]
+      
+      output$curr_basis_tbl <- renderTable(rv$curr_basis)
+      output$obl_plot <- renderPlot(this_frame)
     })
     setProgress(1)
+  })
+  
+  ### Change plot with slider
+  observeEvent(input$anim_slider, {
+    this_frame <- oblique_frame(basis = rv$tour_array[,, input$anim_slider], 
+                                data = selected_dat(), 
+                                manip_var = manip_var(),
+                                col = col_of(col_var()), 
+                                pch = pch_of(pch_var()),
+                                axes = input$axes,
+                                angle = input$anim_angle,
+                                alpha = input$alpha)
+    
+    rv$curr_basis <- rv$tour_array[,, input$anim_slider]
+    output$obl_plot <- renderPlot(this_frame)
   })
   
   ### Save the animation
@@ -267,14 +288,14 @@ server <- function(input, output, session) {
     rv$gif_save_cnt <- rv$gif_save_cnt + 1
     
     withProgress(message = 'Rendering animation ...', value = 0, {
-    anim <- play_manual_tour(selected_dat(), basis(), manip_var(),
+      anim <- play_tour_path(tour_path = rv$tour_array,
+                             data = selected_dat(),
                              col = col_of(col_var()), pch = pch_of(pch_var()),
                              axes = input$axes,
-                             angle = input$angle,
                              alpha = input$alpha,
                              render_type = render_gganimate)
-    save_file <- sprintf("tour_animation%03d.gif", input$anim_save)
-    gganimate::anim_save(save_file, anim)
+      save_file <- sprintf("tour_animation%03d.gif", input$anim_save)
+      gganimate::anim_save(save_file, anim)
     })
     setProgress(1)
     
@@ -313,11 +334,13 @@ server <- function(input, output, session) {
     disp
   })
   
-  output$gallery <- DT::renderDataTable(
-    rv$gallery_bases[, which(colnames(rv$gallery_bases) == "basis")],
-    gallery_disp(), server = FALSE, escape = FALSE, selection = 'none', 
-    options = list(dom = 't', pageLength = 100)
-  )
+  ### TODO: fix, not working on clayton desktop.
+  # output$gallery <- DT::renderDataTable(
+  #   rv$gallery_bases[, which(colnames(rv$gallery_bases) == "basis")],
+  #   gallery_disp(), server = FALSE, escape = FALSE, selection = 'none',
+  #   options = list(dom = 't', pageLength = 100)
+  # )
+  
   ### TODO: ADD icon ggplot here.
   gallery_icons <- reactive({
     row_info <- rv$gallery_bases[, -which(colnames(rv$gallery_bases) == "basis")]

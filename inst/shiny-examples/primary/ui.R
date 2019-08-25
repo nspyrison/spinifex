@@ -27,84 +27,80 @@ tabInput <- tabPanel(
 
 
 ##### Manual tab ----
-tabManual <-
-  tabPanel("Manual tour", fluidPage(
-    ##### _Sidebar tour inputs ----
-    sidebarPanel(
-      fluidRow(
-        column(6, fluidRow(
-          radioButtons("basis_init", "Start basis",
-                       choices = c("Random", "PCA", "Projection pursuit", "From file"),
-                       selected = "Random"),
-          conditionalPanel("input.basis_init == 'Projection pursuit'",
-                           selectInput("pp_type", "Pursuit index", 
-                                       c("cmass", "holes", "Skinny", "Striated", "Convex", 
-                                         "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
-          conditionalPanel("input.basis_init == 'From file'",
-                           fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
-                                     accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))))
-        ),
-        column(6, selectInput('manip_var', 'Manip var', "none"))),
-      hr(),
-      ##### _Sidebar interactive inputs ----
-      h4("Interactive"),
-      selectInput('manip_type', "Manipulation type",
-                  c("Horizontal", "Vertical", "Radial")),
-      conditionalPanel("input.manip_type == 'Horizontal'",
-                       sliderInput("x_slider", "X contribution",
-                                   min = -1, max = 1, value = 0, step = .1)),
-      conditionalPanel("input.manip_type == 'Vertical'",
-                       sliderInput("y_slider", "Y contribution",
-                                   min = -1, max = 1, value = 0, step = .1)),
-      conditionalPanel("input.manip_type == 'Radial'",
-                       sliderInput("rad_slider", "Radial contribution",
-                                   min = 0, max = 1, value = 0, step = .1)),
-      fluidRow(column(4, actionButton("obl_run", "Run")),
-               column(4, actionButton("obl_save", "Save (csv & png)")),
-               column(4, actionButton("obl_to_gallery", "Send to gallery"))
+tabManual <- tabPanel("Manual tour", fluidPage(
+  ##### _Sidebar tour inputs ----
+  sidebarPanel(
+    fluidRow(
+      column(6, fluidRow(
+        radioButtons("basis_init", "Start basis",
+                     choices = c("Random", "PCA", "Projection pursuit", "From file"),
+                     selected = "Random"),
+        conditionalPanel("input.basis_init == 'Projection pursuit'",
+                         selectInput("pp_type", "Pursuit index", 
+                                     c("cmass", "holes", "Skinny", "Striated", "Convex", 
+                                       "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
+        conditionalPanel("input.basis_init == 'From file'",
+                         fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
+                                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))))
       ),
-      verbatimTextOutput("obl_save_msg"),
-      hr(),
-      ##### _Sidebar animation inputs ----
-      h4("Animation"),
-      selectInput('anim_type', 'Tour type',
-                  c("Radial", "Horizontal", "Vertical"
-                    # ,"Grand (8 bases)", "Little (8 bases)", "Projection pursuit"
-                    )),
-      conditionalPanel("anim_type == 'Projection pursuit'",
-                       selectInput("anim_pp_type", "Pursuit index",
-                                   c("cmass", "holes", "Skinny", "Striated", "Convex",
-                                     "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
-      sliderInput('anim_angle', 'Angle step size', value = .05, min = .01, max = .3),
-      # sliderInput('anim_fps', 'Frames per second',
-      #             value = 3, min = .5, max = 5, step = .5),
-      fluidRow(column(4, actionButton("anim_run", "Run")),
-               column(8, actionButton("anim_save", "Save (gif)"))),
-      verbatimTextOutput("anim_save_msg"),
-      hr(),
-      ##### _Sidebar optional inputs ----
-      h5("Optional Settings"),
-      selectInput('axes', 'Reference axes location', 
-                  c('center', 'bottomleft', 'off'),
-                  'center',  multiple = FALSE),
-      sliderInput('alpha', "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
+      column(6, selectInput('manip_var', 'Manip var', "none"))),
+    hr(),
+    ##### _Sidebar interactive inputs ----
+    h4("Interactive"),
+    selectInput('manip_type', "Manipulation type",
+                c("Horizontal", "Vertical", "Radial")),
+    conditionalPanel("input.manip_type == 'Horizontal'",
+                     sliderInput("x_slider", "X contribution",
+                                 min = -1, max = 1, value = 0, step = .1)),
+    conditionalPanel("input.manip_type == 'Vertical'",
+                     sliderInput("y_slider", "Y contribution",
+                                 min = -1, max = 1, value = 0, step = .1)),
+    conditionalPanel("input.manip_type == 'Radial'",
+                     sliderInput("rad_slider", "Radial contribution",
+                                 min = 0, max = 1, value = 0, step = .1)),
+    fluidRow(column(4, actionButton("obl_run", "Run")),
+             column(4, actionButton("obl_save", "Save (csv & png)")),
+             column(4, actionButton("obl_to_gallery", "Send to gallery"))
     ),
-    
-    ##### _Plot display ----
-    mainPanel(
-      h3("Interactive"),
-      fluidRow(
-        column(9, plotOutput("obl_plot")),
-        column(3,
-               fluidRow(
-                 h4("Current basis"),
-                 tableOutput("curr_basis_tbl")))
-      ),
-      hr(),
-      h3("Animation"),
-      column(9, plotlyOutput("anim_plot"))
+    verbatimTextOutput("obl_save_msg"),
+    hr(),
+    ##### _Sidebar animation inputs ----
+    h4("Animation"),
+    selectInput('anim_type', 'Tour type',
+                c("Radial", "Horizontal", "Vertical"
+                  # ,"Grand (8 bases)", "Little (8 bases)", "Projection pursuit"
+                )),
+    conditionalPanel("anim_type == 'Projection pursuit'",
+                     selectInput("anim_pp_type", "Pursuit index",
+                                 c("cmass", "holes", "Skinny", "Striated", "Convex",
+                                   "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
+    sliderInput('anim_angle', 'Angle step size', value = .05, min = .01, max = .3),
+    fluidRow(column(4, actionButton("anim_run", "Run")),
+             column(4, actionButton("anim_save", "Save (gif)")),
+             column(4, actionButton("anim_play", "Play"))),
+             verbatimTextOutput("anim_save_msg"),
+             sliderInput("anim_slider", "Animation index",
+                         min = 1, max = 10, value = 1, step = 1),
+             hr(),
+             ##### _Sidebar optional inputs ----
+             h5("Optional Settings"),
+             selectInput('axes', 'Reference axes location', 
+                         c('center', 'bottomleft', 'off'),
+                         'center',  multiple = FALSE),
+             sliderInput('alpha', "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
+    ),
+  
+  ##### _Plot display ----
+  mainPanel(
+    fluidRow(
+      column(9, plotOutput("obl_plot")),
+      column(3,
+             fluidRow(
+               h4("Current basis"),
+               tableOutput("curr_basis_tbl")))
     )
-  ))
+  )
+))
 
 
 ##### Static tab ----

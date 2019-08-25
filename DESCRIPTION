@@ -42,12 +42,13 @@ Suggests:
     rmarkdown,
     RColorBrewer,
     DT,
-    gt,
     purrr,
     reactlog,
     scagnostics,
     mbgraphic,
     minerva,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    ggfortify,
+    GGally
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))
