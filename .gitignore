@@ -9,5 +9,6 @@ vignettes/introduction_files
 vignettes/introduction_cache
 
 
-
-devExamples/
+*.txt
+*.png
+*.gif
