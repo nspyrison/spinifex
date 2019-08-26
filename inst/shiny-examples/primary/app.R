@@ -142,7 +142,7 @@ server <- function(input, output, session) {
   observeEvent(input$obl_run, {
     #rv$curr_basis <- NULL
     rv$curr_basis <- basis()
-
+    
     
     ### How to update sliders
     observe({
@@ -198,10 +198,10 @@ server <- function(input, output, session) {
     if (is.null(rv$curr_basis)) return()
     rv$gallery_n_rows <- rv$gallery_n_rows + 1
     gallery_row <- data.frame(Id = rv$gallery_n_rows,
-                           `Manip var`  = input$manip_var, 
-                           `Manip type` = input$manip_type, 
-                           `Time saved` = substr(Sys.time(), 12,19),
-                           check.names = FALSE)
+                              `Manip var`  = input$manip_var, 
+                              `Manip type` = input$manip_type, 
+                              `Time saved` = substr(Sys.time(), 12,19),
+                              check.names = FALSE)
     
     gallery_row$basis <- list(rv$curr_basis)
     rv$gallery_bases <- rbind(rv$gallery_bases, gallery_row)
@@ -263,8 +263,9 @@ server <- function(input, output, session) {
       
       output$curr_basis_tbl <- renderTable(rv$curr_basis)
       output$obl_plot <- renderPlot(this_frame)
+      
+      setProgress(1)
     })
-    setProgress(1)
   })
   
   ### Change plot with slider
@@ -330,36 +331,77 @@ server <- function(input, output, session) {
       check.names = FALSE
     )
     disp <- disp[!rownames(disp) %in% rows_to_remove(), ]
+    output$gallery_msg <- NULL
     
     disp
   })
   
-  ### TODO: fix, not working on clayton desktop.
-  # output$gallery <- DT::renderDataTable(
-  #   rv$gallery_bases[, which(colnames(rv$gallery_bases) == "basis")],
-  #   gallery_disp(), server = FALSE, escape = FALSE, selection = 'none',
-  #   options = list(dom = 't', pageLength = 100)
-  # )
+  output$gallery <- DT::renderDataTable(
+    gallery_disp(), server = FALSE, escape = FALSE, selection = 'none',
+    options = list(dom = 't', pageLength = 100)
+  )
   
-  ### TODO: ADD icon ggplot here.
+  output$gallery_disp_str <- renderPrint(str(gallery_disp()))
+  
   gallery_icons <- reactive({
-    row_info <- rv$gallery_bases[, -which(colnames(rv$gallery_bases) == "basis")]
-    bases <- rv$gallery_bases[, which(colnames(rv$gallery_bases) == "basis")]
+    #if (rv$gallery_n_rows > 1) {browser()}
+    ### Init
+    df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ]
+    n <- nrow(df)
+    p <- ncol(selected_dat())
+    dat_colnames <- colnames(selected_dat())
+    angle <- seq(0, 2 * pi, length = 360)
+    circ  <- data.frame(x = cos(angle), y = sin(angle))
     
-    
-    bases_df <- NULL
-    for (i in 1:length(bases_ls)){
-      this_basis <- bases_ls[[i]]
-      this_basis_df <- data.frame(basis_num = i, this_basis)
-      bases_df <- cbind(bases_df, this_basis_df)
+    df$manip_var_num <- NULL
+    for (i in 1:n){
+      df$manip_var_num[i] <- which(dat_colnames == df$`Manip var`[i])
     }
-    colnames(bases_df) <- c("basis_num","X","Y")
     
-    ggplot(bases_df) + 
-      geom_segment(mapping = aes(x = X, y = Y, xend = 0, yend = 0))
+    df$col <- NULL
+    for (i in 1:n){
+      col <- rep("grey40", p)
+      col[df$`Manip var`[i]] <- "blue"
+      df$col[i] <- list(.col)
+    }
     
+    output$gallery_icons_str <- renderPrint(str(df))
+    
+    ggplot2::ggplot() +
+      ggplot2::scale_color_brewer(palette = "Dark2") +
+      ggplot2::theme_void() +
+      ggplot2::theme(legend.position = "none") +
+      ggplot2::coord_fixed() +
+      ## Cirle path
+      ggplot2::geom_path(data = circ,
+                         mapping = ggplot2::aes(x = x, y = y),
+                         color = "grey80", size = .3, inherit.aes = F) +
+      ## Basis axes line segments
+      ggplot2::geom_segment(data = data.frame(df$basis),
+                            mapping = ggplot2::aes_string(x = "x" , y = "y", 
+                                                   xend = 0, yend = 0)
+                                                   #, col = as.factor(unlist(df$col))
+                            ) +
+      ## Basis variable text labels
+      # ggplot2::geom_text(data = data.frame(df$basis),
+      #                    mapping = ggplot2::aes(x = 1.5 * x[df$manip_var_num],
+      #                                           y = 1.5 * y[df$manip_var_num],
+      #                                           label = df$`Manip var`),
+      #                    size = 4, hjust = 0, vjust = 0, col = "blue") +
+      # ## manip_type label
+      # ggplot2::geom_text(data = df,
+      #                    mapping = ggplot2::aes(x = -1, y = -1, label = `Manip type`),
+      #                    size = 4, hjust = 0, vjust = 0) +
+      ## facet
+      ggplot2::facet_grid(rows = df$Id) +
+      ggplot2::theme(strip.background = ggplot2::element_blank(),
+                     strip.text.y     = ggplot2::element_blank())
+
   })
   
+  
+  output$gallery_icons <- renderPlot(gallery_icons(), width = 85, 
+                                     height = function(){85 * rv$gallery_n_rows})
   
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {
@@ -412,7 +454,7 @@ server <- function(input, output, session) {
   
   ### Development help -- uncomment message at bottom on ui to use
   output$dev_msg <- renderPrint({
-    paste0("Dev msg --\n",
+    cat("Dev msg --\n",
         "obl_run: ", input$obl_run, "\n",
         "obl_save: ", input$obl_save, "\n",
         "anim_run: ", input$anim_run, "\n",

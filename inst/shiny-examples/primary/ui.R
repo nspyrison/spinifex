@@ -19,8 +19,8 @@ tabInput <- tabPanel(
       checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
     ),
     mainPanel(h3("Data structure")
-              ,verbatimTextOutput("data_str")
-              ,verbatimTextOutput("data_summary")
+              , verbatimTextOutput("data_str")
+              # , verbatimTextOutput("data_summary")
     )
   )
 )
@@ -76,11 +76,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                                    "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
     sliderInput('anim_angle', 'Angle step size', value = .05, min = .01, max = .3),
     fluidRow(column(4, actionButton("anim_run", "Run")),
-             column(4, actionButton("anim_save", "Save (gif)")),
-             column(4, actionButton("anim_play", "Play"))),
+             column(8, actionButton("anim_save", "Save (gif)"))),
              verbatimTextOutput("anim_save_msg"),
-             sliderInput("anim_slider", "Animation index",
-                         min = 1, max = 10, value = 1, step = 1),
              hr(),
              ##### _Sidebar optional inputs ----
              h5("Optional Settings"),
@@ -94,11 +91,20 @@ tabManual <- tabPanel("Manual tour", fluidPage(
   mainPanel(
     fluidRow(
       column(9, plotOutput("obl_plot")),
-      column(3,
-             fluidRow(
-               h4("Current basis"),
-               tableOutput("curr_basis_tbl")))
+      column(3, fluidRow(h4("Current basis"),
+                         tableOutput("curr_basis_tbl"))
+      )
     )
+  ),
+  
+  conditionalPanel(
+    "input.anim_run > 0", 
+    fluidRow(column(1, actionButton("anim_play", "Play")),
+             column(5, sliderInput("anim_slider", "Animation index",
+                                   min = 1, max = 10, value = 1, step = 1, 
+                                   width = '80%'))
+    ), # align the play botton with a top margin:
+    tags$style(type='text/css', "#anim_play {margin-top: 40px;}")
   )
 ))
 
@@ -123,7 +129,12 @@ tabStatic <- tabPanel(
 tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
-      DT::dataTableOutput("gallery")
+      fluidRow(column(1, plotOutput("gallery_icons")),
+               column(11, DT::dataTableOutput("gallery"))
+      ) # align icons with a top margin: 
+      , tags$style(type='text/css', "#gallery_icons {margin-top: 40px;}")
+      , verbatimTextOutput("gallery_disp_str")
+      , verbatimTextOutput("gallery_icons_str")
       , verbatimTextOutput("gallery_msg")
     )
   )
