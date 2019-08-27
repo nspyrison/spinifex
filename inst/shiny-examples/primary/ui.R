@@ -133,8 +133,6 @@ tabGallery <- tabPanel(
                column(11, DT::dataTableOutput("gallery"))
       ) # align icons with a top margin: 
       , tags$style(type='text/css', "#gallery_icons {margin-top: 40px;}")
-      , verbatimTextOutput("gallery_disp_str")
-      , verbatimTextOutput("gallery_icons_str")
       , verbatimTextOutput("gallery_msg")
     )
   )
