@@ -95,6 +95,7 @@ server <- function(input, output, session) {
   ##### _Interactive reactives ----
   ### Interactive uses oblique manipulation, commonly has obl_ prefix.
   obl_plot <- reactive({
+    if (is.null(rv$curr_basis)) {return()}
     oblique_frame(data = selected_dat(),
                   basis = rv$curr_basis,
                   manip_var = manip_var(),
@@ -343,11 +344,13 @@ server <- function(input, output, session) {
     options = list(dom = 't', pageLength = 100)
   )
   
+  ##### Gallery icons
   gallery_icons <- reactive({
     if (is.null(rv$gallery_bases)) {return()}
     ### Init
     df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ]
     n_bases <- nrow(df)
+    n <- nrow(selected_dat())
     p <- ncol(selected_dat())
     dat_colnames <- colnames(selected_dat())
     angle <- seq(0, 2 * pi, length = 360)
@@ -377,9 +380,17 @@ server <- function(input, output, session) {
       type_chunk[df$`manip_var_num`[i]] <- as.character(df$`Manip type`[i])
       type_lab <- c(type_lab, type_chunk)
     }
-    
     output$gallery_icons_str <- renderText(str(df_gg))
-    # df_gg
+    
+    ### Set structure to add data points and density.
+    rows_needed <- (n * n_bases) - (p * n_bases)
+    col_text <- c(col_text, rep(NA, rows_needed))
+    var_lab <- c(var_lab, rep(NA, rows_needed))
+    type_lab <- c(type_lab, rep(NA, rows_needed))
+    df_gg <- rbind(df_gg, 
+                   data.frame(id = rep(NA, rows_needed), 
+                              x = rep(NA, rows_needed), 
+                              y = rep(NA, rows_needed)))
     
     ### Plot
     ggplot2::ggplot(data = df_gg) +
@@ -407,39 +418,47 @@ server <- function(input, output, session) {
       ggplot2::facet_grid(rows = vars(id)) +
       ggplot2::theme(strip.background = ggplot2::element_blank(),
                      strip.text.y     = ggplot2::element_blank())
-    #browser()
   })
   
   output$gallery_icons <- renderPlot(
-    gallery_icons(), width = 85, 
+    gallery_icons(), width = 84, 
     height = function(){
-      85 * nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ])
+      n_bases <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ])
+      84 * (n_bases + 1) # +1 because of blank NA icon
     })
   
-  # gallery_icons_data <- reactive({
-  #   if (is.null(rv$gallery_bases)) {return()}
-  #   
-  #   df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ]
-  #   n <- nrow(df)
-  #   p <- ncol(selected_dat())
-  #   
-  #   df_gg_data <- NULL # Unlist basis into p rows
-  #   for (i in 1:nrow(df)){
-  #     rows <- data.frame(id = df$Id[i], 
-  #                        dat %*% df$basis[[i]])
-  #     df_gg_data <- rbind(df_gg_data, rows)
-  #   }
-  #   
-  #   gg <- gallery_icons()
-  #   
-  #   gg + ggplot2::geom_point(data = df_gg_data, aes(x = x, y = y))
-  # })
+  ##### Gallery icons with data
+  gallery_icons_data <- reactive({
+    if (is.null(rv$gallery_bases)) {return()}
+    # Init
+    df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ]
+    n_bases <- nrow(df)
+    n <- nrow(selected_dat())
+    p <- ncol(selected_dat())
+    gg <- gallery_icons()
+    
+    df_gg_data <- NULL # Unlist basis into p rows
+    for (i in 1:n_bases){
+      rows <- data.frame(id = rep(df$Id[i], n),
+                         selected_dat() %*% df$basis[[i]],
+                         col = col_of(col_var())) #categorical off of col (not pch)
+      df_gg_data <- rbind(df_gg_data, rows)
+    }
+    output$gallery_icons_data_str <- renderText(str(df_gg_data))
+    
+    ### Add data points/density to gallery icons
+    gg + 
+      geom_point(data = df_gg_data, mapping = aes(x, y, color = col), size =.3) 
+    # + geom_density_2d(data = df_gg_data, bins = 4,
+    #                   mapping = ggplot2::aes(x = x, y = y, color = col))
+  })
   
-  # output$gallery_icons_data <- renderPlot(
-  #   gallery_icons(), width = 85, 
-  #   height = function(){
-  #     85 * nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ])
-  #   })
+  output$gallery_icons_data <- renderPlot(
+    gallery_icons_data(), width = 84,
+    height = function(){
+      n_bases <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ])
+      84 * (n_bases + 1) # +1 because of blank NA icon
+    })
   
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {

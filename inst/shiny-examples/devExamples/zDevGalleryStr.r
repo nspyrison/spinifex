@@ -1,10 +1,10 @@
 nsLib()
 library(ggplot2)
 
-mat <- matrix(1:12, ncol=2, byrow = F)/10
+mat <- matrix(1:12, ncol=2, byrow = F)/12
 colnames(mat) <- c("x", "y")
-foo <- data.frame(`Manip type` = c("type A", "type C"), 
-                  `Manip var` = c("head","tars1"), 
+foo <- data.frame(`Manip type` = c("Horizontal", "Vertical", "Radial", "else"), 
+                  `Manip var` = c("head", "tars1", "tars2", "tars2"), 
                   check.names = FALSE)
 foo2 <- data.frame(Id=seq.int(nrow(foo)), foo, 
                    basis = I(replicate(nrow(foo), mat, simplify=FALSE)),
@@ -16,26 +16,22 @@ df <- foo2
 dat <- tourr::rescale(flea[, 1:6])
 
 n_bases <- nrow(df)
+n <- nrow(dat)
 p <- ncol(dat)
 dat_colnames <- colnames(dat)
 angle <- seq(0, 2 * pi, length = 360)
 circ <- NULL
-for (i in 1:n_bases) {
-  this_circ <- data.frame(id = i, x = cos(angle), y = sin(angle))
-  circ <- rbind(circ, this_circ)
-}
-circ 
-
 df$manip_var_num <- NULL
-for (i in 1:n_bases){
-  df$manip_var_num[i] <- which(dat_colnames == df$`Manip var`[i])
-}
-df
-
 col_text <- NULL
 var_lab <- NULL
 type_lab <- NULL
+df_gg <- NULL
 for (i in 1:n_bases){
+  # Circle
+  this_circ <- data.frame(id = i, x = cos(angle), y = sin(angle))
+  circ <- rbind(circ, this_circ)
+  # Labels and color
+  df$manip_var_num[i] <- which(dat_colnames == df$`Manip var`[i])
   col_chunk <- rep("grey40", p)
   col_chunk[df$`manip_var_num`[i]] <- "blue"
   col_text <- c(col_text, col_chunk)
@@ -45,27 +41,22 @@ for (i in 1:n_bases){
   type_chunk <- rep("", p)
   type_chunk[df$`manip_var_num`[i]] <- as.character(df$`Manip type`[i])
   type_lab <- c(type_lab, type_chunk)
-}
-col_text
-var_lab
-type_lab
-
-df_gg <- NULL # unlist basis
-for (i in 1:nrow(df)){
-  rows <- data.frame(id = rep(df$Id[i], n_bases), 
+  # Unlist bases
+  rows <- data.frame(id = rep(df$Id[i], p), 
                      df$basis[[i]])
   df_gg <- rbind(df_gg, rows)
 }
-str(df_gg)
+dim(df_gg)
 
+rows_needed <- (n * n_bases) - (p * n_bases)
+col_text <- c(col_text, rep(NA, rows_needed))
+var_lab <- c(type_lab, rep(NA, rows_needed))
+type_lab <- c(type_lab, rep(NA, rows_needed))
 
-col_text <- c(col_text, rep(NA, 136))
-var_lab <- c(type_lab, rep(NA, 136))
-type_lab <- c(type_lab, rep(NA, 136))
 df_gg <- rbind(df_gg, 
-               data.frame(id = rep(NA, 136), 
-                          x = rep(NA, 136), 
-                          y = rep(NA, 136)))
+               data.frame(id = rep(NA, rows_needed), 
+                          x = rep(NA, rows_needed), 
+                          y = rep(NA, rows_needed)))
 
 gg <-
   ggplot2::ggplot() + #data = df_gg
@@ -108,12 +99,13 @@ for (i in 1:nrow(df)){
                      cat = flea[, 7])
   df_gg_data <- rbind(df_gg_data, rows)
 }
-str(df_gg_data)
+dim(df_gg_data)
+
 
 gg + geom_point(data = df_gg_data, mapping = aes(x, y, color = cat), size =.5) 
 
-gg + geom_density_2d(data = df_gg_data, bins = 4,
-                     mapping = ggplot2::aes(x = x, y = y, color = cat))
+#gg + geom_density_2d(data = df_gg_data, bins = 4,
+#                     mapping = ggplot2::aes(x = x, y = y, color = cat))
 
 
 
