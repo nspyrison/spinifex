@@ -130,9 +130,11 @@ tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
       fluidRow(column(1, plotOutput("gallery_icons")),
-               column(11, DT::dataTableOutput("gallery"))
+               column(1, plotOutput("gallery_icons_data")),
+               column(10, DT::dataTableOutput("gallery"))
       ) # align icons with a top margin: 
       , tags$style(type='text/css', "#gallery_icons {margin-top: 40px;}")
+      , verbatimTextOutput("gallery_icons_str")
       , verbatimTextOutput("gallery_msg")
     )
   )

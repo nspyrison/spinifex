@@ -208,7 +208,7 @@ server <- function(input, output, session) {
     rv$gallery_bases <- rbind(rv$gallery_bases, gallery_row)
     
     output$obl_save_msg <- renderPrint(cat(
-      "Basis sent to the gallery as Id ", rv$gallery_n_rows, "."))
+      "Basis sent to the gallery as Id ", rv$gallery_n_rows, ".", sep = ""))
   })
   
   
@@ -327,7 +327,7 @@ server <- function(input, output, session) {
       Delete = 
         shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Remove", 
                    onclick = 'Shiny.onInputChange(\"gallery_delete\",  this.id)'),
-      rv$gallery_bases[, -which(colnames(rv$gallery_bases) == "basis")],
+      rv$gallery_bases[, -which(colnames(rv$gallery_bases) %in% c("basis", "Id"))],
       stringsAsFactors = FALSE,
       row.names = NULL,
       check.names = FALSE
@@ -347,38 +347,39 @@ server <- function(input, output, session) {
     if (is.null(rv$gallery_bases)) {return()}
     ### Init
     df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ]
-    n <- nrow(df)
+    n_bases <- nrow(df)
     p <- ncol(selected_dat())
     dat_colnames <- colnames(selected_dat())
-    angle <- seq(0, 2 * pi, length = 360*n)
-    circ  <- data.frame(x = cos(angle), y = sin(angle))
+    angle <- seq(0, 2 * pi, length = 360)
     
-    df_gg <- NULL # Unlist basis into p rows
-    for (i in 1:nrow(df)){
-      rows <- data.frame(id = df$Id[i], 
-                         df$basis[[i]])
-      df_gg <- rbind(df_gg, rows)
-    }
-    
-    # make label and color vectors
-    df$manip_var_num <- NULL
-    for (i in 1:n){
-      df$manip_var_num[i] <- which(dat_colnames == df$`Manip var`[i])
-    }
+    circ  <- NULL
+    df_gg <- NULL
     col_text <- NULL
     var_lab <- NULL
     type_lab <- NULL
-    for (i in 1:n){
+    for (i in 1:n_bases){
+      # Circle
+      this_circ <- data.frame(id = i, x = cos(angle), y = sin(angle))
+      circ <- rbind(circ, this_circ)
+      # Segments: Unlist basis into p rows
+      rows <- data.frame(id = df$Id[i], 
+                         df$basis[[i]])
+      df_gg <- rbind(df_gg, rows)
+      # Manip var, manip type and color vectors
+      df$manip_var_num[i] <- which(dat_colnames == df$`Manip var`[i])
       col_chunk <- rep("grey40", p)
       col_chunk[df$`manip_var_num`[i]] <- "blue"
       col_text <- c(col_text, col_chunk)
-      lab_chunk <- rep("", p)
-      lab_chunk[df$`manip_var_num`[i]] <- as.character(df$`Manip var`[i])
-      var_lab <- c(var_lab, lab_chunk)
+      var_chunk <- rep("", p)
+      var_chunk[df$`manip_var_num`[i]] <- as.character(df$`Manip var`[i])
+      var_lab <- c(var_lab, var_chunk)
       type_chunk <- rep("", p)
       type_chunk[df$`manip_var_num`[i]] <- as.character(df$`Manip type`[i])
       type_lab <- c(type_lab, type_chunk)
     }
+    
+    output$gallery_icons_str <- renderText(str(df_gg))
+    # df_gg
     
     ### Plot
     ggplot2::ggplot(data = df_gg) +
@@ -391,7 +392,7 @@ server <- function(input, output, session) {
                          mapping = ggplot2::aes(x = x, y = y),
                          color = "grey80", size = .3, inherit.aes = F) +
       ## Basis line segments
-      ggplot2::geom_segment(mapping = ggplot2::aes(x = x , y = y, 
+      ggplot2::geom_segment(mapping = ggplot2::aes(x = x , y = y,
                                                    xend = 0, yend = 0)
                             , col = col_text) +
       ## manip_var labels
@@ -403,18 +404,42 @@ server <- function(input, output, session) {
       ggplot2::geom_text(mapping = ggplot2::aes(x = -1, y = -1, label = type_lab),
                          size = 4, hjust = 0, vjust = 0) +
       ## Facet
-      ggplot2::facet_grid(rows = df_gg$id) +
+      ggplot2::facet_grid(rows = vars(id)) +
       ggplot2::theme(strip.background = ggplot2::element_blank(),
                      strip.text.y     = ggplot2::element_blank())
-
+    #browser()
   })
-  
   
   output$gallery_icons <- renderPlot(
     gallery_icons(), width = 85, 
     height = function(){
       85 * nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ])
     })
+  
+  # gallery_icons_data <- reactive({
+  #   if (is.null(rv$gallery_bases)) {return()}
+  #   
+  #   df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ]
+  #   n <- nrow(df)
+  #   p <- ncol(selected_dat())
+  #   
+  #   df_gg_data <- NULL # Unlist basis into p rows
+  #   for (i in 1:nrow(df)){
+  #     rows <- data.frame(id = df$Id[i], 
+  #                        dat %*% df$basis[[i]])
+  #     df_gg_data <- rbind(df_gg_data, rows)
+  #   }
+  #   
+  #   gg <- gallery_icons()
+  #   
+  #   gg + ggplot2::geom_point(data = df_gg_data, aes(x = x, y = y))
+  # })
+  
+  # output$gallery_icons_data <- renderPlot(
+  #   gallery_icons(), width = 85, 
+  #   height = function(){
+  #     85 * nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ])
+  #   })
   
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {
