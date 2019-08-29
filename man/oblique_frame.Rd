@@ -4,15 +4,16 @@
 \alias{oblique_frame}
 \title{Plot a single frame of a manual tour}
 \usage{
-oblique_frame(data = NULL, basis = NULL, manip_var, theta = 0,
+oblique_frame(basis = NULL, data = NULL, manip_var, theta = 0,
   phi = 0, manip_col = "blue", col = "black", pch = 20,
-  axes = "center", rescale_data = FALSE, alpha = 1, ...)
+  lab = NULL, axes = "center", rescale_data = FALSE, alpha = 1,
+  ...)
 }
 \arguments{
-\item{data}{(n, p) dataset to project, consisting of numeric variables.}
-
 \item{basis}{A (p, d) dim orthonormal numeric matrix.
 If it's left null, random basis will be used.}
+
+\item{data}{(n, p) dataset to project, consisting of numeric variables.}
 
 \item{manip_var}{Number of the column/dimension to rotate.}
 
@@ -30,6 +31,9 @@ Defaults to "blue".}
 \item{col}{Color of the projected points. Defaults to "black".}
 
 \item{pch}{Point character of the projected points. Defaults to 20.}
+
+\item{lab}{Optional, labels for the reference frame of length 1 or the
+number of variables used. Defaults to an abbriviation of the variables.}
 
 \item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
 to "center".}

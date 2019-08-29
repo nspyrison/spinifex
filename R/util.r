@@ -31,8 +31,8 @@ set_axes_position <- function(x, axes) {
 #' 
 #' @param basis A (p, d) basis, XY linear combination of each dimension 
 #'   (numeric variable).
-#' @param labels Optional character vector of `p` length, add name to the axes 
-#'   in the reference frame, typically the variable names.
+#' @param lab Optional, labels for the reference frame of length 1 or the 
+#'   number of variables used. Defaults to the V1, V2...
 #' @param data Optional (n, p) data, plots xy scatterplot on the frame
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
@@ -46,7 +46,7 @@ set_axes_position <- function(x, axes) {
 #' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 #' @export
 view_basis <- function(basis,
-                       labels = paste0("V", 1:nrow(basis)),
+                       lab  = NULL,
                        data = NULL,
                        axes = "center"
 ) {
@@ -54,6 +54,12 @@ view_basis <- function(basis,
   basis <- as.data.frame(basis)
   angle <- seq(0, 2 * pi, length = 360)
   circ  <- data.frame(x = cos(angle), y = sin(angle))
+  p     <- nrow(basis)
+  lab   <- if(!is.null(lab)){
+    rep(lab, p / length(lab))
+  } else {
+    if(!is.null(data)) {abbreviate(colnames(data), 3)
+    } else {paste0("V", 1:p)}}
   ## scale axes
   zero  <- set_axes_position(0, axes)
   basis <- set_axes_position(basis, axes)
@@ -82,7 +88,7 @@ view_basis <- function(basis,
     ## Basis variable text labels
     ggplot2::geom_text(
       data = basis, 
-      mapping = ggplot2::aes(x = V1, y = V2, label = labels),
+      mapping = ggplot2::aes(x = V1, y = V2, label = lab),
       size = 4, hjust = 0, vjust = 0, colour = "black")
   }
   
@@ -161,7 +167,7 @@ view_manip_space <- function(basis,
                        z = m_sp[manip_var, 3],
                        xend = m_sp_r[manip_var, "x"],
                        yend = m_sp_r[manip_var, "y"],
-                       lab = labels[manip_var])
+                       label = labels[manip_var])
   ## rotate angle curves, phi & theta
   theta_curve <- xyz(make_circ(0, theta) %*% rot)
   phi_curve   <- xyz(make_circ(0, phi))
@@ -215,7 +221,7 @@ view_manip_space <- function(basis,
     ## Z projection axis text label
     ggplot2::geom_text(
       data = m_sp_z, 
-      mapping = ggplot2::aes(x = x, y = z, label = lab),
+      mapping = ggplot2::aes(x = x, y = z, label = label),
       size = 4, colour = z_col, vjust = "outward", hjust = "outward") +
     ## Theta curve path
     ggplot2::geom_path(

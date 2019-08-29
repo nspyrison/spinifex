@@ -18,6 +18,8 @@
 #'   Defaults to "blue".
 #' @param col Color of the projected points. Defaults to "black".
 #' @param pch Point character of the projected points. Defaults to 20.
+#' @param lab Optional, labels for the reference frame of length 1 or the 
+#'   number of variables used. Defaults to an abbriviation of the variables.
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
@@ -36,14 +38,15 @@
 #' 
 #' oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
 
-oblique_frame <- function(data         = NULL, #TODO: data is ~.16 why not NULL?
-                          basis        = NULL,
+oblique_frame <- function(basis        = NULL,
+                          data         = NULL, ### TODO: when NULL data gets assigned small numeric 1x1 value, where & why?
                           manip_var,
                           theta        = 0,
                           phi          = 0,
                           manip_col    = "blue",
                           col          = "black", 
                           pch          = 20,
+                          lab          = NULL,
                           axes         = "center",
                           rescale_data = FALSE,
                           alpha        = 1,
@@ -67,8 +70,12 @@ oblique_frame <- function(data         = NULL, #TODO: data is ~.16 why not NULL?
   }
   
   # Add labels, attribute, and list
-  basis_slides$lab_abbr <- if(!is.null(data)) {abbreviate(colnames(data), 3)
-  } else paste0("V", 1:p)
+  basis_slides$lab <- 
+    if(!is.null(lab)){
+      rep(lab, nrow(basis_slides) / length(lab))
+    } else {
+      if(!is.null(data)) {abbreviate(colnames(data), 3)
+      } else {paste0("V", 1:p)}}
   
   attr(basis_slides, "manip_var") <- manip_var
   

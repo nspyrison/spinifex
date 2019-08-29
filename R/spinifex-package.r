@@ -29,7 +29,6 @@
 # Manual tour globals:
 globalVariables(c("col",
                   "pch",
-                  "disp_type",
                   "phi_min",
                   "phi_max",
                   "manip_col",
@@ -40,14 +39,11 @@ globalVariables(c("col",
 )
 
 # ggplot aes globals:
-globalVariables(c("V1",
-                  "V2",
-                  "x",
+globalVariables(c("x",
                   "y",
                   "z",
                   "xend",
                   "yend",
                   "lab",
-                  "lab_abbr",
                   "slide")
 )

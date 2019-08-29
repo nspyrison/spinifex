@@ -34,15 +34,14 @@ render_ <- function(slides,
                     ...) {
   # Initialize
   if (length(slides) == 2)
-    data_slides  <- data.frame(slides[[2]])
-  basis_slides   <- data.frame(slides[[1]])
-  manip_var      <- attributes(slides$basis_slides)$manip_var
-  n_slides       <- max(basis_slides$slide)
-  p              <- nrow(basis_slides) / n_slides
-  d              <- ncol(basis_slides) - 2
-  ## Circle
-  angle          <- seq(0, 2 * pi, length = 360)
-  circ           <- data.frame(x = cos(angle), y = sin(angle))
+    data_slides <- data.frame(slides[[2]])
+  basis_slides  <- data.frame(slides[[1]])
+  manip_var     <- attributes(slides$basis_slides)$manip_var
+  n_slides      <- max(basis_slides$slide)
+  p             <- nrow(basis_slides) / n_slides
+  d             <- ncol(basis_slides) - 2
+  angle         <- seq(0, 2 * pi, length = 360)
+  circ          <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes
   if (axes != "off"){
     zero         <- set_axes_position(0, axes)
@@ -86,7 +85,7 @@ render_ <- function(slides,
       ggplot2::geom_point( 
         data = data_slides, size = 1, 
         shape = pch, color = col, fill = col, alpha = alpha,
-        mapping = ggplot2::aes(x = V1, y = V2, frame = slide)
+        mapping = ggplot2::aes(x = x, y = y, frame = slide)
       )
     )
   
@@ -101,8 +100,8 @@ render_ <- function(slides,
       suppressWarnings( # Suppress for unused aes "frame".
         ggplot2::geom_segment( 
           data = basis_slides, size = axes_siz, colour = axes_col,
-          mapping = ggplot2::aes(x = V1,
-                                 y = V2, 
+          mapping = ggplot2::aes(x = x,
+                                 y = y, 
                                  xend = zero, yend = zero, 
                                  frame = slide)
         )
@@ -111,8 +110,8 @@ render_ <- function(slides,
       suppressWarnings( # Suppress for unused aes "frame".
         ggplot2::geom_text(
           data = basis_slides, 
-          mapping = ggplot2::aes(x = V1, y = V2, 
-                                 frame = slide, label = lab_abbr),
+          mapping = ggplot2::aes(x = x, y = y, 
+                                 frame = slide, label = lab),
           colour = axes_col, size = 4, vjust = "outward", hjust = "outward")
       )
   }

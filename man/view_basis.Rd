@@ -4,15 +4,14 @@
 \alias{view_basis}
 \title{Plot projection frame and return the axes table}
 \usage{
-view_basis(basis, labels = paste0("V", 1:nrow(basis)), data = NULL,
-  axes = "center")
+view_basis(basis, lab = NULL, data = NULL, axes = "center")
 }
 \arguments{
 \item{basis}{A (p, d) basis, XY linear combination of each dimension
 (numeric variable).}
 
-\item{labels}{Optional character vector of \code{p} length, add name to the axes
-in the reference frame, typically the variable names.}
+\item{lab}{Optional, labels for the reference frame of length 1 or the
+number of variables used. Defaults to the V1, V2...}
 
 \item{data}{Optional (n, p) data, plots xy scatterplot on the frame}
 

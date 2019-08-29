@@ -31,7 +31,7 @@ remotes::install_github("nspyrison/spinifex")
 View the vignette to get started!
 ```
 library("spinifiex")
-vignette("spinifex_vignette")
+vignette("spinifex")
 ```
 
 ## reporting and issues

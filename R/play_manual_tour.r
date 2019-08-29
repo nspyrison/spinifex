@@ -39,9 +39,9 @@
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' 
-#' play_manual_tour(data = flea_std, basis = rb, manip_var = 4)
+#' play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
 #' 
-#' play_manual_tour(data = flea_std, basis = rb, manip_var = 6, 
+#' play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
 #'   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
 #' }
 play_manual_tour <- function(basis = NULL,

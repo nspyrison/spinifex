@@ -1,12 +1,16 @@
-# spinifex 0.2.0
+# spinifex 2.0.0
 
-Building support for 3D manual tours. New angle, omega.
+Intoduced shiny apps: "intro", "primary", "study"
 
-- play_radial_tour()
+New functions to accomadate interactive use, rather than predefined paths:
+
+- oblique_basis()
+- oblique_frame()
+
 
 # spinifex 0.1.0
 
-Initial submission to CRAN.
+Initial submission to CRAN. Vignette: "spinifex"
 
 ## Primary functions
 

@@ -1,5 +1,5 @@
 ---
-title: "Spinifex"
+title: "spinifex"
 author: "Nicholas Spyrison"
 date: "`r Sys.Date()`"
 output: 
