@@ -47,7 +47,7 @@ staticProjection <- function(dat, method, col, pch, alpha) {
 scags <- function(scagMetricIndex) {
   function(mat) {return (scagnostics(mat)[scagMetricIndex])}
 }
-getGuidedTour <- function(indexName, grId=NA){ # reurtns a tour function
+getGuidedTour <- function(indexName, grId=NA){ # returns a tour function
   if(indexName == "cmass"){return(guided_tour(cmass()))}
   if(indexName == "holes"){return(guided_tour(holes()))}
   if(indexName %in% c("Skinny", "Striated", "Convex", "Clumpy")){return(guided_tour(scags(indexName)))}

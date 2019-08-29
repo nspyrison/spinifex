@@ -4,6 +4,7 @@ server <- function(input, output, session) {
   rv$x <- NULL
   rv$y <- NULL
   rv$rad <- NULL
+  rv$curr_loc <- c(0,0)
   
   ### _Interactive observes ----
   #TODO: Fix sliders not yielding control on re-run
@@ -17,8 +18,8 @@ server <- function(input, output, session) {
   
   ### Display interactive
   observeEvent(input$obl_run, {
-    rv$x <- round(runif(1,-1,1),1)
-    rv$y <- round(runif(1,-1,1),1)
+    rv$curr_loc[1] <- round(runif(1,-1,1),1)
+    rv$curr_loc[2] <- round(runif(1,-1,1),1)
     rv$rad <- sqrt(rv$x^2 + rv$y^2)
     output$obl_plot <- renderPlot(myPlot())
   })
@@ -26,7 +27,6 @@ server <- function(input, output, session) {
   ### Observe sliders
   observeEvent(input$x_slider, {
     rv$x <- input$x_slider
-    
   })
   observeEvent(input$y_slider, {
     rv$y <- input$y_slider

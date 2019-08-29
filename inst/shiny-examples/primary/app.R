@@ -110,54 +110,52 @@ server <- function(input, output, session) {
   ### x, y, radius reactives
   # x motion 
   basis_x <- reactive({
-    .theta <- 0
+    theta <- 0
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-    .phi <- input$x_slider * pi/2 + phi.x_zero
+    phi <- input$x_slider * pi/2 + phi.x_zero
     oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                  theta = .theta, phi = .phi)
+                  theta = theta, phi =phi)
   })
   # y motion
   basis_y <- reactive({
-    .theta <- pi/2
+    theta <- pi/2
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-    .phi <- input$y_slider * pi/2 + phi.y_zero
+    phi <- input$y_slider * pi/2 + phi.y_zero
     oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                  theta = .theta, phi = .phi)
+                  theta = theta, phi = phi)
   })
   # Radial motion
   basis_rad <- reactive({
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    .theta <- atan(mv_sp[2] / mv_sp[1])
+    theta <- atan(mv_sp[2] / mv_sp[1])
     phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    .phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
+    phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
     oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                  theta = .theta, phi = .phi)
+                  theta = theta, phi = phi)
   })
+  
+
   
   ### _Interactive observes ----
   #TODO: Fix sliders not yielding control on re-run
   
   ### Run button, interative initialize
   observeEvent(input$obl_run, {
-    #rv$curr_basis <- NULL
-    rv$curr_basis <- basis()
+    rv$curr_basis <- basis() # pull a new random basis.
     
-    
-    ### How to update sliders
-    observe({
-      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
-      x_i <- round(-phi.x_zero / (pi/2), 1)
-      (updateSliderInput(session, "x_slider", value = x_i))
-      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
-      y_i <- round(-phi.y_zero / (pi/2), 1)
-      (updateSliderInput(session, "y_slider", value = y_i))
-      phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-      rad_i <- round(cos(phi_i), 1)
-      (updateSliderInput(session, "rad_slider", value = rad_i))
-    })
+    # Update sliders
+    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
+    rv$x_val <- round(-phi.x_zero / (pi/2), 1)
+    updateSliderInput(session, "x_slider", value = rv$x_val)
+    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
+    rv$y_val <- round(-phi.y_zero / (pi/2), 1)
+    updateSliderInput(session, "y_slider", value = rv$y_val)
+    phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+    rv$rad_val <- round(cos(phi_i), 1)
+    updateSliderInput(session, "rad_slider", value = rv$rad_val)
     
     ### Observe slider values
     observeEvent(input$x_slider, {
