@@ -1,6 +1,6 @@
 context("create_manip_space")
 
-flea_std <- tourr::rescale(tourr::flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
 
 rb <- basis_random(n = ncol(flea_std))
 ret <- create_manip_space(basis = rb, manip_var = 4)

@@ -19,3 +19,13 @@ test_that("gganimate class and length", {
   expect_is(ret, "ggplot")
   expect_equal(length(ret), 14)
 })
+
+cat <- flea[1:2, 7]
+ret <- play_tour_path(tour_path = tpath, data = flea_std, 
+                      col = cat, pch = cat, lab <- paste0("a", 1:6), axes="off")
+
+test_that("col, pch, lab, axes args returns plotly object", {
+  expect_is(ret, "plotly")
+  expect_is(ret, "htmlwidget")
+  expect_equal(length(ret), 9)
+})

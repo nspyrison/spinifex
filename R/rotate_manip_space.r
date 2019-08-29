@@ -12,7 +12,6 @@
 #'   reference frame. Effectively changes the norm of XY contributions of the 
 #'   manip_var.
 #' @return A (p, d+1) orthonormal matrix of the rotated (manipulation) space.
-#' @import magrittr
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
@@ -40,17 +39,10 @@ rotate_manip_space <- function(manip_space, theta, phi) {
                 c_phi)                                 # 9 of 9
               ,nrow = 3, ncol = 3, byrow = TRUE)
   
-  if (ncol(manip_space) == 3) { 
-    rotation_space <- manip_space %*% R3
-  } else {
-    # 4D Rotation matrix, a function of theta, phi and psi.
-    R4 <- rbind(R3, rep(0,3)) %>% 
-      cbind(c(rep(0,3),1))
-    rotation_space <- manip_space %*% R4
-  } 
+  rotated_space <- manip_space %*% R3
   
-  colnames(rotation_space) <- colnames(manip_space)
-  rownames(rotation_space) <- rownames(manip_space)
+  colnames(rotated_space) <- colnames(manip_space)
+  rownames(rotated_space) <- rownames(manip_space)
   
-  rotation_space
+  rotated_space
 }

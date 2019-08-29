@@ -4,7 +4,7 @@
 \alias{array2df}
 \title{Turns a tour path array into a long data frame}
 \usage{
-array2df(array, data = NULL)
+array2df(array, data = NULL, lab = NULL)
 }
 \arguments{
 \item{array}{A (p, d, n_slides) array of a tour, the output of
@@ -12,6 +12,9 @@ array2df(array, data = NULL)
 
 \item{data}{Optional, (n, p) dataset to project, consisting of numeric
 variables.}
+
+\item{lab}{Optional, labels for the reference frame of length 1 or the
+number of variables used. Defaults to an abbriviation of the variables.}
 }
 \value{
 A list containing the (p, d, n_slides) basis slides array, and

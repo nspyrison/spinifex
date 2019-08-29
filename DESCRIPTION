@@ -19,30 +19,22 @@ Depends:
     R (>= 3.4.0),
     tourr
 License: GPL-3
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 6.1.1
 URL: https://github.com/nspyrison/spinifex/
 BugReports: https://github.com/nspyrison/spinifex/issues
 Imports:
-    dplyr,
-    GGally,
     ggplot2,
     plotly,
-    tibble,
     webshot,
-    shiny,
-    magrittr
+    RColorBrewer,
+    shiny
 Suggests: 
     gganimate,
     animation,
     gifski,
-    knitr,
     png,
+    knitr,
     rmarkdown,
-    RColorBrewer,
     DT,
-    purrr,
     reactlog,
     scagnostics,
     mbgraphic,
@@ -51,4 +43,7 @@ Suggests:
     ggfortify,
     GGally
 VignetteBuilder: knitr
+Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))
+RoxygenNote: 6.1.1

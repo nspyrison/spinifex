@@ -1,6 +1,6 @@
 context("util")
 
-flea_std <- tourr::rescale(tourr::flea[, 1:6])
+flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
 rb <- basis_random(ncol(flea_std), 2)
 
 ret <- set_axes_position(x = rb, axes = "bottomleft")

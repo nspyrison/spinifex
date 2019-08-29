@@ -9,6 +9,8 @@
 #'   `manual_tour()`.
 #' @param data Optional, (n, p) dataset to project, consisting of numeric 
 #'   variables.
+#' @param lab Optional, labels for the reference frame of length 1 or the 
+#'   number of variables used. Defaults to an abbriviation of the variables.
 #' @return A list containing the (p, d, n_slides) basis slides array, and
 #'   the (n, d, n_slides) data slides array.
 #' @export
@@ -19,7 +21,8 @@
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' array2df(array = mtour, data = flea_std)
 array2df <- function(array, 
-                     data = NULL) {
+                     data = NULL,
+                     lab = NULL) {
   # Initialize
   manip_var <- attributes(array)$manip_var
   p <- nrow(array[,, 1])
@@ -31,7 +34,7 @@ array2df <- function(array,
     basis_rows <- data.frame(cbind(array[,, slide], slide))
     basis_slides <- rbind(basis_slides, basis_rows)
   }
-  colnames(basis_slides) <- c("x", "y", "slide", "lab")
+  colnames(basis_slides) <- c("x", "y", "slide")
   
   # data; if exists,  array to long df
   if(!is.null(data)) {
@@ -47,11 +50,12 @@ array2df <- function(array,
   }
   
   # Add labels, attribute, and list
-  lab <- if(!is.null(lab)){
-    rep(lab, nrow(basis_slides) / length(lab))
-  } else {
-    if(!is.null(data)) {abbreviate(colnames(data), 3)
-    } else {paste0("V", 1:p)}}
+  lab <- 
+    if(!is.null(lab)){
+      rep(lab, nrow(basis_slides) / length(lab))
+    } else {
+      if(!is.null(data)) {abbreviate(colnames(data), 3)
+      } else {paste0("V", 1:p)}}
   basis_slides$lab <- rep(lab, n_slides)
   
   attr(basis_slides, "manip_var") <- manip_var
