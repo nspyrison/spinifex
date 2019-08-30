@@ -4,7 +4,6 @@ server <- function(input, output, session) {
   rv$x <- NULL
   rv$y <- NULL
   rv$rad <- NULL
-  rv$curr_loc <- c(0,0)
   
   ### _Interactive observes ----
   #TODO: Fix sliders not yielding control on re-run
@@ -17,12 +16,12 @@ server <- function(input, output, session) {
   })
   
   ### Display interactive
-  observeEvent(input$obl_run, {
-    rv$curr_loc[1] <- round(runif(1,-1,1),1)
-    rv$curr_loc[2] <- round(runif(1,-1,1),1)
+  init <- reactive({
+    rv$x <- round(runif(1,-1,1),1)
+    rv$y <- round(runif(1,-1,1),1)
     rv$rad <- sqrt(rv$x^2 + rv$y^2)
-    output$obl_plot <- renderPlot(myPlot())
   })
+  output$obl_plot <- renderPlot(myPlot())
     
   ### Observe sliders
   observeEvent(input$x_slider, {
@@ -51,6 +50,8 @@ server <- function(input, output, session) {
         "x_slider: ", input$x_slider, "\n",
         "y_slider: ", input$y_slider, "\n",
         "rad_slider: ", input$rad_slider, "\n",
+        "rv:x: ", rv$x, "\n",
+        "rv:y: ", rv$y, "\n",
         sep = "")
   })
 }
@@ -59,11 +60,11 @@ server <- function(input, output, session) {
 ###### UI ----
 ui <- fluidPage(
   sliderInput("x_slider", "X",
-              min = -1, max = 1, value = 0, step = .1)
-  ,sliderInput("y_slider", "Y ",
-              min = -1, max = 1, value = 0, step = .1)
+              min = -1, max = 1, value = round(runif(1,-1,1),1), step = .1)
+  ,sliderInput("y_slider", "Y",
+              min = -1, max = 1, value = round(runif(1,-1,1),1), step = .1)
   ,sliderInput("rad_slider", "radius",
-               min = 0, max = 1, value = .1,)
+               min = 0, max = 1, value = round(runif(1, 0,1),1), step = .1)
   ,actionButton("obl_run", "Run")
   , plotOutput("obl_plot")
   , verbatimTextOutput("dev_msg")

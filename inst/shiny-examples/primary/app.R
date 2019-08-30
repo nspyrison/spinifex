@@ -17,13 +17,13 @@ source('ui.R', local = TRUE)
 server <- function(input, output, session) {
   ##### Initialize ----
   rv <- reactiveValues() # rv needed for x,y,r sliders and gallery
-  rv$curr_basis    <- NULL
-  rv$png_save_cnt  <- 0
-  rv$tour_array <- NULL
-  rv$gif_save_cnt  <- 0
-  rv$gallery_bases <- NULL
+  rv$curr_basis     <- NULL
+  rv$png_save_cnt   <- 0
+  rv$tour_array     <- NULL
+  rv$gif_save_cnt   <- 0
+  rv$gallery_bases  <- NULL
   rv$gallery_n_rows <- 0
-  rv$gallery_rows_to_remove <- NULL
+  rv$gallery_rows_removed <- NULL
   
   ### Initialize data reactives (global)
   data <- reactive({
@@ -136,15 +136,8 @@ server <- function(input, output, session) {
     oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
                   theta = theta, phi = phi)
   })
-  
-
-  
-  ### _Interactive observes ----
-  ### Run button, interative initialize
-  observeEvent(input$obl_run, {
-    rv$curr_basis <- basis() # pull a new random basis.
-    
-    # Update sliders
+  # Update sliders
+  reactive({
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
     rv$x_val <- round(-phi.x_zero / (pi/2), 1)
@@ -155,22 +148,23 @@ server <- function(input, output, session) {
     phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
     rv$rad_val <- round(cos(phi_i), 1)
     updateSliderInput(session, "rad_slider", value = rv$rad_val)
-    
-    ### Observe slider values
-    observeEvent(input$x_slider, {
-      rv$curr_basis <- basis_x()
-    })
-    observeEvent(input$y_slider, {
-      rv$curr_basis <- basis_y()
-    })
-    observeEvent(input$rad_slider, {
-      rv$curr_basis <- basis_rad()
-    })
-    
-    output$curr_basis_tbl <- renderTable(rv$curr_basis)
-    output$obl_plot <- renderPlot({obl_plot()})
   })
   
+  ### _Interactive observes ----
+  # Init
+  isolate({rv$curr_basis <- basis()})
+  ### Observe slider values
+  observeEvent(input$x_slider, {
+    rv$curr_basis <- basis_x()
+  })
+  observeEvent(input$y_slider, {
+    rv$curr_basis <- basis_y()
+  })
+  observeEvent(input$rad_slider, {
+    rv$curr_basis <- basis_rad()
+  })
+  output$curr_basis_tbl <- renderTable(rv$curr_basis)
+  output$obl_plot <- renderPlot({obl_plot()})
   
   ### Save current basis (interactive)
   observeEvent(input$obl_save, {
@@ -434,7 +428,8 @@ server <- function(input, output, session) {
   ### Development help -- uncomment message at bottom on ui to use
   output$dev_msg <- renderPrint({
     cat("Dev msg --\n",
-        "obl_run: ", input$obl_run, "\n",
+        "curr_basis: ", rv$curr_basis, "\n",
+        "basis()", basis(),
         sep = ""
     )
   })
