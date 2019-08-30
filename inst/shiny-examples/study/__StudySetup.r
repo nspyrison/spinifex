@@ -15,3 +15,30 @@
 # https://www.verywellmind.com/how-to-conduct-a-psychology-experiment-2795792
 library(spinifex)
 run_app("comparison")
+
+
+# Intro: training into multivariate datasets & tools
+# explore: 2 or 3 dataset with all three/four methods 
+# (PCA, grand tour, animation, interactive)
+# More open ended? more directed? give answers and findings 
+# Survey: easy to use, understand, preference, 
+
+# =====
+# see picture of meeting with DI
+# Seprate rep with 3 apps of the 3 factors
+# should be about 5 pages of write up explaining:
+
+# Hypothesis: 
+# does the availability of the manual tour improve the ability of the analyst 
+# to understand the importance of variables contributing to the structure?
+
+# Factors: manual tour vs not (grand tour, or static only)
+# Block/control: dimensionality p, n clusters, g, important vars d, var-covar s
+# replication: 24 within-subject of all 3 factors, 4 controls, sampled from 
+# datasets
+# Randomization: latin square; 8 get each factor first.
+# of those 8, 4 get one factor second, 4 get the other factor second.
+# Response: Accuracy in determining important variable.
+# measure: accuracy, speed (caped at 2min) ease of use, ease of understanding, ease of prefrence 
+
+#

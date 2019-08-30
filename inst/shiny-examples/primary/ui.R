@@ -129,9 +129,9 @@ tabStatic <- tabPanel(
 tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
-      fluidRow(column(1, plotOutput("gallery_icons")),
-               column(1, plotOutput("gallery_icons_data")),
-               column(10, DT::dataTableOutput("gallery"))
+      fluidRow(column(2, plotOutput("gallery_icons")),
+               column(2, plotOutput("gallery_icons_data")),
+               column(8, DT::dataTableOutput("gallery"))
       ) # align icons with a top margin: 
       , tags$style(type='text/css', "#gallery_icons {margin-top: 40px;}")
       , tags$style(type='text/css', "#gallery_icons_data {margin-top: 40px;}")
