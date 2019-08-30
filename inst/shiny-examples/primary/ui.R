@@ -30,62 +30,71 @@ tabInput <- tabPanel(
 tabManual <- tabPanel("Manual tour", fluidPage(
   ##### _Sidebar tour inputs ----
   sidebarPanel(
-    fluidRow(
-      column(6, fluidRow(
-        radioButtons("basis_init", "Start basis",
-                     choices = c("Random", "PCA", "Projection pursuit", "From file"),
-                     selected = "Random"),
-        conditionalPanel("input.basis_init == 'Projection pursuit'",
-                         selectInput("pp_type", "Pursuit index", 
-                                     c("cmass", "holes", "Skinny", "Striated", "Convex", 
-                                       "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
-        conditionalPanel("input.basis_init == 'From file'",
-                         fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
-                                   accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))))
-      ),
-      column(6, selectInput('manip_var', 'Manip var', "none"))),
+    radioButtons("basis_init", "Start basis",
+                 choices = c("PCA", "Projection pursuit", "Random", "From file"),
+                 selected = "PCA"),
+    conditionalPanel("input.basis_init == 'Projection pursuit'",
+                     selectInput("pp_type", "Pursuit index", 
+                                 c("cmass", "holes", "Skinny", "Striated", "Convex", 
+                                   "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
+    conditionalPanel("input.basis_init == 'From file'",
+                     fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
+                               accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))),
+    selectInput('manip_var', 'Manip var', "none"),
+    radioButtons("manual_method", "",
+                 choices = c("Interactive", "Animation"),
+                 selected = "Interactive"),
     hr(),
     ##### _Sidebar interactive inputs ----
-    h4("Interactive"),
-    selectInput('manip_type', "Manipulation type",
-                c("Horizontal", "Vertical", "Radial")),
-    conditionalPanel("input.manip_type == 'Horizontal'",
-                     sliderInput("x_slider", "X contribution",
-                                 min = -1, max = 1, value = 0, step = .1)),
-    conditionalPanel("input.manip_type == 'Vertical'",
-                     sliderInput("y_slider", "Y contribution",
-                                 min = -1, max = 1, value = 0, step = .1)),
-    conditionalPanel("input.manip_type == 'Radial'",
-                     sliderInput("rad_slider", "Radial contribution",
-                                 min = 0, max = 1, value = 0, step = .1)),
-    fluidRow(column(4, actionButton("obl_run", "Run")),
-             column(4, actionButton("obl_save", "Save (csv & png)")),
-             column(4, actionButton("obl_to_gallery", "Send to gallery"))
+    conditionalPanel(
+      "input.manual_method == 'Interactive'", 
+      fluidRow(
+        h4("Interactive"),
+        selectInput('manip_type', "Manipulation type",
+                    c("Radial", "Horizontal", "Vertical")),
+        conditionalPanel("input.manip_type == 'Radial'",
+                         sliderInput("rad_slider", "Radial contribution",
+                                     min = 0, max = 1, value = 0, step = .1)),
+        conditionalPanel("input.manip_type == 'Horizontal'",
+                         sliderInput("x_slider", "X contribution",
+                                     min = -1, max = 1, value = 0, step = .1)),
+        conditionalPanel("input.manip_type == 'Vertical'",
+                         sliderInput("y_slider", "Y contribution",
+                                     min = -1, max = 1, value = 0, step = .1)),
+        fluidRow(column(4, actionButton("obl_run", "Run")),
+                 column(4, actionButton("obl_save", "Save (csv & png)")),
+                 column(4, actionButton("obl_to_gallery", "Send to gallery"))
+        ),
+        verbatimTextOutput("obl_save_msg")
+      )
     ),
-    verbatimTextOutput("obl_save_msg"),
-    hr(),
     ##### _Sidebar animation inputs ----
-    h4("Animation"),
-    selectInput('anim_type', 'Tour type',
-                c("Radial", "Horizontal", "Vertical"
-                  # ,"Grand (8 bases)", "Little (8 bases)", "Projection pursuit"
-                )),
-    conditionalPanel("anim_type == 'Projection pursuit'",
-                     selectInput("anim_pp_type", "Pursuit index",
-                                 c("cmass", "holes", "Skinny", "Striated", "Convex",
-                                   "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
-    sliderInput('anim_angle', 'Angle step size', value = .05, min = .01, max = .3),
-    fluidRow(column(4, actionButton("anim_run", "Run")),
-             column(8, actionButton("anim_save", "Save (gif)"))),
-             verbatimTextOutput("anim_save_msg"),
-             hr(),
-             ##### _Sidebar optional inputs ----
-             h5("Optional Settings"),
-             selectInput('axes', 'Reference axes location', 
-                         c('center', 'bottomleft', 'off'),
-                         'center',  multiple = FALSE),
-             sliderInput('alpha', "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
+    conditionalPanel(
+      "input.manual_method == 'Animation'",
+      fluidPage(
+        h4("Animation"),
+        selectInput('anim_type', 'Tour type',
+                    c("Radial", "Horizontal", "Vertical"
+                      # ,"Grand (8 bases)", "Little (8 bases)", "Projection pursuit"
+                    )),
+        conditionalPanel("anim_type == 'Projection pursuit'",
+                         selectInput("anim_pp_type", "Pursuit index",
+                                     c("cmass", "holes", "Skinny", "Striated", "Convex",
+                                       "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
+        sliderInput('anim_angle', 'Angle step size', value = .05, min = .01, max = .3),
+        fluidRow(column(4, actionButton("anim_run", "Run")),
+                 column(8, actionButton("anim_save", "Save (gif)"))),
+        verbatimTextOutput("anim_save_msg")
+      )
     ),
+    hr(),
+    ##### _Sidebar optional inputs ----
+    h5("Optional Settings"),
+    selectInput('axes', 'Reference axes location', 
+                c('center', 'bottomleft', 'off'),
+                'center',  multiple = FALSE),
+    sliderInput('alpha', "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
+  ),
   
   ##### _Plot display ----
   mainPanel(
@@ -94,19 +103,20 @@ tabManual <- tabPanel("Manual tour", fluidPage(
       column(3, fluidRow(h4("Current basis"),
                          tableOutput("curr_basis_tbl"))
       )
+    ),
+    
+    conditionalPanel(
+      "input.manual_method == 'Animation'", 
+      fluidRow(column(1, actionButton("anim_play", "Play")),
+               column(5, sliderInput("anim_slider", "Animation index",
+                                     min = 1, max = 10, value = 1, step = 1, 
+                                     width = '80%'))
+      ), # Align the play botton with a top margin:
+      tags$style(type='text/css', "#anim_play {margin-top: 40px;}")
     )
-  ),
-  
-  conditionalPanel(
-    "input.anim_run > 0", 
-    fluidRow(column(1, actionButton("anim_play", "Play")),
-             column(5, sliderInput("anim_slider", "Animation index",
-                                   min = 1, max = 10, value = 1, step = 1, 
-                                   width = '80%'))
-    ), # align the play botton with a top margin:
-    tags$style(type='text/css', "#anim_play {margin-top: 40px;}")
   )
 ))
+
 
 
 ##### Static tab ----
@@ -130,13 +140,10 @@ tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
       fluidRow(column(2, plotOutput("gallery_icons")),
-               column(2, plotOutput("gallery_icons_data")),
-               column(8, DT::dataTableOutput("gallery"))
+               column(10, DT::dataTableOutput("gallery"))
       ) # align icons with a top margin: 
       , tags$style(type='text/css', "#gallery_icons {margin-top: 40px;}")
-      , tags$style(type='text/css', "#gallery_icons_data {margin-top: 40px;}")
       #, verbatimTextOutput("gallery_icons_str")
-      , verbatimTextOutput("gallery_icons_data_str")
       , verbatimTextOutput("gallery_msg")
     )
   )

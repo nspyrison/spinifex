@@ -18,11 +18,12 @@ server <- function(input, output, session) {
   ##### Initialize ----
   rv <- reactiveValues() # rv needed for x,y,r sliders and gallery
   rv$curr_basis    <- NULL
-  rv$gallery_bases <- NULL
   rv$png_save_cnt  <- 0
-  rv$gif_save_cnt  <- 0
-  rv$gallery_n_rows <- 0
   rv$tour_array <- NULL
+  rv$gif_save_cnt  <- 0
+  rv$gallery_bases <- NULL
+  rv$gallery_n_rows <- 0
+  rv$gallery_rows_to_remove <- NULL
   
   ### Initialize data reactives (global)
   data <- reactive({
@@ -139,8 +140,6 @@ server <- function(input, output, session) {
 
   
   ### _Interactive observes ----
-  #TODO: Fix sliders not yielding control on re-run
-  
   ### Run button, interative initialize
   observeEvent(input$obl_run, {
     rv$curr_basis <- basis() # pull a new random basis.
@@ -307,12 +306,12 @@ server <- function(input, output, session) {
   ##### Gallery tab ----
   
   ### Display table with buttons
-  rows_to_remove <- reactiveVal()
   gallery_disp <- reactive({ # disp for display table
     if (is.null(rv$gallery_bases)) {
       output$gallery_msg <- renderPrint("Send a basis to the gallery.")
       return()
     }
+    
     
     disp = data.frame(
       Label = shinyInput(textInput, nrow(rv$gallery_bases), 'text_', label = "",
@@ -331,10 +330,14 @@ server <- function(input, output, session) {
       row.names = NULL,
       check.names = FALSE
     )
-    disp <- disp[!rownames(disp) %in% rows_to_remove(), ]
+    gallery_disp <- disp[!rownames(disp) %in% rv$gallery_rows_removed, ]
+    if (nrow(df) == 0) {
+      output$gallery_msg <- renderPrint("Send a basis to the gallery.")
+      return()
+    }
     output$gallery_msg <- NULL
     
-    disp
+    gallery_disp
   })
   
   output$gallery <- DT::renderDataTable(
@@ -342,98 +345,16 @@ server <- function(input, output, session) {
     options = list(dom = 't', pageLength = 100)
   )
   
-  ##### Gallery icons
-  gallery_icons <- reactive({
-    if (is.null(rv$gallery_bases)) {return()}
-    ### Init
-    df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ]
-    n_bases <- nrow(df)
-    n <- nrow(selected_dat())
-    p <- ncol(selected_dat())
-    dat_colnames <- colnames(selected_dat())
-    angle <- seq(0, 2 * pi, length = 360)
-    
-    circ  <- NULL
-    df_gg <- NULL
-    col_text <- NULL
-    var_lab <- NULL
-    type_lab <- NULL
-    for (i in 1:n_bases){
-      # Circle
-      this_circ <- data.frame(id = i, x = cos(angle), y = sin(angle))
-      circ <- rbind(circ, this_circ)
-      # Segments: Unlist basis into p rows
-      rows <- data.frame(id = df$Id[i], 
-                         df$basis[[i]])
-      df_gg <- rbind(df_gg, rows)
-      # Manip var, manip type and color vectors
-      df$manip_var_num[i] <- which(dat_colnames == df$`Manip var`[i])
-      col_chunk <- rep("grey40", p)
-      col_chunk[df$`manip_var_num`[i]] <- "blue"
-      col_text <- c(col_text, col_chunk)
-      var_chunk <- rep("", p)
-      var_chunk[df$`manip_var_num`[i]] <- as.character(df$`Manip var`[i])
-      var_lab <- c(var_lab, var_chunk)
-      type_chunk <- rep("", p)
-      type_chunk[df$`manip_var_num`[i]] <- as.character(df$`Manip type`[i])
-      type_lab <- c(type_lab, type_chunk)
-    }
-    output$gallery_icons_str <- renderText(str(df_gg))
-    
-    ### Set structure to add data points and density.
-    rows_needed <- (n * n_bases) - (p * n_bases)
-    col_text <- c(col_text, rep(NA, rows_needed))
-    var_lab <- c(var_lab, rep(NA, rows_needed))
-    type_lab <- c(type_lab, rep(NA, rows_needed))
-    df_gg <- rbind(df_gg, 
-                   data.frame(id = rep(NA, rows_needed), 
-                              x = rep(NA, rows_needed), 
-                              y = rep(NA, rows_needed)))
-    
-    ### Plot
-    ggplot2::ggplot(data = df_gg) +
-      ggplot2::scale_color_brewer(palette = "Dark2") +
-      ggplot2::theme_void() +
-      ggplot2::theme(legend.position = "none") +
-      ggplot2::coord_fixed() +
-      ## Cirle path
-      ggplot2::geom_path(data = circ,
-                         mapping = ggplot2::aes(x = x, y = y),
-                         color = "grey80", size = .3, inherit.aes = F) +
-      ## Basis line segments
-      ggplot2::geom_segment(mapping = ggplot2::aes(x = x , y = y,
-                                                   xend = 0, yend = 0)
-                            , col = col_text) +
-      ## manip_var labels
-      ggplot2::geom_text(mapping = ggplot2::aes(x = 1.5 * x,
-                                                y = 1.5 * y,
-                                                label = var_lab),
-                         size = 4, hjust = 0, vjust = 0, col = "blue") +
-      ## manip_type labels
-      ggplot2::geom_text(mapping = ggplot2::aes(x = -1, y = -1, label = type_lab),
-                         size = 4, hjust = 0, vjust = 0) +
-      ## Facet
-      ggplot2::facet_grid(rows = vars(id)) +
-      ggplot2::theme(strip.background = ggplot2::element_blank(),
-                     strip.text.y     = ggplot2::element_blank())
-  })
-  
-  output$gallery_icons <- renderPlot(
-    gallery_icons(), width = 84, 
-    height = function(){
-      n_bases <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ])
-      84 * (n_bases + 1) # +1 because of blank NA icon
-    })
-  
   ##### Gallery icons with data
-  gallery_icons_data <- reactive({
+  gallery_icons <- reactive({
+    browser()
     if (is.null(rv$gallery_bases)) {return()}
+    df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ]
+    if (nrow(df) == 0) {return()}
     # Init
-    df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ]
     n_bases <- nrow(df)
     n <- nrow(selected_dat())
     p <- ncol(selected_dat())
-    gg <- gallery_icons()
     
     df_gg_data <- NULL # Unlist basis into p rows
     for (i in 1:n_bases){
@@ -442,19 +363,24 @@ server <- function(input, output, session) {
                          col = col_of(col_var())) #categorical off of col (not pch)
       df_gg_data <- rbind(df_gg_data, rows)
     }
-    output$gallery_icons_data_str <- renderText(str(df_gg_data))
+    output$gallery_icons_str <- renderText(str(df_gg_data))
     
     ### Add data points/density to gallery icons
-    gg + 
-      geom_point(data = df_gg_data, mapping = aes(x, y, color = col), size =.3) 
-    # + geom_density_2d(data = df_gg_data, bins = 4,
-    #                   mapping = ggplot2::aes(x = x, y = y, color = col))
+    ggplot2::ggplot() +
+      ggplot2::scale_color_brewer(palette = "Dark2") +
+      ggplot2::theme_void() +
+      ggplot2::theme(legend.position = "none") +
+      ggplot2::coord_fixed() +
+      ggplot2::geom_point(data = df_gg_data, size =.3,
+                          mapping =  ggplot2::aes(x, y, color = col)) 
+    # + ggplot2::geom_density_2d(data = df_gg_data, bins = 4,
+    #                            ggplot2::mapping = ggplot2::aes(x = x, y = y, color = col))
   })
   
-  output$gallery_icons_data <- renderPlot(
-    gallery_icons_data(), width = 84,
+  output$gallery_icons <- renderPlot(
+    gallery_icons(), width = 84,
     height = function(){
-      n_bases <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rows_to_remove(), ])
+      n_bases <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ])
       84 * (n_bases + 1) # +1 because of blank NA icon
     })
   
@@ -492,19 +418,17 @@ server <- function(input, output, session) {
   ### Delete button (gallery)
   observeEvent(input$gallery_delete, {
     selectedRow <- as.numeric(strsplit(input$gallery_delete, "_")[[1]][2])
-    rows_to_remove(c(rows_to_remove(), selectedRow))
+    rv$gallery_rows_removed <- c(rv$gallery_rows_removed, selectedRow)
   })
   
   ##### Static tab ----
-  observeEvent(input$static_run, {
-    output$static_plot <- renderPlot({
-      staticProjection(dat = selected_dat(),
-                       method = input$static_method,
-                       col = col_var(),
-                       pch = pch_var(),
-                       alpha = input$static_alpha
-      )
-    })
+  output$static_plot <- renderPlot({
+    staticProjection(dat = selected_dat(),
+                     method = input$static_method,
+                     col = col_var(),
+                     pch = pch_var(),
+                     alpha = input$static_alpha
+    )
   })
   
   ### Development help -- uncomment message at bottom on ui to use
