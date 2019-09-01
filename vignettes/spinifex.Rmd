@@ -72,7 +72,7 @@ flea_std <- tourr::rescale(tourr::flea[,-7])
 str(flea_std)
 
 flea_rb <- tourr::basis_random(n = ncol(flea_std), d = 2)
-view_basis(basis = flea_rb, labels = colnames(flea_std))
+view_basis(basis = flea_rb, lab = colnames(flea_std))
 ```
 
 We started from a random basis, that explains the orthogonal projection from $p$ to $d$ space. Use `view_basis()` to see the *reference axes*, a visual depiction of how the variables contributed to the XY directions of the 2D projection.
@@ -80,7 +80,7 @@ We started from a random basis, that explains the orthogonal projection from $p$
 We want to explore how the coefficients of `aede2`, the *manip var*, contributed to the structure in this projection. In order to change the contributions without breaking the orthogonality of the other variables, we need to add a dimension. We call this new space the manipulation space, which can be viewed with the function `view_manip_space()`. Note that the projection plane containing the reference frame is laid down on the surface, while the manipulation dimension is at a right angle out-of-plane, with a full contribution on the manip var.
 
 ```{r view-manip-space}
-view_manip_space(basis = flea_rb, manip_var = 3, labels = colnames(flea_std))
+view_manip_space(basis = flea_rb, manip_var = 3, lab = colnames(flea_std))
 ```
 
 Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
@@ -157,7 +157,7 @@ This shows the optimization path of the holes index. We'll grab the reference ax
 
 ```{r}
 f_holes_bas  <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
-view_basis(f_holes_bas, labels = colnames(flea_std))
+view_basis(f_holes_bas, lab = colnames(flea_std))
 ```
 
 We'll select `aede2` as the manip_var, as it is mostly orthogonal to four of the other variables and often has a larger contribution than `tars1`.

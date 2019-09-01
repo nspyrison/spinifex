@@ -47,7 +47,7 @@ render_ <- function(slides,
     zero         <- set_axes_position(0, axes)
     circ         <- set_axes_position(circ, axes)
     basis_slides <- data.frame(set_axes_position(basis_slides[, 1:d], axes), 
-                                basis_slides[, (d+1):ncol(basis_slides)])
+                               basis_slides[, (d+1):ncol(basis_slides)])
   }
   ## manip var axes asethetics
   axes_col <- "grey50"

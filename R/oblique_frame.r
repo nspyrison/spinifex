@@ -62,11 +62,13 @@ oblique_frame <- function(basis        = NULL,
   r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
   
   basis_slides <- cbind(as.data.frame(r_m_sp), slide = 1)
+  colnames(basis_slides) <- c("x", "y", "z", "slide")
   if(!is.null(data)){
     if (rescale_data) {data <- tourr::rescale(data)}
     data_slides  <- cbind(as.data.frame(data %*% r_m_sp), slide = 1)
     data_slides[, 1] <- scale(data_slides[, 1], scale = FALSE)
     data_slides[, 2] <- scale(data_slides[, 2], scale = FALSE)
+    colnames(data_slides) <- c("x", "y", "z", "slide")
   }
   
   # Add labels, attribute, and list

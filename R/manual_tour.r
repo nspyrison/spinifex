@@ -36,14 +36,15 @@ manual_tour <- function(basis   = NULL,
                         angle   = .05,
                         ...) {
     # Initalize
-    basis <- as.matrix(basis)
-    p     <- nrow(basis)
-    d     <- ncol(basis)
-    manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
-    if (is.null(theta)) theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
-    phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
-    stopifnot(phi_min <= phi_start & phi_max >= phi_start)
-    
+  if (missing(manip_var)) stop("manip_var required.")
+  basis <- as.matrix(basis)
+  p     <- nrow(basis)
+  d     <- ncol(basis)
+  manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
+  if (is.null(theta)) theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
+  stopifnot(phi_min <= phi_start & phi_max >= phi_start)
+  
     # Find phi's path
     find_path <- function(start, end){
       
