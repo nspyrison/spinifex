@@ -9,6 +9,11 @@ server <- function(input, output, session) {
   #TODO: Fix sliders not yielding control on re-run
   
   myPlot <- reactive({
+    if(rv$x==0) { # default of UI.
+      rv$x <- round(runif(1,-1,1),1)
+      rv$y <- round(runif(1,-1,1),1)
+      rv$rad <- sqrt(rv$x^2 + rv$y^2)
+    }
     .ang <- seq(0,360, length.out = 360) * pi / 180
     ggplot() + theme_bw() + geom_point(mapping = aes(rv$x, rv$y)) +
     xlim(-1,1) + ylim(-1,1) + coord_fixed() + 
@@ -16,13 +21,15 @@ server <- function(input, output, session) {
   })
   
   ### Display interactive
-  init <- reactive({
-    rv$x <- round(runif(1,-1,1),1)
-    rv$y <- round(runif(1,-1,1),1)
-    rv$rad <- sqrt(rv$x^2 + rv$y^2)
-  })
+  #init <- reactive({
+  # isolate({ 
+  #   rv$x <- round(runif(1,-1,1),1)
+  #   rv$y <- round(runif(1,-1,1),1)
+  #   rv$rad <- sqrt(rv$x^2 + rv$y^2)
+  # })
+  #isolate(init())
   output$obl_plot <- renderPlot(myPlot())
-    
+  
   ### Observe sliders
   observeEvent(input$x_slider, {
     rv$x <- input$x_slider
@@ -45,8 +52,7 @@ server <- function(input, output, session) {
   
   ### Development help -- uncomment message at bottom on ui to use
   output$dev_msg <- renderPrint({
-    cat("Dev msg --\n",
-        "obl_run: ", input$obl_run, "\n",
+    cat("Dev msg -- \n",
         "x_slider: ", input$x_slider, "\n",
         "y_slider: ", input$y_slider, "\n",
         "rad_slider: ", input$rad_slider, "\n",
@@ -60,12 +66,11 @@ server <- function(input, output, session) {
 ###### UI ----
 ui <- fluidPage(
   sliderInput("x_slider", "X",
-              min = -1, max = 1, value = round(runif(1,-1,1),1), step = .1)
+              min = -1, max = 1, value = 0, step = .1)
   ,sliderInput("y_slider", "Y",
-              min = -1, max = 1, value = round(runif(1,-1,1),1), step = .1)
+              min = -1, max = 1, value = 0, step = .1)
   ,sliderInput("rad_slider", "radius",
-               min = 0, max = 1, value = round(runif(1, 0,1),1), step = .1)
-  ,actionButton("obl_run", "Run")
+               min = 0, max = 1, value = 0, step = .1)
   , plotOutput("obl_plot")
   , verbatimTextOutput("dev_msg")
 )

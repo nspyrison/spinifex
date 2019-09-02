@@ -40,7 +40,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
     conditionalPanel("input.basis_init == 'From file'",
                      fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
                                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))),
-    selectInput('manip_var', 'Manip var', "none"),
+    selectInput('manip_var', 'Manip var', "<none>"),
     radioButtons("manual_method", "",
                  choices = c("Interactive", "Animation"),
                  selected = "Interactive"),
@@ -61,9 +61,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
         conditionalPanel("input.manip_type == 'Vertical'",
                          sliderInput("y_slider", "Y contribution",
                                      min = -1, max = 1, value = 0, step = .1)),
-        fluidRow(column(4, actionButton("obl_run", "Run")),
-                 column(4, actionButton("obl_save", "Save (csv & png)")),
-                 column(4, actionButton("obl_to_gallery", "Send to gallery"))
+        fluidRow(column(6, actionButton("obl_save", "Save (csv & png)")),
+                 column(6, actionButton("obl_to_gallery", "Send to gallery"))
         ),
         verbatimTextOutput("obl_save_msg")
       )
@@ -73,7 +72,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
       "input.manual_method == 'Animation'",
       fluidPage(
         h4("Animation"),
-        selectInput('anim_type', 'Tour type',
+        selectInput('anim_type', 'Animation type',
                     c("Radial", "Horizontal", "Vertical"
                       # ,"Grand (8 bases)", "Little (8 bases)", "Projection pursuit"
                     )),
@@ -139,12 +138,12 @@ tabStatic <- tabPanel(
 tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
-      fluidRow(column(2, plotOutput("gallery_icons")),
-               column(10, DT::dataTableOutput("gallery"))
+      verbatimTextOutput("gallery_msg")
+      , fluidRow(column(2, plotOutput("gallery_icons")),
+               column(10, DT::dataTableOutput("gallery_df"))
       ) # align icons with a top margin: 
       , tags$style(type='text/css', "#gallery_icons {margin-top: 40px;}")
-      #, verbatimTextOutput("gallery_icons_str")
-      , verbatimTextOutput("gallery_msg")
+      , verbatimTextOutput("gallery_icons_str")
     )
   )
 )

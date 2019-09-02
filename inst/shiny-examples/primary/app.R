@@ -15,8 +15,8 @@ source('global.R', local = TRUE)
 source('ui.R', local = TRUE)
 
 server <- function(input, output, session) {
-  ##### Initialize ----
-  rv <- reactiveValues() # rv needed for x,y,r sliders and gallery
+  ##### Data reactives ----
+  rv <- reactiveValues()
   rv$curr_basis     <- NULL
   rv$png_save_cnt   <- 0
   rv$tour_array     <- NULL
@@ -25,20 +25,23 @@ server <- function(input, output, session) {
   rv$gallery_n_rows <- 0
   rv$gallery_rows_removed <- NULL
   
-  ### Initialize data reactives (global)
-  data <- reactive({
+  ### Input data
+  in_dat <- reactive({
     if (is.null(input$data_file)) {return(tourr::flea)}
     read.csv(input$data_file$datapath, stringsAsFactors = FALSE)
   })
-  numericVars <- reactive(sapply(data(), is.numeric))
-  groupVars   <- reactive(sapply(data(), function(x) {is.character(x)|is.factor(x)}))
-  numericDat  <- reactive(data()[numericVars()])
-  groupDat    <- reactive(data()[groupVars()])
+  numericVars <- reactive(sapply(in_dat(), is.numeric))
+  groupVars   <- reactive(sapply(in_dat(), function(x) {is.character(x)|is.factor(x)}))
+  numericDat  <- reactive(in_dat()[numericVars()])
+  groupDat    <- reactive(in_dat()[groupVars()])
   colToSelect <- reactive(min(ncol(numericDat()), 6))
   n <- reactive(nrow(selected_dat()))
   p <- reactive(ncol(selected_dat()))
-  output$data_str <- renderPrint({str(data())})
-  output$data_summary <- renderPrint({summary(data())})
+  ### Data output
+  output$data_str <- renderPrint({str(in_dat())})
+  output$data_summary <- renderPrint({summary(in_dat())})
+  
+  ### Selected data
   selected_dat <- reactive({
     x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
     if (input$rescale_data) x <- tourr::rescale(x)
@@ -52,11 +55,11 @@ server <- function(input, output, session) {
     if (input$pch_var == "<none>") {rep("a", n())
     } else {groupDat()[, which(colnames(groupDat()) == input$col_var)]}
   })
-  
-  
-  ##### Manual tour tab ----
-  ### Initialize tour reactives 
-  manip_var <- reactive(which(colnames(numericDat()) == input$manip_var)) # number
+  manip_var <- reactive({ 
+    if (input$manip_var == "<none>") {NULL}
+    which(colnames(numericDat()) == input$manip_var)
+  }) 
+  # basis
   basis <- reactive({
     if (input$basis_init == "Random") x <- tourr::basis_random(n = p(), d = 2)
     if (input$basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
@@ -76,68 +79,25 @@ server <- function(input, output, session) {
       tour_len <- dim(tour_hist)[3]
       x <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
+    colnames(x) <- c("x", "y")
     return(x)
   })
   
-  ### Update tour inputs
+  ##### Data observes ----
+  ### Update inputs
   observe({
     updateCheckboxGroupInput(session, "variables",
                              choices = names(numericDat()),
                              selected = names(numericDat()[1:colToSelect()]))
-  })
-  observe({
-    updateSelectInput(session, "manip_var", choices = input$variables)
+    updateSelectInput(session, "manip_var", choices = input$variables, 
+                      selected = input$variables[1])
     cat_names <- c(names(groupDat()), "<none>")
-    updateSelectInput(session, "col_var", choices = cat_names)
-    updateSelectInput(session, "pch_var", choices = cat_names)
-  })
-  
-  
-  ##### _Interactive reactives ----
-  ### Interactive uses oblique manipulation, commonly has obl_ prefix.
-  obl_plot <- reactive({
-    if (is.null(rv$curr_basis)) {return()}
-    oblique_frame(data = selected_dat(),
-                  basis = rv$curr_basis,
-                  manip_var = manip_var(),
-                  theta = 0,
-                  phi = 0,
-                  col = col_of(col_var()),
-                  pch = pch_of(pch_var()),
-                  axes = input$axes,
-                  alpha = input$alpha)
-  })
-  
-  ### x, y, radius reactives
-  # x motion 
-  basis_x <- reactive({
-    theta <- 0
-    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-    phi <- input$x_slider * pi/2 + phi.x_zero
-    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                  theta = theta, phi =phi)
-  })
-  # y motion
-  basis_y <- reactive({
-    theta <- pi/2
-    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-    phi <- input$y_slider * pi/2 + phi.y_zero
-    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                  theta = theta, phi = phi)
-  })
-  # Radial motion
-  basis_rad <- reactive({
-    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    theta <- atan(mv_sp[2] / mv_sp[1])
-    phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
-    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                  theta = theta, phi = phi)
-  })
-  # Update sliders
-  reactive({
+    updateSelectInput(session, "col_var", choices = cat_names,
+                      selected = cat_names[1])
+    updateSelectInput(session, "pch_var", choices = cat_names,
+                      selected = cat_names[1])
+    # Update sliders
+    if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
     rv$x_val <- round(-phi.x_zero / (pi/2), 1)
@@ -150,21 +110,65 @@ server <- function(input, output, session) {
     updateSliderInput(session, "rad_slider", value = rv$rad_val)
   })
   
-  ### _Interactive observes ----
-  # Init
-  isolate({rv$curr_basis <- basis()})
-  ### Observe slider values
-  observeEvent(input$x_slider, {
-    rv$curr_basis <- basis_x()
+  
+  ##### _Interactive reactives ----
+  ### Plot
+  obl_plot <- reactive({
+    oblique_frame(data      = selected_dat(),
+                  basis     = rv$curr_basis,
+                  manip_var = manip_var(),
+                  theta     = 0,
+                  phi       = 0,
+                  col       = col_of(col_var()),
+                  pch       = pch_of(pch_var()),
+                  axes      = input$axes,
+                  alpha     = input$alpha)
   })
-  observeEvent(input$y_slider, {
-    rv$curr_basis <- basis_y()
-  })
-  observeEvent(input$rad_slider, {
-    rv$curr_basis <- basis_rad()
-  })
+  ### Output
   output$curr_basis_tbl <- renderTable(rv$curr_basis)
   output$obl_plot <- renderPlot({obl_plot()})
+  
+  # ### x, y, radius reactives
+  # # x motion
+  # basis_x <- reactive({
+  #   theta <- 0
+  #   mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+  #   phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+  #   phi <- input$x_slider * pi/2 + phi.x_zero
+  #   oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+  #                 theta = theta, phi =phi)
+  # })
+  # # y motion
+  # basis_y <- reactive({
+  #   theta <- pi/2
+  #   mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+  #   phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+  #   phi <- input$y_slider * pi/2 + phi.y_zero
+  #   oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+  #                 theta = theta, phi = phi)
+  # })
+  # # Radial motion
+  # basis_rad <- reactive({
+  #   mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+  #   theta <- atan(mv_sp[2] / mv_sp[1])
+  #   phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+  #   phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
+  #   oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+  #                 theta = theta, phi = phi)
+  # })
+  # 
+  # 
+  # ##### _Interactive observes ----
+  # ### Observe slider values
+  # observeEvent(input$x_slider, {
+  #   rv$curr_basis <- basis_x()
+  # })
+  # observeEvent(input$y_slider, {
+  #   rv$curr_basis <- basis_y()
+  # })
+  # observeEvent(input$rad_slider, {
+  #   rv$curr_basis <- basis_rad()
+  # })
   
   ### Save current basis (interactive)
   observeEvent(input$obl_save, {
@@ -183,7 +187,7 @@ server <- function(input, output, session) {
                             alpha = input$alpha)
     ggplot2::ggsave(paste0(save_file,".png"), gg_out)
     output$obl_save_msg <- renderPrint(paste0(
-      "Basis saved as ", save_file, "(csv & png."))
+      "Basis saved as ", save_file, " (csv & png)."))
   })
   
   ### Send current basis to gallery
@@ -243,20 +247,8 @@ server <- function(input, output, session) {
                                         max_bases = 8, angle = input$anim_angle)}
       }
       
-      this_frame <- oblique_frame(basis = rv$tour_array[,, input$anim_slider], 
-                                  data = selected_dat(), 
-                                  manip_var = manip_var(),
-                                  col = col_of(col_var()), 
-                                  pch = pch_of(pch_var()),
-                                  axes = input$axes,
-                                  angle = input$anim_angle,
-                                  alpha = input$alpha) 
-      
       updateSliderInput(session, "anim_slider", value = 1, max = dim(rv$tour_array)[3])
       rv$curr_basis <- rv$tour_array[,, input$anim_slider]
-      
-      output$curr_basis_tbl <- renderTable(rv$curr_basis)
-      output$obl_plot <- renderPlot(this_frame)
       
       setProgress(1)
     })
@@ -264,17 +256,7 @@ server <- function(input, output, session) {
   
   ### Change plot with slider
   observeEvent(input$anim_slider, {
-    this_frame <- oblique_frame(basis = rv$tour_array[,, input$anim_slider], 
-                                data = selected_dat(), 
-                                manip_var = manip_var(),
-                                col = col_of(col_var()), 
-                                pch = pch_of(pch_var()),
-                                axes = input$axes,
-                                angle = input$anim_angle,
-                                alpha = input$alpha)
-    
     rv$curr_basis <- rv$tour_array[,, input$anim_slider]
-    output$obl_plot <- renderPlot(this_frame)
   })
   
   ### Save the animation
@@ -300,14 +282,13 @@ server <- function(input, output, session) {
   ##### Gallery tab ----
   
   ### Display table with buttons
-  gallery_disp <- reactive({ # disp for display table
+  gallery_df <- reactive({
     if (is.null(rv$gallery_bases)) {
-      output$gallery_msg <- renderPrint("Send a basis to the gallery.")
+      output$gallery_msg <- renderPrint(cat("Send a basis to the gallery."))
       return()
     }
     
-    
-    disp = data.frame(
+    df_full = data.frame(
       Label = shinyInput(textInput, nrow(rv$gallery_bases), 'text_', label = "",
                          placeholder = "user label", width = '108px'),
       Plot = 
@@ -324,26 +305,28 @@ server <- function(input, output, session) {
       row.names = NULL,
       check.names = FALSE
     )
-    gallery_disp <- disp[!rownames(disp) %in% rv$gallery_rows_removed, ]
-    if (nrow(df) == 0) {
-      output$gallery_msg <- renderPrint("Send a basis to the gallery.")
+    gallery_df <- df_full[!rownames(df_full) %in% rv$gallery_rows_removed, ]
+    
+    if (nrow(gallery_df) == 0) { # if all basis removed
+      output$gallery_msg <- renderPrint(cat("Send a basis to the gallery."))
       return()
     }
     output$gallery_msg <- NULL
     
-    gallery_disp
+    gallery_df
   })
   
-  output$gallery <- DT::renderDataTable(
-    gallery_disp(), server = FALSE, escape = FALSE, selection = 'none',
+  output$gallery_df <- DT::renderDataTable(
+    gallery_df(), server = FALSE, escape = FALSE, selection = 'none',
     options = list(dom = 't', pageLength = 100)
   )
   
   ##### Gallery icons with data
   gallery_icons <- reactive({
-    browser()
     if (is.null(rv$gallery_bases)) {return()}
+    
     df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ]
+    if (is.null(df)) {return()}
     if (nrow(df) == 0) {return()}
     # Init
     n_bases <- nrow(df)
@@ -354,29 +337,33 @@ server <- function(input, output, session) {
     for (i in 1:n_bases){
       rows <- data.frame(id = rep(df$Id[i], n),
                          selected_dat() %*% df$basis[[i]],
-                         col = col_of(col_var())) #categorical off of col (not pch)
+                         pch = pch_of(col_var()),
+                         col = col_of(col_var()))
       df_gg_data <- rbind(df_gg_data, rows)
     }
     output$gallery_icons_str <- renderText(str(df_gg_data))
     
-    ### Add data points/density to gallery icons
+    ### Add data points to gallery icons
     ggplot2::ggplot() +
       ggplot2::scale_color_brewer(palette = "Dark2") +
       ggplot2::theme_void() +
       ggplot2::theme(legend.position = "none") +
       ggplot2::coord_fixed() +
-      ggplot2::geom_point(data = df_gg_data, size =.3,
-                          mapping =  ggplot2::aes(x, y, color = col)) 
-    # + ggplot2::geom_density_2d(data = df_gg_data, bins = 4,
-    #                            ggplot2::mapping = ggplot2::aes(x = x, y = y, color = col))
+      ggplot2::geom_point(data = df_gg_data, size = .3,
+                          mapping =  ggplot2::aes(x = x, y = y, 
+                                                  color = col, shape = pch)) +
+      ggplot2::facet_grid(rows = vars(id))
+      # + ggplot2::theme(strip.background = ggplot2::element_blank(),
+      #                  strip.text.y     = ggplot2::element_blank())
   })
   
-  output$gallery_icons <- renderPlot(
-    gallery_icons(), width = 84,
-    height = function(){
-      n_bases <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ])
-      84 * (n_bases + 1) # +1 because of blank NA icon
-    })
+  ## TODO: this causes the gallery_icon error message, resolve it.
+  # output$gallery_icons <- renderPlot(
+  #   gallery_icons(), width = 84,
+  #   height = function(){
+  #     n_bases <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ])
+  #     84 * (n_bases + 1) # +1 because of blank NA icon
+  #   })
   
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {
@@ -427,9 +414,14 @@ server <- function(input, output, session) {
   
   ### Development help -- uncomment message at bottom on ui to use
   output$dev_msg <- renderPrint({
-    cat("Dev msg --\n",
-        "curr_basis: ", rv$curr_basis, "\n",
-        "basis()", basis(),
+    cat("Dev msg -- \n",
+        "rv$curr_basis: ", rv$curr_basis, "\n",
+        "is null? ", is.null(rv$curr_basis), "\n",
+        "basis(): ", basis(), "\n",
+        "input$manip_var: ", input$manip_var, "\n",
+        "manip_var(): ", manip_var(), "\n",
+        "rv$gallery_bases: ", unlist(rv$gallery_bases), "\n",
+        "is.null? ", is.null(rv$gallery_bases), "\n",
         sep = ""
     )
   })
