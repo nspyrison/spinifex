@@ -4,7 +4,7 @@
 \alias{play_tour_path}
 \title{Render display of a provided tour path}
 \usage{
-play_tour_path(tour_path, data = NULL, angle = 0.05,
+play_tour_path(tour_path, data = NULL, angle = 0.15,
   render_type = render_plotly, rescale_data = FALSE, ...)
 }
 \arguments{
@@ -12,7 +12,7 @@ play_tour_path(tour_path, data = NULL, angle = 0.05,
 
 \item{data}{Optional, number of columns must match that of \code{tour_path}.}
 
-\item{angle}{Target distance (in radians) between steps. Defaults to .05.}
+\item{angle}{Target distance (in radians) between steps. Defaults to .15.}
 
 \item{render_type}{Graphics to render to. Defaults to render_plotly,
 alternative use render_gganimate.}
@@ -31,9 +31,9 @@ over the path and renders into a selected \code{render_type}.
 flea_std <- rescale(tourr::flea[,1:6])
 tpath    <- save_history(flea_std, tour_path = grand_tour(),max = 3)
 
-play_tour_path(tour_path = tpath, data = flea_std, angle = .15)
+play_tour_path(tour_path = tpath, data = flea_std)
 
-play_tour_path(tour_path = tpath, data = flea_std, angle = .15, fps = 4,
+play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
 }
 }

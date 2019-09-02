@@ -5,18 +5,12 @@
 #'
 #' @param tour_path The result of `tourr::save_history()` or `manual_tour()`.
 #' @param data Optional, number of columns must match that of `tour_path`.
-#' @param angle Target distance (in radians) between steps. Defaults to .05.
+#' @param angle Target distance (in radians) between steps. Defaults to .15.
 #' @param render_type Graphics to render to. Defaults to render_plotly, 
 #'   alternative use render_gganimate.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #'   Defaults to FALSE.
 #' @param ... Optionally pass additional arguments to `render_type`.
-### #' @param col Color of the projected points. Defaults to "black".
-### #' @param pch Point character of the projected points. Defaults to 20.
-### #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
-### #'   to "center".
-### #' @param fps Frames/slides shown per second. Defaults to 3.
-### #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @import tourr
 #' @export
 #' @examples
@@ -24,15 +18,15 @@
 #' flea_std <- rescale(tourr::flea[,1:6])
 #' tpath    <- save_history(flea_std, tour_path = grand_tour(),max = 3)
 #' 
-#' play_tour_path(tour_path = tpath, data = flea_std, angle = .15)
+#' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
-#' play_tour_path(tour_path = tpath, data = flea_std, angle = .15, fps = 4,
+#' play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
 #'   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
 #' }
 
 play_tour_path <- function(tour_path,
                            data  = NULL,
-                           angle = .05,
+                           angle = .15,
                            render_type = render_plotly,
                            rescale_data = FALSE,
                            ...) {

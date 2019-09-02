@@ -11,26 +11,6 @@
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #'   plotting options.
-### #' @param angle target distance (in radians) between bases.
-### #' @param manip_var Number of the column/dimension to rotate.
-### #' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
-### #'   reference frame.
-### #'   If left NULL, will initialize the radial angle of the `manip_var`.`
-### #' @param phi_min Minimum value phi should move to. Phi is angle in radians of 
-### #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
-### #'   Required, defaults to 0.
-### #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
-### #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
-### #'   Required, defaults to pi / 2.
-### #' @param manip_col String of the color to highlight the `manip_var`.
-### #'   alternative use render_gganimate.
-### #' @param col Color of the projected points. Defaults to "black".
-### #' @param pch Point character of the projected points. Defaults to 20.
-### #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
-### #'   to "center".
-### #' @param fps Frames/slides shown per second. Defaults to 3.
-### #'   Defaults to FALSE.
-### #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @return An animation of a radial tour.
 #' @import tourr
 #' @export

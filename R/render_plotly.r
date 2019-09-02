@@ -6,14 +6,6 @@
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optional, pass addition arguments to `plotly::animation_opts()` 
 #'   and `plotly::layout()`.
-### #' @param slides The result of `array2df()`, a long df of the projected frames.
-### #' @param manip_col String of the color to highlight the `manip_var`.
-### #'   Defaults to "blue".
-### #' @param col Color of the projected points. Defaults to "black".
-### #' @param pch Point character of the projected points. Defaults to 20.
-### #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults
-### #'   to "center".
-### #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @export
 #' @examples
 #' \dontrun{

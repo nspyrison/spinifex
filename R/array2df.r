@@ -26,7 +26,7 @@ array2df <- function(array,
   # Initialize
   manip_var <- attributes(array)$manip_var
   p <- nrow(array[,, 1])
-  n_slides     <- dim(array)[3]
+  n_slides <- dim(array)[3]
   
   # basis; array to long df
   basis_slides <- NULL
