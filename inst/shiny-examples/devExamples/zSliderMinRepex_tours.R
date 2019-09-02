@@ -21,27 +21,16 @@ server <- function(input, output, session) {
   })
   
   ### Display interactive
-  #init <- reactive({
-  # isolate({ 
-  #   rv$x <- round(runif(1,-1,1),1)
-  #   rv$y <- round(runif(1,-1,1),1)
-  #   rv$rad <- sqrt(rv$x^2 + rv$y^2)
-  # })
-  #isolate(init())
   output$obl_plot <- renderPlot(myPlot())
   
+  x_slider_throt <- throttle(reactive(input$slider), 100)
+  
   ### Observe sliders
-  observeEvent(input$x_slider, {
-    rv$x <- input$x_slider
-  })
-  observeEvent(input$y_slider, {
+  observe({
+    rv$x <- x_slider_throt
     rv$y <- input$y_slider
-  })
-  observeEvent(input$rad_slider, {
-    ang <- atan(input$y_slider / input$x_slider)
     rv$rad <- input$rad_slider
   })
-  
   
   observe({
     rv$rad <- sqrt(rv$x^2 + rv$y^2)

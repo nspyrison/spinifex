@@ -14,8 +14,8 @@ tabInput <- tabPanel(
         selected = names(tourr::flea[, 1:6])
       ),
       # Point color, shape and rescale
-      fluidRow(column(6, selectInput('col_var', 'Point color', "<none>")),
-               column(6, selectInput('pch_var', 'Point shape', "<none>"))),
+      fluidRow(column(5, selectInput('col_var', 'Point color', "<none>")),
+               column(5, selectInput('pch_var', 'Point shape', "<none>"))),
       checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
     ),
     mainPanel(h3("Data structure")
@@ -61,8 +61,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
         conditionalPanel("input.manip_type == 'Vertical'",
                          sliderInput("y_slider", "Y contribution",
                                      min = -1, max = 1, value = 0, step = .1)),
-        fluidRow(column(6, actionButton("obl_save", "Save (csv & png)")),
-                 column(6, actionButton("obl_to_gallery", "Send to gallery"))
+        fluidRow(column(5, actionButton("obl_save", "Save (csv & png)")),
+                 column(5, actionButton("obl_to_gallery", "Send to gallery"))
         ),
         verbatimTextOutput("obl_save_msg")
       )
@@ -154,8 +154,9 @@ ui <- fluidPage(
   tags$head(
     tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
   navbarPage("Manual tours -- comparison",
-             tabInput,
+             #tabInput,
              tabManual,
+             tabInput,
              tabGallery
              #, tabStatic
   )

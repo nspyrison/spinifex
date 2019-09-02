@@ -1,5 +1,5 @@
 # Preamble ------
-# options(shiny.error = browser)
+# options(shiny.error = FALSE)
 
 #' Shiny app for exploring multivariate data, comparing manual tours with 
 #' alternative techniques
@@ -97,17 +97,18 @@ server <- function(input, output, session) {
     updateSelectInput(session, "pch_var", choices = cat_names,
                       selected = cat_names[1])
     # Update sliders
+    
     if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
     mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
     phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
-    rv$x_val <- round(-phi.x_zero / (pi/2), 1)
-    updateSliderInput(session, "x_slider", value = rv$x_val)
+    x_val <- round(-phi.x_zero / (pi/2), 1)
+    isolate(updateSliderInput(session, "x_slider", value = x_val))
     phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
-    rv$y_val <- round(-phi.y_zero / (pi/2), 1)
-    updateSliderInput(session, "y_slider", value = rv$y_val)
+    y_val <- round(-phi.y_zero / (pi/2), 1)
+    isolate(updateSliderInput(session, "y_slider", value = y_val))
     phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    rv$rad_val <- round(cos(phi_i), 1)
-    updateSliderInput(session, "rad_slider", value = rv$rad_val)
+    rad_val <- round(cos(phi_i), 1)
+    isolate(updateSliderInput(session, "rad_slider", value = rad_val))
   })
   
   
@@ -128,47 +129,47 @@ server <- function(input, output, session) {
   output$curr_basis_tbl <- renderTable(rv$curr_basis)
   output$obl_plot <- renderPlot({obl_plot()})
   
-  # ### x, y, radius reactives
-  # # x motion
-  # basis_x <- reactive({
-  #   theta <- 0
-  #   mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-  #   phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-  #   phi <- input$x_slider * pi/2 + phi.x_zero
-  #   oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-  #                 theta = theta, phi =phi)
-  # })
-  # # y motion
-  # basis_y <- reactive({
-  #   theta <- pi/2
-  #   mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-  #   phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-  #   phi <- input$y_slider * pi/2 + phi.y_zero
-  #   oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-  #                 theta = theta, phi = phi)
-  # })
-  # # Radial motion
-  # basis_rad <- reactive({
-  #   mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-  #   theta <- atan(mv_sp[2] / mv_sp[1])
-  #   phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-  #   phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
-  #   oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-  #                 theta = theta, phi = phi)
-  # })
-  # 
-  # 
-  # ##### _Interactive observes ----
-  # ### Observe slider values
-  # observeEvent(input$x_slider, {
-  #   rv$curr_basis <- basis_x()
-  # })
-  # observeEvent(input$y_slider, {
-  #   rv$curr_basis <- basis_y()
-  # })
-  # observeEvent(input$rad_slider, {
-  #   rv$curr_basis <- basis_rad()
-  # })
+  ### x, y, radius reactives
+  # x motion
+  basis_x <- reactive({
+    theta <- 0
+    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+    phi <- input$x_slider * pi/2 + phi.x_zero
+    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                  theta = theta, phi = phi)
+  })
+  # y motion
+  basis_y <- reactive({
+    theta <- pi/2
+    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+    phi <- input$y_slider * pi/2 + phi.y_zero
+    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                  theta = theta, phi = phi)
+  })
+  # Radial motion
+  basis_rad <- reactive({
+    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+    theta <- atan(mv_sp[2] / mv_sp[1])
+    phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+    phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
+    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                  theta = theta, phi = phi)
+  })
+  
+  
+  ##### _Interactive observes ----
+  ### Observe slider values
+  observeEvent(input$x_slider, {
+    rv$curr_basis <- basis_x()
+  })
+  observeEvent(input$y_slider, {
+    rv$curr_basis <- basis_y()
+  })
+  observeEvent(input$rad_slider, {
+    rv$curr_basis <- basis_rad()
+  })
   
   ### Save current basis (interactive)
   observeEvent(input$obl_save, {
@@ -337,33 +338,32 @@ server <- function(input, output, session) {
     for (i in 1:n_bases){
       rows <- data.frame(id = rep(df$Id[i], n),
                          selected_dat() %*% df$basis[[i]],
-                         pch = pch_of(col_var()),
                          col = col_of(col_var()))
       df_gg_data <- rbind(df_gg_data, rows)
     }
     output$gallery_icons_str <- renderText(str(df_gg_data))
     
     ### Add data points to gallery icons
-    ggplot2::ggplot() +
-      ggplot2::scale_color_brewer(palette = "Dark2") +
-      ggplot2::theme_void() +
-      ggplot2::theme(legend.position = "none") +
-      ggplot2::coord_fixed() +
-      ggplot2::geom_point(data = df_gg_data, size = .3,
-                          mapping =  ggplot2::aes(x = x, y = y, 
-                                                  color = col, shape = pch)) +
-      ggplot2::facet_grid(rows = vars(id))
-      # + ggplot2::theme(strip.background = ggplot2::element_blank(),
-      #                  strip.text.y     = ggplot2::element_blank())
+      ggplot2::ggplot() +
+        ggplot2::scale_color_brewer(palette = "Dark2") +
+        ggplot2::theme_void() +
+        ggplot2::theme(legend.position = "none") +
+        ggplot2::coord_fixed() +
+        ggplot2::geom_point(data = df_gg_data, size = .3,
+                            mapping =  ggplot2::aes(x = x, y = y, 
+                                                    color = col)) +
+        ggplot2::facet_grid(rows = vars(id)) + 
+        ggplot2::theme(strip.background = ggplot2::element_blank(),
+                       strip.text.y     = ggplot2::element_blank())
   })
   
   ## TODO: this causes the gallery_icon error message, resolve it.
-  # output$gallery_icons <- renderPlot(
-  #   gallery_icons(), width = 84,
-  #   height = function(){
-  #     n_bases <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ])
-  #     84 * (n_bases + 1) # +1 because of blank NA icon
-  #   })
+  output$gallery_icons <- renderPlot(
+    gallery_icons(), width = 84,
+    height = function(){
+      n_bases <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ])
+      84 * n_bases
+    })
   
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {
