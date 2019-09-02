@@ -25,7 +25,7 @@ mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 render_gganimate(slides = sshow)
 
-render_gganimate(slides = sshow, col = flea$species, pch = flea$species
+render_gganimate(slides = sshow, col = flea$species, pch = flea$species,
   axes = "bottomleft", fps = 2, alpha = .6)
 }
 }

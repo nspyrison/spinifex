@@ -25,7 +25,7 @@
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
 #' 
-#' render_gganimate(slides = sshow, col = flea$species, pch = flea$species
+#' render_gganimate(slides = sshow, col = flea$species, pch = flea$species,
 #'   axes = "bottomleft", fps = 2, alpha = .6)
 #' }
 render_gganimate <- function(fps = 3,

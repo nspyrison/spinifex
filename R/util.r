@@ -32,7 +32,7 @@ set_axes_position <- function(x, axes) {
 #' @param basis A (p, d) basis, XY linear combination of each dimension 
 #'   (numeric variable).
 #' @param lab Optional, labels for the reference frame of length 1 or the 
-#'   number of variables used. Defaults to the V1, V2...
+#'   number of variables used. By default will abbriviate data if available.
 #' @param data Optional (n, p) data, plots xy scatterplot on the frame
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
@@ -52,6 +52,7 @@ view_basis <- function(basis,
 ) {
   # Initialize
   basis <- as.data.frame(basis)
+  colnames(basis) = c("x", "y")
   angle <- seq(0, 2 * pi, length = 360)
   circ  <- data.frame(x = cos(angle), y = sin(angle))
   p     <- nrow(basis)
@@ -84,22 +85,23 @@ view_basis <- function(basis,
     ## Basis axes line segments
     ggplot2::geom_segment(
       data = basis, 
-      mapping = ggplot2::aes(x = V1, y = V2, xend = zero, yend = zero)) +
+      mapping = ggplot2::aes(x = x, y = y, xend = zero, yend = zero)) +
     ## Basis variable text labels
     ggplot2::geom_text(
       data = basis, 
-      mapping = ggplot2::aes(x = V1, y = V2, label = lab),
+      mapping = ggplot2::aes(x = x, y = y, label = lab),
       size = 4, hjust = 0, vjust = 0, colour = "black")
   }
   
   if (!is.null(data))
   {
-    # Project data and all to ggplot
+    # Project data and plot
     proj <- as.data.frame(
       tourr::rescale(as.matrix(data) %*% as.matrix(basis))-.5)
-    gg <- gg + ggplot2::geom_point(
-        data = proj,
-        mapping = ggplot2::aes(x = V1, y = V2))
+    colnames(proj) <- c("x", "y")
+    gg <- gg + 
+      ggplot2::geom_point(data = proj,
+                          mapping = ggplot2::aes(x = x, y = y))
   }
   
   gg
@@ -118,7 +120,7 @@ view_basis <- function(basis,
 #'   Defaults to pi * 5/12.
 #' @param z_col Color to illustrate the z direction or out of the projection 
 #'   plane.
-#' @param labels Optional, character vector of `p` length, add name to the axes 
+#' @param lab Optional, character vector of `p` length, add name to the axes 
 #'   in the reference frame, typically the variable names.
 #' @return ggplot object of the basis.
 #' 
@@ -131,9 +133,9 @@ view_basis <- function(basis,
 view_manip_space <- function(basis,
                              manip_var,
                              manip_col = "blue", # "#1B9E77"
-                             tilt = 5/12 * pi,   # "#D95F02"
-                             z_col = "red",
-                             labels = paste0("V", 1:nrow(basis))
+                             tilt = 5/12 * pi,   
+                             z_col = "red",      # "#D95F02"
+                             lab = paste0("V", 1:nrow(basis))
 ) {
   # Initialize
   ## manip space
@@ -167,7 +169,7 @@ view_manip_space <- function(basis,
                        z = m_sp[manip_var, 3],
                        xend = m_sp_r[manip_var, "x"],
                        yend = m_sp_r[manip_var, "y"],
-                       label = labels[manip_var])
+                       lab = lab[manip_var])
   ## rotate angle curves, phi & theta
   theta_curve <- xyz(make_circ(0, theta) %*% rot)
   phi_curve   <- xyz(make_circ(0, phi))
@@ -201,7 +203,7 @@ view_manip_space <- function(basis,
     ## Basis variable text labels
     ggplot2::geom_text(
       data = m_sp_r, 
-      mapping = ggplot2::aes(x = x, y = y, label = labels), 
+      mapping = ggplot2::aes(x = x, y = y, label = lab), 
       size = 4, colour = col_v, vjust = "outward", hjust = "outward") +
     ## Z circle path
     ggplot2::geom_path(
@@ -221,7 +223,7 @@ view_manip_space <- function(basis,
     ## Z projection axis text label
     ggplot2::geom_text(
       data = m_sp_z, 
-      mapping = ggplot2::aes(x = x, y = z, label = label),
+      mapping = ggplot2::aes(x = x, y = z, label = lab),
       size = 4, colour = z_col, vjust = "outward", hjust = "outward") +
     ## Theta curve path
     ggplot2::geom_path(

@@ -11,7 +11,7 @@ view_basis(basis, lab = NULL, data = NULL, axes = "center")
 (numeric variable).}
 
 \item{lab}{Optional, labels for the reference frame of length 1 or the
-number of variables used. Defaults to the V1, V2...}
+number of variables used. By default will abbriviate data if available.}
 
 \item{data}{Optional (n, p) data, plots xy scatterplot on the frame}
 

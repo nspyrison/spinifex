@@ -27,9 +27,9 @@ knitr::opts_chunk$set(
   cache      = FALSE
 )
 
-library(spinifex)
-library(GGally)
-library(dplyr)
+library("spinifex")
+library("GGally")
+library("dplyr")
 ```
 
 # Introduction
@@ -45,7 +45,7 @@ The package `spinifex` allows the application of manual tours, where a selected 
 
 This concept is illustrated well with the anecdote of shadow puppets. Suppose a bar stool is held in front of a light source. This is a linear projection of a 3D object (bar stool) down to 2D (its shadow). If we observe the shadow change over time as the bar stool is rotated, we are watching a 3- to 2D tour. Some projections may not convey much information (the seat may only cast a circular shadow), but as we watch the stool rotate our visual interpretation quickly understands the geometry of the object. The same is true for tours, each view holds some information, and a better understanding of the structure is gained over time.
 
-We focus on the application of the *manual tours* in this document. In a manual tour, the contributions of one variable are manipulated to show the impact that it has on the structure of the projection. Controlling the coefficients of a single variable can be insightful after finding a projection of interest, perhaps with the use of a *guided tour*. A wider application of tours can be found at [CRAN.R-project.org/package=tourr](https://CRAN.R-project.org/package=tourr).
+We focus on the application of the *manual tours* in this document. In a manual tour, the contributions of one variable are manipulated to show the impact that it has on the structure of the projection. Controlling the coefficients of a single variable can be insightful after finding a projection of interest, perhaps with the use of a *guided tour*. A wider application of tours can be accomplished with with the package `tourr`, [CRAN.R-project.org/package=tourr](https://CRAN.R-project.org/package=tourr).
 
 ## Notation
 
@@ -59,6 +59,12 @@ We focus on the application of the *manual tours* in this document. In a manual 
 # Usage
 
 In the below examples we go through some use cases for manual tours.
+
+```{r libraries}
+library("spinifex")
+library("GGally")
+library("dplyr")
+```
 
 ## Example 1 - Rotate an arbitrary basis (& utility functions)
 
@@ -133,9 +139,11 @@ rot_mat_y <- rotate_manip_space(manip_space = m_sp_y,
 rot_y     <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_y))
 
 # Combine rotations
-rot_xy <- bind_cols(rot_x, rot_y) %>% select(X3, X31) %>% rename(x=X3, y=X31)
+rot_xy <- bind_cols(rot_x, rot_y) %>% 
+  dplyr::select(X3, X31) %>% 
+  dplyr::rename(x = X3, y = X31)
 
-ggplot(rot_xy, aes(x=x, y=y)) + geom_point(size=0.3) +
+ggplot(rot_xy, aes(x = x, y = y)) + geom_point(size = 0.3) +
   theme_bw() + labs(x = "", y = "")
 ```
 

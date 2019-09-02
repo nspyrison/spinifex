@@ -5,7 +5,7 @@
 \title{Plot projection frame and return the axes table.}
 \usage{
 view_manip_space(basis, manip_var, manip_col = "blue", tilt = 5/12 *
-  pi, z_col = "red", labels = paste0("V", 1:nrow(basis)))
+  pi, z_col = "red", lab = paste0("V", 1:nrow(basis)))
 }
 \arguments{
 \item{basis}{A (p, d) basis, XY linear combination of each dimension
@@ -21,7 +21,7 @@ Defaults to pi * 5/12.}
 \item{z_col}{Color to illustrate the z direction or out of the projection
 plane.}
 
-\item{labels}{Optional, character vector of \code{p} length, add name to the axes
+\item{lab}{Optional, character vector of \code{p} length, add name to the axes
 in the reference frame, typically the variable names.}
 }
 \value{

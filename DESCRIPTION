@@ -26,7 +26,8 @@ Imports:
     plotly,
     webshot,
     RColorBrewer,
-    shiny
+    shiny,
+    dplyr
 Suggests: 
     gganimate,
     animation,
