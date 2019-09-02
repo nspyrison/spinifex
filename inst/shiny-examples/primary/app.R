@@ -96,23 +96,12 @@ server <- function(input, output, session) {
                       selected = cat_names[1])
     updateSelectInput(session, "pch_var", choices = cat_names,
                       selected = cat_names[1])
-    # Update sliders
-    
-    if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
-    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
-    x_val <- round(-phi.x_zero / (pi/2), 1)
-    isolate(updateSliderInput(session, "x_slider", value = x_val))
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
-    y_val <- round(-phi.y_zero / (pi/2), 1)
-    isolate(updateSliderInput(session, "y_slider", value = y_val))
-    phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    rad_val <- round(cos(phi_i), 1)
-    isolate(updateSliderInput(session, "rad_slider", value = rad_val))
   })
   
+  observeEvent(input$re_init, {
+    rv$curr_basis <- basis()
+  })
   
-  ##### _Interactive reactives ----
   ### Plot
   obl_plot <- reactive({
     oblique_frame(data      = selected_dat(),
@@ -128,6 +117,10 @@ server <- function(input, output, session) {
   ### Output
   output$curr_basis_tbl <- renderTable(rv$curr_basis)
   output$obl_plot <- renderPlot({obl_plot()})
+  
+  ##### _Interactive reactives ----
+  ### Update sliders
+
   
   ### x, y, radius reactives
   # x motion
@@ -171,6 +164,22 @@ server <- function(input, output, session) {
     rv$curr_basis <- basis_rad()
   })
   
+  observe({
+    if (input$manual_method == 'Interactive') {
+      if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
+      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
+      x_val <- round(-phi.x_zero / (pi/2), 1)
+      isolate(updateSliderInput(session, "x_slider", value = x_val))
+      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
+      y_val <- round(-phi.y_zero / (pi/2), 1)
+      isolate(updateSliderInput(session, "y_slider", value = y_val))
+      phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+      rad_val <- round(cos(phi_i), 1)
+      isolate(updateSliderInput(session, "rad_slider", value = rad_val))
+    }
+  })
+  
   ### Save current basis (interactive)
   observeEvent(input$obl_save, {
     if (is.null(rv$curr_basis)) return()
@@ -212,47 +221,56 @@ server <- function(input, output, session) {
   ##### _Animimation ----
   observeEvent(input$anim_run, {
     ### Processing message for gif
-    withProgress(message = 'Rendering animation ...', value = 0, {
+    #withProgress(message = 'Rendering animation ...', value = 0, {
       ### Manual tour animation
-      app_tour_array <- function(...) { # for code reduction, handle theta.
-        rv$tour_array <- manual_tour(basis = basis(), 
-                                     data = selected_dat(), 
-                                     manip_var = manip_var(),
-                                     col = col_of(col_var()), 
-                                     pch = pch_of(pch_var()),
-                                     axes = input$axes,
-                                     angle = input$anim_angle,
-                                     alpha = input$alpha,
-                                     ...) # Allows theta to vary
+      app_manual_tour <- function(...) { # for code reduction, handle different theta.
+        manual_tour(basis = basis(), 
+                    data = selected_dat(), 
+                    manip_var = manip_var(),
+                    col = col_of(col_var()), 
+                    pch = pch_of(pch_var()),
+                    axes = input$axes,
+                    angle = input$anim_angle,
+                    alpha = input$alpha,
+                    ...) # Allows theta to vary
       }
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
-        if (input$anim_type == "Radial")     {rv$tour_array <- app_tour_array()} # default theta to radial
-        if (input$anim_type == "Horizontal") {rv$tour_array <- app_tour_array(theta = 0)}
-        if (input$anim_type == "Vertical")   {rv$tour_array <- app_tour_array(theta = pi/2)}
+        if (input$anim_type == "Radial")     {rv$tour_array <- app_manual_tour()} # default theta to radial
+        if (input$anim_type == "Horizontal") {rv$tour_array <- app_manual_tour(theta = 0)}
+        if (input$anim_type == "Vertical")   {rv$tour_array <- app_manual_tour(theta = pi/2)}
       } else {
         # TODO: trouble shoot PP and tourr paths.
         ### Projection pursuit
         if (input$anim_type == "Projection pursuit") {
           tour_func <- getGuidedTour(input$pp_type)
           tour_hist <- save_history(selected_dat(), tour_func)
+          
         }
         ### Grand, little and local tours
-        if(input$anim_type == "Grand (8 bases)") {
-          rv$tour_array <- save_history(selected_dat(), tour_path = grand_tour(), 
-                                        max_bases = 8, angle = input$anim_angle)}
-        if(input$anim_type == "Little (8 bases)") {
-          rv$tour_array <- save_history(selected_dat(), tour_path = little_tour(), 
-                                        max_bases = 8, angle = input$anim_angle)}
-        if(input$anim_type == "Local (8 bases)") {
-          rv$tour_array <- save_history(selected_dat(), tour_path = local_tour(), 
-                                        max_bases = 8, angle = input$anim_angle)}
+        if(input$anim_type == "Grand (6 bases)") {
+          t_path <- tourr::save_history(selected_dat(), max_bases = 6,
+                                        tour_path = grand_tour())
+          rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
+        }
+        if(input$anim_type == "Little (6 bases)") {
+          t_path <- tourr::save_history(selected_dat(), max_bases = 6,
+                                        tour_path = little_tour())
+          rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
+        }
+        if(input$anim_type == "Local (6 bases)") {
+          t_path <- tourr::save_history(selected_dat(), max_bases = 6,
+                                        tour_path = local_tour())
+          rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
+        }
       }
       
-      updateSliderInput(session, "anim_slider", value = 1, max = dim(rv$tour_array)[3])
+      #browser()
+      updateSliderInput(session, "anim_slider", value = 1, 
+                        min = 1, max = dim(rv$tour_array)[3])
       rv$curr_basis <- rv$tour_array[,, input$anim_slider]
       
-      setProgress(1)
-    })
+      #setProgress(1)
+    #})
   })
   
   ### Change plot with slider

@@ -41,6 +41,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                      fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
                                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))),
     selectInput('manip_var', 'Manip var', "<none>"),
+    actionButton("re_init", "Back to start"),
     radioButtons("manual_method", "",
                  choices = c("Interactive", "Animation"),
                  selected = "Interactive"),
@@ -74,13 +75,13 @@ tabManual <- tabPanel("Manual tour", fluidPage(
         h4("Animation"),
         selectInput('anim_type', 'Animation type',
                     c("Radial", "Horizontal", "Vertical"
-                      # ,"Grand (8 bases)", "Little (8 bases)", "Projection pursuit"
-                    )),
+                      ,"Grand (6 bases)", "Little (6 bases)", "Local (6 bases)",
+                      "Projection pursuit")),
         conditionalPanel("anim_type == 'Projection pursuit'",
                          selectInput("anim_pp_type", "Pursuit index",
                                      c("cmass", "holes", "Skinny", "Striated", "Convex",
                                        "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
-        sliderInput('anim_angle', 'Angle step size', value = .05, min = .01, max = .3),
+        sliderInput('anim_angle', 'Angle step size', value = .15, min = .05, max = .3),
         fluidRow(column(4, actionButton("anim_run", "Run")),
                  column(8, actionButton("anim_save", "Save (gif)"))),
         verbatimTextOutput("anim_save_msg")
