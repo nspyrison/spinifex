@@ -6,7 +6,7 @@ output:
 vignette: >
   %\VignetteIndexEntry{spinifex}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 <!-- #Example vignette: 
 https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->
@@ -26,10 +26,6 @@ knitr::opts_chunk$set(
   fig.align  = "center",
   cache      = FALSE
 )
-
-library("spinifex")
-library("GGally")
-library("dplyr")
 ```
 
 # Introduction
@@ -58,7 +54,7 @@ We focus on the application of the *manual tours* in this document. In a manual 
 
 # Usage
 
-In the below examples we go through some use cases for manual tours.
+In the below examples we go through some use cases for manual tours. To get started we'll load a couple packages we use.
 
 ```{r libraries}
 library("spinifex")

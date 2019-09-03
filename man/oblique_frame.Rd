@@ -4,10 +4,8 @@
 \alias{oblique_frame}
 \title{Plot a single frame of a manual tour}
 \usage{
-oblique_frame(basis = NULL, data = NULL, manip_var, theta = 0,
-  phi = 0, manip_col = "blue", col = "black", pch = 20,
-  lab = NULL, axes = "center", rescale_data = FALSE, alpha = 1,
-  ...)
+oblique_frame(basis = NULL, data = NULL, manip_var = NULL,
+  theta = 0, phi = 0, lab = NULL, rescale_data = FALSE, ...)
 }
 \arguments{
 \item{basis}{A (p, d) dim orthonormal numeric matrix.
@@ -25,23 +23,11 @@ If left NULL, will initialize the radial angle of the \code{manip_var}.`}
 the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, no default.}
 
-\item{manip_col}{String of the color to highlight the \code{manip_var}.
-Defaults to "blue".}
-
-\item{col}{Color of the projected points. Defaults to "black".}
-
-\item{pch}{Point character of the projected points. Defaults to 20.}
-
 \item{lab}{Optional, labels for the reference frame of length 1 or the
 number of variables used. Defaults to an abbriviation of the variables.}
 
-\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
-to "center".}
-
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
-
-\item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
 
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
 plotting options.}

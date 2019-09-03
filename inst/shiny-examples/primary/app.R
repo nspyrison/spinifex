@@ -56,10 +56,11 @@ server <- function(input, output, session) {
     } else {groupDat()[, which(colnames(groupDat()) == input$col_var)]}
   })
   manip_var <- reactive({ 
-    if (input$manip_var == "<none>") {NULL}
+    if (input$manip_var == "<none>") {return(NULL)}
+    if (input$manual_method == "animation") {return(NULL)}
     which(colnames(numericDat()) == input$manip_var)
   }) 
-  # basis
+  ### basis
   basis <- reactive({
     if (input$basis_init == "Random") x <- tourr::basis_random(n = p(), d = 2)
     if (input$basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
@@ -76,7 +77,7 @@ server <- function(input, output, session) {
     if (input$basis_init == "Projection pursuit") {
       tour_func <- getGuidedTour(input$pp_type)
       tour_hist <- save_history(selected_dat(), tour_func)
-      tour_len <- dim(tour_hist)[3]
+      tour_len  <- dim(tour_hist)[3]
       x <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
     colnames(x) <- c("x", "y")
@@ -104,51 +105,68 @@ server <- function(input, output, session) {
   
   ### Plot
   obl_plot <- reactive({
-    oblique_frame(data      = selected_dat(),
-                  basis     = rv$curr_basis,
-                  manip_var = manip_var(),
-                  theta     = 0,
-                  phi       = 0,
-                  col       = col_of(col_var()),
-                  pch       = pch_of(pch_var()),
-                  axes      = input$axes,
-                  alpha     = input$alpha)
+    if (input$manual_method == 'Animation' ) {
+      return( # for tourr funcs without manip var.
+        view_basis(basis = rv$curr_basis,
+                   data  = selected_dat(),
+                   col   = col_of(col_var()),
+                   pch   = pch_of(pch_var()),
+                   axes  = input$axes,
+                   alpha = input$alpha))
+    }
+    if (input$manual_method == 'Interactive') {
+      if (is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
+      browser() #TODO: continue to trouble shoot here. i think manip_var is null.
+      return(
+        oblique_frame(basis     = rv$curr_basis,
+                      data      = selected_dat(),
+                      manip_var = manip_var(),
+                      theta     = 0,
+                      phi       = 0,
+                      col       = col_of(col_var()),
+                      pch       = pch_of(pch_var()),
+                      axes      = input$axes,
+                      alpha     = input$alpha))
+    }
   })
   ### Output
   output$curr_basis_tbl <- renderTable(rv$curr_basis)
   output$obl_plot <- renderPlot({obl_plot()})
   
   ##### _Interactive reactives ----
-  ### Update sliders
-
-  
   ### x, y, radius reactives
   # x motion
   basis_x <- reactive({
-    theta <- 0
-    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-    phi <- input$x_slider * pi/2 + phi.x_zero
-    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                  theta = theta, phi = phi)
+    if (length(manip_var()) != 0) {
+      theta <- 0
+      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+      phi <- input$x_slider * pi/2 + phi.x_zero
+      oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                    theta = theta, phi = phi)
+    }
   })
   # y motion
   basis_y <- reactive({
-    theta <- pi/2
-    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-    phi <- input$y_slider * pi/2 + phi.y_zero
-    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                  theta = theta, phi = phi)
+    if (length(manip_var()) != 0) {
+      theta <- pi/2
+      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+      phi <- input$y_slider * pi/2 + phi.y_zero
+      oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                    theta = theta, phi = phi)
+    }
   })
   # Radial motion
   basis_rad <- reactive({
-    mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-    theta <- atan(mv_sp[2] / mv_sp[1])
-    phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-    phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
-    oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                  theta = theta, phi = phi)
+    if (length(manip_var()) != 0) {
+      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+      theta <- atan(mv_sp[2] / mv_sp[1])
+      phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+      phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
+      oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                    theta = theta, phi = phi)
+    }
   })
   
   
@@ -164,8 +182,10 @@ server <- function(input, output, session) {
     rv$curr_basis <- basis_rad()
   })
   
+  ### Update sliders
   observe({
-    if (input$manual_method == 'Interactive') {
+    if (length(manip_var()) != 0 &
+        input$manual_method == 'Interactive') {
       if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
       mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
       phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
@@ -221,7 +241,7 @@ server <- function(input, output, session) {
   ##### _Animimation ----
   observeEvent(input$anim_run, {
     ### Processing message for gif
-    #withProgress(message = 'Rendering animation ...', value = 0, {
+    # withProgress(message = 'Rendering animation ...', value = 0, {
       ### Manual tour animation
       app_manual_tour <- function(...) { # for code reduction, handle different theta.
         manual_tour(basis = basis(), 
@@ -264,13 +284,12 @@ server <- function(input, output, session) {
         }
       }
       
-      #browser()
       updateSliderInput(session, "anim_slider", value = 1, 
                         min = 1, max = dim(rv$tour_array)[3])
-      rv$curr_basis <- rv$tour_array[,, input$anim_slider]
+      rv$curr_basis <- matrix(rv$tour_array[,, input$anim_slider], ncol = 2)
       
-      #setProgress(1)
-    #})
+    # setProgress(1)
+    # })
   })
   
   ### Change plot with slider

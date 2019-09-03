@@ -14,17 +14,10 @@
 #' @param phi Phi is angle in radians of 
 #'   the "out-of-plane" rotation, the z-axis of the reference frame. 
 #'   Required, no default.
-#' @param manip_col String of the color to highlight the `manip_var`.
-#'   Defaults to "blue".
-#' @param col Color of the projected points. Defaults to "black".
-#' @param pch Point character of the projected points. Defaults to 20.
 #' @param lab Optional, labels for the reference frame of length 1 or the 
 #'   number of variables used. Defaults to an abbriviation of the variables.
-#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
-#'   to "center".
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #'   Defaults to FALSE.
-#' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #'   plotting options.
 #' @return a ggplot object of the rotated projection.
@@ -40,18 +33,13 @@
 
 oblique_frame <- function(basis        = NULL,
                           data         = NULL, ### TODO: when NULL data gets assigned small numeric 1x1 value, where & why?
-                          manip_var,
+                          manip_var    = NULL,
                           theta        = 0,
                           phi          = 0,
-                          manip_col    = "blue",
-                          col          = "black", 
-                          pch          = 20,
                           lab          = NULL,
-                          axes         = "center",
                           rescale_data = FALSE,
-                          alpha        = 1,
                           ...) {
-
+  
   if (is.null(basis) & !is.null(data)) {
     message("NULL basis passed. Initializing random basis.")
     basis <- tourr::basis_random(n = ncol(data))
@@ -61,14 +49,14 @@ oblique_frame <- function(basis        = NULL,
   m_sp <- create_manip_space(basis, manip_var)
   r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
   
-  basis_slides <- cbind(as.data.frame(r_m_sp), slide = 1)
-  colnames(basis_slides) <- c("x", "y", "z", "slide")
+  basis_slide <- as.data.frame(r_m_sp)
+  colnames(basis_slide) <- c("x", "y", "z")
   if(!is.null(data)){
     if (rescale_data) {data <- tourr::rescale(data)}
-    data_slides  <- cbind(as.data.frame(data %*% r_m_sp), slide = 1)
-    data_slides[, 1] <- scale(data_slides[, 1], scale = FALSE)
-    data_slides[, 2] <- scale(data_slides[, 2], scale = FALSE)
-    colnames(data_slides) <- c("x", "y", "z", "slide")
+    data_slide  <- as.data.frame(data %*% r_m_sp)
+    data_slide[, 1] <- scale(data_slide[, 1], scale = FALSE)
+    data_slide[, 2] <- scale(data_slide[, 2], scale = FALSE)
+    colnames(data_slide) <- c("x", "y", "z", "slide")
   }
   
   # Add labels, attribute, and list
@@ -81,12 +69,11 @@ oblique_frame <- function(basis        = NULL,
   
   attr(basis_slides, "manip_var") <- manip_var
   
-  slides <- if(!is.null(data)) {
-    list(basis_slides = basis_slides, data_slides = data_slides)
-  } else list(basis_slides = basis_slides)
+  slide <- if(!is.null(data)) {
+    list(basis_slides = basis_slide, data_slides = data_slide)
+  } else list(basis_slides = basis_slide)
   
-  gg <- render_(slides = slides, manip_col = manip_col, col = col, pch = pch, 
-                axes = axes, alpha = alpha, ...) +
+  gg <- render_(slides = slide, ...) +
     ggplot2::coord_fixed()
   
   gg

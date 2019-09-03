@@ -31,11 +31,14 @@ set_axes_position <- function(x, axes) {
 #' 
 #' @param basis A (p, d) basis, XY linear combination of each dimension 
 #'   (numeric variable).
+#' @param data Optional (n, p) data to plot on through the projection basis.
 #' @param lab Optional, labels for the reference frame of length 1 or the 
 #'   number of variables used. By default will abbriviate data if available.
-#' @param data Optional (n, p) data, plots xy scatterplot on the frame
+#' @param col Color of the projected points. Defaults to "black".
+#' @param pch Point character of the projected points. Defaults to 20.
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
+#' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @return ggplot object of the basis.
 #' @import tourr
 #' @examples 
@@ -43,12 +46,16 @@ set_axes_position <- function(x, axes) {
 #' view_basis(basis = rb)
 #' 
 #' flea_std <- tourr::rescale(tourr::flea[, 1:4])
-#' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
+#' view_basis(basis = rb, data = flea_std, axes = "bottomleft", 
+#'            col = flea[, 7], pch = flea[,7])
 #' @export
 view_basis <- function(basis,
-                       lab  = NULL,
                        data = NULL,
-                       axes = "center"
+                       lab  = NULL,
+                       col = "black",
+                       pch = 20,
+                       axes = "center",
+                       alpha = 1
 ) {
   # Initialize
   basis <- as.data.frame(basis)
@@ -95,12 +102,21 @@ view_basis <- function(basis,
   
   if (!is.null(data))
   {
+    ## projection color and point char asethetics
+    if(length(col) != 1) {
+      if (is.factor(col)) {col <- col_of(col)}
+    }
+    if(length(pch) != 1) {
+      if (is.factor(pch)) {pch <- pch_of(pch)}
+    }
+    
     # Project data and plot
     proj <- as.data.frame(
-      tourr::rescale(as.matrix(data) %*% as.matrix(basis))-.5)
+      tourr::rescale(as.matrix(data) %*% as.matrix(basis)) - .5)
     colnames(proj) <- c("x", "y")
     gg <- gg + 
-      ggplot2::geom_point(data = proj,
+      ggplot2::geom_point(data = proj, 
+                          shape = pch, color = col, fill = col, alpha = alpha,
                           mapping = ggplot2::aes(x = x, y = y))
   }
   

@@ -61,17 +61,17 @@ render_ <- function(slides,
     axes_siz            <- rep(axes_siz, n_slides)
   }
   ## projection color and point char asethetics
-  if(length(col)!=1) {
+  if(length(col) != 1) {
     if (is.factor(col)) {col <- col_of(col)}
     col <- rep_len(col, nrow(data_slides))
   }
-  if(length(pch)!=1) {
+  if(length(pch) != 1) {
     if (is.factor(pch)) {pch <- pch_of(pch)}
     pch <- rep_len(pch, nrow(data_slides))
   }
   
-  xy_min <- min(circ[, 1:2], data_slides[, 1:2]) -.1
-  xy_max <- max(circ[, 1:2], data_slides[, 1:2]) +.1
+  xy_min <- min(circ[, 1:2], data_slides[, 1:2]) - .1
+  xy_max <- max(circ[, 1:2], data_slides[, 1:2]) + .1
   gg <- 
     ## ggplot settings
     ggplot2::ggplot() +

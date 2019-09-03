@@ -110,7 +110,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
       fluidRow(column(1, actionButton("anim_play", "Play")),
                column(5, sliderInput("anim_slider", "Animation index",
                                      min = 1, max = 10, value = 1, step = 1, 
-                                     width = '80%'))
+                                     width = '100%'))
       ), # Align the play botton with a top margin:
       tags$style(type='text/css', "#anim_play {margin-top: 40px;}")
     )
