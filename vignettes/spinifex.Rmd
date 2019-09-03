@@ -2,11 +2,11 @@
 title: "spinifex"
 author: "Nicholas Spyrison"
 output: 
-  rmarkdown::html_vignette:
+  rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{spinifex}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  %\VignetteEncoding{UTF-8}{inputenc}
 ---
 <!-- #Example vignette: 
 https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->

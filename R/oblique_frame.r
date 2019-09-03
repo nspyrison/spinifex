@@ -49,14 +49,14 @@ oblique_frame <- function(basis        = NULL,
   m_sp <- create_manip_space(basis, manip_var)
   r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
   
-  basis_slide <- as.data.frame(r_m_sp)
-  colnames(basis_slide) <- c("x", "y", "z")
+  basis_slides <- cbind(as.data.frame(r_m_sp), slide = 1)
+  colnames(basis_slides) <- c("x", "y", "z", "slide")
   if(!is.null(data)){
     if (rescale_data) {data <- tourr::rescale(data)}
-    data_slide  <- as.data.frame(data %*% r_m_sp)
-    data_slide[, 1] <- scale(data_slide[, 1], scale = FALSE)
-    data_slide[, 2] <- scale(data_slide[, 2], scale = FALSE)
-    colnames(data_slide) <- c("x", "y", "z", "slide")
+    data_slides  <- cbind(as.data.frame(data %*% r_m_sp), slide = 1)
+    data_slides[, 1] <- scale(data_slides[, 1], scale = FALSE)
+    data_slides[, 2] <- scale(data_slides[, 2], scale = FALSE)
+    colnames(data_slides) <- c("x", "y", "z", "slide")
   }
   
   # Add labels, attribute, and list
@@ -65,13 +65,14 @@ oblique_frame <- function(basis        = NULL,
       rep(lab, nrow(basis_slides) / length(lab))
     } else {
       if(!is.null(data)) {abbreviate(colnames(data), 3)
-      } else {paste0("V", 1:p)}}
+      } else {paste0("V", 1:p)}
+    }
   
   attr(basis_slides, "manip_var") <- manip_var
   
   slide <- if(!is.null(data)) {
-    list(basis_slides = basis_slide, data_slides = data_slide)
-  } else list(basis_slides = basis_slide)
+    list(basis_slides = basis_slides, data_slides = data_slides)
+  } else list(basis_slides = basis_slides)
   
   gg <- render_(slides = slide, ...) +
     ggplot2::coord_fixed()
