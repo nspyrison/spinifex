@@ -283,8 +283,9 @@ view_manip_space <- function(basis,
 #' @export
 col_of <- function(cat, pallet_name = "Dark2")
 {
+  if (length(cat) == 0) stop("Length cannot be zero.")
   n   <- length(levels(cat))
-  pal <- RColorBrewer::brewer.pal(n, pallet_name)
+  pal <- suppressWarnings(RColorBrewer::brewer.pal(n, pallet_name))
   ret <- pal[as.integer(factor(cat))]
   
   ret
@@ -302,5 +303,6 @@ col_of <- function(cat, pallet_name = "Dark2")
 #' @export
 pch_of <- function(cat)
 {
+  if (length(cat) == 0) stop("Length cannot be zero.")
   as.integer(factor(cat))
 }
