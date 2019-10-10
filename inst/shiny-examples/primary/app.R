@@ -8,7 +8,7 @@
 #' @export
 #' @examples \dontrun{
 #' library(spinifex)
-#' run_app("comparison")
+#' run_app("primary")
 #' }
 
 source('global.R', local = TRUE)
@@ -56,8 +56,8 @@ server <- function(input, output, session) {
     } else {groupDat()[, which(colnames(groupDat()) == input$col_var)]}
   })
   manip_var <- reactive({ 
-    if (input$manip_var == "<none>") {return(NULL)}
-    if (input$manual_method == "animation") {return(NULL)}
+    if (input$manip_var == "<none>") {return(1)}
+    if (input$manual_method == "animation") {return(1)}
     which(colnames(numericDat()) == input$manip_var)
   }) 
   ### basis
@@ -116,7 +116,7 @@ server <- function(input, output, session) {
     }
     if (input$manual_method == 'Interactive') {
       if (is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
-      browser() #TODO: continue to trouble shoot here. i think manip_var is null.
+      #browser() #TODO: continue to trouble shoot here. i think manip_var is null.
       return(
         oblique_frame(basis     = rv$curr_basis,
                       data      = selected_dat(),
