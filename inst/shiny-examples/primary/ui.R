@@ -35,8 +35,12 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                  selected = "PCA"),
     conditionalPanel("input.basis_init == 'Projection pursuit'",
                      selectInput("pp_type", "Pursuit index", 
-                                 c("cmass", "holes")
+                                 c("holes", "cmass", "lda_pp", "pda_pp")
                      )),
+    conditionalPanel("input.basis_init == 'Projection pursuit' && 
+                     (input.pp_type == 'lda_pp' || input.pp_type == 'pda_pp')",
+                     selectInput("pp_cluster", "Pursuit cluster (obl)",
+                                 choices = c("<no categorical variables found>" = NA) )),
     conditionalPanel("input.basis_init == 'From file'",
                      fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
                                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))),
@@ -73,14 +77,17 @@ tabManual <- tabPanel("Manual tour", fluidPage(
       "input.manual_method == 'Animation'",
       fluidPage(
         h4("Animation"),
-        selectInput('anim_type', 'Animation type',
+        selectInput("anim_type", "Animation type",
                     c("Radial", "Horizontal", "Vertical"
                       ,"Grand (6 bases)", "Little (6 bases)", "Local (6 bases)",
                       "Projection pursuit")),
-        conditionalPanel("anim_type == 'Projection pursuit'",
+        conditionalPanel("input.anim_type == 'Projection pursuit'",
                          selectInput("anim_pp_type", "Pursuit index",
-                                     c("cmass", "holes", "Skinny", "Striated", "Convex",
-                                       "Clumpy", "splines2d", "dcor2d", "MIC", "TIC"))),
+                                     c("holes", "cmass", "lda_pp", "pda_pp"))),
+        conditionalPanel("input.anim_type == 'Projection pursuit' && 
+                         (input.anim_pp_type == 'lda_pp' || input.anim_pp_type == 'pda_pp')", 
+                         selectInput("anim_pp_cluster", "Pursuit cluster (anim)",
+                                     choices = c("<no categorical variables found>" = NA) )),
         sliderInput('anim_angle', 'Angle step size', value = .15, min = .05, max = .3),
         fluidRow(column(4, actionButton("anim_run", "Run")),
                  column(8, actionButton("anim_save", "Save (gif)"))),

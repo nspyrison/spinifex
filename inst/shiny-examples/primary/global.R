@@ -43,13 +43,13 @@ staticProjection <- function(dat, method, col, pch, alpha) {
 scags <- function(scagMetricIndex) {
   function(mat) {return (scagnostics(mat)[scagMetricIndex])}
 }
-getGuidedTour <- function(indexName, grId=NA){ # returns a tour function
-  if(indexName == "cmass"){return(guided_tour(cmass()))}
+getGuidedTour <- function(indexName, grId = NA){ # returns a tour function
   if(indexName == "holes"){return(guided_tour(holes()))}
+  if(indexName == "cmass"){return(guided_tour(cmass()))}
   if(indexName == "lda_pp"){return(guided_tour(lda_pp(grId)))}
   if(indexName == "pda_pp"){return(guided_tour(pda_pp(grId)))}
   else return(error("index not found"))
-}
+} #ex # animate_xy(flea[, 1:6], guided_tour(pda_pp(flea$species)), sphere = TRUE)
 ### END OF PROJECTION PURSUIT
 
 ##### GALLERY ----

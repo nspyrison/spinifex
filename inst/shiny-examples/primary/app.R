@@ -75,12 +75,19 @@ server <- function(input, output, session) {
       }
     }
     if (input$basis_init == "Projection pursuit") {
+      pp_cluster <- NA
+      if (!is.na(input$anim_pp_cluster)) {
+        pp_cluster <- numericDat()[, which(colnames(numericDat()) %in% input$anim_pp_cluster)]
+        browser() #TODO: continue working on pp_cluster here.
+      }
+      tour_func <- getGuidedTour(input$pp_type, pp_cluster)
       tour_func <- getGuidedTour(input$pp_type)
       tour_hist <- save_history(selected_dat(), tour_func)
       tour_len  <- dim(tour_hist)[3]
       x <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
     colnames(x) <- c("x", "y")
+    row.names(x) <- colnames(selected_dat())
     return(x)
   })
   
@@ -96,6 +103,10 @@ server <- function(input, output, session) {
     updateSelectInput(session, "col_var", choices = cat_names,
                       selected = cat_names[1])
     updateSelectInput(session, "pch_var", choices = cat_names,
+                      selected = cat_names[1])
+    updateSelectInput(session, "pp_cluster", choices = names(groupDat()),
+                      selected = cat_names[1])
+    updateSelectInput(session, "anim_pp_cluster", choices = names(groupDat()),
                       selected = cat_names[1])
   })
   
@@ -116,7 +127,6 @@ server <- function(input, output, session) {
     }
     if (input$manual_method == 'Interactive') {
       if (is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
-      #browser() #TODO: continue to trouble shoot here. i think manip_var is null.
       return(
         oblique_frame(basis     = rv$curr_basis,
                       data      = selected_dat(),
@@ -130,7 +140,7 @@ server <- function(input, output, session) {
     }
   })
   ### Output
-  output$curr_basis_tbl <- renderTable(rv$curr_basis)
+  output$curr_basis_tbl <- renderTable(rv$curr_basis, rownames = TRUE)
   output$obl_plot <- renderPlot({obl_plot()})
   
   ##### _Interactive reactives ----
@@ -142,8 +152,11 @@ server <- function(input, output, session) {
       mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
       phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
       phi <- input$x_slider * pi/2 + phi.x_zero
-      oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+      bas <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
                     theta = theta, phi = phi)
+      row.names(bas) <- colnames(selected_dat())
+      
+      bas
     }
   })
   # y motion
@@ -153,8 +166,10 @@ server <- function(input, output, session) {
       mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
       phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
       phi <- input$y_slider * pi/2 + phi.y_zero
-      oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+      bas <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
                     theta = theta, phi = phi)
+      row.names(bas) <- colnames(selected_dat())
+      bas
     }
   })
   # Radial motion
@@ -164,8 +179,10 @@ server <- function(input, output, session) {
       theta <- atan(mv_sp[2] / mv_sp[1])
       phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
       phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
-      oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+      bas <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
                     theta = theta, phi = phi)
+      row.names(bas) <- colnames(selected_dat())
+      bas
     }
   })
   
@@ -262,9 +279,12 @@ server <- function(input, output, session) {
         # TODO: trouble shoot PP and tourr paths.
         ### Projection pursuit
         if (input$anim_type == "Projection pursuit") {
-          tour_func <- getGuidedTour(input$pp_type)
+          pp_cluster <- NA
+          if (!is.na(input$anim_pp_cluster)){
+            pp_cluster <- numericDat()[, which(colnames(numericDat()) %in% input$anim_pp_cluster)]
+          }
+          tour_func <- getGuidedTour(input$pp_type, pp_cluster)
           tour_hist <- save_history(selected_dat(), tour_func)
-          
         }
         ### Grand, little and local tours
         if(input$anim_type == "Grand (6 bases)") {
@@ -459,6 +479,7 @@ server <- function(input, output, session) {
         "manip_var(): ", manip_var(), "\n",
         "rv$gallery_bases: ", unlist(rv$gallery_bases), "\n",
         "is.null? ", is.null(rv$gallery_bases), "\n",
+        "input$pp_type", input$pp_type,
         sep = ""
     )
   })
