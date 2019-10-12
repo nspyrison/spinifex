@@ -75,11 +75,13 @@ server <- function(input, output, session) {
       }
     }
     if (input$basis_init == "Projection pursuit") {
-      pp_cluster <- NA
-      if (!is.na(input$anim_pp_cluster)) {
-        pp_cluster <- numericDat()[, which(colnames(numericDat()) %in% input$anim_pp_cluster)]
-        browser() #TODO: continue working on pp_cluster here.
-      }
+      pp_cluster <- flea$species #NA
+      # if (!is.na(input$anim_pp_cluster)) {
+      #   pp_cluster <- numericDat()[, which(colnames(numericDat()) %in% input$anim_pp_cluster)]
+      #   print(pp_cluster)
+      #   #browser() #TODO: continue working on pp_cluster here.
+      # }
+      browser()
       tour_func <- getGuidedTour(input$pp_type, pp_cluster)
       tour_func <- getGuidedTour(input$pp_type)
       tour_hist <- save_history(selected_dat(), tour_func)
@@ -89,6 +91,17 @@ server <- function(input, output, session) {
     colnames(x) <- c("x", "y")
     row.names(x) <- colnames(selected_dat())
     return(x)
+  })
+  
+  TEST_pp_cluster <- reactive({
+    pp_cluster <- NA
+    if (input$basis_init == "Projection pursuit") {
+
+      if (!is.na(input$anim_pp_cluster)) {
+        pp_cluster <- numericDat()[, which(colnames(numericDat()) %in% input$anim_pp_cluster)]
+      }
+    }
+    return(pp_cluster)
   })
   
   ##### Data observes ----
@@ -479,7 +492,9 @@ server <- function(input, output, session) {
         "manip_var(): ", manip_var(), "\n",
         "rv$gallery_bases: ", unlist(rv$gallery_bases), "\n",
         "is.null? ", is.null(rv$gallery_bases), "\n",
-        "input$pp_type", input$pp_type,
+        "input$pp_type: ", input$pp_type, "\n",
+        "input$anim_pp_cluster: ", input$anim_pp_cluster, "\n",
+        "TEST_pp_cluster(): ", TEST_pp_cluster(), "\n",
         sep = ""
     )
   })
