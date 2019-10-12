@@ -11,7 +11,6 @@ library("reactlog")    # Logging
 library("purrr")       # sparkplot prep
 ### Projection pursuit indices
 library("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
-library("mbgraphic")   # splines2d, dcor2d
 library("minerva")     # MIC, TIC
 
 ## for saving files:
@@ -51,8 +50,6 @@ getGuidedTour <- function(indexName, grId=NA){ # returns a tour function
   if(indexName == "cmass"){return(guided_tour(cmass()))}
   if(indexName == "holes"){return(guided_tour(holes()))}
   if(indexName %in% c("Skinny", "Striated", "Convex", "Clumpy")){return(guided_tour(scags(indexName)))}
-  if(indexName == "splines2d"){return(guided_tour(splineIndex()))}
-  if(indexName == "dcor2d"){return(guided_tour(dcorIndex()))}
   if(indexName %in% c("MIC", "TIC")){return(guided_tour(mineIndex(indexName)))}
   if(indexName == "lda_pp"){return(guided_tour(lda_pp(grId)))}
   if(indexName == "pda_pp"){return(guided_tour(pda_pp(grId)))}

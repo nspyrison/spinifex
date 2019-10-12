@@ -38,7 +38,6 @@ Suggests:
     DT,
     reactlog,
     scagnostics,
-    mbgraphic,
     minerva,
     testthat (>= 2.1.0),
     ggfortify,

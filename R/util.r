@@ -304,5 +304,5 @@ col_of <- function(cat, pallet_name = "Dark2")
 pch_of <- function(cat)
 {
   if (length(cat) == 0) stop("Length cannot be zero.")
-  as.integer(factor(cat))
+  as.integer(factor(cat)) + 15
 }
