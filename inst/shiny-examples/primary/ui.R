@@ -35,8 +35,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                  selected = "PCA"),
     conditionalPanel("input.basis_init == 'Projection pursuit'",
                      selectInput("pp_type", "Pursuit index", 
-                                 c("cmass", "holes", "Skinny", "Striated", "Convex", 
-                                   "Clumpy", "MIC", "TIC"))),
+                                 c("cmass", "holes")
+                     )),
     conditionalPanel("input.basis_init == 'From file'",
                      fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
                                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))),

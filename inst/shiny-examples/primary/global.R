@@ -9,9 +9,6 @@ library("dplyr")
 library("DT")          # Gallery table
 library("reactlog")    # Logging
 library("purrr")       # sparkplot prep
-### Projection pursuit indices
-library("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
-library("minerva")     # MIC, TIC
 
 ## for saving files:
 # write.csv(tourr::flea, file="./inst/shiny-examples/comparison/flea.csv",row.names=FALSE)
@@ -49,8 +46,6 @@ scags <- function(scagMetricIndex) {
 getGuidedTour <- function(indexName, grId=NA){ # returns a tour function
   if(indexName == "cmass"){return(guided_tour(cmass()))}
   if(indexName == "holes"){return(guided_tour(holes()))}
-  if(indexName %in% c("Skinny", "Striated", "Convex", "Clumpy")){return(guided_tour(scags(indexName)))}
-  if(indexName %in% c("MIC", "TIC")){return(guided_tour(mineIndex(indexName)))}
   if(indexName == "lda_pp"){return(guided_tour(lda_pp(grId)))}
   if(indexName == "pda_pp"){return(guided_tour(pda_pp(grId)))}
   else return(error("index not found"))
