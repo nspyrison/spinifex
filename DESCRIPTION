@@ -41,7 +41,8 @@ Suggests:
     minerva,
     testthat (>= 2.1.0),
     ggfortify,
-    GGally
+    GGally,
+    covr
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true

@@ -22,4 +22,7 @@ addons:
     packages:
       - cargo
 
+  after_success:
+    - Rscript -e 'covr::codecov()'
+
 
