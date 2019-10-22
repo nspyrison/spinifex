@@ -40,9 +40,6 @@ staticProjection <- function(dat, method, col, pch, alpha) {
 ### END OF STATIC
 
 ### PROJECTION PURSUIT ----
-scags <- function(scagMetricIndex) {
-  function(mat) {return (scagnostics(mat)[scagMetricIndex])}
-}
 getGuidedTour <- function(indexName, grId = NA){ # returns a tour function
   if(indexName == "holes"){return(guided_tour(holes()))}
   if(indexName == "cmass"){return(guided_tour(cmass()))}

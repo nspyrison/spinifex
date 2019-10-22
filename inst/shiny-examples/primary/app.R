@@ -43,9 +43,9 @@ server <- function(input, output, session) {
   
   ### Selected data
   selected_dat <- reactive({
-    x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
-    if (input$rescale_data) x <- tourr::rescale(x)
-    return(x)
+    ret <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
+    if (input$rescale_data) ret <- tourr::rescale(ret)
+    return(ret)
   })
   col_var <- reactive({
     if (input$col_var == "<none>") {rep("a", n())
@@ -62,8 +62,8 @@ server <- function(input, output, session) {
   }) 
   ### basis
   basis <- reactive({
-    if (input$basis_init == "Random") x <- tourr::basis_random(n = p(), d = 2)
-    if (input$basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
+    if (input$basis_init == "Random") ret <- tourr::basis_random(n = p(), d = 2)
+    if (input$basis_init == "PCA")    ret <- prcomp(selected_dat())[[2]][, 1:2]
     if (input$basis_init == "From file") {
       path <- input$basis_file$datapath
       ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
@@ -71,7 +71,7 @@ server <- function(input, output, session) {
       if (ext == ".rda"){ # load .rda object, not just name.
         tmp <- new.env()
         load(file = path, envir = tmp)
-        x <- tmp[[ls(tmp)[1]]]
+        ret <- tmp[[ls(tmp)[1]]]
       }
     }
     if (input$basis_init == "Projection pursuit") {
@@ -86,22 +86,11 @@ server <- function(input, output, session) {
       tour_func <- getGuidedTour(input$pp_type)
       tour_hist <- save_history(selected_dat(), tour_func)
       tour_len  <- dim(tour_hist)[3]
-      x <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
+      ret <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
-    colnames(x) <- c("x", "y")
-    row.names(x) <- colnames(selected_dat())
-    return(x)
-  })
-  
-  TEST_pp_cluster <- reactive({
-    pp_cluster <- NA
-    if (input$basis_init == "Projection pursuit") {
-
-      if (!is.na(input$anim_pp_cluster)) {
-        pp_cluster <- numericDat()[, which(colnames(numericDat()) %in% input$anim_pp_cluster)]
-      }
-    }
-    return(pp_cluster)
+    colnames(ret) <- c("x", "y")
+    row.names(ret) <- colnames(selected_dat())
+    return(ret)
   })
   
   ##### Data observes ----
@@ -127,7 +116,7 @@ server <- function(input, output, session) {
     rv$curr_basis <- basis()
   })
   
-  ### Plot
+  ### Obl reactives -----
   obl_plot <- reactive({
     if (input$manual_method == 'Animation' ) {
       return( # for tourr funcs without manip var.
@@ -156,72 +145,50 @@ server <- function(input, output, session) {
   output$curr_basis_tbl <- renderTable(rv$curr_basis, rownames = TRUE)
   output$obl_plot <- renderPlot({obl_plot()})
   
-  ##### _Interactive reactives ----
-  ### x, y, radius reactives
-  # x motion
-  basis_x <- reactive({
+  ### x, y, radius oblique motion 
+  basis_obl <- reactive({
     if (length(manip_var()) != 0) {
-      theta <- 0
+      theta <- phi <- NULL
       mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-      phi <- input$x_slider * pi/2 + phi.x_zero
-      bas <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                    theta = theta, phi = phi)
-      row.names(bas) <- colnames(selected_dat())
+      if (input$manip_type == "Horizontal") {
+        theta <- 0
+        phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+        phi <- input$manip_slider * pi/2 + phi.x_zero
+      }
+      if (input$manip_type == "Vertical") {
+        theta <- pi/2
+        phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+        phi <- input$manip_slider * pi/2 + phi.y_zero
+      }
+      if (input$manip_type == "Radial") {
+        theta <- atan(mv_sp[2] / mv_sp[1])
+        phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+        phi <- (acos(input$manip_slider) - phi_start) * - sign(mv_sp[1])
+      }
+      ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+                           theta = theta, phi = phi)
+      row.names(ret) <- colnames(selected_dat())
       
-      bas
-    }
-  })
-  # y motion
-  basis_y <- reactive({
-    if (length(manip_var()) != 0) {
-      theta <- pi/2
-      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-      phi <- input$y_slider * pi/2 + phi.y_zero
-      bas <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                    theta = theta, phi = phi)
-      row.names(bas) <- colnames(selected_dat())
-      bas
-    }
-  })
-  # Radial motion
-  basis_rad <- reactive({
-    if (length(manip_var()) != 0) {
-      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-      theta <- atan(mv_sp[2] / mv_sp[1])
-      phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-      phi <- (acos(input$rad_slider) - phi_start) * - sign(mv_sp[1])
-      bas <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
-                    theta = theta, phi = phi)
-      row.names(bas) <- colnames(selected_dat())
-      bas
+      return(ret)
     }
   })
   
   
-  ##### _Interactive observes ----
-  ### Observe slider values
-  observeEvent(input$x_slider, {
-    rv$curr_basis <- basis_x()
-  })
-  observeEvent(input$y_slider, {
-    rv$curr_basis <- basis_y()
-  })
-  observeEvent(input$rad_slider, {
-    rv$curr_basis <- basis_rad()
+  ##### Obl observes -----
+  ### Slider values
+  observeEvent(input$manip_slider, {
+    rv$curr_basis <- basis_obl()
   })
   
   ### Update sliders
   observe({
-    if (length(manip_var()) != 0 &
-        input$manual_method == 'Interactive') {
-      if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
+    if (length(manip_var()) != 0 & input$manual_method == 'Interactive') {
+      if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()} # init rv$curr_basis?
       mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
-      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi/2*sign(mv_sp[1]))
+      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
       x_val <- round(-phi.x_zero / (pi/2), 1)
       isolate(updateSliderInput(session, "x_slider", value = x_val))
-      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi/2*sign(mv_sp[2]))
+      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
       y_val <- round(-phi.y_zero / (pi/2), 1)
       isolate(updateSliderInput(session, "y_slider", value = y_val))
       phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
@@ -245,7 +212,7 @@ server <- function(input, output, session) {
                             pch = pch_of(pch_var()),
                             axes = input$axes,
                             alpha = input$alpha)
-    ggplot2::ggsave(paste0(save_file,".png"), gg_out)
+    ggplot2::ggsave(paste0(save_file, ".png"), gg_out)
     output$obl_save_msg <- renderPrint(paste0(
       "Basis saved as ", save_file, " (csv & png)."))
   })
@@ -257,7 +224,7 @@ server <- function(input, output, session) {
     gallery_row <- data.frame(Id = rv$gallery_n_rows,
                               `Manip var`  = input$manip_var, 
                               `Manip type` = input$manip_type, 
-                              `Time saved` = substr(Sys.time(), 12,19),
+                              `Time saved` = substr(Sys.time(), 12, 19),
                               check.names = FALSE)
     
     gallery_row$basis <- list(rv$curr_basis)
@@ -268,7 +235,7 @@ server <- function(input, output, session) {
   })
   
   
-  ##### _Animimation ----
+  ##### _Animation -----
   observeEvent(input$anim_run, {
     ### Processing message for gif
     # withProgress(message = 'Rendering animation ...', value = 0, {
@@ -292,10 +259,9 @@ server <- function(input, output, session) {
         # TODO: trouble shoot PP and tourr paths.
         ### Projection pursuit
         if (input$anim_type == "Projection pursuit") {
-          pp_cluster <- NA
-          if (!is.na(input$anim_pp_cluster)){
+          if (input$pp_type == "lda_pp" | input$pp_type == "lda_pp") {
             pp_cluster <- numericDat()[, which(colnames(numericDat()) %in% input$anim_pp_cluster)]
-          }
+          } else {pp_cluster <- NA}
           tour_func <- getGuidedTour(input$pp_type, pp_cluster)
           tour_hist <- save_history(selected_dat(), tour_func)
         }
@@ -494,7 +460,7 @@ server <- function(input, output, session) {
         "is.null? ", is.null(rv$gallery_bases), "\n",
         "input$pp_type: ", input$pp_type, "\n",
         "input$anim_pp_cluster: ", input$anim_pp_cluster, "\n",
-        "TEST_pp_cluster(): ", TEST_pp_cluster(), "\n",
+
         sep = ""
     )
   })

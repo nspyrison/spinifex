@@ -57,15 +57,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
         h4("Interactive"),
         selectInput('manip_type', "Manipulation type",
                     c("Radial", "Horizontal", "Vertical")),
-        conditionalPanel("input.manip_type == 'Radial'",
-                         sliderInput("rad_slider", "Radial contribution",
-                                     min = 0, max = 1, value = 0, step = .1)),
-        conditionalPanel("input.manip_type == 'Horizontal'",
-                         sliderInput("x_slider", "X contribution",
-                                     min = -1, max = 1, value = 0, step = .1)),
-        conditionalPanel("input.manip_type == 'Vertical'",
-                         sliderInput("y_slider", "Y contribution",
-                                     min = -1, max = 1, value = 0, step = .1)),
+        sliderInput("manip_slider", "Contribution",
+                    min = -1, max = 1, value = 0, step = .1), 
         fluidRow(column(5, actionButton("obl_save", "Save (csv & png)")),
                  column(5, actionButton("obl_to_gallery", "Send to gallery"))
         ),
@@ -108,8 +101,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
     fluidRow(
       column(9, plotOutput("obl_plot")),
       column(3, fluidRow(h4("Current basis"),
-                         tableOutput("curr_basis_tbl"))
-      )
+                         tableOutput("curr_basis_tbl")))
     ),
     
     conditionalPanel(
