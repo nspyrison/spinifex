@@ -1,26 +1,81 @@
 library(ggplot2)
+library(tourr)
+library(spinifex)
+
+m_var <- 1
 
 server <- function(input, output, session) {
   ##### Initialize ----
   rv <- reactiveValues() # rv needed for x,y,r sliders
-  rv$x <- NULL
-  rv$y <- NULL
-  rv$rad <- NULL
+  rv$slider <- NULL
+  rv$curr_basis <- NULL
+  
+  manip_var_num <- reactive({1})
   
   myPlot <- reactive({
-    .ang <- seq(0,360, length.out = 360) * pi / 180
-    ggplot() + theme_bw() + geom_point(mapping = aes(rv$x, rv$y)) +
-    xlim(-1,1) + ylim(-1,1) + coord_fixed() + 
-    geom_path(mapping = aes(x=cos(.ang),y=sin(.ang)))
+    if (is.null(rv$curr_basis)) {
+      rb <- tourr::basis_random(6, 2)
+      rownames(rb) <- colnames(tourr::flea[, 1:6])
+      rv$curr_basis <- rb
+    } # init curr_basis
+    # Init
+    dat_std <- tourr::rescale(tourr::flea[,1:6])
+    col <- pch <- tourr::flea$species
+    m_var <- manip_var_num()
+    
+    return(oblique_frame(data      = dat_std, 
+                         basis     = rv$curr_basis, 
+                         manip_var = m_var, 
+                         theta     = 0, # perform rotation when setting rv$curr_basis
+                         phi       = 0, 
+                         col       = col,
+                         pch       = pch,
+                         axes      = "bottomleft",
+                         alpha     = 1))
   })
   
-  ### Display interactive
-  observeEvent(input$obl_run, {
-    rv$x <- round(runif(1,-1,1),1)
-    rv$y <- round(runif(1,-1,1),1)
-    rv$rad <- sqrt(rv$x^2 + rv$y^2)
+  #basis_obl <- reactive({
+  observe({
+    #browser()
+    if(is.null(rv$curr_basis)) {
+      rb <- tourr::basis_random(6, 2)
+      rownames(rb) <- colnames(tourr::flea[, 1:6])
+      rv$curr_basis <- rb
+    }
+    theta <- phi <- NULL
+    mv_sp <- create_manip_space(rv$curr_basis, manip_var_num())[manip_var_num(), ]
+    if (input$manip_type == "Horizontal") {
+      theta <- 0
+      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+      phi <- input$manip_slider * pi/2 + phi.x_zero
+    }
+    if (input$manip_type == "Vertical") {
+      theta <- pi/2
+      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+      phi <- input$manip_slider * pi/2 + phi.y_zero
+    }
+    if (input$manip_type == "Radial") {
+      theta <- atan(mv_sp[2] / mv_sp[1])
+      phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+      phi <- (acos(input$manip_slider) - phi_start) * - sign(mv_sp[1])
+    }
+    ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var_num(),
+                         theta = theta, phi = phi)
+    row.names(ret) <- colnames(tourr::flea[,1:6])
+    
+    rv$curr_basis <- ret
   })
+  
+
+  observeEvent(input$obl_run, {
+    rv$curr_basis <- NULL
+    rb <- tourr::basis_random(6, 2)
+    rownames(rb) <- colnames(tourr::flea[, 1:6])
+    rv$curr_basis <- rb
+  })
+  
   output$obl_plot <- renderPlot(myPlot())
+  output$curr_basis <- renderTable(rv$curr_basis, rownames = T)
   
   ### Observe sliders
   observe({
@@ -28,11 +83,10 @@ server <- function(input, output, session) {
     rv$y <- input$y_slider
     rv$rad <- input$rad_slider
   })
-  ### Observe rv$vals
+  
   observe({
-    updateSliderInput(session, "x_slider", value = rv$x)
-    updateSliderInput(session, "y_slider", value = rv$y)
-    updateSliderInput(session, "rad_slider", value = rv$rad)
+    this_val <-  .5
+    updateSliderInput(session, "manip_slider", value = this_val)
   })
   
   ### Development help -- uncomment message at bottom on ui to use
@@ -50,14 +104,13 @@ server <- function(input, output, session) {
 
 ###### UI ----
 ui <- fluidPage(
-  sliderInput("x_slider", "X",
-              min = -1, max = 1, value = 0, step = .1)
-  ,sliderInput("y_slider", "Y",
-              min = -1, max = 1, value = 0, step = .1)
-  ,sliderInput("rad_slider", "radius",
-               min = 0, max = 1.4, value = 0, step = .1)
-  ,actionButton("obl_run", "Random point")
+  selectInput("manip_type", "Type of manipulation", 
+              choices = c("Horizontal", "Vertical", "Radial"))
+  , sliderInput("manip_slider", "magnitude",
+              min = 0, max = 1, value = 0, step = .1)
+  , actionButton("obl_run", "Random basis")
   , plotOutput("obl_plot")
+  , tableOutput("curr_basis")
   , verbatimTextOutput("dev_msg")
 )
 
