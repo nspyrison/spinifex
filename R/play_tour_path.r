@@ -14,14 +14,16 @@
 #' @import tourr
 #' @export
 #' @examples
-#' \dontrun{
 #' flea_std <- rescale(tourr::flea[,1:6])
-#' tpath    <- save_history(flea_std, tour_path = grand_tour(),max = 3)
+#' tpath <- save_history(flea_std, tour_path = grand_tour(),max = 3)
+#' class <- tourr::flea$species
 #' 
+#' \dontrun{
 #' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
 #' play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
-#'   render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+#'   render_type = render_gganimate, col = class, pch = class, 
+#'   axes = "bottomleft", angle = .25, fps = 4)
 #' }
 
 play_tour_path <- function(tour_path,

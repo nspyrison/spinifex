@@ -17,9 +17,6 @@
 # https://deanattali.com/2015/04/21/r-package-shiny-app/
 run_app <- function(example) {
   if (example == "primary") {
-    requireNamespace("scagnostics") # "Skinny", "Striated", "Convex", "Clumpy" 
-    requireNamespace("mbgraphic")   # splines2d, dcor2d
-    requireNamespace("minerva")     # MIC, TIC
     requireNamespace("DT")          # Gallery table
     requireNamespace("reactlog")    # Logging
     requireNamespace("ggfortify")   # PCA
@@ -29,11 +26,9 @@ run_app <- function(example) {
   # locate all the shiny app examples that exist
   validExamples <- list.files(system.file("shiny-examples", package = "spinifex"))
   
-  validExamplesMsg <-
-    paste0(
-      "Valid examples are: '",
-      paste(validExamples, collapse = "', '"),
-      "'")
+  validExamplesMsg <- paste0("Valid examples are: '",
+                             paste(validExamples, collapse = "', '"),
+                             "'")
   
   # if an invalid example is given, throw an error
   if (missing(example) || !nzchar(example) ||

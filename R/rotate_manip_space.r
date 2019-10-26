@@ -15,9 +15,9 @@
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
-#' 
 #' rb  <- basis_random(n = ncol(flea_std))
-#' msp <- create_manip_space(basis = rb, manip_var = 4) 
+#' msp <- create_manip_space(basis = rb, manip_var = 4)
+#' 
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
 #'                    phi = runif(1, max = 2 * pi) )
 rotate_manip_space <- function(manip_space, theta, phi) {

@@ -28,13 +28,15 @@ Performs the a manual tour and returns an animation of \code{render_type}.
 For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}.
 }
 \examples{
-\dontrun{
 flea_std <- tourr::rescale(tourr::flea[,1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
+class <- tourr::flea$species
 
+\dontrun{
 play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
 
-play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
-  render_type = render_gganimate, col = col_of(flea$species), axes = "bottomleft")
+play_manual_tour(basis = rb, data = flea_std, manip_var = 6, theta = .5 * pi,
+                 render_type = render_gganimate, col = class, pch = class, 
+                 axes = "bottomleft", fps = 5)
 }
 }
