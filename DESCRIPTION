@@ -24,10 +24,8 @@ BugReports: https://github.com/nspyrison/spinifex/issues
 Imports:
     ggplot2,
     plotly,
-    webshot,
     RColorBrewer,
-    shiny,
-    dplyr
+    shiny
 Suggests: 
     gganimate,
     animation,
@@ -37,11 +35,10 @@ Suggests:
     rmarkdown,
     DT,
     reactlog,
-    scagnostics,
-    minerva,
     testthat (>= 2.1.0),
     ggfortify,
     GGally,
+    dplyr,
     covr
 VignetteBuilder: knitr
 Encoding: UTF-8
