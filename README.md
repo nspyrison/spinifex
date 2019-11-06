@@ -1,11 +1,11 @@
 [![Travis build status](https://travis-ci.org/nspyrison/spinifex.svg?branch=master)](https://travis-ci.org/nspyrison/spinifex)
 [![CRAN Status Badge](http://www.r-pkg.org/badges/version/spinifex)](https://cran.r-project.org/package=spinifex)
-[![Codecov test coverage](https://codecov.io/gh/nspyrison/spinifex/branch/master/graph/badge.svg)](https://codecov.io/gh/nspyrison/spinifex?branch=master)
+<!-- [![Codecov test coverage](https://codecov.io/gh/nspyrison/spinifex/branch/master/graph/badge.svg)](https://codecov.io/gh/nspyrison/spinifex?branch=master) -->
 <!-- [![CRAN Downloads Each Month](http://cranlogs.r-pkg.org/badges/spinifex)](http://cran.rstudio.com/web/packages/spinifex/index.html)
 [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) -->
 
 
-# spinifex
+# spinifex <img src="man/figures/spinifex_hex.png" align="right" />
 
 ## Scope
 
