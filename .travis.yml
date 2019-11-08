@@ -25,5 +25,6 @@ addons:
     update: true
     packages:
       - cargo
+      - libmagick++-dev
 
 

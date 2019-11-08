@@ -10,3 +10,11 @@ coverage:
       default:
         target: auto
         threshold: 1%
+
+#following: https://walczak.org/2017/06/how-to-add-code-coverage-codecov-to-your-r-package/        
+#comment: false
+language: R
+sudo: false
+cache: packages
+after_success:
+- Rscript -e 'covr::codecov()'
