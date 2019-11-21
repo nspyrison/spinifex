@@ -23,11 +23,11 @@ env:
 addons:
   apt:
     update: true
-         sources:
+       sources:
        - sourceline: 'ppa:opencpu/imagemagick'
        - sourceline: 'ppa:ubuntugis/ppa'
-    packages:
-       - libmagick++-dev
+       packages:
+       - libmagick++-dev # Debian, Ubuntu: install Magick++ for imagemagick
        - librsvg2-dev
        - libwebp-dev
        - libpoppler-cpp-dev
@@ -40,6 +40,7 @@ addons:
 
 
 before_install:
+  - brew install imagemagick@6  # MacOS: install Magick++ for imagemagick
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install llvm &&
     export PATH="/usr/local/opt/llvm/bin:$PATH" &&
     export LDFLAGS="-L/usr/local/opt/llvm/lib" &&
