@@ -16,23 +16,23 @@ library(dplyr)
 source('ui.R', local = TRUE)
 
 server <- function(input, output, session) {
-
-  data <- reactive({
-    if (is.null(input$dat)) {return()}
-    if (input$dat == "flea") .data <- tourr::flea
-    if (input$dat == "olive") .data <- tourr::olive
-    if (input$dat == "wine") .data <- spinifex::wine
-    if (input$dat == "weather") .data <- spinifex::weather
-    if (input$dat == "breastcancer") .data <- spinifex::breastcancer
-    if (input$dat == "mtcars") .data <- mtcars
-    return(.data)
-  })
   
+  ##### Reactives ----
   ### Data initialize
-  numericVars <- reactive(sapply(data(), is.numeric))
-  groupVars   <- reactive(sapply(data(), function(x) is.character(x)|is.factor(x)))
-  numericDat  <- reactive(data()[numericVars()]) # d is only numeric vars
-  groupDat    <- reactive(data()[groupVars()])
+  dat <- reactive({
+    if (is.null(input$dat)) {return()}
+    if (input$dat == "flea") return(tourr::flea)
+    if (input$dat == "olive") return(tourr::olive)
+    if (input$dat == "wine") return(spinifex::wine)
+    if (input$dat == "weather") return(spinifex::weather)
+    if (input$dat == "breastcancer") return(spinifex::breastcancer)
+    if (input$dat == "mtcars") return(mtcars)
+    return()
+  })
+  numericVars <- reactive(sapply(dat(), is.numeric))
+  clusterVars <- reactive(sapply(dat(), function(x) is.character(x)|is.factor(x)))
+  numericDat  <- reactive(dat()[numericVars()]) # dat of only numeric vars
+  clusterDat  <- reactive(dat()[clusterVars()])
   colToSelect <- reactive(min(ncol(numericDat()), 6))
   
   ### Input initialize
@@ -41,38 +41,41 @@ server <- function(input, output, session) {
     if (input$rescale_data) x <- tourr::rescale(x)
     return(x)
   })
-  col_var <- reactive({ # a column
-    groupDat()[, which(colnames(groupDat()) == input$col_var)] 
+  col_var <- reactive({ # a column of values
+    clusterDat()[, which(colnames(clusterDat()) == input$col_var)] 
   })
-  pch_var <- reactive({
-    groupDat()[, which(colnames(groupDat()) == input$pch_var)] # a column
+  pch_var <- reactive({ # a column of values
+    clusterDat()[, which(colnames(clusterDat()) == input$pch_var)] 
   })
   n <- reactive(ncol(selected_dat()))
-  manip_var <- reactive(which(colnames(numericDat()) == input$manip_var)) # number
-  basis <- reactive({
-    if (input$basis_init == "Random") x <- tourr::basis_random(n = n(), d = 2)
-    if (input$basis_init == "PCA")    x <- prcomp(selected_dat())[[2]][, 1:2]
-    return(x)
-  })
+  manip_var <- reactive(which(colnames(numericDat()) == input$manip_var)) # number of var
+  basis <- reactive({prcomp(selected_dat())[[2]][, 1:2]}) # init basis to PC1:2
   
-  ### Update dropdown lists
-  observe({
+  ##### Observes -----
+  ### Update include variable checkbox
+  observeEvent(dat() ,{
     updateCheckboxGroupInput(session,
                              "variables",
                              choices = names(numericDat()),
                              selected = names(numericDat()[1:colToSelect()]))
-    
+  })
+  
+  ### Update manip_var based on selected include varables
+  observeEvent(input$variables, {
     updateSelectInput(session,
                       "manip_var",
                       choices = input$variables)
-    
-    if (length(groupDat()) >= 1) {
+  })
+  
+  ### Update pch/col var if clusterDat changes
+  observeEvent(clusterDat(), {
+    if (length(clusterDat()) >= 1) {
       updateSelectInput(session,
                         "col_var",
-                        choices = names(groupDat()))
+                        choices = names(clusterDat()))
       updateSelectInput(session,
                         "pch_var",
-                        choices = names(groupDat()))
+                        choices = names(clusterDat()))
     } else { # list "none", if there are not character or factor vars.
       updateSelectInput(session,
                         "col_var",
@@ -83,8 +86,8 @@ server <- function(input, output, session) {
     }
   })
   
-  ### Output
-  output$str_data <- renderPrint({str(data())})
+  
+  ### Output ----
   ## Radial tour
   observeEvent(input$radial_button, {
     tour_path <- reactive({manual_tour(basis = basis(),
@@ -99,14 +102,16 @@ server <- function(input, output, session) {
                        col = col_of(col_var()),
                        pch = pch_of(pch_var()),
                        axes = input$axes,
-                       angle = input$angle
+                       angle = input$angle,
+                       fps = input$fps
       )
     })
   }) ## end of radial tour
   
+  output$str_data <- renderPrint({str(dat())})
+  
   output$devMessage <- renderPrint({
-    numericVars()
-    #paste("Development Message: nSelected(): ", head(numVars()))
+    paste0("Development Message: nSelected(): ", head(numVars()))
   })
   
 }

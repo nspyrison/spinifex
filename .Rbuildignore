@@ -1,11 +1,11 @@
 ^CRAN-RELEASE$
 ^Meta$
+^docs$
 ^doc$
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^cran-comments\.md$
-
 
 ^inst/shiny-examples/devExamples/.*$
 

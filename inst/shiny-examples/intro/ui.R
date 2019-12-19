@@ -1,4 +1,4 @@
-### Input Tab
+### Input Tab -----
 tabInput <- tabPanel(
   "Input", fluidPage(
     sidebarPanel(
@@ -24,17 +24,13 @@ tabInput <- tabPanel(
   )
 )
 
-### Radial Manual Tab
+### Radial Manual Tab ----
 tabRadial <-  tabPanel(
   "Radial manual", fluidPage(
     sidebarPanel(
       # generate tour button
       actionButton("radial_button", "Generate tour"),
       tags$hr(),
-      # basis init and rescale
-      radioButtons("basis_init", "Start basis",
-                   choices = c("Random", "PCA"),
-                   selected = "Random"),
       
       # manip, col, and pch vars
       selectInput('manip_var', 'Manip var', "none"),
@@ -44,7 +40,8 @@ tabRadial <-  tabPanel(
       selectInput('axes', 'Reference axes location', 
                   c('center', 'bottomleft', 'off'),
                   'center',  multiple = FALSE),
-      sliderInput('angle', 'Angle step size', value = .05, min = .01, max = .3)
+      sliderInput('angle', 'Angle step size', value = .05, min = .01, max = .3),
+      sliderInput('fps', 'frames per second', value = 3, min = 1, max = 6)
     ),
     
     mainPanel(
@@ -53,7 +50,7 @@ tabRadial <-  tabPanel(
   )
 )
 
-
+##### ui -----
 ### Tabs combined
 ui <- fluidPage(
   navbarPage(

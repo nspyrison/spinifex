@@ -53,22 +53,15 @@ tabManual <- tabPanel("Manual tour", fluidPage(
     ##### _Sidebar interactive inputs ----
     conditionalPanel(
       "input.manual_method == 'Interactive'", 
-      fluidRow(
         h4("Interactive"),
         selectInput('manip_type', "Manipulation type",
                     c("Radial", "Horizontal", "Vertical")),
         sliderInput("manip_slider", "Contribution",
-                    min = -1, max = 1, value = 0, step = .1), 
-        fluidRow(column(5, actionButton("obl_save", "Save (csv & png)")),
-                 column(5, actionButton("obl_to_gallery", "Send to gallery"))
-        ),
-        verbatimTextOutput("obl_save_msg")
-      )
+                    min = -1, max = 1, value = 0, step = .1)
     ),
     ##### _Sidebar animation inputs ----
     conditionalPanel(
       "input.manual_method == 'Animation'",
-      fluidPage(
         h4("Animation"),
         selectInput("anim_type", "Animation type",
                     c("Radial", "Horizontal", "Vertical"
@@ -81,14 +74,17 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                          (input.anim_pp_type == 'lda_pp' || input.anim_pp_type == 'pda_pp')", 
                          selectInput("anim_pp_cluster", "Pursuit cluster (anim)",
                                      choices = c("<no categorical variables found>" = NA) )),
-        sliderInput('anim_angle', 'Angle step size', value = .15, min = .05, max = .3),
-        fluidRow(column(4, actionButton("anim_run", "Run")),
-                 column(8, actionButton("anim_save", "Save (gif)"))),
-        verbatimTextOutput("anim_save_msg")
-      )
+        sliderInput('anim_angle', 'Angle step size', value = .15, min = .05, max = .3)
     ),
-    hr(),
     ##### _Sidebar optional inputs ----
+    fluidRow(column(4, actionButton("save", "Save basis")), # (csv & png)
+             column(4, actionButton("to_gallery", "Send to gallery")),
+             column(4, 
+                    conditionalPanel("input.manual_method == 'Animation'",
+                                     actionButton("anim_save", "Save anim"))) # (gif)
+    ),
+             verbatimTextOutput("save_msg"),
+             hr(),
     h5("Optional Settings"),
     selectInput('axes', 'Reference axes location', 
                 c('center', 'bottomleft', 'off'),
@@ -107,7 +103,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
     conditionalPanel(
       "input.manual_method == 'Animation'", 
       fluidRow(column(1, actionButton("anim_play", "Play")),
-               column(5, sliderInput("anim_slider", "Animation index",
+               column(7, sliderInput("anim_slider", "Animation index",
                                      min = 1, max = 10, value = 1, step = 1, 
                                      width = '100%'))
       ), # Align the play botton with a top margin:
@@ -118,31 +114,15 @@ tabManual <- tabPanel("Manual tour", fluidPage(
 
 
 
-##### Static tab ----
-tabStatic <- tabPanel(
-  "Static projections", fluidPage(
-    sidebarPanel(
-      actionButton("static_run", "Run"),
-      radioButtons("static_method", "Projection",
-                   choices = c("PCA", "SPLOM"), # others to consider: k-means, LDA, MDS, TNSE, Sammon's mapping, etc
-                   selected = "PCA"),
-      sliderInput("static_alpha", "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
-    ),
-    mainPanel(
-      plotOutput("static_plot")
-    )
-  )
-)
-
 ##### Gallery -----
 tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
       verbatimTextOutput("gallery_msg")
       , fluidRow(column(2, plotOutput("gallery_icons")),
-               column(10, DT::dataTableOutput("gallery_df"))
+                 column(10, DT::dataTableOutput("gallery_df"))
       ) # align icons with a top margin: 
-      , tags$style(type='text/css', "#gallery_icons {margin-top: 40px;}")
+      , tags$style(type='text/css', "#gallery_icons {margin-top: 70px;}")
       , verbatimTextOutput("gallery_icons_str")
     )
   )
@@ -153,12 +133,11 @@ ui <- fluidPage(
   ### Make the lines, hr() black
   tags$head(
     tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-  navbarPage("Manual tours -- comparison",
+  navbarPage("spinifex app",
              #tabInput,
              tabManual,
              tabInput,
              tabGallery
-             #, tabStatic
   )
   , verbatimTextOutput("dev_msg")
 )
