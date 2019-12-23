@@ -26,6 +26,11 @@ server <- function(input, output, session) {
   rv$gallery_bases  <- NULL
   rv$gallery_n_rows <- 0
   rv$gallery_rows_removed <- NULL
+  ### for anim_window
+  rv$xmin <- 0
+  rv$xmax <- 0
+  rv$ymin <- 0
+  rv$ymax <- 0
   
   ### Input data
   in_dat <- reactive({
@@ -65,6 +70,8 @@ server <- function(input, output, session) {
     if (input$basis_init == "Random") ret <- tourr::basis_random(n = p(), d = 2)
     if (input$basis_init == "PCA")    ret <- prcomp(selected_dat())[[2]][, 1:2]
     if (input$basis_init == "From file") {
+      ##TODO: trouble shoot
+      browser()
       path <- input$basis_file$datapath
       ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
       if (ext == ".csv") x <- read.csv(path, stringsAsFactors = FALSE)
@@ -75,15 +82,11 @@ server <- function(input, output, session) {
       }
     }
     if (input$basis_init == "Projection pursuit") {
-      pp_cluster <- flea$species #NA
-      # if (!is.na(input$anim_pp_cluster)) {
-      #   pp_cluster <- numericDat()[, which(colnames(numericDat()) %in% input$anim_pp_cluster)]
-      #   print(pp_cluster)
-      #   #browser() #TODO: continue working on pp_cluster here.
-      # }
-      browser()
+      pp_cluster <- NA # flea$species
+      if (input$pp_type %in% c("lda_pp", "pda_pp")){
+        pp_cluster <- clusterDat()[, which(colnames(clusterDat()) %in% input$pp_cluster)]
+      }
       tour_func <- getGuidedTour(input$pp_type, pp_cluster)
-      tour_func <- getGuidedTour(input$pp_type)
       tour_hist <- save_history(selected_dat(), tour_func)
       tour_len  <- dim(tour_hist)[3]
       ret <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
@@ -93,22 +96,83 @@ server <- function(input, output, session) {
     return(ret)
   })
   
+  ### Add col and row names for curr basis tbl 
+  format_curr_basis <- reactive({
+    function(basis){
+      colnames(basis) <- c("x", "y")
+      row.names(basis) <- colnames(selected_dat())
+      rv$curr_basis <- basis
+      return(basis)
+    }
+  })
+  
+  ### Interactive and animated plot
+  main_plot <- reactive({
+    if (input$manual_method == 'Animation' ) {
+      gg_anim <- NULL
+      if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {# spinifex funcs with manip var.
+        gg_anim <- oblique_frame(basis     = rv$curr_basis,
+                                 data      = selected_dat(),
+                                 manip_var = manip_var(),
+                                 theta     = 0,
+                                 phi       = 0,
+                                 col       = col_of(col_var()),
+                                 pch       = pch_of(pch_var()),
+                                 axes      = input$axes,
+                                 alpha     = input$alpha)
+      } else { # tourr funcs without manip var.
+        gg_anim <- view_basis(basis = rv$curr_basis,
+                              data  = selected_dat(),
+                              col   = col_of(col_var()),
+                              pch   = pch_of(pch_var()),
+                              axes  = input$axes,
+                              alpha = input$alpha)
+      }
+      #browser()
+      return(gg_anim)
+    } # end of if (input$manual_method == 'Animation')
+    if (input$manual_method == 'Interactive') {
+      if (is.null(rv$curr_basis)) {format_curr_basis()(basis())}
+      return(
+        oblique_frame(basis     = rv$curr_basis,
+                      data      = selected_dat(),
+                      manip_var = manip_var(),
+                      theta     = 0,
+                      phi       = 0,
+                      col       = col_of(col_var()),
+                      pch       = pch_of(pch_var()),
+                      axes      = input$axes,
+                      alpha     = input$alpha))
+    }
+  })
+  
   ### Data output
-  output$data_str     <- renderPrint({str(in_dat())})
-  output$data_summary <- renderPrint({summary(in_dat())})
+  output$data_str       <- renderPrint({str(in_dat())})
+  output$data_summary   <- renderPrint({summary(in_dat())})
+  output$curr_basis_tbl <- renderTable(rv$curr_basis, rownames = TRUE)
+  output$main_plot      <- renderPlot({suppressMessages(main_plot() + 
+      xlim(-1, 1) +
+      ylim(-1, 1))
+    })
   
   ##### Data observes ----
+  
+  ### Set rv$curr_basis when basis() changes
+  observeEvent(basis(),{rv$curr_basis <- basis()})
+  
   ### Update include variables when numeric data changes.
   observeEvent({numericDat()}, {
     updateCheckboxGroupInput(session, "variables",
                              choices = names(numericDat()),
                              selected = names(numericDat()[1:colToSelect()]))
   })
+  
   ### Update manip variable choices when include variables change
   observeEvent({input$variables}, {
     updateSelectInput(session, "manip_var", choices = input$variables, 
                       selected = input$variables[1])
   })
+  
   ### Update pch/col choices when cluster dat changes
   observeEvent({clusterDat()}, {
     cat_names <- c(names(clusterDat()), "<none>")
@@ -124,7 +188,7 @@ server <- function(input, output, session) {
   
   ### On "Back to start" button, set current basis to the initial basis.
   observeEvent(input$re_init, {
-    rv$curr_basis <- basis()
+    format_curr_basis()(basis())
   })
   
   ### Save current basis (interactive)
@@ -150,7 +214,6 @@ server <- function(input, output, session) {
       "Basis saved as ", save_file, " (csv & png)."))
   })
   
-  
   ### Send current basis to gallery
   observeEvent(input$to_gallery, {
     if (is.null(rv$curr_basis)) return()
@@ -170,41 +233,7 @@ server <- function(input, output, session) {
   
   
   ### Oblique reactives -----
-  obl_plot <- reactive({
-    if (input$manual_method == 'Animation' ) { 
-      if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {# spinifex funcs with manip var.
-        return(oblique_frame(basis     = rv$curr_basis,
-                             data      = selected_dat(),
-                             manip_var = manip_var(),
-                             theta     = 0,
-                             phi       = 0,
-                             col       = col_of(col_var()),
-                             pch       = pch_of(pch_var()),
-                             axes      = input$axes,
-                             alpha     = input$alpha))
-      } else { # tourr funcs without manip var.
-      return( view_basis(basis = rv$curr_basis,
-                         data  = selected_dat(),
-                         col   = col_of(col_var()),
-                         pch   = pch_of(pch_var()),
-                         axes  = input$axes,
-                         alpha = input$alpha))
-      }
-    } # end of if (input$manual_method == 'Animation')
-    if (input$manual_method == 'Interactive') {
-      if (is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
-      return(
-        oblique_frame(basis     = rv$curr_basis,
-                      data      = selected_dat(),
-                      manip_var = manip_var(),
-                      theta     = 0,
-                      phi       = 0,
-                      col       = col_of(col_var()),
-                      pch       = pch_of(pch_var()),
-                      axes      = input$axes,
-                      alpha     = input$alpha))
-    }
-  })
+  
   
   ### x, y, radius oblique motion 
   basis_obl <- reactive({
@@ -234,14 +263,13 @@ server <- function(input, output, session) {
     }
   })
   
-  ### Oblique output
-  output$curr_basis_tbl <- renderTable(rv$curr_basis, rownames = TRUE)
-  output$obl_plot <- renderPlot({obl_plot()})
+  ### No uniquely oblique outputs
+  
   
   ##### Oblique observes -----
   ### Slider values
   observeEvent(input$manip_slider, {
-    rv$curr_basis <- basis_obl()
+    format_curr_basis()(basis_obl())
   })
   
   ### Update sliders
@@ -250,7 +278,7 @@ server <- function(input, output, session) {
     manip_var()
   }, {
     if (length(manip_var()) != 0 & input$manual_method == 'Interactive') {
-      if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
+      if(is.null(rv$curr_basis)) {format_curr_basis()(basis())}
       mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
       if (input$manip_type == "Horizontal") {
         phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
@@ -275,6 +303,7 @@ server <- function(input, output, session) {
   ### Set rv$tour_array when any param changes.
   observeEvent({
     selected_dat()
+    input$anim_type
     ## spinifex param
     basis() 
     manip_var()
@@ -294,35 +323,37 @@ server <- function(input, output, session) {
                     ...) # Allows theta to vary
       }
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
-        if (input$anim_type == "Radial")     {rv$tour_array <- app_manual_tour()} # default theta to radial
-        if (input$anim_type == "Horizontal") {rv$tour_array <- app_manual_tour(theta = 0)}
-        if (input$anim_type == "Vertical")   {rv$tour_array <- app_manual_tour(theta = pi/2)}
+        t_array <- NULL 
+        if (input$anim_type == "Radial")     {t_array <- app_manual_tour()} # default theta to radial
+        if (input$anim_type == "Horizontal") {t_array <- app_manual_tour(theta = 0)}
+        if (input$anim_type == "Vertical")   {t_array <- app_manual_tour(theta = pi/2)}
+        rv$tour_array <- t_array
       } else {
-        # TODO: trouble shoot PP and tourr paths.
         ### Projection pursuit
+        # TODO: trouble shoot PP and tourr paths.
+        t_path <- NULL
         if (input$anim_type == "Projection pursuit") {
-          if (input$pp_type %in% c("lda_pp", "pda_pp")) {
-            pp_cluster <- numericDat()[, which(colnames(numericDat()) %in% input$anim_pp_cluster)]
-          } else {pp_cluster <- NA}
-          tour_func <- getGuidedTour(input$pp_type, pp_cluster)
-          tour_hist <- save_history(selected_dat(), tour_func)
+          pp_cluster <- NA
+          if (input$anim_pp_type %in% c("lda_pp", "pda_pp")) {
+            pp_cluster <- clusterDat()[, which(colnames(clusterDat()) %in% input$anim_pp_cluster)]
+          }
+          tour_func <- getGuidedTour(input$anim_pp_type, pp_cluster)
+          t_path <- tourr::save_history(selected_dat(), tour_func)
         }
         ### Grand, little and local tours
         if(input$anim_type == "Grand (6 bases)") {
           t_path <- tourr::save_history(selected_dat(), max_bases = 6,
                                         tour_path = grand_tour())
-          rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
         }
         if(input$anim_type == "Little (6 bases)") {
           t_path <- tourr::save_history(selected_dat(), max_bases = 6,
                                         tour_path = little_tour())
-          rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
         }
         if(input$anim_type == "Local (6 bases)") {
           t_path <- tourr::save_history(selected_dat(), max_bases = 6,
-                                        tour_path = local_tour())
-          rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
+                                        tour_path = local_tour(rv$curr_basis, pi/4))
         }
+        rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
       }
       
     ### end processing message for .gif 
@@ -333,43 +364,56 @@ server <- function(input, output, session) {
   ##### Animation observes -----
   ### Update anim_slider when rv$tour_array changes.
   observeEvent(rv$tour_array, {
+    rv$anim_playing <- FALSE
     updateSliderInput(session, "anim_slider", value = 1, 
                       min = 1, max = dim(rv$tour_array)[3])
   })
   
   ### Set curr basis when anim_slider changes.
   observeEvent(input$anim_slider, {
-    rv$curr_basis <- matrix(rv$tour_array[,, input$anim_slider], ncol = 2)
+    ## TODO: causes play to stop every tick, dispite play being isolated.
+    #rv$anim_playing <- FALSE
+    format_curr_basis()(matrix(rv$tour_array[,, input$anim_slider], ncol = 2))
   })
   
   ### Change curr basis when slider changes
   observeEvent(input$anim_slider, {
-    rv$curr_basis <- rv$tour_array[,, input$anim_slider]
+    format_curr_basis()(matrix(rv$tour_array[,, input$anim_slider],  ncol = 2 ))
   })
   
+
   ### Save animation to .gif
   observeEvent(input$anim_save, {
     rv$gif_save_cnt <- rv$gif_save_cnt + 1
     
     ##TODO:: DEBUGGING
-    browser()
     flea_std <- rescale(tourr::flea[,1:6])
     tpath <- save_history(flea_std, tour_path = grand_tour(), max = 3)
     str(tpath)
     str(rv$tour_array)
-    attributes(rv$tour_array)$manip_var <- NULL #remove attr manip_var
-    attributes(rv$tour_array)$data <- selected_dat()
+    debug(interpolate)
+    #debug(geodesic_path)
+    writeClipboard("debug(tour)")
+    browser()
     str(tpath)
     str(rv$tour_array)
+    cat("error in tourr::interpolate(tour(tour_path(geodesic_path(geodesic_info(is_orthonormal. it's functions all the way down...")
+    cat("massive hair ball does a tumble")
     play_tour_path(tour_path = rv$tour_array, data = selected_dat(),
                    render_type = render_gganimate)
+    writeClipboard("debug(tour_path)")
+    undebug(interpolate)
+    undebug(tour_path)
+    undebug(geodesic_path)
+    undebug(geodesic_info)
+    ##### --
     ex <- play_tour_path(tour_path = tpath, data = flea_std,
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex)
     ex2 <- play_tour_path(tour_path = rv$tour_array, data = selected_dat(),
                          render_type = render_gganimate)
-    cat("error in tourr::interpolate(tour()). don't know what new_tour() and tour(0) are doing...")
     # gganimate::anim_save("myGif.gif", ex2)
+
     ##TODO: END
     
     
@@ -392,22 +436,25 @@ server <- function(input, output, session) {
   
   ### Play animation button.
   observe({ # Play anim while odd number of clicks
-    invalidateLater(1000, session)
+    invalidateLater(1000 / input$fps, session)
     isolate({
       if (rv$anim_playing == TRUE) { # on play
-        updateSliderInput(session, "anim_slider", value = input$anim_slider + 1)
+        isolate(updateSliderInput(session, "anim_slider", 
+                                   value = input$anim_slider + 1))
         if (input$anim_slider == dim(rv$tour_array)[3]) { # pause on last slide 
           rv$anim_playing <- !rv$anim_playing
         }
       }
-      # play/pause labeling
-      if (rv$anim_playing == TRUE) {
-        updateActionButton(session, "anim_play", label = "pause")
-      }
-      if (rv$anim_playing == FALSE) {
-        updateActionButton(session, "anim_play", label = "play")
-      }
     })
+  })
+  # play/pause labeling
+  observeEvent(rv$anim_playing, {
+    if (rv$anim_playing == TRUE) {
+      updateActionButton(session, "anim_play", label = "pause")
+    }
+    if (rv$anim_playing == FALSE) {
+      updateActionButton(session, "anim_play", label = "play")
+    }
   })
   observeEvent(input$anim_play, { # Button label switching and end of anim handling
     if (input$anim_slider == dim(rv$tour_array)[3]) { # if at the last slide, start at slide 1
@@ -415,6 +462,7 @@ server <- function(input, output, session) {
     }
     rv$anim_playing <- !rv$anim_playing
   })
+  
 
   ##### Gallery tab ----
   
@@ -507,8 +555,9 @@ server <- function(input, output, session) {
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {
     selectedRow <- as.numeric(strsplit(input$gallery_plot, "_")[[1]][2])
-    rv$curr_basis <- 
+    format_curr_basis()(
       rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
+    )
     output$gallery_msg <- renderText(
       paste0("The basis from row ", selectedRow, " is now the current basis.", sep = ""))
   })

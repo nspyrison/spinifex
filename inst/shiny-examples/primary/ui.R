@@ -74,7 +74,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                          (input.anim_pp_type == 'lda_pp' || input.anim_pp_type == 'pda_pp')", 
                          selectInput("anim_pp_cluster", "Pursuit cluster (anim)",
                                      choices = c("<no categorical variables found>" = NA) )),
-        sliderInput('anim_angle', 'Angle step size', value = .15, min = .05, max = .3)
+      sliderInput('anim_angle', 'Angle step size', value = .15, min = .05, max = .3),
+      sliderInput('fps', "Frames per second", min = 1, max = 6, value = 3, step = 1)
     ),
     ##### _Sidebar optional inputs ----
     fluidRow(column(4, actionButton("save", "Save basis")), # (csv & png)
@@ -95,7 +96,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
   ##### _Plot display ----
   mainPanel(
     fluidRow(
-      column(9, plotOutput("obl_plot")),
+      column(9, plotOutput("main_plot")),
       column(3, fluidRow(h4("Current basis"),
                          tableOutput("curr_basis_tbl")))
     ),
