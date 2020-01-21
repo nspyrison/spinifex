@@ -11,17 +11,34 @@
 #' set_axes_position(x = rb, axes = "bottomleft")
 #' @export
 set_axes_position <- function(x, axes) {
-  position <- match.arg(axes, c("center", "bottomleft", "off"))
-  if (position == "off") return()
-  if (position == "center") {
-    axis_scale <- 2 / 3
-    axis_pos   <- 0
-  } else if (position == "bottomleft") {
-    axis_scale <- 1 / 4
-    axis_pos   <- -2 / 3
+  if (length(x) == 1) {x <- data.frame(x = x, y = x)}
+  stopifnot(ncol(x) == 2)
+  stopifnot(axes %in% 
+              c("center", "bottomleft", "topright", "off", "left", "right"))
+  if (axes == "off") return()
+  if (axes == "center") {
+    scale <- 2 / 3
+    x_off <- y_off <- 0
+  } else if (axes == "bottomleft") {
+    scale <- 1 / 4
+    x_off <- y_off <- -2 / 3
+  } else if (axes == "topright") {
+    scale <- 1 / 4
+    x_off <- y_off <- 2 / 3
+  } else if (axes == "left") {
+    scale <- 2 / 3
+    x_off <- -5 / 3 
+    y_off <- 0
+  } else if (axes == "right") {
+    scale <- 2 / 3
+    x_off <- 5 / 3 
+    y_off <- 0
   }
   
-  axis_scale * x + axis_pos 
+  ret <- scale * x
+  ret[, 1] <- ret[, 1] + x_off
+  ret[, 2] <- ret[, 2] + y_off
+  return(ret)
 }
 
 #' Plot projection frame and return the axes table
@@ -92,7 +109,7 @@ view_basis <- function(basis,
     ## Basis axes line segments
     ggplot2::geom_segment(
       data = basis, 
-      mapping = ggplot2::aes(x = x, y = y, xend = zero, yend = zero)) +
+      mapping = ggplot2::aes(x = x, y = y, xend = zero[, 1], yend = zero[, 2])) +
     ## Basis variable text labels
     ggplot2::geom_text(
       data = basis, 

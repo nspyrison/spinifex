@@ -22,8 +22,7 @@
 #' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
 #' play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
-#'   render_type = render_gganimate, col = class, pch = class, 
-#'   axes = "bottomleft", angle = .25, fps = 4)
+#'   render_type = render_gganimate, col = class, pch = class, axes = "bottomleft")
 #' }
 
 play_tour_path <- function(tour_path,

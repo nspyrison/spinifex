@@ -39,7 +39,7 @@ render_ <- function(slides,
   manip_var     <- attributes(slides$basis_slides)$manip_var
   n_slides      <- max(basis_slides$slide)
   p             <- nrow(basis_slides) / n_slides
-  d             <- ncol(basis_slides) - 2
+  d             <- 2
   angle         <- seq(0, 2 * pi, length = 360)
   circ          <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes
@@ -102,7 +102,7 @@ render_ <- function(slides,
           data = basis_slides, size = axes_siz, colour = axes_col,
           mapping = ggplot2::aes(x = x,
                                  y = y, 
-                                 xend = zero, yend = zero, 
+                                 xend = zero[, 1], yend = zero[, 2], 
                                  frame = slide)
         )
       ) +

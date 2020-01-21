@@ -35,13 +35,17 @@ manual_tour <- function(basis   = NULL,
                         phi_max = .5 * pi,
                         angle   = .05,
                         ...) {
-    # Initalize
-  if (missing(manip_var)) stop("manip_var required.")
-  basis <- as.matrix(basis)
+  # Initalize
+  bas <- as.matrix(basis)
   p     <- nrow(basis)
   d     <- ncol(basis)
   manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
-  if (is.null(theta)) theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
+  mv_sp <- manip_space[manip_var, ]
+  if (is.null(theta)) {
+    ang_minor <- atan(mv_sp[2] / mv_sp[1])
+    offset <- 240 + sign(mv_sp[1]) * 60
+    theta <- (offset + sign(mv_sp[1]) * sign(mv_sp[2]) * ang_minor) %% 360
+  }
   phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)
   
