@@ -18,7 +18,7 @@ Description: Generates the path for manual tours
 Depends: 
     R (>= 3.4.0),
     tourr
-License: GPL-3
+License: CC BY-NC-SA 4.0
 URL: https://github.com/nspyrison/spinifex/
 BugReports: https://github.com/nspyrison/spinifex/issues
 Imports:
