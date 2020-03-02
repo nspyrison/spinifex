@@ -1,10 +1,9 @@
 #' Plot a single frame of a manual tour
 #'
-#' Projects the specified rotation as a 2D ggplot object. Analogous to a
-#' slide frame of a radial tour. Used to create an oblique tour by small
-#' changes to the rotation.
+#' Projects the specified rotation as a 2D ggplot object. One static frame of 
+#' manual tour. Useful for providing uaer-guided interaction.
 #' 
-#' @param data (n, p) dataset to project, consisting of numeric variables.
+#' @param data A  (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix. 
 #'   If it's left null, random basis will be used.
 #' @param manip_var Number of the column/dimension to rotate.

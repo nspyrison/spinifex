@@ -338,16 +338,17 @@ server <- function(input, output, session) {
             pp_cluster <- clusterDat()[, which(colnames(clusterDat()) %in% input$anim_pp_cluster)]
           }
           tour_func <- getGuidedTour(input$anim_pp_type, pp_cluster)
-          t_path <- tourr::save_history(selected_dat(), tour_func)
+          t_path <- tourr::save_history(selected_dat(), tour_func, 
+                                        start = rv$curr_basis)
         }
         ### Grand, little and local tours
         if(input$anim_type == "Grand (6 bases)") {
-          t_path <- tourr::save_history(selected_dat(), max_bases = 6,
-                                        tour_path = grand_tour())
+          t_path <- tourr::save_history(selected_dat(), grand_tour(),
+                                        max_bases = 6, start = rv$curr_basis)
         }
         if(input$anim_type == "Little (6 bases)") {
-          t_path <- tourr::save_history(selected_dat(), max_bases = 6,
-                                        tour_path = little_tour())
+          t_path <- tourr::save_history(selected_dat(), little_tour(),
+                                        max_bases = 6, start = rv$curr_basis)
         }
         if(input$anim_type == "Local (6 bases)") {
           t_path <- tourr::save_history(selected_dat(), max_bases = 6,
@@ -413,7 +414,6 @@ server <- function(input, output, session) {
     ex2 <- play_tour_path(tour_path = rv$tour_array, data = selected_dat(),
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex2)
-
     ##TODO: END
     
     

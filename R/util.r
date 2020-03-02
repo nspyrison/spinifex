@@ -11,33 +11,36 @@
 #' set_axes_position(x = rb, axes = "bottomleft")
 #' @export
 set_axes_position <- function(x, axes) {
+  ## Expects
   if (length(x) == 1) {x <- data.frame(x = x, y = x)}
-  stopifnot(ncol(x) == 2)
-  stopifnot(axes %in% 
-              c("center", "bottomleft", "topright", "off", "left", "right"))
-  if (axes == "off") return()
-  if (axes == "center") {
-    scale <- 2 / 3
-    x_off <- y_off <- 0
-  } else if (axes == "bottomleft") {
-    scale <- 1 / 4
-    x_off <- y_off <- -2 / 3
-  } else if (axes == "topright") {
-    scale <- 1 / 4
-    x_off <- y_off <- 2 / 3
-  } else if (axes == "left") {
-    scale <- 2 / 3
-    x_off <- -5 / 3 
-    y_off <- 0
-  } else if (axes == "right") {
-    scale <- 2 / 3
-    x_off <- 5 / 3 
-    y_off <- 0
+  if (ncol(x) != 2) stop("Only defined for 2 dimensions")
+  #### Contains atleast 1 expected string
+  expected_strings <- c("off", "center", "top", "bottom", "left", "right", "middle", "far")
+  axes_contains <- data.frame(0)
+  for (i in 1:length(expected_strings)){
+    axes_contains[1, i] <- as.numeric(grepl(expected_strings[i], axes))
   }
+  colnames(axes_contains) <- expected_strings
+  stopifnot((class(axes) == "character" & max(axes_contains) == TRUE) | 
+              axes %in% c(0, F))
+  
+  if (axes %in% c("off", 0, F)) return()
+  scale <- NULL
+  if (axes_contains$center | axes_contains$middle | axes_contains$far) {
+    scale <- 2 / 3
+  } else { ## If corner: scale <- 1 / 4
+    if((axes_contains$top  + axes_contains$bottom +
+        axes_contains$left + axes_contains$right) >= 2) {scale <- 1 / 4}
+  }
+  offset_x <- offset_y <- 0
+  if (axes_contains$top)    {offset_y <-  5 / 3}
+  if (axes_contains$bottom) {offset_y <- -5 / 3}
+  if (axes_contains$left)   {offset_x <- -5 / 3}
+  if (axes_contains$right)  {offset_x <-  5 / 3}
   
   ret <- scale * x
-  ret[, 1] <- ret[, 1] + x_off
-  ret[, 2] <- ret[, 2] + y_off
+  ret[, 1] <- ret[, 1] + offset_x
+  ret[, 2] <- ret[, 2] + offset_y
   return(ret)
 }
 
@@ -86,13 +89,12 @@ view_basis <- function(basis,
     if(!is.null(data)) {abbreviate(colnames(data), 3)
     } else {paste0("V", 1:p)}}
   ## scale axes
-  zero  <- set_axes_position(0, axes)
+  zero  <- set_axes_position(0,     axes)
   basis <- set_axes_position(basis, axes)
-  circ  <- set_axes_position(circ, axes)
+  circ  <- set_axes_position(circ,  axes)
   
   gg <- 
-    ## Ggplot options
-    ggplot2::ggplot() +
+    #ggplot2::ggplot() +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
@@ -127,7 +129,7 @@ view_basis <- function(basis,
       if (is.factor(pch)) {pch <- pch_of(pch)}
     }
     
-    # Project data and plot
+    ## Project data and plot
     proj <- as.data.frame(
       tourr::rescale(as.matrix(data) %*% as.matrix(basis)) - .5)
     colnames(proj) <- c("x", "y")
@@ -185,17 +187,17 @@ view_manip_space <- function(basis,
     as.matrix(data.frame(x = cos(ang), y = sin(ang), z = 0))
   }
   find_angle <- function(a,b) acos( sum(a*b) / ( sqrt(sum(a * a)) * sqrt(sum(b * b)) ) )
-  xyz <- function(mat) {colnames(mat) <- c("x", "y", "z"); as.data.frame(mat)}
-  rot3x_of <- function(mat, ang = tilt){ # https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
-    ang <- -ang
+  as_xyz_df <- function(mat) {colnames(mat) <- c("x", "y", "z"); as.data.frame(mat)}
+  Rx_of <- function(angle = tilt){ # https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+    ang <- -ang ## Orientation I assume is correct, double check.
     c <- cos(ang)
     s <- sin(ang)
     rot <- matrix(c(1, 0,  0,
                     0, c, -s,
                     0, s,  c), ncol = 3, byrow = T)
-    xyz(mat %*% rot)
+    as_xyz_df(mat %*% rot)
   }
-  rot3z_of <- function(mat, ang){
+  Rz_of <- function(angle = tilt){
     mat <- as.matrix(mat)
     ang <- -ang
     c <- cos(ang)
@@ -203,7 +205,7 @@ view_manip_space <- function(basis,
     rot <- matrix(c(c, -s, 0,
                     s,  c, 0,
                     0,  0, 1),   ncol = 3, byrow = T)
-    xyz(mat %*% rot)
+    as_xyz_df(mat %*% rot)
   }
     
   ##### Square space
@@ -211,22 +213,22 @@ view_manip_space <- function(basis,
   phi   <- find_angle(m_sp[manip_var, ], c(m_sp[manip_var, 1:2], 0))
   
   circ          <- make_curve()
-  theta_curve_r <- rot3x_of(make_curve(0, theta) / 5)
-  phi_curve_r   <- rot3x_of(make_curve(0, phi) / 3) ###TODO: NEEDS TO BE BASED AND ORIENTED FROM END OF V4
-  phi_curve_r   <- rot3z_of(phi_curve_r, theta)
+  theta_curve_r <- Rx_of(make_curve(0, theta) / 5)
+  phi_curve_r   <- Rx_of(make_curve(0, phi) / 3) ###TODO: NEEDS TO BE BASED AND ORIENTED FROM END OF V4
+  phi_curve_r   <- Rz_of(phi_curve_r, theta)
   
   midpt_theta   <- round(nrow(theta_curve) / 2)
   midpt_phi     <- round(nrow(phi_curve) / 2)
   
   m_sp_pp <- cbind(m_sp[,1:2],0) # Force to projection plane
-  circ_r <- rot3x_of(circ)
-  m_sp_r <- rot3x_of(m_sp_pp)
-  m_sp_z <- data.frame(x = m_sp_pp[manip_var, 1],
-                       y = m_sp_pp[manip_var, 2],
-                       z = m_sp_pp[manip_var, 3],
-                       xend = m_sp_r[manip_var, 1],
-                       yend = m_sp_r[manip_var, 3],
-                       lab  = lab[manip_var])
+  circ_r  <- rot3x_of(circ)
+  m_sp_r  <- rot3x_of(m_sp_pp)
+  m_sp_z  <- data.frame(x    = m_sp_pp[manip_var, 1],
+                        y    = m_sp_pp[manip_var, 2],
+                        z    = m_sp_pp[manip_var, 3],
+                        xend = m_sp_r[manip_var, 1],
+                        yend = m_sp_r[manip_var, 3],
+                        lab  = lab[manip_var])
   
   
   ### Plot

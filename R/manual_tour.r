@@ -67,7 +67,7 @@ manual_tour <- function(basis   = NULL,
     
     phi_path <- c(find_path(start = phi_start, end = phi_min),
                   find_path(start = phi_min,   end = phi_max),
-                  find_path(start = phi_max, end = phi_start))
+                  find_path(start = phi_max,   end = phi_start))
     
     ## Make projected basis array
     n_frames <- length(phi_path)
