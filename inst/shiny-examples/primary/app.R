@@ -17,14 +17,14 @@ source('ui.R', local = TRUE)
 server <- function(input, output, session) {
   ##### Data reactives ----
   rv <- reactiveValues()
-  rv$curr_basis     <- NULL
-  rv$png_save_cnt   <- 0
-  rv$tour_array     <- NULL
-  rv$gif_save_cnt   <- 0
-  rv$anim_playing   <- FALSE
-  rv$anim_slide     <- 1
-  rv$gallery_bases  <- NULL
-  rv$gallery_n_rows <- 0
+  rv$curr_basis           <- NULL
+  rv$png_save_cnt         <- 0
+  rv$tour_array           <- NULL
+  rv$gif_save_cnt         <- 0
+  rv$anim_playing         <- FALSE
+  rv$anim_slide           <- 1
+  rv$gallery_bases        <- NULL
+  rv$gallery_n_rows       <- 0
   rv$gallery_rows_removed <- NULL
   ### for anim_window
   rv$xmin <- 0

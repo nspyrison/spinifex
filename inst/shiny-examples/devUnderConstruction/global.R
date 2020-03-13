@@ -5,15 +5,28 @@ library("shiny")
 library("plotly")
 library("spinifex")
 library("dplyr")
+
 ##### include in requireNamespace() in run_app:
+library("shinythemes")
+library("shinyBS")     # BootStrap controls, _ie_ ?shinyBS::bsTooltip
 library("DT")          # Gallery table
 library("reactlog")    # Logging
 library("purrr")       # sparkplot prep
+
+options(shiny.usecairo = FALSE)
 
 ## for saving files:
 # write.csv(tourr::flea, file="./inst/shiny-examples/comparison/flea.csv",row.names=FALSE)
 # save(df, file="./inst/shiny-examples/comparison/df.rda")
 
+format_basis_funcTEST <- function(bas) {
+  if (is.null(bas) | length(bas) == 0) return()
+  if (!is.numeric(bas)) return()
+  colnames(bas)  <- c("x", "y")
+  #row.names(bas) <- colnames(projDat())
+  #rv$curr_basis <- bas
+  return(bas)
+}
 
 ### STATIC LINEAR PROJECTIONS ----
 staticProjection <- function(dat, method, col, pch, alpha) {
@@ -41,8 +54,8 @@ staticProjection <- function(dat, method, col, pch, alpha) {
 
 ### PROJECTION PURSUIT ----
 getGuidedTour <- function(indexName, grId = NA){ # returns a tour function
-  if(indexName == "holes"){return(guided_tour(holes()))}
-  if(indexName == "cmass"){return(guided_tour(cmass()))}
+  if(indexName == "holes") {return(guided_tour(holes()))}
+  if(indexName == "cmass") {return(guided_tour(cmass()))}
   if(indexName == "lda_pp"){return(guided_tour(lda_pp(grId)))}
   if(indexName == "pda_pp"){return(guided_tour(pda_pp(grId)))}
   else return(error("index not found"))

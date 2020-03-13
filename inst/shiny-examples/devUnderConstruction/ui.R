@@ -1,33 +1,40 @@
 ##### Data tab -----
 tabData <- tabPanel(
-  "Data", fluidPage(
+  title = "Data", 
+  fluidPage(
     sidebarPanel(
       # Input csv file
       fileInput("data_file", "Data file (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
       ),
       # Variables to project
-      checkboxGroupInput(
-        "projVars_nms",
-        label = "Variables to project (numeric or ordinal)",
-        choices  = names(tourr::flea[, 1:6]),
-        selected = names(tourr::flea[, 1:6])
+      tipify(
+        checkboxGroupInput(
+          "projVars_nms",
+          label = "Variables to project",
+          choices  = names(tourr::flea),
+          selected = names(tourr::flea)[1:6]
+        ),
+        title = "Expects numeric or discrete ordinal",
+        placement = "top"
       ),
-      # Variables to map to aesthetics 
-      checkboxGroupInput(
-        "aesVars",
-        label = "Variables to map to aesthetics (esp. categorical)",
-        choices  = names(tourr::flea),
-        selected = names(tourr::flea[, 7])
-      ),
+      
       # Point color, shape, and rescale
       fluidRow(column(5, selectInput('col_var', 'Point color', "<none>")),
                column(5, selectInput('pch_var', 'Point shape', "<none>"))),
-      checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
+      tags$div(title = "Normalize every variable to [0, 1]?",
+               checkboxInput("rescale_data", 
+                             "Rescale projection variables", value = TRUE)
+      ),
+      tags$div(title = "Transform data s.t. covariance matrix diagonals are 1?",
+               checkboxInput("sphere_data", "Sphere projection variable", value = FALSE)
+      ),
+      h5("- Rows containing missing values in any projection variable have been remove.")
     ),
-    mainPanel(h3("Data summary -- skimr::skim()")
-              #, verbatimTextOutput("data_str")
-              , verbatimTextOutput("data_summary")
+    mainPanel(h4("Input data summary"),
+              verbatimTextOutput("rawDat_summary"),
+              h4("Selected data summary"),
+              verbatimTextOutput("projDat_summary")
     )
   )
 )
@@ -137,9 +144,11 @@ tabGallery <- tabPanel(
   )
 )
 
-###### Tabs combined ----
-ui <- fluidPage(
-  ### Make the lines, hr() black
+###### Full app layout ----
+ui <- fluidPage( 
+  ## Full app theme
+  theme = shinythemes::shinytheme("flatly"), 
+  ## Make the lines, hr() black
   tags$head(
     tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
   navbarPage("spinifex -- dev app",
@@ -147,6 +156,6 @@ ui <- fluidPage(
              tabManual,
              tabGallery
   )
-  , verbatimTextOutput("dev_msg")
+  , actionButton("browser", "browser()"), verbatimTextOutput("dev_msg")
 )
 

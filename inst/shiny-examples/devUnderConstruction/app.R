@@ -34,33 +34,28 @@ server <- function(input, output, session) {
   
   ##### Init reactive Functions -----
   ### Input data
-  raw_dat <- reactive({
+  rawDat <- reactive({
     if (is.null(input$data_file)) {return(tourr::flea)}
     read.csv(input$data_file$datapath, stringsAsFactors = FALSE)
   })
   
   ### Selected data
   projDat <- reactive({
-    ret <- raw_dat()[, which(colnames(raw_dat()) %in% input$projVars_nms)]
+    dat <- dplyr::tibble(rawDat())
+    ret <- dat[, which(colnames(dat) %in% input$projVars_nms)]
+    ret <- ret[complete.cases(ret), ] # Rowwise complete
     if (input$rescale_data) ret <- tourr::rescale(ret)
-    # if (input$sphere_data)  ret <- tourr::sphere_data(ret)
+    if (input$sphere_data)  ret <- tourr::sphere_data(ret)
     return(ret)
   })
-  projDat <- reactive(raw_dat()[input$projVars_nms])
-  aesDat  <- reactive(raw_dat()[input$aesVars_nms])
+  projDat <- reactive(rawDat()[input$projVars_nms])
+  aesDat  <- reactive(rawDat()[input$aesVars_nms])
   projVars_defaultNms <- reactive({
-    dat <- raw_dat()
-    nms <- names(dat)
-    default_cols <- sapply(dat, function(x) {is.character(x)|is.factor(x)})
-    nms[default_cols]
-  })
-  aesVars_defaultNms  <- reactive({
-    dat <- raw_dat()
+    dat <- rawDat()
     nms <- names(dat)
     default_cols <- sapply(dat, function(x) {is.numeric(x)})
     nms[default_cols]
   })
-  
   n <- reactive(nrow(projDat()))
   p <- reactive(ncol(projDat()))
   col_var <- reactive({
@@ -106,15 +101,18 @@ server <- function(input, output, session) {
       ret <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
     
-    format_basis()(ret)
+    ret <- format_basis()(ret)
     return(ret)
   })
+  
   ### Add col and row names, and set rv$curr_basis.
   format_basis <- reactive({
-    function(bas) {
+    format_basis_func <- function(bas) {
+      if (is.null(bas) | length(bas) == 0) return()
+      if (!is.numeric(bas)) return()
       colnames(bas)  <- c("x", "y")
       row.names(bas) <- colnames(projDat())
-      rv$curr_basis  <- bas
+      #rv$curr_basis <- bas # can I assign rv$ from a reactive or use OBS?
       return(bas)
     }
   })
@@ -160,12 +158,12 @@ server <- function(input, output, session) {
   })
   
   ### Data output
-  output$data_str       <- renderPrint({str(projDat())})
-  output$data_summary   <- renderPrint({skimr::skim(projDat())})
-  output$curr_basis_tbl <- renderTable(rv$curr_basis, rownames = TRUE)
-  output$main_plot      <- renderPlot({suppressMessages(main_plot() + 
-                                                          xlim(-1, 1) +
-                                                          ylim(-1, 1)
+  output$rawDat_summary  <- renderPrint({dplyr::tibble(rawDat())})
+  output$projDat_summary <- renderPrint({dplyr::tibble(projDat())})
+  output$curr_basis_tbl  <- renderTable(rv$curr_basis, rownames = TRUE)
+  output$main_plot       <- renderPlot({suppressMessages(main_plot() + 
+                                                            xlim(-1, 1) +
+                                                            ylim(-1, 1)
     )
   })
   
@@ -177,15 +175,15 @@ server <- function(input, output, session) {
   #   rv$curr_basis <- format_basis()(basis())
   # })
   
-  ### Update include variables when numeric data changes.
-  observeEvent({projDat()}, {
+  ### Update input$projVars_nms when rawDat() changes.
+  observeEvent({rawDat()}, {
     updateCheckboxGroupInput(session,
                              inputId  = "projVars_nms",
-                             choices  = names(raw_dat()),
+                             choices  = names(rawDat()),
                              selected = projVars_defaultNms())
   })
   
-  ### Update manip variable choices when include variables change
+  ### Update input$manip_var choices when input$projVariables changes.
   observeEvent({input$projVariables}, {
     updateSelectInput(session,
                       inputId  = "manip_var", 
@@ -193,25 +191,35 @@ server <- function(input, output, session) {
                       selected = input$projVar[1])
   })
   
-  ### Update col, pch, oo,  choices when cluster dat changes
-  observeEvent({aesDat()}, {
-    aesNms <- names(aesDat())
+  ### Update col, pch,and pp choices when aesdat changes
+  observeEvent({rawDat()}, {
+    dat <- rawDat()
+    nms <- names(dat)
+    pos_cols <- sapply(dat, function(x){is.factor(x)})
+    if (length(pos_cols) == 0) 
+      pos_cols <- sapply(dat, function(x){is.character(x)})
+    if (length(pos_cols) == 0) 
+      pos_cols <- sapply(dat, function(x){length(unique(x)) < 10})
+    if (length(pos_cols) == 0) {selec <- "<none>"
+    } else {selec <- nms[pos_cols][1]}
+    choice <- c("<none>", nms)
+   
     updateSelectInput(session,
                       inputId  = "col_var",
-                      choices  = aesNms,
-                      selected = aesNms[1])
+                      choices  = choice,
+                      selected = selec)
     updateSelectInput(session,
                       inputId  = "pch_var",
-                      choices  = aesNms,
-                      selected = aesNms[1])
+                      choices  = choice,
+                      selected = selec)
     updateSelectInput(session,
                       inputId  = "pp_cluster",
-                      choices  = aesNms,
-                      selected = aesNms[1])
+                      choices  = choice,
+                      selected = selec)
     updateSelectInput(session, 
                       inputId  = "anim_pp_cluster", 
-                      choices  = aesNms,
-                      selected = aesNms[1])
+                      choices  = choice,
+                      selected = selec)
   })
   
   ### On "Initiaze to above parameters" button, set current basis to the initial basis.
@@ -304,7 +312,7 @@ server <- function(input, output, session) {
     manip_num()
   }, {
     if (length(manip_num()) != 0 & input$disp_method == 'Interactive') {
-      if(is.null(rv$curr_basis)) {basis()}
+      if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
       mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
       if (input$manip_type == "Horizontal") {
         phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
@@ -331,16 +339,18 @@ server <- function(input, output, session) {
     projDat()
     input$anim_type
     ## spinifex param
-    basis() 
+    ## TODO: TS
+    # browser()
+    # basis() 
     manip_num()
     input$anim_angle
     ## tourr param 
     input$pp_type
     projDat()
     }, {
-    ### Processing message for gif
-    # withProgress(message = 'Rendering animation ...', value = 0, {
-      ### Manual tour animation
+      ### Processing message for gif
+      # withProgress(message = 'Rendering animation ...', value = 0, {
+      ## Manual tour animation
       app_manual_tour <- function(...) { # for code reduction, handle different theta.
         manual_tour(basis = basis(), 
                     data = projDat(), 
@@ -487,8 +497,10 @@ server <- function(input, output, session) {
     rv$anim_playing <- !rv$anim_playing
   })
   
+  ### Obs browser button
+  observeEvent(input$browser, {browser()})
 
-  ##### Gallery tab ----
+  ##### Gallery tab -- reactive and observe----
   
   ### Display table with buttons
   gallery_df <- reactive({
