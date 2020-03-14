@@ -3,11 +3,11 @@ tabData <- tabPanel(
   title = "Data", 
   fluidPage(
     sidebarPanel(
-      # Input csv file
+      ## Input csv file
       fileInput("data_file", "Data file (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
       ),
-      # Variables to project
+      ## Variables to project
       tipify(
         checkboxGroupInput(
           "projVars_nms",
@@ -19,9 +19,9 @@ tabData <- tabPanel(
         placement = "top"
       ),
       
-      # Point color, shape, and rescale
-      fluidRow(column(5, selectInput('col_var', 'Point color', "<none>")),
-               column(5, selectInput('pch_var', 'Point shape', "<none>"))),
+      ## Aesthetic mappings: Point color, shape, rescale sphere
+      fluidRow(column(5, selectInput('col_nm', 'Point color', "<none>")),
+               column(5, selectInput('pch_nm', 'Point shape', "<none>"))),
       tags$div(title = "Normalize every variable to [0, 1]?",
                checkboxInput("rescale_data", 
                              "Rescale projection variables", value = TRUE)
@@ -29,7 +29,7 @@ tabData <- tabPanel(
       tags$div(title = "Transform data s.t. covariance matrix diagonals are 1?",
                checkboxInput("sphere_data", "Sphere projection variable", value = FALSE)
       ),
-      h5("- Rows containing missing values in any projection variable have been remove.")
+      h5("--  Rows containing missing values in any projection variable have been remove.")
     ),
     mainPanel(h4("Input data summary"),
               verbatimTextOutput("rawDat_summary"),
@@ -42,7 +42,7 @@ tabData <- tabPanel(
 
 ##### Manual tab ----
 tabManual <- tabPanel("Manual tour", fluidPage(
-  ##### _Sidebar tour inputs ----
+  ##### _Sidebar globar inputs ----
   sidebarPanel(
     radioButtons("basis_init", "Start basis",
                  choices = c("PCA", "Projection pursuit", "From file",
@@ -93,11 +93,11 @@ tabManual <- tabPanel("Manual tour", fluidPage(
       sliderInput('fps', "Frames per second", min = 1, max = 6, value = 3, step = 1)
     ),
     ##### _Sidebar optional inputs ----
-    fluidRow(column(4, actionButton("save", "Save basis")), # (csv & png)
+    fluidRow(column(4, actionButton("save", "Save basis")), ## (csv & png)
              column(4, actionButton("to_gallery", "Send to gallery")),
              column(4, 
                     conditionalPanel("input.disp_method == 'Animation'",
-                                     actionButton("anim_save", "Save anim"))) # (gif)
+                                     actionButton("anim_save", "Save anim"))) ## (gif)
     ),
              verbatimTextOutput("save_msg"),
              hr(),
@@ -122,40 +122,73 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                column(7, sliderInput("anim_slider", "Animation index",
                                      min = 1, max = 10, value = 1, step = 1, 
                                      width = '100%'))
-      ), # Align the play botton with a top margin:
+      ), ## Align the play botton with a top margin:
       tags$style(type='text/css', "#anim_play {margin-top: 40px;}")
     )
   )
 ))
 
 
-
-##### Gallery -----
+##### Gallery tab -----
 tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
-      verbatimTextOutput("gallery_msg")
-      , fluidRow(column(2, plotOutput("gallery_icons")),
-                 column(10, DT::dataTableOutput("gallery_df"))
-      ) # align icons with a top margin: 
-      , tags$style(type='text/css', "#gallery_icons {margin-top: 70px;}")
-      , verbatimTextOutput("gallery_icons_str")
+      verbatimTextOutput("gallery_msg"),
+      fluidRow(column(2, plotOutput("gallery_icons")),
+               column(10, DT::dataTableOutput("gallery_df"))
+      ), 
+      ## A icons with a top margin: 
+      tags$style(type='text/css', "#gallery_icons {margin-top: 70px;}"),
+      verbatimTextOutput("gallery_icons_str")
     )
   )
 )
 
 ###### Full app layout ----
-ui <- fluidPage( 
-  ## Full app theme
-  theme = shinythemes::shinytheme("flatly"), 
-  ## Make the lines, hr() black
-  tags$head(
-    tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-  navbarPage("spinifex -- dev app",
-             tabData,
-             tabManual,
-             tabGallery
-  )
-  , actionButton("browser", "browser()"), verbatimTextOutput("dev_msg")
+if (include_dev_display == TRUE){ ## Display dev content.
+ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
+                ## Make the lines, hr() black:
+                tags$head(
+                  tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+                navbarPage("spinifex -- DEV app",
+                           tabData,
+                           tabManual,
+                           tabGallery
+                ),
+                h5(signOff, style = "color: #A9A9A9"),
+                actionButton("browser", "browser()"), 
+                verbatimTextOutput("dev_msg")
 )
+} else { ## Remove dev content
+  ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
+                  ## Make the lines, hr() black:
+                  tags$head(
+                    tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+                  navbarPage("spinifex -- DEV app",
+                             tabData,
+                             tabManual,
+                             tabGallery
+                  ),
+                  h5(signOff, style = "color: #A9A9A9"),
+  )
+}
 
+# ## DO.CALL -- the boolian is breaking conitional arg; returns html string rather than as html obj.
+# ui <- do.call(fluidPage, 
+#               c(list( ## unconitional args:
+#                 theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
+#                 ## Make the lines, hr() black:
+#                 tags$head(
+#                   tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+#                 navbarPage("spinifex -- DEV app",
+#                            tabData,
+#                            tabManual,
+#                            tabGallery
+#                 ),
+#                 h5(signOff, style = "color: #A9A9A9")
+#               ),
+#               list( ## unconitional args:
+#                 actionButton("browser", "browser()")[include_dev_display],
+#                 verbatimTextOutput("dev_msg")[include_dev_display]
+#               ))
+# )

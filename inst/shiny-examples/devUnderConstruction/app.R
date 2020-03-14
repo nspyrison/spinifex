@@ -11,6 +11,8 @@
 #' run_app("primary")
 #' }
 
+#TODO: Go to the other logging method. see spinifex_study app
+
 source('global.R', local = TRUE)
 source('ui.R', local = TRUE)
 
@@ -48,23 +50,28 @@ server <- function(input, output, session) {
     if (input$sphere_data)  ret <- tourr::sphere_data(ret)
     return(ret)
   })
+  
   projDat <- reactive(rawDat()[input$projVars_nms])
-  aesDat  <- reactive(rawDat()[input$aesVars_nms])
   projVars_defaultNms <- reactive({
     dat <- rawDat()
     nms <- names(dat)
     default_cols <- sapply(dat, function(x) {is.numeric(x)})
     nms[default_cols]
   })
+  
   n <- reactive(nrow(projDat()))
   p <- reactive(ncol(projDat()))
   col_var <- reactive({
-    if (input$col_nm == "<none>") {rep("a", n())
-    } else {aesDat()[, which(colnames(aesDat()) == input$col_nm)]}
+    if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
+    
+    dat <- rawDat()
+    dat[, which(colnames(dat) == input$col_nm)]
   })
   pch_var <- reactive({
-    if (input$pch_var == "<none>") {rep("a", n())
-    } else {aesDat()[, which(colnames(aesDat()) == input$pch_nm)]}
+    if (input$pch_var == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
+    
+    dat <- rawDat()
+    dat[, which(colnames(dat) == input$pch_nm)]
   })
   manip_num <- reactive({ 
     if (input$manip_nm == "<none>") {return(1)}
@@ -79,21 +86,22 @@ server <- function(input, output, session) {
     if (input$basis_init == "Random")   ret <- tourr::basis_random(n = p(), d = 2)
     if (input$basis_init == "PCA")      ret <- prcomp(projDat())[[2]][, 1:2]
     if (input$basis_init == "From file") {
-      ##TODO: trouble shoot
-      browser()
+      if(is.null(input$basis_file$datapath) | length(input$basis_file$datapath) == 0)
+        return()
       path <- input$basis_file$datapath
-      ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
+      ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
       if (ext == ".csv") x <- read.csv(path, stringsAsFactors = FALSE)
-      if (ext == ".rda"){ # load .rda object, not just name.
+      if (ext == ".rda"){ ## load .rda object, not just name:
         tmp <- new.env()
         load(file = path, envir = tmp)
         ret <- tmp[[ls(tmp)[1]]]
       }
     }
     if (input$basis_init == "Projection pursuit") {
-      pp_cluster <- NA # flea$species
+      pp_cluster <- NA
       if (input$pp_type %in% c("lda_pp", "pda_pp")){
-        pp_cluster <- aesDat()[, which(colnames(aesDat()) %in% input$pp_cluster)]
+        dat <- rawDat()
+        pp_cluster <- dat[, which(colnames(dat) %in% input$pp_cluster)]
       }
       tour_func <- getGuidedTour(input$pp_type, pp_cluster)
       tour_hist <- save_history(projDat(), tour_func)
@@ -101,7 +109,7 @@ server <- function(input, output, session) {
       ret <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
     
-    ret <- format_basis()(ret)
+    rv$curr_basis <- ret <- format_basis()(ret)
     return(ret)
   })
   
@@ -144,6 +152,7 @@ server <- function(input, output, session) {
     } # end of if (input$disp_method == 'Animation')
     if (input$disp_method == 'Interactive') {
       if (is.null(rv$curr_basis)) {basis()}
+      #browser()
       return(
         oblique_frame(basis     = rv$curr_basis,
                       data      = projDat(),
@@ -169,11 +178,11 @@ server <- function(input, output, session) {
   
   ##### Data observes ----
   
-  # TODO: CAN DEL?
-  # ### Set rv$curr_basis when basis() changes
-  # observeEvent(basis(),{
-  #   rv$curr_basis <- format_basis()(basis())
-  # })
+  ## TODO: CAN DEL?
+  ### Set rv$curr_basis when basis() changes
+  observeEvent(basis(),{
+    rv$curr_basis <- format_basis()(basis())
+  })
   
   ### Update input$projVars_nms when rawDat() changes.
   observeEvent({rawDat()}, {
@@ -191,7 +200,7 @@ server <- function(input, output, session) {
                       selected = input$projVar[1])
   })
   
-  ### Update col, pch,and pp choices when aesdat changes
+  ### Update col, pch,and pp choices when rawDat() changes
   observeEvent({rawDat()}, {
     dat <- rawDat()
     nms <- names(dat)
@@ -222,7 +231,7 @@ server <- function(input, output, session) {
                       selected = selec)
   })
   
-  ### On "Initiaze to above parameters" button, set current basis to the initial basis.
+  ### On "Initiaze to above parameters" button, set current basis to the initializ basis.
   observeEvent(input$re_init, {
     basis()
   })
@@ -231,7 +240,7 @@ server <- function(input, output, session) {
   observeEvent(input$save, {
     if (is.null(rv$curr_basis)) return()
     rv$png_save_cnt <- rv$png_save_cnt + 1
-    save_file <- sprintf("tour_basis%03d", rv$png_save_cnt)
+    save_file <- sprintf("spinifexApp_basis%03d", rv$png_save_cnt)
     write.csv(rv$curr_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
     
     gg_out <- oblique_frame(data = projDat(),
@@ -269,8 +278,6 @@ server <- function(input, output, session) {
   
   
   ### Oblique reactives -----
-  
-  
   ### x, y, radius oblique motion 
   basis_obl <- reactive({
     if (length(manip_num()) != 0 & !is.null(rv$curr_basis)) {
@@ -294,12 +301,10 @@ server <- function(input, output, session) {
       ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_num(),
                            theta = theta, phi = phi)
       
-      format_basis()(ret)
+      rv$curr_basis <- ret <- format_basis()(ret)
       return(ret)
     }
   })
-  
-  ### No uniquely oblique outputs
   
   
   ##### Oblique observes -----
@@ -334,17 +339,14 @@ server <- function(input, output, session) {
   
   
   ##### Animation reactives -----
-  ### Set rv$tour_array when any param changes.
+  ### Set rv$tour_array when related paramater changes.
   observeEvent({
     projDat()
     input$anim_type
-    ## spinifex param
-    ## TODO: TS
-    # browser()
-    # basis() 
+    ## spinifex parameter change:
     manip_num()
     input$anim_angle
-    ## tourr param 
+    ## tourr param parameters change:
     input$pp_type
     projDat()
     }, {
@@ -371,7 +373,8 @@ server <- function(input, output, session) {
         if (input$anim_type == "Projection pursuit") {
           pp_cluster <- NA
           if (input$anim_pp_type %in% c("lda_pp", "pda_pp")) {
-            pp_cluster <- aesDat()[, which(colnames(aesDat()) %in% input$anim_pp_cluster)]
+            dat <- rawDat()
+            pp_cluster <- dat[, which(colnames(dat) %in% input$anim_pp_cluster)]
           }
           tour_func <- getGuidedTour(input$anim_pp_type, pp_cluster)
           t_path <- tourr::save_history(projDat(), tour_func, 
@@ -408,12 +411,12 @@ server <- function(input, output, session) {
   
   ### Set curr basis when anim_slider changes.
   observeEvent(input$anim_slider, {
-    format_basis()(matrix(rv$tour_array[,, input$anim_slider], ncol = 2))
+    rv$curr_basis <- format_basis()(matrix(rv$tour_array[,, input$anim_slider], ncol = 2))
   })
   
   ### Change curr basis when slider changes
   observeEvent(input$anim_slider, {
-    format_basis()(matrix(rv$tour_array[,, input$anim_slider],  ncol = 2 ))
+    rv$curr_basis <- format_basis()(matrix(rv$tour_array[,, input$anim_slider],  ncol = 2 ))
   })
   
 
@@ -460,7 +463,7 @@ server <- function(input, output, session) {
                              render_type = render_gganimate,
                              angle = input$angle,
                              fps = input$fps)
-      save_file <- sprintf("tour_animation%03d.gif", rv$gif_save_cnt)
+      save_file <- sprintf("spinifexApp_animation%03d.gif", rv$gif_save_cnt)
       gganimate::anim_save(save_file, anim)
     })
     setProgress(1)
@@ -469,13 +472,13 @@ server <- function(input, output, session) {
   })
   
   ### Play animation button.
-  observe({ # Play anim while odd number of clicks
+  observe({ ## Play anim while odd number of clicks
     invalidateLater(1000 / input$fps, session)
     isolate({
-      if (rv$anim_playing == TRUE) { # on play
+      if (rv$anim_playing == TRUE) {
         isolate(updateSliderInput(session, "anim_slider", 
                                    value = input$anim_slider + 1))
-        if (input$anim_slider == dim(rv$tour_array)[3]) { # pause on last slide 
+        if (input$anim_slider == dim(rv$tour_array)[3]) { ## pause on last slide 
           rv$anim_playing <- !rv$anim_playing
         }
       }
@@ -490,33 +493,32 @@ server <- function(input, output, session) {
       updateActionButton(session, "anim_play", label = "play")
     }
   })
-  observeEvent(input$anim_play, { # Button label switching and end of anim handling
-    if (input$anim_slider == dim(rv$tour_array)[3]) { # if at the last slide, start at slide 1
+  observeEvent(input$anim_play, { ## Button label switching and end of anim handling
+    if (input$anim_slider == dim(rv$tour_array)[3]) { ## if at the last slide, start at slide 1
       updateSliderInput(session, "anim_slider", value = 1)
     }
     rv$anim_playing <- !rv$anim_playing
   })
   
-  ### Obs browser button
-  observeEvent(input$browser, {browser()})
-
   ##### Gallery tab -- reactive and observe----
-  
-  ### Display table with buttons
   gallery_df <- reactive({
-    if (is.null(rv$gallery_bases)) {
+    if (is.null(rv$gallery_bases) | length(rv$gallery_bases) == 0) {
       output$gallery_msg <- renderPrint(cat("Send a basis to the gallery."))
       return()
     }
     
-    df_full = data.frame(
-      Label = shinyInput(textInput, nrow(rv$gallery_bases), 'text_', label = "",
-                         placeholder = "user label", width = '108px'),
+    full_gallery_df = data.frame(
+      Label = 
+        shinyInput(textInput, 
+                   nrow(rv$gallery_bases), 'text_', label = "",
+                   placeholder = "user label", width = '108px'),
       Plot = 
-        shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Plot", 
+        shinyInput(actionButton, 
+                   nrow(rv$gallery_bases), 'button_', label = "Plot", 
                    onclick = 'Shiny.onInputChange(\"gallery_plot\",  this.id)'),
-      `Save (csv & png)` = 
-        shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Save", 
+      `Save (csv & png)` =
+        shinyInput(actionButton, 
+                   nrow(rv$gallery_bases), 'button_', label = "Save", 
                    onclick = 'Shiny.onInputChange(\"gallery_save\",  this.id)'),
       Delete = 
         shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Remove", 
@@ -526,18 +528,18 @@ server <- function(input, output, session) {
       row.names = NULL,
       check.names = FALSE
     )
-    gallery_df <- df_full[!rownames(df_full) %in% rv$gallery_rows_removed, ]
+    display_gallery_df <- full_gallery_df[!rownames(full_gallery_df) %in% rv$gallery_rows_removed, ]
     
-    if (nrow(gallery_df) == 0) { # if all basis removed
+    if (nrow(display_gallery_df) == 0) { ## _ie._ all bases removed
       output$gallery_msg <- renderPrint(cat("Send a basis to the gallery."))
       return()
     }
     output$gallery_msg <- NULL
     
-    return(gallery_df)
+    return(display_gallery_df)
   })
   
-  ### gallery table output
+  ### Gallery table output
   output$gallery_df <- DT::renderDataTable(
     gallery_df(), server = FALSE, escape = FALSE, selection = 'none', 
     options = list(dom = 't', pageLength = 100)
@@ -545,12 +547,11 @@ server <- function(input, output, session) {
   
   ##### Gallery icons with data
   gallery_icons <- reactive({
-    if (is.null(rv$gallery_bases)) {NULL}
+    if (is.null(rv$gallery_bases) | length(rv$gallery_bases) == 0) {return()}
     
     df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ]
     if (is.null(df)) {return()}
     if (nrow(df) == 0) {return()}
-    # Init
     n_bases <- nrow(df)
     n <- nrow(projDat())
     p <- ncol(projDat())
@@ -564,7 +565,7 @@ server <- function(input, output, session) {
     }
     output$gallery_icons_str <- renderText(str(df_gg_data))
     
-    ### Add data points to gallery icons
+    ## Add data points to gallery icons
       ggplot2::ggplot() +
         ggplot2::scale_color_brewer(palette = "Dark2") +
         ggplot2::theme_void() +
@@ -576,13 +577,13 @@ server <- function(input, output, session) {
         ggplot2::facet_grid(rows = vars(id)) + 
         ggplot2::theme(strip.background = ggplot2::element_blank(),
                        strip.text.y     = ggplot2::element_blank(),
-                       panel.spacing.y   = unit(1.5, "lines"))
+                       panel.spacing.y  = unit(1.5, "lines"))
   })
   
-  ## TODO: this causes the gallery_icon error message, resolve it.
   output$gallery_icons <- renderPlot(
     gallery_icons(), width = 84,
     height = function(){
+      if (is.null(rv$gallery_bases) | length(rv$gallery_bases) == 0) {return(1)}
       n_icons <- nrow(rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ])
       84 * n_icons
     }
@@ -591,18 +592,18 @@ server <- function(input, output, session) {
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {
     selectedRow <- as.numeric(strsplit(input$gallery_plot, "_")[[1]][2])
-    format_basis()(
-      rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
-    )
+    g_bas <- rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
+    rv$curr_basis <- format_basis()(g_bas)
+    
     output$gallery_msg <- renderText(
-      paste0("The basis from row ", selectedRow, " is now the current basis.", sep = ""))
+      paste0("The basis from row ", selectedRow, " has been sent to the Manual tour tab.", sep = ""))
   })
   
   ### Save button (gallery)
   observeEvent(input$gallery_save, {
     rv$png_save_cnt <- rv$png_save_cnt + 1
     selectedRow <- as.numeric(strsplit(input$gallery_save, "_")[[1]][2])
-    save_file <- sprintf("tour_basis%03d", rv$png_save_cnt)
+    save_file <- sprintf("spinifexApp_basis%03d", rv$png_save_cnt)
     save_basis <- 
       rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
     
@@ -627,7 +628,9 @@ server <- function(input, output, session) {
     rv$gallery_rows_removed <- c(rv$gallery_rows_removed, selectedRow)
   })
   
-  ### Development help -- uncomment message at bottom of ui to use
+  ### Development display -- can be toggled by setting include_dev_display at the top of global.R
+  observeEvent(input$browser, {browser()})
+  
   output$dev_msg <- renderPrint({
     cat("Dev msg -- \n",
         "rv$curr_basis: ",         rv$curr_basis, "\n",
@@ -643,7 +646,6 @@ server <- function(input, output, session) {
     )
   })
   
-  #TODO: Go to the other logging method.
 }
 
 shinyApp(ui, server)
