@@ -1,16 +1,15 @@
 ##### Setup ----
 include_dev_display <- T
 
-library("shiny")
-library("plotly")
-library("spinifex")
-library("dplyr")
-## include in requireNamespace() in run_app:
-library("shinythemes")
-library("shinyBS")     # BootStrap controls, _ie_ ?shinyBS::bsTooltip
-library("shinyjs")     # futher control, esp. toggle()
-library("DT")          # Gallery table, HTML in cells
-library("reactlog")    # Logging
+debug(rotate_manip_space)
+
+library("spinifex")    ## imports "ggplot2", "plotly", and "shiny"
+library("tibble")
+library("shinythemes") ## Themes for shiny, think css files.
+library("shinyBS")     ## BootStrap functionality, see ?shinyBS::bsTooltip
+library("shinyjs")     ## Extend JS control and formating, see ?shinyjs::toggle
+library("reactlog")    ## Custom shiny logging
+library("DT")          ## HTML tabbles for the gallery table
 
 options(shiny.reactlog = TRUE) # Logging with reactlog
 

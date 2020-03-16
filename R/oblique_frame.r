@@ -43,6 +43,10 @@ oblique_frame <- function(basis        = NULL,
     message("NULL basis passed. Initializing random basis.")
     basis <- tourr::basis_random(n = ncol(data))
   }
+  if (!is.matrix(data)) {
+    messgae("Data is not a matrix, coearsing to matrix")
+    data <- as.matrix(data)
+  }
   
   p <- nrow(basis)
   m_sp <- create_manip_space(basis, manip_var)

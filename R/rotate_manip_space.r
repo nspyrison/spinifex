@@ -43,7 +43,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
   rotated_space <- manip_space %*% R
   
   ## Checks and formating
-  stopifnot(tourr::is_orthonormal(rotated_space))
+  stopifnot(tourr::is_orthonormal(rotated_space)) ##TODO: it is orthonormal; revisit tourr::is_orthonormal fix.
   if (is.null(colnames(manip_space))) {colnames(rotated_space) <- paste0("proj_", c("x", "y", "z"))
   } else {colnames(rotated_space) <- colnames(manip_space)}
   if (is.null(rownames(manip_space))) {rownames(rotated_space) <- paste0("orig_", c("x", "y", "z"))

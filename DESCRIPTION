@@ -27,19 +27,21 @@ Imports:
     RColorBrewer,
     shiny
 Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 2.1.0),
+    covr, 
     gganimate,
     animation,
     gifski,
     png,
-    knitr,
-    rmarkdown,
-    DT,
-    reactlog,
-    testthat (>= 2.1.0),
-    ggfortify,
-    GGally,
     dplyr,
-    covr
+    GGally,
+    skinythemes,
+    shinyBS,
+    shinyjs,
+    reactlog,
+    DT
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true

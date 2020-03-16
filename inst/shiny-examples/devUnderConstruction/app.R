@@ -43,7 +43,6 @@ server <- function(input, output, session) {
   
   ### Selected data
   projDat <- reactive({
-    dat <- dplyr::tibble(rawDat())
     ret <- dat[, which(colnames(dat) %in% input$projVars_nms)]
     ret <- ret[complete.cases(ret), ] # Rowwise complete
     if (input$rescale_data) ret <- tourr::rescale(ret)
@@ -63,13 +62,11 @@ server <- function(input, output, session) {
   p <- reactive(ncol(projDat()))
   col_var <- reactive({
     if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
-    
     dat <- rawDat()
     dat[, which(colnames(dat) == input$col_nm)]
   })
   pch_var <- reactive({
-    if (input$pch_var == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
-    
+    if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
     dat <- rawDat()
     dat[, which(colnames(dat) == input$pch_nm)]
   })
@@ -80,7 +77,7 @@ server <- function(input, output, session) {
   }) 
   
   ### basis
-  basis <- reactive({
+  init_basis <- reactive({
     ### Condition handling
     if (input$basis_init == "Identity") ret <- diag(p())[, 1:2]
     if (input$basis_init == "Random")   ret <- tourr::basis_random(n = p(), d = 2)
@@ -112,63 +109,67 @@ server <- function(input, output, session) {
     rv$curr_basis <- ret <- format_basis()(ret)
     return(ret)
   })
+  basis_assumptions <- reactive({
+    bas <- rv$curr_basis
+    if (is.null(bas) | length(bas) == 0) return(return())
+    if (!is.numeric(bas)) return(return())
+  })
   
   ### Add col and row names, and set rv$curr_basis.
   format_basis <- reactive({
     format_basis_func <- function(bas) {
-      if (is.null(bas) | length(bas) == 0) return()
-      if (!is.numeric(bas)) return()
+      basis_assumptions()
       colnames(bas)  <- c("x", "y")
       row.names(bas) <- colnames(projDat())
-      #rv$curr_basis <- bas # can I assign rv$ from a reactive or use OBS?
+      
+      rv$curr_basis <- bas # can I assign rv$ from a reactive or use OBS?
       return(bas)
     }
   })
   
   ### Interactive and animated plot
   main_plot <- reactive({
+    basis_assumptions()
+    if (input$disp_method == 'Interactive') {
+      return(
+        spinifex::oblique_frame(basis     = rv$curr_basis,
+                                data      = projDat(),
+                                manip_var = manip_num(),
+                                theta     = 0,
+                                phi       = 0,
+                                col       = col_of(col_var()),
+                                pch       = pch_of(pch_var()),
+                                axes      = input$axes,
+                                alpha     = input$alpha))
+    }# end of if (input$disp_method == 'Interactive')
     if (input$disp_method == 'Animation' ) {
       gg_anim <- NULL
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {# spinifex funcs with manip var.
-        gg_anim <- oblique_frame(basis     = rv$curr_basis,
-                                 data      = projDat(),
-                                 manip_var = manip_num(),
-                                 theta     = 0,
-                                 phi       = 0,
-                                 col       = col_of(col_var()),
-                                 pch       = pch_of(pch_var()),
-                                 axes      = input$axes,
-                                 alpha     = input$alpha)
+        gg_anim <- spinifex::oblique_frame(basis     = rv$curr_basis,
+                                           data      = projDat(),
+                                           manip_var = manip_num(),
+                                           theta     = 0,
+                                           phi       = 0,
+                                           col       = col_of(col_var()),
+                                           pch       = pch_of(pch_var()),
+                                           axes      = input$axes,
+                                           alpha     = input$alpha)
       } else { # tourr funcs without manip var.
-        gg_anim <- view_basis(basis = rv$curr_basis,
-                              data  = projDat(),
-                              col   = col_of(col_var()),
-                              pch   = pch_of(pch_var()),
-                              axes  = input$axes,
-                              alpha = input$alpha)
+        gg_anim <- spinifex::view_basis(basis = rv$curr_basis,
+                                        data  = projDat(),
+                                        col   = col_of(col_var()),
+                                        pch   = pch_of(pch_var()),
+                                        axes  = input$axes,
+                                        alpha = input$alpha)
       }
       #browser()
       return(gg_anim)
     } # end of if (input$disp_method == 'Animation')
-    if (input$disp_method == 'Interactive') {
-      if (is.null(rv$curr_basis)) {basis()}
-      #browser()
-      return(
-        oblique_frame(basis     = rv$curr_basis,
-                      data      = projDat(),
-                      manip_var = manip_num(),
-                      theta     = 0,
-                      phi       = 0,
-                      col       = col_of(col_var()),
-                      pch       = pch_of(pch_var()),
-                      axes      = input$axes,
-                      alpha     = input$alpha))
-    }
   })
   
   ### Data output
-  output$rawDat_summary  <- renderPrint({dplyr::tibble(rawDat())})
-  output$projDat_summary <- renderPrint({dplyr::tibble(projDat())})
+  output$rawDat_summary  <- renderPrint({tibble::tibble(rawDat())})
+  output$projDat_summary <- renderPrint({tibble::tibble(projDat())})
   output$curr_basis_tbl  <- renderTable(rv$curr_basis, rownames = TRUE)
   output$main_plot       <- renderPlot({suppressMessages(main_plot() + 
                                                             xlim(-1, 1) +
@@ -177,11 +178,9 @@ server <- function(input, output, session) {
   })
   
   ##### Data observes ----
-  
-  ## TODO: CAN DEL?
-  ### Set rv$curr_basis when basis() changes
-  observeEvent(basis(),{
-    rv$curr_basis <- format_basis()(basis())
+  ### Set rv$curr_basis when init_basis() changes
+  observeEvent(init_basis(),{ ##TODO Doesn't this defeat the purpose of a re_init button?
+    rv$curr_basis <- format_basis()(init_basis())
   })
   
   ### Update input$projVars_nms when rawDat() changes.
@@ -233,7 +232,7 @@ server <- function(input, output, session) {
   
   ### On "Initiaze to above parameters" button, set current basis to the initializ basis.
   observeEvent(input$re_init, {
-    basis()
+    rv$curr_basis <- init_basis()
   })
   
   ### Save current basis (interactive)
@@ -243,15 +242,15 @@ server <- function(input, output, session) {
     save_file <- sprintf("spinifexApp_basis%03d", rv$png_save_cnt)
     write.csv(rv$curr_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
     
-    gg_out <- oblique_frame(data = projDat(),
-                            basis = rv$curr_basis,
-                            manip_var = manip_num(),
-                            theta = 0,
-                            phi = 0,
-                            col = col_of(col_var()),
-                            pch = pch_of(pch_var()),
-                            axes = input$axes,
-                            alpha = input$alpha)
+    gg_out <- spinifex::oblique_frame(data = projDat(),
+                                      basis = rv$curr_basis,
+                                      manip_var = manip_num(),
+                                      theta = 0,
+                                      phi = 0,
+                                      col = col_of(col_var()),
+                                      pch = pch_of(pch_var()),
+                                      axes = input$axes,
+                                      alpha = input$alpha)
     ggplot2::ggsave(paste0(save_file, ".png"), gg_out,
                     width = 4, height = 4, units = "in")
     
@@ -277,8 +276,8 @@ server <- function(input, output, session) {
   })
   
   
-  ### Oblique reactives -----
-  ### x, y, radius oblique motion 
+  ### Interactive reactives -----
+  ### hor, vert, radial interactive motion 
   basis_obl <- reactive({
     if (length(manip_num()) != 0 & !is.null(rv$curr_basis)) {
       theta <- phi <- NULL
@@ -307,7 +306,7 @@ server <- function(input, output, session) {
   })
   
   
-  ##### Oblique observes -----
+  ##### interactive observes -----
   ### Slider values
   observeEvent(input$manip_slider, {basis_obl()})
   
@@ -317,7 +316,7 @@ server <- function(input, output, session) {
     manip_num()
   }, {
     if (length(manip_num()) != 0 & input$disp_method == 'Interactive') {
-      if(is.null(rv$curr_basis)) {rv$curr_basis <- basis()}
+      if(is.null(rv$curr_basis)) {rv$curr_basis <- init_basis()}
       mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
       if (input$manip_type == "Horizontal") {
         phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
@@ -354,12 +353,13 @@ server <- function(input, output, session) {
       # withProgress(message = 'Rendering animation ...', value = 0, {
       ## Manual tour animation
       app_manual_tour <- function(...) { # for code reduction, handle different theta.
-        manual_tour(basis = basis(), 
+        manual_tour(basis = init_basis(), ##TODO: should be rv$currbasis??? 
                     data = projDat(), 
                     manip_var = manip_num(),
                     angle = input$anim_angle,
                     ...) # Allows theta to vary
       }
+      if (input$disp_method != "animation") return()
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
         t_array <- NULL 
         if (input$anim_type == "Radial")     {t_array <- app_manual_tour()} # Default theta to radial
@@ -404,6 +404,7 @@ server <- function(input, output, session) {
   ##### Animation observes -----
   ### Update anim_slider when rv$tour_array changes.
   observeEvent(rv$tour_array, {
+    if (input$disp_method != "animation") return()
     rv$anim_playing <- FALSE
     updateSliderInput(session, "anim_slider", value = 1, 
                       min = 1, max = dim(rv$tour_array)[3])
@@ -411,17 +412,22 @@ server <- function(input, output, session) {
   
   ### Set curr basis when anim_slider changes.
   observeEvent(input$anim_slider, {
+    if (input$disp_method != "animation") return()
+    basis_assumptions()
     rv$curr_basis <- format_basis()(matrix(rv$tour_array[,, input$anim_slider], ncol = 2))
   })
   
   ### Change curr basis when slider changes
   observeEvent(input$anim_slider, {
+    if (input$disp_method != "animation") return()
+    basis_assumptions()
     rv$curr_basis <- format_basis()(matrix(rv$tour_array[,, input$anim_slider],  ncol = 2 ))
   })
   
 
   ### Save animation to .gif
   observeEvent(input$anim_save, {
+    if (input$disp_method != "animation") return()
     rv$gif_save_cnt <- rv$gif_save_cnt + 1
     
     ##TODO:: DEBUGGING
@@ -547,7 +553,7 @@ server <- function(input, output, session) {
   
   ##### Gallery icons with data
   gallery_icons <- reactive({
-    if (is.null(rv$gallery_bases) | length(rv$gallery_bases) == 0) {return()}
+    if (is.null(rv$gallery_bases) | length(rv$gallery_bases) == 0) return()
     
     df <- rv$gallery_bases[!rownames(rv$gallery_bases) %in% rv$gallery_rows_removed, ]
     if (is.null(df)) {return()}
@@ -608,15 +614,15 @@ server <- function(input, output, session) {
       rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
     
     write.csv(save_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
-    gg_out <- oblique_frame(data = projDat(),
-                            basis = save_basis,
-                            manip_var = manip_num(),
-                            theta = 0,
-                            phi = 0,
-                            col = col_of(col_var()),
-                            pch = pch_of(pch_var()),
-                            axes = input$axes,
-                            alpha = input$alpha)
+    gg_out <- spinifex::oblique_frame(data = projDat(),
+                                      basis = save_basis,
+                                      manip_var = manip_num(),
+                                      theta = 0,
+                                      phi = 0,
+                                      col = col_of(col_var()),
+                                      pch = pch_of(pch_var()),
+                                      axes = input$axes,
+                                      alpha = input$alpha)
     ggplot2::ggsave(paste0(save_file,".png"), gg_out,
                     width = 4, height = 4, units = "in")
     output$gallery_msg <- renderText(paste0("Saved row ", selectedRow, " as ", save_file, " (csv & png).")) 
@@ -635,7 +641,7 @@ server <- function(input, output, session) {
     cat("Dev msg -- \n",
         "rv$curr_basis: ",         rv$curr_basis, "\n",
         "is null? ",               is.null(rv$curr_basis), "\n",
-        "basis(): ",               basis(), "\n",
+        "init_basis(): ",          init_basis(), "\n",
         "input$manip_nm: ",        input$manip_nm, "\n",
         "manip_num(): ",           manip_num(), "\n",
         "rv$gallery_bases: ",      unlist(rv$gallery_bases), "\n",

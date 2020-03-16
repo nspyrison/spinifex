@@ -16,11 +16,12 @@
 # For adjusting or adding more apps it may be useful to read: 
 # https://deanattali.com/2015/04/21/r-package-shiny-app/
 run_app <- function(example) {
-  if (example == "primary") {
-    requireNamespace("DT")          # Gallery table
-    requireNamespace("reactlog")    # Logging
-    requireNamespace("ggfortify")   # PCA
-    requireNamespace("GGally")      # SPLOM
+  if (example %in% c("primary", "devUnderConstruction") {
+    requireNamespace("skinythemes") ## Themes for shiny, think css files.
+    requireNamespace("shinyBS")     ## BootStrap functionality, see ?shinyBS::bsTooltip
+    requireNamespace("shinyjs")     ## Extend JS control and formating, see ?shinyjs::toggle
+    requireNamespace("reactlog")    ## Custom shiny logging
+    requireNamespace("DT")          ## HTML tabbles for the gallery table
   }
   
   # locate all the shiny app examples that exist
