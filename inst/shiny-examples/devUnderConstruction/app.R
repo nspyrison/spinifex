@@ -50,7 +50,7 @@ server <- function(input, output, session) {
     return(ret)
   })
   
-  projDat <- reactive(rawDat()[input$projVars_nms])
+  projDat <- reactive(rawDat()[input$projVansrs_nms])
   projVars_defaultNms <- reactive({
     dat <- rawDat()
     nms <- names(dat)

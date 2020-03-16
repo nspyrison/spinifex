@@ -16,7 +16,7 @@
 # For adjusting or adding more apps it may be useful to read: 
 # https://deanattali.com/2015/04/21/r-package-shiny-app/
 run_app <- function(example) {
-  if (example %in% c("primary", "devUnderConstruction") {
+  if (example %in% c("primary", "devUnderConstruction")) {
     requireNamespace("skinythemes") ## Themes for shiny, think css files.
     requireNamespace("shinyBS")     ## BootStrap functionality, see ?shinyBS::bsTooltip
     requireNamespace("shinyjs")     ## Extend JS control and formating, see ?shinyjs::toggle

@@ -155,7 +155,7 @@ ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "sp
                            tabManual,
                            tabGallery
                 ),
-                h5(signOff, style = "color: #A9A9A9"),
+                h5(contextLine, style = "color: #A9A9A9"),
                 actionButton("browser", "browser()"), 
                 verbatimTextOutput("dev_msg")
 )

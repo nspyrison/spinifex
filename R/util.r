@@ -1,48 +1,4 @@
-#' Returns the axis scale and position
-#' 
-#' Typically called, by other functions to scale axes.
-#' 
-#' @param x numeric data object to scale and offset
-#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
-#'   to "center".
-#' @return axis_scale and axis_scale
-#' @examples 
-#' rb <- basis_random(4, 2)
-#' set_axes_position(x = rb, axes = "bottomleft")
-#' @export
-set_axes_position <- function(x, axes) {
-  ## Expects
-  if (length(x) == 1) {x <- data.frame(x = x, y = x)}
-  if (ncol(x) != 2) stop("Only defined for 2 dimensions")
-  #### Contains atleast 1 expected string
-  expected_strings <- c("off", "center", "top", "bottom", "left", "right", "middle", "far")
-  axes_contains <- data.frame(0)
-  for (i in 1:length(expected_strings)){
-    axes_contains[1, i] <- as.numeric(grepl(expected_strings[i], axes))
-  }
-  colnames(axes_contains) <- expected_strings
-  stopifnot((class(axes) == "character" & max(axes_contains) == TRUE) | 
-              axes %in% c(0, F))
-  
-  if (axes %in% c("off", 0, F)) return()
-  scale <- NULL
-  if (axes_contains$center | axes_contains$middle | axes_contains$far) {
-    scale <- 2 / 3
-  } else { ## If corner: scale <- 1 / 4
-    if((axes_contains$top  + axes_contains$bottom +
-        axes_contains$left + axes_contains$right) >= 2) {scale <- 1 / 4}
-  }
-  offset_x <- offset_y <- 0
-  if (axes_contains$top)    {offset_y <-  5 / 3}
-  if (axes_contains$bottom) {offset_y <- -5 / 3}
-  if (axes_contains$left)   {offset_x <- -5 / 3}
-  if (axes_contains$right)  {offset_x <-  5 / 3}
-  
-  ret <- scale * x
-  ret[, 1] <- ret[, 1] + offset_x
-  ret[, 2] <- ret[, 2] + offset_y
-  return(ret)
-}
+### DISPLAYS -----
 
 #' Plot projection frame and return the axes table
 #' 
@@ -94,7 +50,7 @@ view_basis <- function(basis,
   circ  <- set_axes_position(circ,  axes)
   
   gg <- 
-    #ggplot2::ggplot() +
+    ggplot2::ggplot() +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
@@ -151,7 +107,7 @@ view_basis <- function(basis,
 #'   (numeric variable).
 #' @param manip_var Number of the column/dimension to rotate.
 #' @param manip_col String of the color to highlight the `manip_var`.
-#' @param tilt Angle in radians to rotate the projection plane. 
+#' @param tilt angle in radians to rotate the projection plane. 
 #'   Defaults to pi * 5/12.
 #' @param z_col Color to illustrate the z direction or out of the projection 
 #'   plane.
@@ -180,54 +136,27 @@ view_manip_space <- function(basis,
   col_v[manip_var] <- manip_col
   siz_v            <- rep(0.3, p)
   siz_v[manip_var] <- 1
-  ## helper funcs
-  make_curve <- function(rad_st = 0, rad_stop = 2 * pi){ # 1 obs per degree drawn
-    ang <- seq(rad_st, rad_stop, 
-                 length = max(round(360 * abs(rad_st - rad_stop) / (2 * pi)), 3) )
-    as.matrix(data.frame(x = cos(ang), y = sin(ang), z = 0))
-  }
-  find_angle <- function(a,b) acos( sum(a*b) / ( sqrt(sum(a * a)) * sqrt(sum(b * b)) ) )
-  as_xyz_df <- function(mat) {colnames(mat) <- c("x", "y", "z"); as.data.frame(mat)}
-  Rx_of <- function(angle = tilt){ # https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
-    ang <- -ang ## Orientation I assume is correct, double check.
-    c <- cos(ang)
-    s <- sin(ang)
-    rot <- matrix(c(1, 0,  0,
-                    0, c, -s,
-                    0, s,  c), ncol = 3, byrow = T)
-    as_xyz_df(mat %*% rot)
-  }
-  Rz_of <- function(angle = tilt){
-    mat <- as.matrix(mat)
-    ang <- -ang
-    c <- cos(ang)
-    s <- sin(ang)
-    rot <- matrix(c(c, -s, 0,
-                    s,  c, 0,
-                    0,  0, 1),   ncol = 3, byrow = T)
-    as_xyz_df(mat %*% rot)
-  }
-    
+  
   ##### Square space
   theta <- find_angle(m_sp[manip_var, 1:2], c(1, 0)) * sign(m_sp[manip_var, 2])
-  phi   <- find_angle(m_sp[manip_var, ], c(m_sp[manip_var, 1:2], 0))
+  phi   <- find_angle(m_sp[manip_var, ],    c(m_sp[manip_var, 1:2], 0))
   
   circ          <- make_curve()
-  theta_curve_r <- Rx_of(make_curve(0, theta) / 5)
-  phi_curve_r   <- Rx_of(make_curve(0, phi) / 3) ###TODO: NEEDS TO BE BASED AND ORIENTED FROM END OF V4
-  phi_curve_r   <- Rz_of(phi_curve_r, theta)
+  theta_curve_r <- R3x_of(make_curve(0, theta) / 5, tilt)
+  phi_curve_r   <- R3x_of(make_curve(0, phi) / 3, tilt) ##TODO: NEEDS TO BE BASED AND ORIENTED FROM END OF V4
+  phi_curve_r   <- R3z_of(phi_curve_r, theta) ##TODO: theta isn't suppose to be tilt?
   
-  midpt_theta   <- round(nrow(theta_curve) / 2)
-  midpt_phi     <- round(nrow(phi_curve) / 2)
+  midpt_theta   <- round(nrow(theta_curve_r) / 2)
+  midpt_phi     <- round(nrow(phi_curve_r) / 2)
   
   m_sp_pp <- cbind(m_sp[,1:2],0) # Force to projection plane
-  circ_r  <- rot3x_of(circ)
-  m_sp_r  <- rot3x_of(m_sp_pp)
+  circ_r  <- R3x_of(circ, tilt)
+  m_sp_r  <- R3x_of(m_sp_pp, tilt)
   m_sp_z  <- data.frame(x    = m_sp_pp[manip_var, 1],
                         y    = m_sp_pp[manip_var, 2],
                         z    = m_sp_pp[manip_var, 3],
-                        xend = m_sp_r[manip_var, 1],
-                        yend = m_sp_r[manip_var, 3],
+                        xend =  m_sp_r[manip_var, 1],
+                        yend =  m_sp_r[manip_var, 3],
                         lab  = lab[manip_var])
   
   
@@ -290,6 +219,7 @@ view_manip_space <- function(basis,
   gg
 }
 
+### FORMATING ------
 
 #' Return `col` values for a given categorical variable
 #' 
@@ -327,4 +257,126 @@ pch_of <- function(cat)
 {
   if (length(cat) == 0) stop("Length cannot be zero.")
   as.integer(factor(cat)) + 20L
+}
+
+
+### 
+## _TODO DOC -----
+as_xyz_df <- function(mat) {
+  colnames(mat) <- c("x", "y", "z")
+  as.data.frame(mat)
+}
+
+
+### MATH AND TRANSFORMS -----
+
+#' Test if a numeric matrix is orthonormal.
+#'
+#' Handles more cases than tourr::is_orthonormal(). Will yield to changlees made to tourr.
+#'
+#' @param x numeric matrix
+#' @param tol tolerance used to test floating point differences
+#' 
+#' @examples 
+#' is_orthonormal(tourr::basis_random(n = 6))
+#' is_orthonormal(matrix(1:12, ncol=2))
+#' @export
+is_orthonormal <- function(x, tol = 0.001) { ## TOLerance of SUM of element-wise error.
+  stopifnot(is.matrix(x))
+  
+  actual <- t(x) %*% x ## Collapses to identity matrix IFF x is orthonormal
+  expected <- diag(ncol(x))
+  
+  if (max(actual - expected) < tol) {TRUE} else {FALSE}
+}
+
+
+#' Returns the axis scale and position
+#' 
+#' Typically called, by other functions to scale axes.
+#' 
+#' @param x numeric data object to scale and offset
+#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
+#'   to "center".
+#' @return axis_scale and axis_scale
+#' @examples 
+#' rb <- basis_random(4, 2)
+#' set_axes_position(x = rb, axes = "bottomleft")
+#' @export
+set_axes_position <- function(x, axes) { ## alias old and set new name to set_3x3_position?
+  ## Expects
+  if (length(x) == 1) {x <- data.frame(x = x, y = x)}
+  if (ncol(x) != 2) stop("Only defined for 2 dimensions")
+  #### Contains atleast 1 expected string
+  expected_strings <- c("off", "center", "top", "bottom", "left", "right", "middle", "far")
+  axes_contains <- data.frame(0)
+  for (i in 1:length(expected_strings)){
+    axes_contains[1, i] <- as.numeric(grepl(expected_strings[i], axes))
+  }
+  colnames(axes_contains) <- expected_strings
+  stopifnot((class(axes) == "character" & max(axes_contains) == TRUE) | 
+              axes %in% c(0, F))
+  
+  if (axes %in% c("off", 0, F)) return()
+  scale <- NULL
+  if (axes_contains$center | axes_contains$middle | axes_contains$far) {
+    scale <- 2 / 3
+  } else { ## If corner: scale <- 1 / 4
+    if((axes_contains$top  + axes_contains$bottom +
+        axes_contains$left + axes_contains$right) >= 2) {scale <- 1 / 4}
+  }
+  offset_x <- offset_y <- 0
+  if (axes_contains$top)    {offset_y <-  5 / 3}
+  if (axes_contains$bottom) {offset_y <- -5 / 3}
+  if (axes_contains$left)   {offset_x <- -5 / 3}
+  if (axes_contains$right)  {offset_x <-  5 / 3}
+  
+  ret <- scale * x
+  ret[, 1] <- ret[, 1] + offset_x
+  ret[, 2] <- ret[, 2] + offset_y
+  return(ret)
+}
+
+###_TODO DOC 4x ----
+make_curve <- function(rad_st = 0, rad_stop = 2 * pi){ # 1 obs per degree drawn
+  angle <- seq(rad_st, rad_stop, 
+             length = max(round(360 * abs(rad_st - rad_stop) / (2 * pi)), 3) )
+  as.matrix(data.frame(x = cos(angle), y = sin(angle), z = 0))
+}
+
+find_angle <- function(a,b) { ## Find the angle [radians] between 2 vectors
+  acos(sum(a*b) / 
+         (sqrt(sum(a * a)) * sqrt(sum(b * b))) 
+  )
+  }
+
+R3x_of <- function(mat, angle = tilt){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+  angle <- -angle ## Orientation as I imagine it defined, double check.
+  mat <- as.matrix(mat)
+  c <- cos(angle)
+  s <- sin(angle)
+  rot <- matrix(c(1, 0,  0,
+                  0, c, -s,
+                  0, s,  c), ncol = 3, byrow = T)
+  as_xyz_df(mat %*% rot)
+}
+R3y_of <- function(mat, angle = tilt){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+  angle <- -angle ## Orientation as I imagine it defined, double check.
+  mat <- as.matrix(mat)
+  c <- cos(angle)
+  s <- sin(angle)
+  rot <- matrix(c( c, 0, s,
+                   0, 1, 0,
+                   -s, 0, c), ncol = 3, byrow = T)
+  as_xyz_df(mat %*% rot)
+}
+R3z_of <- function(mat, angle = tilt){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+  angle <- -angle ## Orientation as I imagine it defined, double check.
+  mat <- as.matrix(mat)
+  c <- cos(angle)
+  s <- sin(angle)
+  rot <- matrix(c(c, -s, 0,
+                  s,  c, 0,
+                  0,  0, 1),   ncol = 3, byrow = T)
+  as_xyz_df(mat %*% rot)
 }

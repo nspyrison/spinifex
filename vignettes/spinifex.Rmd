@@ -117,7 +117,7 @@ Subset the data, rescaling the measures. We'll perform a horizontal rotation and
 ```{r Horizontal}
 # Initialize
 nasa_std <- 
-  cbind(GGally::nasa[c("x", "y")], tourr::rescale(nasa[c("day", "surftemp")]))
+  cbind(GGally::nasa[c("x", "y")], tourr::rescale(GGally::nasa[c("day", "surftemp")]))
 bas <- tourr::basis_init(ncol(nasa_std), 2)
 
 # Horizontal roation

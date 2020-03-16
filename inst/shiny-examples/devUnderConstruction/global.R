@@ -14,7 +14,7 @@ library("DT")          ## HTML tabbles for the gallery table
 options(shiny.reactlog = TRUE) # Logging with reactlog
 
 
-signOff <- paste0("Spinifex app --- spinifex (v" ,packageVersion("spinifex"),") --- ", Sys.Date())
+contextLine <- paste0("Spinifex app --- spinifex (v" ,packageVersion("spinifex"),") --- ", Sys.Date())
 
 ## for saving files use:
 # write.csv(tourr::flea, file="./inst/shiny-examples/comparison/flea.csv",row.names=FALSE)
