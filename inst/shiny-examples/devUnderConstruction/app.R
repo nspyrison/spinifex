@@ -7,8 +7,7 @@
 #' @author Nicholas Spyrison
 #' @export
 #' @examples \dontrun{
-#' library(spinifex)
-#' run_app("primary")
+#' spinifex::run_app("primary")
 #' }
 
 #TODO: Go to the other logging method. see spinifex_study app
@@ -34,23 +33,30 @@ server <- function(input, output, session) {
   rv$ymin <- 0
   rv$ymax <- 0
   
-  ##### Init reactive Functions -----
-  ### Input data
+  ####### Reactive functions -----
+  ##### Data reactive
+  ### Raw input data
   rawDat <- reactive({
     if (is.null(input$data_file)) {return(tourr::flea)}
     read.csv(input$data_file$datapath, stringsAsFactors = FALSE)
   })
   
-  ### Selected data
+  ### Data to project
   projDat <- reactive({
-    ret <- dat[, which(colnames(dat) %in% input$projVars_nms)]
+    ret <- rawDat()[input$projVars_nms]
     ret <- ret[complete.cases(ret), ] # Rowwise complete
     if (input$rescale_data) ret <- tourr::rescale(ret)
     if (input$sphere_data)  ret <- tourr::sphere_data(ret)
+    if (!is.matrix(ret))    ret <- as.matrix(ret)
     return(ret)
   })
   
-  projDat <- reactive(rawDat()[input$projVansrs_nms])
+  data_assumptions <- reactive({
+    dat <- projDat()
+    if (is.null(dat) | length(dat) == 0) return(return())
+    if (!is.numeric(bas)) return(return())
+  })
+  
   projVars_defaultNms <- reactive({
     dat <- rawDat()
     nms <- names(dat)
@@ -59,26 +65,47 @@ server <- function(input, output, session) {
   })
   
   n <- reactive(nrow(projDat()))
+  
   p <- reactive(ncol(projDat()))
+  
   col_var <- reactive({
     if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
     dat <- rawDat()
     dat[, which(colnames(dat) == input$col_nm)]
   })
+  
   pch_var <- reactive({
-    if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
+    if (input$pch_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
     dat <- rawDat()
     dat[, which(colnames(dat) == input$pch_nm)]
   })
+  
   manip_num <- reactive({ 
     if (input$manip_nm == "<none>") {return(1)}
     if (input$disp_method == "animation") {return(1)}
     which(colnames(projDat()) == input$manip_nm)
   }) 
   
+  manip_assumptions <- reactive({
+    if (is.null(manip_num()) | length(manip_num()) != 0) return(return())
+    if ((manip_num() %in% colnames(rawDat())) == FALSE) return(return())
+  })
+    
+  pch_assumptions <- reactive({
+    if (is.null(input$pch_nm) | length(input$pch_nm) != 0) return(return())
+    if ((input$pch_nm %in% c(colnames(rawDat()), "<none>")) == FALSE) return(return())
+  })
+  
+  col_assumptions <- reactive({
+    if (is.null(input$col_nm) | length(input$col_nm) != 0) return(return())
+    if ((input$col_nm %in% c(colnames(rawDat()), "<none>")) == FALSE) return(return())
+  })
+  
+  ###### Basis reactives
   ### basis
   init_basis <- reactive({
     ### Condition handling
+    data_assumptions()
     if (input$basis_init == "Identity") ret <- diag(p())[, 1:2]
     if (input$basis_init == "Random")   ret <- tourr::basis_random(n = p(), d = 2)
     if (input$basis_init == "PCA")      ret <- prcomp(projDat())[[2]][, 1:2]
@@ -106,13 +133,14 @@ server <- function(input, output, session) {
       ret <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
     
-    rv$curr_basis <- ret <- format_basis()(ret)
+    ret <- format_basis()(ret)
     return(ret)
   })
+  
   basis_assumptions <- reactive({
     bas <- rv$curr_basis
-    if (is.null(bas) | length(bas) == 0) return(return())
-    if (!is.numeric(bas)) return(return())
+    if (is.null(bas) | length(bas) == 0) init_basis()
+    if (!is.numeric(bas)) stop("Basis non-numeric.")
   })
   
   ### Add col and row names, and set rv$curr_basis.
@@ -170,7 +198,8 @@ server <- function(input, output, session) {
   ### Data output
   output$rawDat_summary  <- renderPrint({tibble::tibble(rawDat())})
   output$projDat_summary <- renderPrint({tibble::tibble(projDat())})
-  output$curr_basis_tbl  <- renderTable(rv$curr_basis, rownames = TRUE)
+  output$curr_basis_tbl  <- renderTable(round(rv$curr_basis, 2),
+                                        rownames = TRUE, colnames = TRUE)
   output$main_plot       <- renderPlot({suppressMessages(main_plot() + 
                                                             xlim(-1, 1) +
                                                             ylim(-1, 1)
@@ -180,7 +209,7 @@ server <- function(input, output, session) {
   ##### Data observes ----
   ### Set rv$curr_basis when init_basis() changes
   observeEvent(init_basis(),{ ##TODO Doesn't this defeat the purpose of a re_init button?
-    rv$curr_basis <- format_basis()(init_basis())
+    format_basis()(init_basis())
   })
   
   ### Update input$projVars_nms when rawDat() changes.
@@ -231,9 +260,7 @@ server <- function(input, output, session) {
   })
   
   ### On "Initiaze to above parameters" button, set current basis to the initializ basis.
-  observeEvent(input$re_init, {
-    rv$curr_basis <- init_basis()
-  })
+  observeEvent(input$re_init, {init_basis()})
   
   ### Save current basis (interactive)
   observeEvent(input$save, {
@@ -299,8 +326,8 @@ server <- function(input, output, session) {
       }
       ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_num(),
                            theta = theta, phi = phi)
+      ret <- format_basis()(ret)
       
-      rv$curr_basis <- ret <- format_basis()(ret)
       return(ret)
     }
   })
@@ -316,7 +343,7 @@ server <- function(input, output, session) {
     manip_num()
   }, {
     if (length(manip_num()) != 0 & input$disp_method == 'Interactive') {
-      if(is.null(rv$curr_basis)) {rv$curr_basis <- init_basis()}
+      basis_assumptions()
       mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
       if (input$manip_type == "Horizontal") {
         phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
@@ -414,14 +441,14 @@ server <- function(input, output, session) {
   observeEvent(input$anim_slider, {
     if (input$disp_method != "animation") return()
     basis_assumptions()
-    rv$curr_basis <- format_basis()(matrix(rv$tour_array[,, input$anim_slider], ncol = 2))
+    format_basis()(matrix(rv$tour_array[,, input$anim_slider], ncol = 2))
   })
   
   ### Change curr basis when slider changes
   observeEvent(input$anim_slider, {
     if (input$disp_method != "animation") return()
     basis_assumptions()
-    rv$curr_basis <- format_basis()(matrix(rv$tour_array[,, input$anim_slider],  ncol = 2 ))
+    format_basis()(matrix(rv$tour_array[,, input$anim_slider],  ncol = 2 ))
   })
   
 
@@ -599,7 +626,7 @@ server <- function(input, output, session) {
   observeEvent(input$gallery_plot, {
     selectedRow <- as.numeric(strsplit(input$gallery_plot, "_")[[1]][2])
     g_bas <- rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
-    rv$curr_basis <- format_basis()(g_bas)
+    format_basis()(g_bas)
     
     output$gallery_msg <- renderText(
       paste0("The basis from row ", selectedRow, " has been sent to the Manual tour tab.", sep = ""))
