@@ -1,14 +1,14 @@
 ##### Preamble ----
 options(shiny.reactlog = TRUE) # Logging with reactlog
 
-library("shiny")
-library("plotly")
-library("spinifex")
-library("dplyr")
+requireNamespace("shiny")
+requireNamespace("plotly")
+requireNamespace("spinifex")
+requireNamespace("dplyr")
 ##### include in requireNamespace() in run_app:
-library("DT")          # Gallery table
-library("reactlog")    # Logging
-library("purrr")       # sparkplot prep
+requireNamespace("DT")          # Gallery table
+requireNamespace("reactlog")    # Logging
+requireNamespace("purrr")       # sparkplot prep
 
 ## for saving files:
 # write.csv(tourr::flea, file="./inst/shiny-examples/comparison/flea.csv",row.names=FALSE)

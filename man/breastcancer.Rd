@@ -4,8 +4,10 @@
 \name{breastcancer}
 \alias{breastcancer}
 \title{Wisconsin Breast Cancer Database}
-\format{Data frame with 675 observations on 10 variables: a factor
-Id, 9 numeric variables, and target class.}
+\format{
+Data frame with 675 observations on 10 variables: a factor
+Id, 9 numeric variables, and target class.
+}
 \usage{
 breastcancer
 }
@@ -37,7 +39,7 @@ Data frame with 675 observations on 10 variables: a factor Id,
 \item Class, Class
 }
 
-Reproducing this dataset:\preformatted{library("mlbench")
+Reproducing this dataset:\preformatted{requireNamespace("mlbench")
 data(BreastCancer)
 
 d <- BreastCancer

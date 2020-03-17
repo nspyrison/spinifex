@@ -23,27 +23,26 @@ URL: https://github.com/nspyrison/spinifex/
 BugReports: https://github.com/nspyrison/spinifex/issues
 Imports:
     ggplot2,
-    plotly,
-    RColorBrewer,
-    shiny
-Suggests: 
-    knitr,
-    rmarkdown,
-    testthat (>= 2.1.0),
-    covr, 
     gganimate,
-    animation,
+    plotly,
+    shiny,
+    RColorBrewer,
     gifski,
     png,
     dplyr,
     GGally,
-    skinythemes,
+    shinythemes,
     shinyBS,
     shinyjs,
     reactlog,
     DT
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 2.1.0),
+    covr
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0

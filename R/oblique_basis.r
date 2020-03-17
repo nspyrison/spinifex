@@ -29,7 +29,6 @@ oblique_basis <- function(basis = NULL,
   
   m_sp <- create_manip_space(basis, manip_var)
   ret <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1:2]
-  colnames(ret) <- c("x","y")
   
   ret
 }

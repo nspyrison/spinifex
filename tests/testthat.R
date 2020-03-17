@@ -1,4 +1,4 @@
-library(testthat)
-library(spinifex)
+requireNamespace(testthat)
+requireNamespace(spinifex)
 
 test_check("spinifex")

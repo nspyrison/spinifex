@@ -57,10 +57,10 @@ We focus on the application of the *manual tours* in this document. In a manual 
 
 In the below examples we go through some use cases for manual tours. To get started we'll load a couple packages we use.
 
-```{r libraries}
-library("spinifex")
-library("GGally")
-library("dplyr")
+```{r pkgs}
+requireNamespace("spinifex")
+requireNamespace("GGally")
+requireNamespace("dplyr")
 ```
 
 ## Example 1 - Rotate an arbitrary basis (& utility functions)

@@ -5,8 +5,15 @@
 \title{Produce the series of projection bases to rotate a variable into and out
 of a projection}
 \usage{
-manual_tour(basis = NULL, manip_var, theta = NULL, phi_min = 0,
-  phi_max = 0.5 * pi, angle = 0.05, ...)
+manual_tour(
+  basis = NULL,
+  manip_var,
+  theta = NULL,
+  phi_min = 0,
+  phi_max = 0.5 * pi,
+  angle = 0.05,
+  ...
+)
 }
 \arguments{
 \item{basis}{A (p, d) dim orthonormal matrix. Required, no default.}

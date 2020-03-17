@@ -7,8 +7,7 @@
 #' @author Nicholas Spyrison
 #' @export
 #' @examples \dontrun{
-#' library(spinifex)
-#' run_app("primary")
+#' spinifex::run_app("primary")
 #' }
 
 source('global.R', local = TRUE)

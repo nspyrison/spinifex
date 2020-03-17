@@ -2,28 +2,30 @@
 % Please edit documentation in R/rotate_manip_space.r
 \name{rotate_manip_space}
 \alias{rotate_manip_space}
-\title{Rotate and return the manipulation space}
+\title{Performs a rotation on the manipulation space}
 \usage{
 rotate_manip_space(manip_space, theta, phi)
 }
 \arguments{
-\item{manip_space}{A (p, d+1) dim manipulation space to be rotated.}
+\item{manip_space}{A (p, d+1) dim matrix (manipulation space) to be rotated.}
 
-\item{theta}{Angle in radians of rotation "in-plane", on the XY plane of the
-reference frame. Typically set from manip_type in \code{proj_data()}.}
+\item{theta}{Angle (radians) of "in-projection-plane" rotation (ie. on xy-
+of the projection). Typically set by the manip_type arg in \code{proj_data()}.}
 
-\item{phi}{Angle in radians of rotation "out-of-plane", the z axis of the
-reference frame. Effectively changes the norm of XY contributions of the
-manip_var.}
+\item{phi}{Angle (radians) of "out-of-porjection-plane" rotation (ie. into
+the z-direction of the manipulation space. Effectively changes the norm
+of the manip_var in the projection plane.}
 }
 \value{
 A (p, d+1) orthonormal matrix of the rotated (manipulation) space.
+The first 2 columns are x and y in the projection plane. The 3rd column
+extends "in the z-direction" orthogonal to the projection plane.
 }
 \description{
-Typically called by \code{manual_tour()}. Rotates a (p, d+1) manipulation space
-matrix by (d+1, d+1) rotation matrix, returning (p, d+1) matrix rotation
-space. The first 2 variables of which are the linear combination of the
-variables for a 2d projection.
+A specific R3 rotation of the manipulation space for a 2D tour.
+Typically called by \code{manual_tour()}. The first 2 columns are x and y in
+the projection plane. The 3rd column extends "in the z-direction" orthogonal
+to the projection plane.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])

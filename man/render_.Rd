@@ -4,8 +4,15 @@
 \alias{render_}
 \title{Render the ggplot before the animation package}
 \usage{
-render_(slides, manip_col = "blue", col = "black", pch = 20,
-  axes = "center", alpha = 1, ...)
+render_(
+  slides,
+  manip_col = "blue",
+  col = "black",
+  pch = 20,
+  axes = "center",
+  alpha = 1,
+  ...
+)
 }
 \arguments{
 \item{slides}{The result of \code{array2df()}, a long df of the projected frames.}

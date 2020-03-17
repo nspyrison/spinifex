@@ -4,8 +4,13 @@
 \alias{play_manual_tour}
 \title{Animate a manual tour}
 \usage{
-play_manual_tour(basis = NULL, data, render_type = render_plotly,
-  rescale_data = FALSE, ...)
+play_manual_tour(
+  basis = NULL,
+  data,
+  render_type = render_plotly,
+  rescale_data = FALSE,
+  ...
+)
 }
 \arguments{
 \item{basis}{A (p, d) dim orthonormal numeric matrix.

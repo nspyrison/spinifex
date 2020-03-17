@@ -4,8 +4,15 @@
 \alias{view_basis}
 \title{Plot projection frame and return the axes table}
 \usage{
-view_basis(basis, data = NULL, lab = NULL, col = "black", pch = 20,
-  axes = "center", alpha = 1)
+view_basis(
+  basis,
+  data = NULL,
+  lab = NULL,
+  col = "black",
+  pch = 20,
+  axes = "center",
+  alpha = 1
+)
 }
 \arguments{
 \item{basis}{A (p, d) basis, XY linear combination of each dimension

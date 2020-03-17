@@ -4,8 +4,14 @@
 \alias{play_tour_path}
 \title{Render display of a provided tour path}
 \usage{
-play_tour_path(tour_path, data = NULL, angle = 0.15,
-  render_type = render_plotly, rescale_data = FALSE, ...)
+play_tour_path(
+  tour_path,
+  data = NULL,
+  angle = 0.15,
+  render_type = render_plotly,
+  rescale_data = FALSE,
+  ...
+)
 }
 \arguments{
 \item{tour_path}{The result of \code{tourr::save_history()} or \code{manual_tour()}.}
@@ -35,7 +41,6 @@ class <- tourr::flea$species
 play_tour_path(tour_path = tpath, data = flea_std)
 
 play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
-  render_type = render_gganimate, col = class, pch = class, 
-  axes = "bottomleft", angle = .25, fps = 4)
+  render_type = render_gganimate, col = class, pch = class, axes = "bottomleft")
 }
 }

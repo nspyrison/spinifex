@@ -28,7 +28,7 @@
 #' @details 
 #' Reproducing this dataset:
 #' ```
-#' library("mlbench")
+#' requireNamespace("mlbench")
 #' data(BreastCancer)
 #' 
 #' d <- BreastCancer
@@ -96,7 +96,7 @@
 #' @details 
 #' Reproducing this dataset:
 #' ```
-#' library("rattle.data")
+#' requireNamespace("rattle.data")
 #' weather <- weather[, c(1,3:7,9,12:24)]
 #' ```
 #' @name weather
@@ -150,7 +150,7 @@
 #' @details 
 #' Reproducing this dataset:
 #' ```
-#' library("rattle.data")
+#' requireNamespace("rattle.data")
 #' wine
 #' ```
 #' @name wine

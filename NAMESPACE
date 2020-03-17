@@ -3,6 +3,7 @@
 export(array2df)
 export(col_of)
 export(create_manip_space)
+export(is_orthonormal)
 export(manual_tour)
 export(oblique_basis)
 export(oblique_frame)

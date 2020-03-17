@@ -4,14 +4,13 @@
 #' @export
 #' @examples 
 #' \dontrun{
-#' library(spinifex)
-#' run_app("intro")
+#' spinifex::run_app("intro")
 #' }
 
-library(shiny)
-library(plotly)
-library(spinifex)
-library(dplyr)
+requireNamespace(shiny)
+requireNamespace(plotly)
+requireNamespace(spinifex)
+requireNamespace(dplyr)
 
 source('ui.R', local = TRUE)
 

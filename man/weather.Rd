@@ -4,9 +4,11 @@
 \name{weather}
 \alias{weather}
 \title{Sample dataset of daily weather observations from Canberra airport in Australia.}
-\format{Data frame of 366 observations of 20 variables, one year of
+\format{
+Data frame of 366 observations of 20 variables, one year of
 daily observations of weather variables at Canberra airport in Australia
-starting November 2007.}
+starting November 2007.
+}
 \source{
 The daily observations are available from http://www.bom.gov.au/climate/data.
 Copyright Commonwealth of Australia 2010,
@@ -61,7 +63,7 @@ starting November 2007:
 \item RainTomorrow, The target variable. Did it rain tomorrow?
 }
 
-Reproducing this dataset:\preformatted{library("rattle.data")
+Reproducing this dataset:\preformatted{requireNamespace("rattle.data")
 weather <- weather[, c(1,3:7,9,12:24)]
 }
 }

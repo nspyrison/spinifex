@@ -38,16 +38,16 @@ rotate_manip_space <- function(manip_space, theta, phi) {
                 -s_theta * s_phi,                      # 6 of 9
                 c_theta * s_phi,
                 s_theta * s_phi,
-                c_phi)                                 # 9 of 9
-              ,nrow = 3, ncol = 3, byrow = TRUE)
+                c_phi),                                # 9 of 9
+              nrow = 3, ncol = 3, byrow = TRUE)
   rotated_space <- manip_space %*% R
   
   ## Checks and formating
   stopifnot(spinifex::is_orthonormal(rotated_space))
-  if (is.null(colnames(manip_space))) {colnames(rotated_space) <- paste0("proj_", c("x", "y", "z"))
-  } else {colnames(rotated_space) <- colnames(manip_space)}
-  if (is.null(rownames(manip_space))) {rownames(rotated_space) <- paste0("orig_", c("x", "y", "z"))
-  } else {rownames(rotated_space) <- rownames(manip_space)}
+  if (is.null(colnames(manip_space)) == FALSE) {colnames(rotated_space) <- colnames(manip_space)
+  } else {colnames(rotated_space) <- paste0("proj_", 1:ncol(rotated))}
+  if (is.null(rownames(manip_space)) == FALSE) {rownames(rotated_space) <- rownames(manip_space)
+  } else {rownames(rotated_space) <- paste0("orig_", 1:nrow(rotated_space))}
   
   rotated_space
 }

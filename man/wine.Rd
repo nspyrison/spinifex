@@ -4,8 +4,10 @@
 \name{wine}
 \alias{wine}
 \title{The wine dataset from the UCI Machine Learning Repository.}
-\format{data frame of 178 observations of 13 variables, target
-class \code{Type} and 12 numeric variables.}
+\format{
+data frame of 178 observations of 13 variables, target
+class \code{Type} and 12 numeric variables.
+}
 \usage{
 wine
 }
@@ -39,7 +41,7 @@ class \code{Type} and 12 numeric variables:
 \item Proline, Proline
 }
 
-Reproducing this dataset:\preformatted{library("rattle.data")
+Reproducing this dataset:\preformatted{requireNamespace("rattle.data")
 wine
 }
 }
