@@ -40,13 +40,21 @@ server <- function(input, output, session) {
     if (is.null(input$data_file)) {return(tourr::flea)}
     read.csv(input$data_file$datapath, stringsAsFactors = FALSE)
   })
+  raw_data_assumptions <- reactive({
+    raw <- rawDat()
+    if (is.null(raw) | length(raw) == 0) return(return())
+  })
   
   ### Data to project
   projDat <- reactive({
+    raw_data_assumptions()
     ret <- rawDat()[input$projVars_nms]
-    ret <- ret[complete.cases(ret), ] # Rowwise complete
+    ret <- ret[complete.cases(ret), ] ## Rowwise complete
+    #### Tranforms are too far beyond the scope right now.
+    ## if (input$transfor == "sphere") ret <- tourr::sphere_data(ret)
+    ## if (input$transfor == "PCA")    ret <- prcomp(ret)$rotation
     if (input$rescale_data) ret <- tourr::rescale(ret)
-    if (input$sphere_data)  ret <- tourr::sphere_data(ret)
+    
     if (!is.matrix(ret))    ret <- as.matrix(ret)
     return(ret)
   })
@@ -54,10 +62,10 @@ server <- function(input, output, session) {
   data_assumptions <- reactive({
     dat <- projDat()
     if (is.null(dat) | length(dat) == 0) return(return())
-    if (!is.numeric(bas)) return(return())
   })
   
   projVars_defaultNms <- reactive({
+    data_assumptions()
     dat <- rawDat()
     nms <- names(dat)
     default_cols <- sapply(dat, function(x) {is.numeric(x)})
@@ -65,19 +73,18 @@ server <- function(input, output, session) {
   })
   
   n <- reactive(nrow(projDat()))
-  
   p <- reactive(ncol(projDat()))
   
   col_var <- reactive({
     if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
     dat <- rawDat()
-    dat[, which(colnames(dat) == input$col_nm)]
+    dat[input$col_nm]
   })
   
   pch_var <- reactive({
     if (input$pch_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
     dat <- rawDat()
-    dat[, which(colnames(dat) == input$pch_nm)]
+    dat[input$pch_nm]
   })
   
   manip_num <- reactive({ 
@@ -88,9 +95,10 @@ server <- function(input, output, session) {
   
   manip_assumptions <- reactive({
     if (is.null(manip_num()) | length(manip_num()) != 0) return(return())
-    if ((manip_num() %in% colnames(rawDat())) == FALSE) return(return())
+    if ((manip_num() %in% colnames(rawDat())) == FALSE)  return(return())
+    if (input$manip_slider < 0 | input$manip_slider > 1) return(return()) 
   })
-    
+  
   pch_assumptions <- reactive({
     if (is.null(input$pch_nm) | length(input$pch_nm) != 0) return(return())
     if ((input$pch_nm %in% c(colnames(rawDat()), "<none>")) == FALSE) return(return())
@@ -110,8 +118,8 @@ server <- function(input, output, session) {
     if (input$basis_init == "Random")   ret <- tourr::basis_random(n = p(), d = 2)
     if (input$basis_init == "PCA")      ret <- prcomp(projDat())[[2]][, 1:2]
     if (input$basis_init == "From file") {
-      if(is.null(input$basis_file$datapath) | length(input$basis_file$datapath) == 0)
-        return()
+      if(is.null(input$basis_file$datapath) | 
+         length(input$basis_file$datapath) == 0) return()
       path <- input$basis_file$datapath
       ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
       if (ext == ".csv") x <- read.csv(path, stringsAsFactors = FALSE)
@@ -125,7 +133,7 @@ server <- function(input, output, session) {
       pp_cluster <- NA
       if (input$pp_type %in% c("lda_pp", "pda_pp")){
         dat <- rawDat()
-        pp_cluster <- dat[, which(colnames(dat) %in% input$pp_cluster)]
+        pp_cluster <- dat[input$pp_cluster]
       }
       tour_func <- getGuidedTour(input$pp_type, pp_cluster)
       tour_hist <- save_history(projDat(), tour_func)
@@ -158,6 +166,11 @@ server <- function(input, output, session) {
   ### Interactive and animated plot
   main_plot <- reactive({
     basis_assumptions()
+    data_assumptions()
+    manip_assumptions()
+    pch_assumptions()
+    col_assumptions()
+    
     if (input$disp_method == 'Interactive') {
       return(
         spinifex::oblique_frame(basis     = rv$curr_basis,
@@ -169,11 +182,11 @@ server <- function(input, output, session) {
                                 pch       = pch_of(pch_var()),
                                 axes      = input$axes,
                                 alpha     = input$alpha))
-    }# end of if (input$disp_method == 'Interactive')
+    } ## end of if (input$disp_method == 'Interactive')
     if (input$disp_method == 'Animation' ) {
-      gg_anim <- NULL
-      if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {# spinifex funcs with manip var.
-        gg_anim <- spinifex::oblique_frame(basis     = rv$curr_basis,
+      anim_frame <- NULL
+      if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
+        anim_frame <- spinifex::oblique_frame(basis     = rv$curr_basis,
                                            data      = projDat(),
                                            manip_var = manip_num(),
                                            theta     = 0,
@@ -182,27 +195,29 @@ server <- function(input, output, session) {
                                            pch       = pch_of(pch_var()),
                                            axes      = input$axes,
                                            alpha     = input$alpha)
-      } else { # tourr funcs without manip var.
-        gg_anim <- spinifex::view_basis(basis = rv$curr_basis,
+      } else { ## For tourr funcs without manip var.
+        anim_frame <- spinifex::view_basis(basis = rv$curr_basis,
                                         data  = projDat(),
                                         col   = col_of(col_var()),
                                         pch   = pch_of(pch_var()),
                                         axes  = input$axes,
                                         alpha = input$alpha)
       }
-      #browser()
-      return(gg_anim)
-    } # end of if (input$disp_method == 'Animation')
+      return(anim_frame)
+    } ## end of if (input$disp_method == 'Animation')
   })
   
   ### Data output
   output$rawDat_summary  <- renderPrint({tibble::tibble(rawDat())})
   output$projDat_summary <- renderPrint({tibble::tibble(projDat())})
-  output$curr_basis_tbl  <- renderTable(round(rv$curr_basis, 2),
-                                        rownames = TRUE, colnames = TRUE)
-  output$main_plot       <- renderPlot({suppressMessages(main_plot() + 
-                                                            xlim(-1, 1) +
-                                                            ylim(-1, 1)
+  output$curr_basis_tbl  <- renderTable({
+    basis_assumptions()
+    round(rv$curr_basis, 2)
+  })
+  output$main_plot       <- renderPlot({
+    suppressMessages(main_plot() + 
+                       xlim(-1, 1) +
+                       ylim(-1, 1)
     )
   })
   
@@ -306,34 +321,35 @@ server <- function(input, output, session) {
   ### Interactive reactives -----
   ### hor, vert, radial interactive motion 
   basis_obl <- reactive({
-    if (length(manip_num()) != 0 & !is.null(rv$curr_basis)) {
-      theta <- phi <- NULL
-      mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
-      if (input$manip_type == "Horizontal") {
-        theta <- 0
-        phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-        phi <- input$manip_slider * pi/2 + phi.x_zero
-      }
-      if (input$manip_type == "Vertical") {
-        theta <- pi/2
-        phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-        phi <- input$manip_slider * pi/2 + phi.y_zero
-      }
-      if (input$manip_type == "Radial") {
-        theta <- atan(mv_sp[2] / mv_sp[1])
-        phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-        phi <- (acos(input$manip_slider) - phi_start) * - sign(mv_sp[1])
-      }
-      ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_num(),
-                           theta = theta, phi = phi)
-      ret <- format_basis()(ret)
-      
-      return(ret)
+    basis_assumptions()
+    manip_assumptions()
+    
+    theta <- phi <- NULL
+    mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
+    if (input$manip_type == "Horizontal") {
+      theta <- 0
+      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+      phi <- input$manip_slider * pi/2 + phi.x_zero
     }
+    if (input$manip_type == "Vertical") {
+      theta <- pi/2
+      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+      phi <- input$manip_slider * pi/2 + phi.y_zero
+    }
+    if (input$manip_type == "Radial") {
+      theta <- atan(mv_sp[2] / mv_sp[1])
+      phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+      phi <- (acos(input$manip_slider) - phi_start) * - sign(mv_sp[1])
+    }
+    ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_num(),
+                         theta = theta, phi = phi)
+    
+    ret <- format_basis()(ret)
+    return(ret)
   })
   
   
-  ##### interactive observes -----
+  ##### Interactive observes -----
   ### Slider values
   observeEvent(input$manip_slider, {basis_obl()})
   
@@ -342,24 +358,23 @@ server <- function(input, output, session) {
     rv$curr_basis
     manip_num()
   }, {
-    if (length(manip_num()) != 0 & input$disp_method == 'Interactive') {
-      basis_assumptions()
-      mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
-      if (input$manip_type == "Horizontal") {
-        phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
-        x_val <- round(-phi.x_zero / (pi/2), 1)
-        updateSliderInput(session, "manip_slider", value = x_val)
-      }
-      if (input$manip_type == "Vertical") {
-        phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
-        y_val <- round(-phi.y_zero / (pi/2), 1)
-        updateSliderInput(session, "manip_slider", value = y_val)
-      }
-      if (input$manip_type == "Radial") {
-        phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-        rad_val <- round(cos(phi_i), 1)
-        updateSliderInput(session, "manip_slider", value = rad_val)
-      }
+    if (input$disp_method != 'Interactive') return()
+    basis_assumptions()
+    mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
+    if (input$manip_type == "Horizontal") {
+      phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
+      x_val <- round(-phi.x_zero / (pi/2), 1)
+      updateSliderInput(session, "manip_slider", value = x_val)
+    }
+    if (input$manip_type == "Vertical") {
+      phi.y_zero <- atan(mv_sp[3] / mv_sp[2]) - (pi / 2 * sign(mv_sp[2]))
+      y_val <- round(-phi.y_zero / (pi/2), 1)
+      updateSliderInput(session, "manip_slider", value = y_val)
+    }
+    if (input$manip_type == "Radial") {
+      phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+      rad_val <- round(cos(phi_i), 1)
+      updateSliderInput(session, "manip_slider", value = rad_val)
     }
   })
   
@@ -376,17 +391,17 @@ server <- function(input, output, session) {
     input$pp_type
     projDat()
     }, {
+      if (input$disp_method != "animation") return()
       ### Processing message for gif
       # withProgress(message = 'Rendering animation ...', value = 0, {
       ## Manual tour animation
-      app_manual_tour <- function(...) { # for code reduction, handle different theta.
+      app_manual_tour <- function(...) { ## For code reduction, to handle different theta values.
         manual_tour(basis = init_basis(), ##TODO: should be rv$currbasis??? 
                     data = projDat(), 
                     manip_var = manip_num(),
                     angle = input$anim_angle,
-                    ...) # Allows theta to vary
+                    ...) ## Allows theta to vary
       }
-      if (input$disp_method != "animation") return()
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
         t_array <- NULL 
         if (input$anim_type == "Radial")     {t_array <- app_manual_tour()} # Default theta to radial
@@ -401,13 +416,13 @@ server <- function(input, output, session) {
           pp_cluster <- NA
           if (input$anim_pp_type %in% c("lda_pp", "pda_pp")) {
             dat <- rawDat()
-            pp_cluster <- dat[, which(colnames(dat) %in% input$anim_pp_cluster)]
+            pp_cluster <- dat[input$anim_pp_cluster]
           }
           tour_func <- getGuidedTour(input$anim_pp_type, pp_cluster)
           t_path <- tourr::save_history(projDat(), tour_func, 
                                         start = rv$curr_basis)
         }
-        ### Grand, little and local tours
+        # Grand, little and local tours
         if(input$anim_type == "Grand (6 bases)") {
           t_path <- tourr::save_history(projDat(), grand_tour(),
                                         max_bases = 6, start = rv$curr_basis)
@@ -422,7 +437,6 @@ server <- function(input, output, session) {
         }
         rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
       }
-      
     ### end processing message for .gif 
     # setProgress(1)
     # })
@@ -433,8 +447,10 @@ server <- function(input, output, session) {
   observeEvent(rv$tour_array, {
     if (input$disp_method != "animation") return()
     rv$anim_playing <- FALSE
-    updateSliderInput(session, "anim_slider", value = 1, 
-                      min = 1, max = dim(rv$tour_array)[3])
+    updateSliderInput(session, "anim_slider", 
+                      value = 1, 
+                      min = 1, 
+                      max = dim(rv$tour_array)[3])
   })
   
   ### Set curr basis when anim_slider changes.

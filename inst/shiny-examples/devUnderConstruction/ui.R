@@ -26,9 +26,11 @@ tabData <- tabPanel(
                checkboxInput("rescale_data", 
                              "Rescale projection variables", value = TRUE)
       ),
-      tags$div(title = "Transform data s.t. covariance matrix diagonals are 1?",
-               checkboxInput("sphere_data", "Sphere projection variable", value = FALSE)
-      ),
+      #### To add sphere and pca tranform here later 
+      # tags$div(title = "Transform data s.t. covariance matrix becomes an identity matrix?",
+      #          selectInput("data_transform", "Data tranformation",
+      #                      c("<none>", "PCA", "sphere"))
+      # ),
       h5("--  Rows containing missing values in any projection variable have been remove.")
     ),
     mainPanel(h4("Input data summary"),
