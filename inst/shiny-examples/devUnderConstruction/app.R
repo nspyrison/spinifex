@@ -37,17 +37,19 @@ server <- function(input, output, session) {
   ##### Data reactive
   ### Raw input data
   rawDat <- reactive({
+    appDebugMsg(rawDat)
     if (is.null(input$data_file)) {return(tourr::flea)}
     read.csv(input$data_file$datapath, stringsAsFactors = FALSE)
   })
   raw_data_assumptions <- reactive({
     raw <- rawDat()
-    if (is.null(raw) | length(raw) == 0) return(return())
+    if (is.null(raw) | length(raw) == 0) return(FALSE)
+    TRUE
   })
   
   ### Data to project
   projDat <- reactive({
-    raw_data_assumptions()
+    if(raw_data_assumptions() == FALSE) return()
     ret <- rawDat()[input$projVars_nms]
     ret <- ret[complete.cases(ret), ] ## Rowwise complete
     #### Tranforms are too far beyond the scope right now.
@@ -61,11 +63,12 @@ server <- function(input, output, session) {
   
   data_assumptions <- reactive({
     dat <- projDat()
-    if (is.null(dat) | length(dat) == 0) return(return())
+    if (is.null(dat) | length(dat) == 0) return(FALSE)
+    TRUE
   })
   
   projVars_defaultNms <- reactive({
-    data_assumptions()
+    if(data_assumptions() == FALSE) return()
     dat <- rawDat()
     nms <- names(dat)
     default_cols <- sapply(dat, function(x) {is.numeric(x)})
@@ -94,26 +97,30 @@ server <- function(input, output, session) {
   }) 
   
   manip_assumptions <- reactive({
-    if (is.null(manip_num()) | length(manip_num()) != 0) return(return())
-    if ((manip_num() %in% colnames(rawDat())) == FALSE)  return(return())
-    if (input$manip_slider < 0 | input$manip_slider > 1) return(return()) 
+    if (is.null(manip_num()) | length(manip_num()) != 0) return(FALSE)
+    if ((manip_num() %in% colnames(rawDat())) == FALSE)  return(FALSE)
+    if (input$manip_slider < 0 | input$manip_slider > 1) return(FALSE)
+    TRUE
   })
   
   pch_assumptions <- reactive({
-    if (is.null(input$pch_nm) | length(input$pch_nm) != 0) return(return())
-    if ((input$pch_nm %in% c(colnames(rawDat()), "<none>")) == FALSE) return(return())
+    if (is.null(input$pch_nm) | length(input$pch_nm) != 0) return(FALSE)
+    if ((input$pch_nm %in% c(colnames(rawDat()), "<none>")) == FALSE) return(FALSE)
+    TRUE
   })
   
   col_assumptions <- reactive({
     if (is.null(input$col_nm) | length(input$col_nm) != 0) return(return())
-    if ((input$col_nm %in% c(colnames(rawDat()), "<none>")) == FALSE) return(return())
+    if ((input$col_nm %in% c(colnames(rawDat()), "<none>")) == FALSE) return(FALSE)
+    TRUE
   })
   
   ###### Basis reactives
   ### basis
   init_basis <- reactive({
+    appDebugMsg(init_basis)
     ### Condition handling
-    data_assumptions()
+    if(data_assumptions() == FALSE) return()
     if (input$basis_init == "Identity") ret <- diag(p())[, 1:2]
     if (input$basis_init == "Random")   ret <- tourr::basis_random(n = p(), d = 2)
     if (input$basis_init == "PCA")      ret <- prcomp(projDat())[[2]][, 1:2]
@@ -135,7 +142,7 @@ server <- function(input, output, session) {
         dat <- rawDat()
         pp_cluster <- dat[input$pp_cluster]
       }
-      tour_func <- getGuidedTour(input$pp_type, pp_cluster)
+      tour_func <- appGetGuidedTour(input$pp_type, pp_cluster)
       tour_hist <- save_history(projDat(), tour_func)
       tour_len  <- dim(tour_hist)[3]
       ret <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
@@ -147,14 +154,15 @@ server <- function(input, output, session) {
   
   basis_assumptions <- reactive({
     bas <- rv$curr_basis
-    if (is.null(bas) | length(bas) == 0) init_basis()
-    if (!is.numeric(bas)) stop("Basis non-numeric.")
+    if (is.null(bas) | length(bas) == 0) return(FALSE)
+    if (!is.numeric(bas)) return(FALSE)
+    TRUE
   })
   
   ### Add col and row names, and set rv$curr_basis.
   format_basis <- reactive({
     format_basis_func <- function(bas) {
-      basis_assumptions()
+      if(basis_assumptions() == FALSE) return()
       colnames(bas)  <- c("x", "y")
       row.names(bas) <- colnames(projDat())
       
@@ -165,11 +173,12 @@ server <- function(input, output, session) {
   
   ### Interactive and animated plot
   main_plot <- reactive({
-    basis_assumptions()
-    data_assumptions()
-    manip_assumptions()
-    pch_assumptions()
-    col_assumptions()
+    appDebugMsg(main_plot)
+    if(basis_assumptions() == FALSE) return()
+    if(data_assumptions() == FALSE) return()
+    if(manip_assumptions() == FALSE) return()
+    if(pch_assumptions() == FALSE) return()
+    if(col_assumptions() == FALSE) return()
     
     if (input$disp_method == 'Interactive') {
       return(
@@ -211,7 +220,7 @@ server <- function(input, output, session) {
   output$rawDat_summary  <- renderPrint({tibble::tibble(rawDat())})
   output$projDat_summary <- renderPrint({tibble::tibble(projDat())})
   output$curr_basis_tbl  <- renderTable({
-    basis_assumptions()
+    if(basis_assumptions() == FALSE) return()
     round(rv$curr_basis, 2)
   })
   output$main_plot       <- renderPlot({
@@ -222,10 +231,10 @@ server <- function(input, output, session) {
   })
   
   ##### Data observes ----
-  ### Set rv$curr_basis when init_basis() changes
-  observeEvent(init_basis(),{ ##TODO Doesn't this defeat the purpose of a re_init button?
-    format_basis()(init_basis())
-  })
+  # ### Set rv$curr_basis when init_basis() changes
+  # observeEvent(init_basis(),{ ##TODO Doesn't this defeat the purpose of a re_init button?
+  #   format_basis()(init_basis())
+  # })
   
   ### Update input$projVars_nms when rawDat() changes.
   observeEvent({rawDat()}, {
@@ -321,9 +330,8 @@ server <- function(input, output, session) {
   ### Interactive reactives -----
   ### hor, vert, radial interactive motion 
   basis_obl <- reactive({
-    basis_assumptions()
-    manip_assumptions()
-    
+    if(basis_assumptions() == FALSE) return()
+    if(manip_assumptions() == FALSE) return()
     theta <- phi <- NULL
     mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
     if (input$manip_type == "Horizontal") {
@@ -359,7 +367,7 @@ server <- function(input, output, session) {
     manip_num()
   }, {
     if (input$disp_method != 'Interactive') return()
-    basis_assumptions()
+    if(basis_assumptions() == FALSE) return()
     mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
     if (input$manip_type == "Horizontal") {
       phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
@@ -418,7 +426,7 @@ server <- function(input, output, session) {
             dat <- rawDat()
             pp_cluster <- dat[input$anim_pp_cluster]
           }
-          tour_func <- getGuidedTour(input$anim_pp_type, pp_cluster)
+          tour_func <- appGetGuidedTour(input$anim_pp_type, pp_cluster)
           t_path <- tourr::save_history(projDat(), tour_func, 
                                         start = rv$curr_basis)
         }
@@ -456,14 +464,14 @@ server <- function(input, output, session) {
   ### Set curr basis when anim_slider changes.
   observeEvent(input$anim_slider, {
     if (input$disp_method != "animation") return()
-    basis_assumptions()
+    if(basis_assumptions() == FALSE) return()
     format_basis()(matrix(rv$tour_array[,, input$anim_slider], ncol = 2))
   })
   
   ### Change curr basis when slider changes
   observeEvent(input$anim_slider, {
     if (input$disp_method != "animation") return()
-    basis_assumptions()
+    if(basis_assumptions() == FALSE) return()
     format_basis()(matrix(rv$tour_array[,, input$anim_slider],  ncol = 2 ))
   })
   
@@ -558,20 +566,20 @@ server <- function(input, output, session) {
     
     full_gallery_df = data.frame(
       Label = 
-        shinyInput(textInput, 
-                   nrow(rv$gallery_bases), 'text_', label = "",
-                   placeholder = "user label", width = '108px'),
+        appShinyInput(textInput, 
+                      nrow(rv$gallery_bases), 'text_', label = "",
+                      placeholder = "user label", width = '108px'),
       Plot = 
-        shinyInput(actionButton, 
-                   nrow(rv$gallery_bases), 'button_', label = "Plot", 
-                   onclick = 'Shiny.onInputChange(\"gallery_plot\",  this.id)'),
+        appShinyInput(actionButton, 
+                      nrow(rv$gallery_bases), 'button_', label = "Plot", 
+                      onclick = 'Shiny.onInputChange(\"gallery_plot\",  this.id)'),
       `Save (csv & png)` =
-        shinyInput(actionButton, 
-                   nrow(rv$gallery_bases), 'button_', label = "Save", 
-                   onclick = 'Shiny.onInputChange(\"gallery_save\",  this.id)'),
+        appShinyInput(actionButton, 
+                      nrow(rv$gallery_bases), 'button_', label = "Save", 
+                      onclick = 'Shiny.onInputChange(\"gallery_save\",  this.id)'),
       Delete = 
-        shinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Remove", 
-                   onclick = 'Shiny.onInputChange(\"gallery_delete\",  this.id)'),
+        appShinyInput(actionButton, nrow(rv$gallery_bases), 'button_', label = "Remove", 
+                      onclick = 'Shiny.onInputChange(\"gallery_delete\",  this.id)'),
       rv$gallery_bases[, -which(colnames(rv$gallery_bases) %in% c("basis", "Id"))],
       stringsAsFactors = FALSE,
       row.names = NULL,
@@ -677,7 +685,7 @@ server <- function(input, output, session) {
     rv$gallery_rows_removed <- c(rv$gallery_rows_removed, selectedRow)
   })
   
-  ### Development display -- can be toggled by setting include_dev_display at the top of global.R
+  ### Development display -- can be toggled by setting .include_dev_display at the top of global.R
   observeEvent(input$browser, {browser()})
   
   output$dev_msg <- renderPrint({

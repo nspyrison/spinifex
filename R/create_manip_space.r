@@ -16,7 +16,7 @@
 #' create_manip_space(basis = rb, manip_var = 4)
 create_manip_space <- function(basis, 
                                manip_var) {
-  if (is.null(basis) | nrow(basis) == 0) stop("non empty basis reiquired.")
+  if (is.null(basis) | nrow(basis) == 0) stop("non empty basis required.")
   if (!is.matrix(basis)) as.matrix(basis)
   
   manip_space <- cbind(basis, rep(0, len = nrow(basis) ))

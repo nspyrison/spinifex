@@ -1,16 +1,21 @@
 ##### Setup ----
-include_dev_display <- T
+.include_dev_display <- T
+.include_debug_msg   <- T
+.debug_msg_counter   <- 0
 
-requireNamespace("spinifex")    ## imports "ggplot2", "plotly", and "shiny"
-requireNamespace("tibble")
-requireNamespace("shinythemes") ## Themes for shiny, think css files.
-requireNamespace("shinyBS")     ## BootStrap functionality, see ?shinyBS::bsTooltip
-requireNamespace("shinyjs")     ## Extend JS control and formating, see ?shinyjs::toggle
-requireNamespace("reactlog")    ## Custom shiny logging
-requireNamespace("DT")          ## HTML tabbles for the gallery table
-
+##TODO: go to custom loggin and remove this:
 options(shiny.reactlog = TRUE) # Logging with reactlog
 
+# options(error = recover)
+# options(warning = recover)
+
+require("spinifex")    ## imports "ggplot2", "plotly", and "shiny"
+require("tibble")
+require("shinythemes") ## Themes for shiny, think css files.
+require("shinyBS")     ## BootStrap functionality, see ?shinyBS::bsTooltip
+require("shinyjs")     ## Extend JS control and formating, see ?shinyjs::toggle
+require("reactlog")    ## Custom shiny logging
+require("DT")          ## HTML tabbles for the gallery table
 
 contextLine <- paste0("Spinifex app --- spinifex (v" ,packageVersion("spinifex"),") --- ", Sys.Date())
 
@@ -19,8 +24,17 @@ contextLine <- paste0("Spinifex app --- spinifex (v" ,packageVersion("spinifex")
 # save(df, file="./inst/shiny-examples/comparison/df.rda")
 
 
+appDebugMsg <- function(actionNm = NULL){
+  if (.include_debug_msg == F) return()
+  if (!is.character(actionNm)) actionNm <- substitute(actionNm)
+  .debug_msg_counter <<- .debug_msg_counter + 1
+  message(paste0("Action #", .debug_msg_counter, "; ran ", actionNm))
+  if (is.null(actionNm) == T) environment()
+  return()
+}
+
 ### PROJECTION PURSUIT ----
-getGuidedTour <- function(indexName, clId = NA){ # returns a tour function
+appGetGuidedTour <- function(indexName, clId = NA){ # returns a tour function
   if(indexName == "holes") {return(guided_tour(holes()))}
   if(indexName == "cmass") {return(guided_tour(cmass()))}
   if(indexName == "lda_pp"){return(guided_tour(lda_pp(clId)))}
@@ -30,7 +44,7 @@ getGuidedTour <- function(indexName, clId = NA){ # returns a tour function
 ### END OF PROJECTION PURSUIT
 
 ##### GALLERY ----
-shinyInput <- function(FUN, len, id, ...) {
+appShinyInput <- function(FUN, len, id, ...) {
   inputs <- character(len)
   for (i in seq_len(len)) {
     inputs[i] <- as.character(FUN(paste0(id, i), ...))

@@ -8,7 +8,7 @@ tabData <- tabPanel(
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
       ),
       ## Variables to project
-      tipify(
+      shinyBS::tipify(
         checkboxGroupInput(
           "projVars_nms",
           label = "Variables to project",
@@ -147,7 +147,7 @@ tabGallery <- tabPanel(
 )
 
 ###### Full app layout ----
-if (include_dev_display == TRUE){ ## Display dev content.
+if (.include_dev_display == TRUE){ ## Display dev content.
 ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
                 ## Make the lines, hr() black:
                 tags$head(
@@ -190,7 +190,7 @@ ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "sp
 #                 h5(signOff, style = "color: #A9A9A9")
 #               ),
 #               list( ## unconitional args:
-#                 actionButton("browser", "browser()")[include_dev_display],
-#                 verbatimTextOutput("dev_msg")[include_dev_display]
+#                 actionButton("browser", "browser()")[.include_dev_display],
+#                 verbatimTextOutput("dev_msg")[.include_dev_display]
 #               ))
 # )
