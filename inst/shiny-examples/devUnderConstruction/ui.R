@@ -4,8 +4,19 @@ tabData <- tabPanel(
   fluidPage(
     sidebarPanel(
       ## Input csv file
-      fileInput("data_file", "Data file (.csv format)",
-                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
+      radioButtons("data_source", "Data source",
+                   choices = c("Example", "Upload"),
+                   selected = "Example"),
+      conditionalPanel("input.data_source == 'Example'",
+                       selectInput("data_example", "Example data",
+                                   choice = c("flea", "wine", "beastcancer", "weather"), ## See tourr:: "olive", "ozone", "laser", "tao", "ratcns"
+                                   selected = "flea"
+                       )
+      ),
+      conditionalPanel("input.data_source == 'Upload'",
+                       fileInput("data_file", "Data file (.csv format)",
+                                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
+                       )
       ),
       ## Variables to project
       shinyBS::tipify(

@@ -9,7 +9,8 @@ options(shiny.reactlog = TRUE) # Logging with reactlog
 # options(error = recover)
 # options(warning = recover)
 
-require("spinifex")    ## imports "ggplot2", "plotly", and "shiny"
+require("spinifex")
+require("ggplot2")
 require("tibble")
 require("shinythemes") ## Themes for shiny, think css files.
 require("shinyBS")     ## BootStrap functionality, see ?shinyBS::bsTooltip
@@ -28,9 +29,13 @@ appDebugMsg <- function(actionNm = NULL){
   if (.include_debug_msg == F) return()
   if (!is.character(actionNm)) actionNm <- substitute(actionNm)
   .debug_msg_counter <<- .debug_msg_counter + 1
-  message(paste0("Action #", .debug_msg_counter, "; ran ", actionNm))
+  message(paste0("Observe #", .debug_msg_counter, "; obs of ", actionNm))
   if (is.null(actionNm) == T) environment()
   return()
+}
+M <- function(assumptionNm = "An assumption"){
+  msg <- paste0(substitute(assumptionNm), " was not met.")
+  message(msg)
 }
 
 ### PROJECTION PURSUIT ----
