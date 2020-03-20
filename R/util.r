@@ -306,7 +306,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## TOLerance of SUM of element-wise
 set_axes_position <- function(x, axes) { ## alias old and set new name to set_3x3_position?
   ## Expects
   if (length(x) == 1) {x <- data.frame(x = x, y = x)}
-  if (ncol(x) != 2) stop("Only defined for 2 dimensions")
+  if (ncol(x) != 2) stop("set_axes_position is only defined for 2 variables.")
   #### Contains atleast 1 expected string
   expected_strings <- c("off", "center", "top", "bottom", "left", "right", "middle", "far")
   axes_contains <- data.frame(0)
@@ -318,13 +318,10 @@ set_axes_position <- function(x, axes) { ## alias old and set new name to set_3x
               axes %in% c(0, F))
   
   if (axes %in% c("off", 0, F)) return()
-  scale <- NULL
-  if (axes_contains$center | axes_contains$middle | axes_contains$far) {
-    scale <- 2 / 3
-  } else { ## If corner: scale <- 1 / 4
-    if((axes_contains$top  + axes_contains$bottom +
-        axes_contains$left + axes_contains$right) >= 2) {scale <- 1 / 4}
-  }
+  scale <- 2 / 3
+  if((axes_contains$top  + axes_contains$bottom +
+      axes_contains$left + axes_contains$right) >= 2) {scale <- 1 / 4}
+  
   offset_x <- offset_y <- 0
   if (axes_contains$top)    {offset_y <-  5 / 3}
   if (axes_contains$bottom) {offset_y <- -5 / 3}
@@ -336,6 +333,33 @@ set_axes_position <- function(x, axes) { ## alias old and set new name to set_3x
   ret[, 2] <- ret[, 2] + offset_y
   return(ret)
 }
+
+#' Pan and zoom a 2 column matrix, dataframe or scaler number
+#' 
+#' @param x Numeric data obeject with 2 columns (or scaler) to scale and offset
+#' @param x_offset Numeric value to pan in the x-direction
+#' @param y_offset Numeric value to pan in the x-direction
+#' @param scale Numeric value to scale/zoom the size for x
+#' @return Transformed numeric data object
+#' @examples 
+#' ib <- basis_init(6, 2)
+#' pan_zoom(x = ib, x_offset = -1, y_offset = 0, scale = 2/3)
+#' @export
+pan_zoom <- function(x, 
+                     x_offset = 0, 
+                     y_offset = 0, 
+                     scale = 1) {
+  ## assumptions
+  if (length(x) == 1) {x <- data.frame(x = x, y = x)}
+  if (ncol(x) != 2) stop("pan_zoom is only defined for 2 variables.")
+  
+  ret      <- x * scale
+  ret[, 1] <- ret[, 1] + x_offset
+  ret[, 2] <- ret[, 2] + y_offset
+  
+  return(ret)
+}
+
 
 ###_TODO DOC 4x ----
 make_curve <- function(rad_st = 0, rad_stop = 2 * pi){ # 1 obs per degree drawn

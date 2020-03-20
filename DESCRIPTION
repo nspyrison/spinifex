@@ -31,6 +31,7 @@ Imports:
     png,
     dplyr,
     GGally,
+    gridExtra,
     shinythemes,
     shinyBS,
     shinyjs,

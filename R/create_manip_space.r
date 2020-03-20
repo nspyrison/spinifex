@@ -21,7 +21,6 @@ create_manip_space <- function(basis,
   
   manip_space <- cbind(basis, rep(0, len = nrow(basis) ))
   manip_space[manip_var, 3] <- 1
-  manip_space <- apply(manip_space, 2, as.numeric)
   
   manip_space  <- tourr::orthonormalise(manip_space)
   colnames(manip_space) <- NULL

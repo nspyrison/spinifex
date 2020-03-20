@@ -1,24 +1,23 @@
 #' Plot a single frame of a manual tour
 #'
 #' Projects the specified rotation as a 2D ggplot object. One static frame of 
-#' manual tour. Useful for providing uaer-guided interaction.
+#' manual tour. Useful for providing user-guided interaction.
 #' 
 #' @param data A  (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix. 
-#'   If it's left null, random basis will be used.
-#' @param manip_var Number of the column/dimension to rotate.
-#' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
-#'   reference frame. Required, no default.
-#'   If left NULL, will initialize the radial angle of the `manip_var`.`
-#' @param phi Phi is angle in radians of 
-#'   the "out-of-plane" rotation, the z-axis of the reference frame. 
-#'   Required, no default.
-#' @param lab Optional, labels for the reference frame of length 1 or the 
-#'   number of variables used. Defaults to an abbriviation of the variables.
+#' Defaults to NULL, giving a random basis.
+#' @param manip_var Number of the variable to rotate.
+#' @param theta Angle in radians of "in-projection plane" rotation, 
+#' on the XY plane of the reference frame. Defaults to 0, no rotaion.
+#' @param phi Angle in radians of the "out-of-projection plane" rotation, into 
+#' the z-direction of the axes. Defaults to 0, no rotaion.
+#' @param lab Optionally, provide a character vector of length p (or 1) 
+#' to label the variable contributions to the axes, Default NULL, 
+#' results in a 3 character abbriviation of the variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
-#'   Defaults to FALSE.
-#' @param ... Optionally pass additional arguments to the `render_type` for 
-#'   plotting options.
+#' Defaults to FALSE.
+#' @param ... Optionally pass additional arguments. 
+#' especially to the `render_type` for plotting options.
 #' @return a ggplot object of the rotated projection.
 #' @import tourr
 #' @export
@@ -82,3 +81,4 @@ oblique_frame <- function(basis        = NULL,
   
   gg
 }
+

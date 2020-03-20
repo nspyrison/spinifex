@@ -30,7 +30,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
   c_phi   <- cos(phi)
   
   ## 3D rotation matrix, as a function of theta and phi.
-  R <- matrix(c(c_theta^2 * c_phi + s_theta^2,
+  R3 <- matrix(c(c_theta^2 * c_phi + s_theta^2,
                 -c_theta * s_theta * (1 - c_phi),
                 -c_theta * s_phi,                      # 3 of 9
                 -c_theta * s_theta * (1 - c_phi),
@@ -40,13 +40,15 @@ rotate_manip_space <- function(manip_space, theta, phi) {
                 s_theta * s_phi,
                 c_phi),                                # 9 of 9
               nrow = 3, ncol = 3, byrow = TRUE)
-  rotated_space <- manip_space %*% R
+  rotated_space <- manip_space %*% R3
   
   ## Checks and formating
   stopifnot(spinifex::is_orthonormal(rotated_space))
-  if (is.null(colnames(manip_space)) == FALSE) {colnames(rotated_space) <- colnames(manip_space)
-  } else {colnames(rotated_space) <- paste0("proj_", 1:ncol(rotated))}
-  if (is.null(rownames(manip_space)) == FALSE) {rownames(rotated_space) <- rownames(manip_space)
+  if (is.null(colnames(manip_space)) == FALSE) {
+    colnames(rotated_space) <- colnames(manip_space)
+  } else {colnames(rotated_space) <- paste0("proj_", 1:ncol(rotated_space))}
+  if (is.null(rownames(manip_space)) == FALSE) {
+    rownames(rotated_space) <- rownames(manip_space)
   } else {rownames(rotated_space) <- paste0("orig_", 1:nrow(rotated_space))}
   
   rotated_space

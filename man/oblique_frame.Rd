@@ -17,35 +17,34 @@ oblique_frame(
 }
 \arguments{
 \item{basis}{A (p, d) dim orthonormal numeric matrix.
-If it's left null, random basis will be used.}
+Defaults to NULL, giving a random basis.}
 
 \item{data}{A  (n, p) dataset to project, consisting of numeric variables.}
 
-\item{manip_var}{Number of the column/dimension to rotate.}
+\item{manip_var}{Number of the variable to rotate.}
 
-\item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the
-reference frame. Required, no default.
-If left NULL, will initialize the radial angle of the \code{manip_var}.`}
+\item{theta}{Angle in radians of "in-projection plane" rotation,
+on the XY plane of the reference frame. Defaults to 0, no rotaion.}
 
-\item{phi}{Phi is angle in radians of
-the "out-of-plane" rotation, the z-axis of the reference frame.
-Required, no default.}
+\item{phi}{Angle in radians of the "out-of-projection plane" rotation, into
+the z-direction of the axes. Defaults to 0, no rotaion.}
 
-\item{lab}{Optional, labels for the reference frame of length 1 or the
-number of variables used. Defaults to an abbriviation of the variables.}
+\item{lab}{Optionally, provide a character vector of length p (or 1)
+to label the variable contributions to the axes, Default NULL,
+results in a 3 character abbriviation of the variable names.}
 
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
-\item{...}{Optionally pass additional arguments to the \code{render_type} for
-plotting options.}
+\item{...}{Optionally pass additional arguments.
+especially to the \code{render_type} for plotting options.}
 }
 \value{
 a ggplot object of the rotated projection.
 }
 \description{
 Projects the specified rotation as a 2D ggplot object. One static frame of
-manual tour. Useful for providing uaer-guided interaction.
+manual tour. Useful for providing user-guided interaction.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])
