@@ -58,8 +58,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
   ##### _Sidebar globar inputs ----
   sidebarPanel(
     radioButtons("basis_init", "Start basis",
-                 choices = c("PCA", "Projection pursuit", "From file",
-                             "Identity", "Random"),
+                 choices = c("PCA", "Projection pursuit", "From file", "Random"),
                  selected = "PCA"),
     conditionalPanel("input.basis_init == 'Projection pursuit'",
                      selectInput("pp_type", "Pursuit index", 
@@ -116,9 +115,9 @@ tabManual <- tabPanel("Manual tour", fluidPage(
              hr(),
     h5("Optional Settings"),
     selectInput('axes', 'Reference axes location', 
-                c('center', 'bottomleft', 'off'),
-                'center',  multiple = FALSE),
-    sliderInput('alpha', "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
+                c("left", "center", "bottomleft", "off"),
+                "bottomleft",  multiple = FALSE),
+    sliderInput("alpha", "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
   ),
   
   ##### _Plot display ----

@@ -18,7 +18,7 @@ source('ui.R', local = TRUE)
 server <- function(input, output, session) {
   ##### Init reactiveValues
   rv                      <- reactiveValues()
-  rv$curr_basis           <- diag(6)[, 1:2]
+  rv$curr_basis           <- tourr::basis_random(6)
   rv$tour_array           <- NULL
   rv$anim_playing         <- FALSE
   rv$anim_slide           <- 1
@@ -140,7 +140,7 @@ server <- function(input, output, session) {
   
   pch_assumptions <- reactive({
     pchVarNm <- input$pch_nm
-    if (is.null(pchVarNm) | length(pchVarNm) != 0) 
+    if (is.null(pchVarNm) | length(pchVarNm) == 0) 
       {M(pch_assumptions);return(FALSE)}
     if (pchVarNm %in% c(colnames(rawDat()), "<none>") == FALSE) 
       {M(pch_assumptions);return(FALSE)}
@@ -149,7 +149,7 @@ server <- function(input, output, session) {
   
   col_assumptions <- reactive({
     colVarNm <- input$col_nm
-    if (is.null(colVarNm) | length(colVarNm) != 0) 
+    if (is.null(colVarNm) | length(colVarNm) == 0) 
       {M(col_assumptions);return(FALSE)}
     if ((colVarNm %in% c(colnames(rawDat()), "<none>")) == FALSE) 
       {M(col_assumptions);return(FALSE)}
@@ -207,7 +207,7 @@ server <- function(input, output, session) {
       {M(gallery_basis_assumptions);return(FALSE)}
     if (!is.numeric(bas)) 
       {M(gallery_basis_assumptions);return(FALSE)}
-    if (nrow(df) == 0) 
+    if (nrow(bas) == 0) 
       {M(gallery_basis_assumptions);return(FALSE)}
     TRUE
   })
@@ -226,7 +226,6 @@ server <- function(input, output, session) {
   
   ### Interactive and animated plot
   main_plot <- reactive({
-    browser()
     if(basis_assumptions()     == FALSE) return()
     if(projData_assumptions()  == FALSE) return()
     if(manip_assumptions()     == FALSE) return()
@@ -238,12 +237,13 @@ server <- function(input, output, session) {
         spinifex::oblique_frame(basis     = rv$curr_basis,
                                 data      = projDat(),
                                 manip_var = manip_num(),
-                                theta     = 0,
-                                phi       = 0,
                                 col       = col_of(col_var()),
                                 pch       = pch_of(pch_var()),
-                                axes      = input$axes,
-                                alpha     = input$alpha))
+                                axes = "off"
+        ) +
+          spinifex::geom_basisAxes(basis = rv$curr_basis, manip_num(),
+                                   x_offset = -1.5, scale = 2/3)
+      )
     } ## end of if (input$disp_method == 'Interactive')
     if (input$disp_method == 'Animation' ) {
       anim_frame <- NULL
@@ -294,7 +294,8 @@ server <- function(input, output, session) {
       phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
       phi <- (acos(input$manip_slider) - phi_start) * - sign(mv_sp[1])
     }
-    browser()
+    # browser()
+    # undebug(rotate_manip_space)
     ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_num(),
                          theta = theta, phi = phi)
     
@@ -302,25 +303,6 @@ server <- function(input, output, session) {
     return(ret)
   })
   
-  ### Data output
-  output$rawDat_summary  <- renderPrint({
-    if (rawData_assumptions() == FALSE) return()
-    tibble::tibble(rawDat())
-  })
-  output$projDat_summary <- renderPrint({
-    if (projData_assumptions() == FALSE) return()
-    tibble::tibble(projDat())
-  })
-  output$curr_basis_tbl  <- renderTable({
-    if(basis_assumptions() == FALSE) return()
-    round(rv$curr_basis, 2)
-  })
-  output$main_plot       <- renderPlot({
-    suppressMessages(main_plot() + 
-                       xlim(-1, 1) +
-                       ylim(-1, 1)
-    )
-  })
   
   ##### _Gallery reactives -----
   gallery_df <- reactive({
@@ -555,7 +537,7 @@ server <- function(input, output, session) {
       # withProgress(message = 'Rendering animation ...', value = 0, {
       ## Manual tour animation
       app_manual_tour <- function(...) { ## For code reduction, to handle different theta values.
-        manual_tour(basis = init_basis(), ##TODO: should be rv$currbasis??? 
+        manual_tour(basis = rv$currbasis,
                     data = projDat(), 
                     manip_var = manip_num(),
                     angle = input$anim_angle,
@@ -751,7 +733,6 @@ server <- function(input, output, session) {
   observeEvent(input$browser, {browser()})
   
   
-  
   ###### OUTPUTS -----
   ### Data tab
   output$rawDat_summary  <- renderPrint({
@@ -769,8 +750,8 @@ server <- function(input, output, session) {
   })
   output$main_plot       <- renderPlot({
     suppressMessages(main_plot() + 
-                       xlim(-1, 1) +
-                       ylim(-1, 1)
+                       xlim(-2.2, .5) +
+                       ylim(-.9, .9)
     )
   })
   ### Gallery tab
