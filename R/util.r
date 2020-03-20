@@ -236,7 +236,7 @@ view_manip_space <- function(basis,
 col_of <- function(cat, pallet_name = "Dark2")
 {
   if (length(cat) == 0) stop("Length cannot be zero.")
-  n   <- length(levels(cat))
+  n   <- length(unique(cat))
   pal <- suppressWarnings(RColorBrewer::brewer.pal(n, pallet_name))
   ret <- pal[as.integer(factor(cat))]
   
@@ -303,36 +303,66 @@ is_orthonormal <- function(x, tol = 0.001) { ## TOLerance of SUM of element-wise
 #' rb <- basis_random(4, 2)
 #' set_axes_position(x = rb, axes = "bottomleft")
 #' @export
-set_axes_position <- function(x, axes) { ## alias old and set new name to set_3x3_position?
-  ## Expects
+set_axes_position <- function(x, axes) {
   if (length(x) == 1) {x <- data.frame(x = x, y = x)}
-  if (ncol(x) != 2) stop("set_axes_position is only defined for 2 variables.")
-  #### Contains atleast 1 expected string
-  expected_strings <- c("off", "center", "top", "bottom", "left", "right", "middle", "far")
-  axes_contains <- data.frame(0)
-  for (i in 1:length(expected_strings)){
-    axes_contains[1, i] <- as.numeric(grepl(expected_strings[i], axes))
+  stopifnot(ncol(x) == 2)
+  stopifnot(axes %in% 
+              c("center", "bottomleft", "topright", "off", "left", "right"))
+  if (axes == "off") return()
+  if (axes == "center") {
+    scale <- 2 / 3
+    x_off <- y_off <- 0
+  } else if (axes == "bottomleft") {
+    scale <- 1 / 4
+    x_off <- y_off <- -2 / 3
+  } else if (axes == "topright") {
+    scale <- 1 / 4
+    x_off <- y_off <- 2 / 3
+  } else if (axes == "left") {
+    scale <- 2 / 3
+    x_off <- -5 / 3 
+    y_off <- 0
+  } else if (axes == "right") {
+    scale <- 2 / 3
+    x_off <- 5 / 3 
+    y_off <- 0
   }
-  colnames(axes_contains) <- expected_strings
-  stopifnot((class(axes) == "character" & max(axes_contains) == TRUE) | 
-              axes %in% c(0, F))
-  
-  if (axes %in% c("off", 0, F)) return()
-  scale <- 2 / 3
-  if((axes_contains$top  + axes_contains$bottom +
-      axes_contains$left + axes_contains$right) >= 2) {scale <- 1 / 4}
-  
-  offset_x <- offset_y <- 0
-  if (axes_contains$top)    {offset_y <-  5 / 3}
-  if (axes_contains$bottom) {offset_y <- -5 / 3}
-  if (axes_contains$left)   {offset_x <- -5 / 3}
-  if (axes_contains$right)  {offset_x <-  5 / 3}
   
   ret <- scale * x
-  ret[, 1] <- ret[, 1] + offset_x
-  ret[, 2] <- ret[, 2] + offset_y
+  ret[, 1] <- ret[, 1] + x_off
+  ret[, 2] <- ret[, 2] + y_off
   return(ret)
 }
+# set_axes_position <- function(x, axes) { ## alias old and set new name to set_3x3_position?
+#   ## Expects
+#   if (length(x) == 1) {x <- data.frame(x = x, y = x)}
+#   if (ncol(x) != 2) stop("set_axes_position is only defined for 2 variables.")
+#   #### Contains atleast 1 expected string
+#   expected_strings <- c("off", "center", "top", "bottom", "left", "right", "middle", "far")
+#   axes_contains <- data.frame(0)
+#   for (i in 1:length(expected_strings)){
+#     axes_contains[1, i] <- as.numeric(grepl(expected_strings[i], axes))
+#   }
+#   colnames(axes_contains) <- expected_strings
+#   stopifnot((class(axes) == "character" & max(axes_contains) == TRUE) | 
+#               axes %in% c(0, F))
+#   
+#   if (axes %in% c("off", 0, F)) return()
+#   scale <- 2 / 3
+#   if((axes_contains$top  + axes_contains$bottom +
+#       axes_contains$left + axes_contains$right) >= 2) {scale <- 1 / 4}
+#   
+#   offset_x <- offset_y <- 0
+#   if (axes_contains$top)    {offset_y <-  5 / 3}
+#   if (axes_contains$bottom) {offset_y <- -5 / 3}
+#   if (axes_contains$left)   {offset_x <- -5 / 3}
+#   if (axes_contains$right)  {offset_x <-  5 / 3}
+#   
+#   ret <- scale * x
+#   ret[, 1] <- ret[, 1] + offset_x
+#   ret[, 2] <- ret[, 2] + offset_y
+#   return(ret)
+# }
 
 #' Pan and zoom a 2 column matrix, dataframe or scaler number
 #' 

@@ -45,7 +45,7 @@ tabRadial <-  tabPanel(
     ),
     
     mainPanel(
-      plotlyOutput("plotlyAnim")
+      plotly::plotlyOutput("plotlyAnim")
     )
   )
 )

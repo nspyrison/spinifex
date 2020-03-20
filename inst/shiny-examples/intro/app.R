@@ -7,10 +7,10 @@
 #' spinifex::run_app("intro")
 #' }
 
-requireNamespace(shiny)
-requireNamespace(plotly)
-requireNamespace(spinifex)
-requireNamespace(dplyr)
+requireNamespace("shiny")
+requireNamespace("plotly")
+requireNamespace("spinifex")
+requireNamespace("dplyr")
 
 source('ui.R', local = TRUE)
 
@@ -94,7 +94,7 @@ server <- function(input, output, session) {
                                        angle = input$angle)
     })
     
-    output$plotlyAnim <- renderPlotly({
+    output$plotlyAnim <- plotly::renderPlotly({
       play_manual_tour(data = selected_dat(),
                        basis = basis(),
                        manip_var = manip_var(),

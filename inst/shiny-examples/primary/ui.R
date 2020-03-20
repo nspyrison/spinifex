@@ -1,6 +1,6 @@
-##### Input tab ----
-tabInput <- tabPanel(
-  "Input", fluidPage(
+##### Data tab ----
+tabData <- tabPanel(
+  "Data", fluidPage(
     sidebarPanel(
       # Input csv file
       fileInput("data_file", "Data file (.csv format)",
@@ -14,13 +14,13 @@ tabInput <- tabPanel(
         selected = names(tourr::flea[, 1:6])
       ),
       # Point color, shape and rescale
-      fluidRow(column(5, selectInput('col_var', 'Point color', "<none>")),
-               column(5, selectInput('pch_var', 'Point shape', "<none>"))),
+      fluidRow(column(5, selectInput("col_var", "Point color", "<none>")),
+               column(5, selectInput("pch_var", "Point shape", "<none>"))),
       checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
     ),
-    mainPanel(h3("Data structure")
-              , verbatimTextOutput("data_str")
-              # , verbatimTextOutput("data_summary")
+    mainPanel(h3("Data structure"),
+              verbatimTextOutput("rawDat_summary"),
+              verbatimTextOutput("projDat_summary")
     )
   )
 )
@@ -44,7 +44,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
     conditionalPanel("input.basis_init == 'From file'",
                      fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
                                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))),
-    selectInput('manip_var', 'Manip var', "<none>"),
+    selectInput("manip_var", "Manip var", "<none>"),
     actionButton("re_init", "Back to start"),
     radioButtons("manual_method", "",
                  choices = c("Interactive", "Animation"),
@@ -54,10 +54,10 @@ tabManual <- tabPanel("Manual tour", fluidPage(
     conditionalPanel(
       "input.manual_method == 'Interactive'", 
         h4("Interactive"),
-        selectInput('manip_type', "Manipulation type",
+        selectInput("manip_type", "Manipulation type",
                     c("Radial", "Horizontal", "Vertical")),
         sliderInput("manip_slider", "Contribution",
-                    min = -1, max = 1, value = 0, step = .1)
+                    min = 0, max = 1, value = 0, step = .1)
     ),
     ##### _Sidebar animation inputs ----
     conditionalPanel(
@@ -74,30 +74,24 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                          (input.anim_pp_type == 'lda_pp' || input.anim_pp_type == 'pda_pp')", 
                          selectInput("anim_pp_cluster", "Pursuit cluster (anim)",
                                      choices = c("<no categorical variables found>" = NA) )),
-      sliderInput('anim_angle', 'Angle step size', value = .15, min = .05, max = .3),
-      sliderInput('fps', "Frames per second", min = 1, max = 6, value = 3, step = 1)
+      sliderInput("anim_angle", "Angle step size", value = .15, min = .05, max = .3),
+      sliderInput("fps", "Frames per second", min = 1, max = 6, value = 3, step = 1)
     ),
     ##### _Sidebar optional inputs ----
-    fluidRow(column(4, actionButton("save", "Save basis")), # (csv & png)
+    fluidRow(column(4, actionButton("save", "Save basis")), ## (csv & png)
              column(4, actionButton("to_gallery", "Send to gallery")),
              column(4, 
                     conditionalPanel("input.manual_method == 'Animation'",
-                                     actionButton("anim_save", "Save anim"))) # (gif)
+                                     actionButton("anim_save", "Save anim"))) ## (gif)
     ),
              verbatimTextOutput("save_msg"),
-             hr(),
-    h5("Optional Settings"),
-    selectInput('axes', 'Reference axes location', 
-                c('center', 'bottomleft', 'off'),
-                'center',  multiple = FALSE),
-    sliderInput('alpha', "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
   ),
   
   ##### _Plot display ----
   mainPanel(
     fluidRow(
-      column(9, plotOutput("main_plot")),
-      column(3, fluidRow(h4("Current basis"),
+      column(10, plotOutput("main_plot")),
+      column(2, fluidRow(h4("Current basis"),
                          tableOutput("curr_basis_tbl")))
     ),
     
@@ -106,40 +100,54 @@ tabManual <- tabPanel("Manual tour", fluidPage(
       fluidRow(column(1, actionButton("anim_play", "Play")),
                column(7, sliderInput("anim_slider", "Animation index",
                                      min = 1, max = 10, value = 1, step = 1, 
-                                     width = '100%'))
-      ), # Align the play botton with a top margin:
-      tags$style(type='text/css', "#anim_play {margin-top: 40px;}")
+                                     width = "100%"))
+      ), ## Align the play botton with a top margin:
+      tags$style(type="text/css", "#anim_play {margin-top: 40px;}")
     )
   )
 ))
 
 
 
-##### Gallery -----
+##### Gallery tab -----
 tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
       verbatimTextOutput("gallery_msg")
       , fluidRow(column(2, plotOutput("gallery_icons")),
                  column(10, DT::dataTableOutput("gallery_df"))
-      ) # align icons with a top margin: 
-      , tags$style(type='text/css', "#gallery_icons {margin-top: 70px;}")
+      ) ## align icons with a top margin: 
+      , tags$style(type="text/css", "#gallery_icons {margin-top: 70px;}")
       , verbatimTextOutput("gallery_icons_str")
     )
   )
 )
 
-###### Tabs combined ----
-ui <- fluidPage(
-  ### Make the lines, hr() black
-  tags$head(
-    tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-  navbarPage("spinifex app",
-             #tabInput,
-             tabManual,
-             tabInput,
-             tabGallery
+###### Full app layout ----
+if (.include_dev_display == TRUE){ ## Display dev content.
+  ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
+                  ## Make the lines, hr() black:
+                  tags$head(
+                    tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+                  navbarPage("spinifex -- DEV app",
+                             tabData,
+                             tabManual,
+                             tabGallery
+                  ),
+                  h5(contextLine, style = "color: #A9A9A9"),
+                  actionButton("browser", "browser()"), 
+                  verbatimTextOutput("dev_msg")
   )
-  , verbatimTextOutput("dev_msg")
-)
-
+} else { ## Remove dev content
+  ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
+                  ## Make the lines, hr() black:
+                  tags$head(
+                    tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+                  navbarPage("spinifex -- DEV app",
+                             tabData,
+                             tabManual,
+                             tabGallery
+                  ),
+                  h5(signOff, style = "color: #A9A9A9"),
+  )
+}
