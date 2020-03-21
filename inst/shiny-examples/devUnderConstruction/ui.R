@@ -3,25 +3,28 @@ tabData <- tabPanel(
   title = "Data", 
   fluidPage(
     sidebarPanel(
+      width = 3,
       ## Input csv file
       radioButtons("data_source", "Data source",
                    choices = c("Example", "Upload"),
                    selected = "Example"),
       conditionalPanel("input.data_source == 'Example'",
                        selectInput("data_example", "Example data",
-                                   choice = c("flea", "wine", "beastcancer", "weather"), ## See tourr:: "olive", "ozone", "laser", "tao", "ratcns"
+                                   choice = c("flea", "wine", "breastcancer", "weather"), ## See tourr:: "olive", "ozone", "laser", "tao", "ratcns"
                                    selected = "flea"
                        )
       ),
       conditionalPanel("input.data_source == 'Upload'",
-                       fileInput("data_file", "Data file (.csv format)",
+                       fileInput("data_file", "Data file",
+                                 placeholder = "<Select a .csv file>",
                                  accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
-                       )
+                       ),
+                       verbatimTextOutput("data_msg")
       ),
       ## Variables to project
       shinyBS::tipify(
         checkboxGroupInput(
-          "projVars_nms",
+          "projVar_nms",
           label = "Variables to project",
           choices  = names(tourr::flea),
           selected = names(tourr::flea)[1:6]
@@ -29,34 +32,28 @@ tabData <- tabPanel(
         title = "Expects numeric or discrete ordinal",
         placement = "top"
       ),
-      
-      ## Aesthetic mappings: Point color, shape, rescale sphere
-      fluidRow(column(5, selectInput('col_nm', 'Point color', "<none>")),
-               column(5, selectInput('pch_nm', 'Point shape', "<none>"))),
+      tags$b("Tranformations"),
       tags$div(title = "Normalize every variable to [0, 1]?",
                checkboxInput("rescale_data", 
-                             "Rescale projection variables", value = TRUE)
+                              "Normalize", value = TRUE)
       ),
-      #### To add sphere and pca tranform here later 
-      # tags$div(title = "Transform data s.t. covariance matrix becomes an identity matrix?",
-      #          selectInput("data_transform", "Data tranformation",
-      #                      c("<none>", "PCA", "sphere"))
-      # ),
-      h5("--  Rows containing missing values in any projection variable have been remove.")
+      h5("Note: rows containing missing values in any projection variable have been remove.")
     ),
-    mainPanel(h4("Input data summary"),
+    mainPanel(width = 9,
+              h4("Input data summary"),
               verbatimTextOutput("rawDat_summary"),
-              h4("Selected data summary"),
+              h4("Projection data summary"),
               verbatimTextOutput("projDat_summary")
     )
   )
 )
 
 
-##### Manual tab ----
+##### Manual tour tab ----
 tabManual <- tabPanel("Manual tour", fluidPage(
   ##### _Sidebar globar inputs ----
   sidebarPanel(
+    width = 3,
     radioButtons("basis_init", "Start basis",
                  choices = c("PCA", "Projection pursuit", "From file", "Random"),
                  selected = "PCA"),
@@ -66,31 +63,33 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                      )),
     conditionalPanel("input.basis_init == 'Projection pursuit' && 
                      (input.pp_type == 'lda_pp' || input.pp_type == 'pda_pp')",
-                     selectInput("pp_cluster", "Pursuit cluster (obl)",
+                     selectInput("basis_pp_cluster", "Pursuit cluster (obl)",
                                  choices = c("<no categorical variables found>" = NA) )),
     conditionalPanel("input.basis_init == 'From file'",
                      fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
                                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))),
-    selectInput("manip_nm", "Variable to manipulate", "<none>"),
-    actionButton("re_init", "Initiaze to above parameters"),
-    radioButtons("disp_method", "",
-                 choices = c("Interactive", "Animation"),
-                 selected = "Interactive"),
+    actionButton("re_init", "Return to the basis above"),
+    selectInput("manip_nm", "Manipulation variable", "<none>"),
+    fluidRow(column(6, selectInput("col_nm", "Point color", "<none>")),
+             column(6, selectInput("pch_nm", "Point shape", "<none>"))),
     hr(),
-    ##### _Sidebar interactive inputs ----
+    radioButtons("tour_class", "Class of tour",
+                 choices = c("Manual", "Guided"),
+                 selected = "Manual"),
+    ##### _Sidebar: manual tour inputs ----
     conditionalPanel(
-      "input.disp_method == 'Interactive'", 
-        h4("Interactive"),
-        selectInput("manip_type", "Manipulation type",
+      "input.tour_class == 'Manual'", 
+        h4("Manual tours"),
+        selectInput("manip_type", "Manipulation direction",
                     c("Radial", "Horizontal", "Vertical")),
-        sliderInput("manip_slider", "Contribution",
-                    min = -1, max = 1, value = 0, step = .1)
+        sliderInput("manip_slider", "Radius",
+                    min = 0, max = 1, value = .5, step = .1)
     ),
-    ##### _Sidebar animation inputs ----
+    ##### _Sidebar: guided tour inputs ----
     conditionalPanel(
-      "input.disp_method == 'Animation'",
-        h4("Animation"),
-        selectInput("anim_type", "Animation type",
+      "input.tour_class == 'Guided'",
+        h4("Guided tours"),
+        selectInput("anim_type", "Type of tour",
                     c("Radial", "Horizontal", "Vertical"
                       ,"Grand (6 bases)", "Little (6 bases)", "Local (6 bases)",
                       "Projection pursuit")),
@@ -101,41 +100,36 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                          (input.anim_pp_type == 'lda_pp' || input.anim_pp_type == 'pda_pp')", 
                          selectInput("anim_pp_cluster", "Pursuit cluster (anim)",
                                      choices = c("<no categorical variables found>" = NA) )),
-      sliderInput('anim_angle', 'Angle step size', value = .15, min = .05, max = .3),
-      sliderInput('fps', "Frames per second", min = 1, max = 6, value = 3, step = 1)
+      sliderInput("anim_angle", "Angle step size", value = .15, min = .05, max = .3),
+      sliderInput("fps", "Frames per second", min = 1, max = 6, value = 3, step = 1)
     ),
-    ##### _Sidebar optional inputs ----
+    
     fluidRow(column(4, actionButton("save", "Save basis")), ## (csv & png)
              column(4, actionButton("to_gallery", "Send to gallery")),
              column(4, 
-                    conditionalPanel("input.disp_method == 'Animation'",
+                    conditionalPanel("input.tour_class == 'Guided'",
                                      actionButton("anim_save", "Save anim"))) ## (gif)
     ),
-             verbatimTextOutput("save_msg"),
-             hr(),
-    h5("Optional Settings"),
-    selectInput('axes', 'Reference axes location', 
-                c("left", "center", "bottomleft", "off"),
-                "bottomleft",  multiple = FALSE),
-    sliderInput("alpha", "Alpha opacity", min = 0, max = 1, value = 1, step = .1)
+    verbatimTextOutput("save_msg")
   ),
   
-  ##### _Plot display ----
+  ##### _MainPanel: Plot display ----
   mainPanel(
+    width = 9,
     fluidRow(
-      column(9, plotOutput("main_plot")),
-      column(3, fluidRow(h4("Current basis"),
+      column(10, plotOutput("main_plot")),
+      column(2, fluidRow(h4("Current basis"),
                          tableOutput("curr_basis_tbl")))
     ),
     
     conditionalPanel(
-      "input.disp_method == 'Animation'", 
+      "input.tour_class == 'Guided'", 
       fluidRow(column(1, actionButton("anim_play", "Play")),
-               column(7, sliderInput("anim_slider", "Animation index",
+               column(7, sliderInput("anim_slider", "Tour index",
                                      min = 1, max = 10, value = 1, step = 1, 
-                                     width = '100%'))
+                                     width = "100%"))
       ), ## Align the play botton with a top margin:
-      tags$style(type='text/css', "#anim_play {margin-top: 40px;}")
+      tags$style(type = "text/css", "#anim_play {margin-top: 40px;}")
     )
   )
 ))
@@ -145,12 +139,13 @@ tabManual <- tabPanel("Manual tour", fluidPage(
 tabGallery <- tabPanel(
   "Gallery", fluidPage(
     mainPanel(
+      width = 12,
       verbatimTextOutput("gallery_msg"),
-      fluidRow(column(2, plotOutput("gallery_icons")),
-               column(10, DT::dataTableOutput("gallery_df"))
+      fluidRow(column(1, plotOutput("gallery_icons")),
+               column(11, DT::dataTableOutput("gallery_df"))
       ), 
       ## A icons with a top margin: 
-      tags$style(type='text/css', "#gallery_icons {margin-top: 70px;}"),
+      tags$style(type = "text/css", "#gallery_icons {margin-top: 36px;}"),
       verbatimTextOutput("gallery_icons_str")
     )
   )
