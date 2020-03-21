@@ -6,10 +6,11 @@
 #' @param slides The result of `array2df()`, a long df of the projected frames.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #'   Defaults to "blue".
-#' @param col Color of the projected points. Defaults to "black".
-#' @param pch Point character of the projected points. Defaults to 20.
-#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
-#'   to "center".
+#' @param col Point color and fill of the data. Defaults to "black".
+#' @param pch Point shape of the data. Defaults to 20.
+#' @param cex Point size of the data. Defaults to 1.
+#' @param axes Position of the axes: "center", "bottomleft", "off", "left", 
+#' "right". Defaults to "center".
 #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @param ... Recieves arguments from `play_manual_tour()` and `play_tour_path()`
 #' @return A ggplot2 object ready to be called by `render_plotly()` or 
@@ -24,15 +25,16 @@
 #' render_(slides = sshow)
 #' 
 #' render_(slides = sshow, axes = "bottomleft", 
-#'         col = flea$species, pch = flea$species)
+#'         col = col_of(flea$species), pch = pch_of(flea$species), cex = 2, alpha = .5)
 render_ <- function(slides,
                     manip_col = "blue",
                     col = "black", 
                     pch = 20,
+                    cex = 1,
                     axes = "center",
                     alpha = 1,
                     ...) {
-  # Initialize
+  ## Initialize
   if (length(slides) == 2)
     data_slides <- data.frame(slides[[2]])
   basis_slides  <- data.frame(slides[[1]])
@@ -85,8 +87,8 @@ render_ <- function(slides,
     ## Projected data points
     suppressWarnings( # Suppress for unused aes "frame".
       ggplot2::geom_point( 
-        data = data_slides, size = 1, 
-        shape = pch, color = col, fill = col, alpha = alpha,
+        data = data_slides,
+        shape = pch, color = col, fill = col, size = cex, alpha = alpha,
         mapping = ggplot2::aes(x = x, y = y, frame = slide)
       )
     )
@@ -110,7 +112,7 @@ render_ <- function(slides,
       ) +
       ## Basis axes text labels
       suppressWarnings( # Suppress for unused aes "frame".
-        ggplot2::geom_text(
+        ggrepel::geom_text_repel(
           data = basis_slides, 
           mapping = ggplot2::aes(x = x, y = y, 
                                  frame = slide, label = lab),

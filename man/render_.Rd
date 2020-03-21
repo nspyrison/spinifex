@@ -9,6 +9,7 @@ render_(
   manip_col = "blue",
   col = "black",
   pch = 20,
+  cex = 1,
   axes = "center",
   alpha = 1,
   ...
@@ -20,12 +21,14 @@ render_(
 \item{manip_col}{String of the color to highlight the \code{manip_var}.
 Defaults to "blue".}
 
-\item{col}{Color of the projected points. Defaults to "black".}
+\item{col}{Point color and fill of the data. Defaults to "black".}
 
-\item{pch}{Point character of the projected points. Defaults to 20.}
+\item{pch}{Point shape of the data. Defaults to 20.}
 
-\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
-to "center".}
+\item{cex}{Point size of the data. Defaults to 1.}
+
+\item{axes}{Position of the axes: "center", "bottomleft", "off", "left",
+"right". Defaults to "center".}
 
 \item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
 
@@ -48,5 +51,5 @@ sshow <- array2df(array = mtour, data = flea_std)
 render_(slides = sshow)
 
 render_(slides = sshow, axes = "bottomleft", 
-        col = flea$species, pch = flea$species)
+        col = col_of(flea$species), pch = pch_of(flea$species), cex = 2, alpha = .5)
 }

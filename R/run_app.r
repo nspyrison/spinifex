@@ -10,6 +10,7 @@
 #' \dontrun{
 #' run_app(example = "intro")
 #' run_app(example = "primary")
+#' run_app(example = "devUnderConstruction")
 #' }
 
 
@@ -17,11 +18,14 @@
 # https://deanattali.com/2015/04/21/r-package-shiny-app/
 run_app <- function(example) {
   if (example %in% c("primary", "devUnderConstruction")) {
+    requireNamespace("ggplot2")
+    requireNamespace("tibble")
     requireNamespace("skinythemes") ## Themes for shiny, think css files.
     requireNamespace("shinyBS")     ## BootStrap functionality, see ?shinyBS::bsTooltip
     requireNamespace("shinyjs")     ## Extend JS control and formating, see ?shinyjs::toggle
     requireNamespace("reactlog")    ## Custom shiny logging
     requireNamespace("DT")          ## HTML tabbles for the gallery table
+    
   }
   
   # locate all the shiny app examples that exist

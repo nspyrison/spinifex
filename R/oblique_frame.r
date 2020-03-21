@@ -16,8 +16,8 @@
 #' results in a 3 character abbriviation of the variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
-#' @param ... Optionally pass additional arguments. 
-#' especially to the `render_type` for plotting options.
+#' @param ... Optionally pass additional arguments `render_`. 
+#' Especially to the col, pch, and cex, alpha
 #' @return a ggplot object of the rotated projection.
 #' @import tourr
 #' @export
@@ -28,6 +28,9 @@
 #' phi <- runif(1, 0, 2*pi)
 #' 
 #' oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
+
+## TODO: Review spinifex_study app to see if pch, col, cex, alpha are much 
+#### better within aes for legend or not. Resolve here if so.
 
 oblique_frame <- function(basis        = NULL,
                           data         = NULL, ### TODO: when NULL data gets assigned small numeric 1x1 value, where & why?
@@ -61,7 +64,7 @@ oblique_frame <- function(basis        = NULL,
     colnames(data_slides) <- c("x", "y", "z", "slide")
   }
   
-  # Add labels, attribute, and list
+  ## Add labels, attribute, and list
   basis_slides$lab <- 
     if(!is.null(lab)){
       rep(lab, nrow(basis_slides) / length(lab))

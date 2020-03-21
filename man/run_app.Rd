@@ -20,5 +20,6 @@ traditional techniques for static projections of multivariate data sets.
 \dontrun{
 run_app(example = "intro")
 run_app(example = "primary")
+run_app(example = "devUnderConstruction")
 }
 }

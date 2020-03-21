@@ -36,8 +36,8 @@ results in a 3 character abbriviation of the variable names.}
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
-\item{...}{Optionally pass additional arguments.
-especially to the \code{render_type} for plotting options.}
+\item{...}{Optionally pass additional arguments \code{render_}.
+Especially to the col, pch, and cex, alpha}
 }
 \value{
 a ggplot object of the rotated projection.
