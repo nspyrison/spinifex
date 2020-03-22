@@ -26,7 +26,8 @@ server <- function(input, output, session) {
   ##### Init reactiveValues
   rv                      <- reactiveValues()
   rv$curr_basis           <- tourr::basis_random(6)
-  rv$tour_array           <- NULL
+  rv$manual_basis_array   <- NULL
+  rv$anim_basis_array     <- NULL
   rv$anim_slide           <- 1
   rv$is_anim_playing      <- FALSE
   rv$png_save_cnt         <- 0
@@ -34,11 +35,7 @@ server <- function(input, output, session) {
   rv$gallery_bases        <- NULL
   rv$gallery_n_rows       <- 0
   rv$gallery_rows_removed <- NULL
-  # ### For anim_window
-  # rv$xmin <- 0
-  # rv$xmax <- 0
-  # rv$ymin <- 0
-  # rv$ymax <- 0
+
   
   ####### REACTERS -----
   ##### _Data reactives -----
@@ -132,6 +129,10 @@ server <- function(input, output, session) {
   ##### _Util reactives: dim and aesthetics ----
   n <- reactive(nrow(projDat()))
   p <- reactive(ncol(projDat()))
+  
+  ### Throttle manip_slider
+  manip_slider   <- reactive(input$manip_slider)
+  manip_slider_t <- throttle(manip_slider, 300)
   
   col_var <- reactive({
     if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
@@ -247,16 +248,40 @@ server <- function(input, output, session) {
     if (col_assumptions()      == FALSE) return()
     
     if (input$tour_class == 'Manual') {
+      dat <- projDat()
+      m_var_num <- manip_num()
+      ### Make rv$manual_basis_array if null
+      if(length(rv$manual_basis_array) == 0){
+        rv$manual_basis_array <- array(NA, dim = c(p(), 2, 11))
+        mv_sp <- create_manip_space(rv$curr_basis, m_var_num)[m_var_num, ]
+        theta <- phi <- NULL
+        if(input$manip_type == "Horizontal") theta <- 0
+        if(input$manip_type == "Vertical")   theta <- pi / 2
+        if(input$manip_type == "Radial")     theta <- atan(mv_sp[2] / mv_sp[1])
+        phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
+        phi_slide <- acos((0:10)/10) ## possible values of manip_slider.
+        phi_vals  <- (phi_slide - phi_start) * - sign(mv_sp[1]) 
+        
+        for (i in 1:length(phi_vals)){
+          rv$manual_basis_array[,, i] <-
+            oblique_basis(basis = rv$curr_basis, manip_var = m_var_num,
+                          theta = theta, phi = phi_vals[i])
+        }
+      }
+      
+      .basis_num <- manip_slider_t() * 10 + 1
+      format_basis()(rv$manual_basis_array[,, .basis_num])
+      
       return(
         spinifex::oblique_frame(basis     = rv$curr_basis,
-                                data      = projDat(),
-                                manip_var = manip_num(),
+                                data      = dat,
+                                manip_var = m_var_num,
                                 col       = col_of(col_var()),
                                 pch       = pch_of(pch_var()),
                                 axes      = "right")
       )
     }
-    if (input$tour_class == 'Guided' ) {
+    if (input$tour_class == 'Guided') {
       anim_frame <- NULL
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
         anim_frame <- spinifex::oblique_frame(basis     = rv$curr_basis,
@@ -360,7 +385,7 @@ server <- function(input, output, session) {
   ##### _Data observes ----
   ### When rawDat() changes...
   observeEvent({rawDat()}, {
-    appObsMsg(rawDat)
+    appObsMsg("rawDat")
     dat <- rawDat()
     nms <- names(dat)
     
@@ -401,7 +426,7 @@ server <- function(input, output, session) {
   
   ### When input$projVariables changes...
   observeEvent({input$projVar_nms}, {
-    appObsMsg(input$projVar_nms)
+    appObsMsg("input$projVar_nms")
     
     ### Update manip var choices 
     updateSelectInput(session,
@@ -412,7 +437,7 @@ server <- function(input, output, session) {
   
   ### On "Initiaze to above parameters" button, set current basis to the initializ basis.
   observeEvent(input$re_init, {
-    appObsMsg(input$re_init)
+    appObsMsg("input$re_init")
     init_basis()
   })
   
@@ -470,8 +495,7 @@ server <- function(input, output, session) {
     rv$curr_basis
     manip_num()
   }, {
-    appObsMsg("    rv$curr_basis
-    manip_num()")
+    appObsMsg("rv$curr_basis, manip_num()")
     if (input$tour_class != 'Manual') return()
     if (basis_assumptions() == FALSE)       return()
     mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
@@ -494,7 +518,7 @@ server <- function(input, output, session) {
   
   
   ##### _Guided tour observes -----
-  ### Set rv$tour_array when related paramater changes.
+  ### Set rv$anim_basis_array when related paramater changes.
   observeEvent({
     projDat()
     input$anim_type
@@ -525,7 +549,7 @@ server <- function(input, output, session) {
         if (input$anim_type == "Radial")     {t_array <- app_manual_tour()} # Default theta to radial
         if (input$anim_type == "Horizontal") {t_array <- app_manual_tour(theta = 0)}
         if (input$anim_type == "Vertical")   {t_array <- app_manual_tour(theta = pi/2)}
-        rv$tour_array <- t_array
+        rv$anim_basis_array <- t_array
       } else {
         ### Projection pursuit
         # TODO: trouble shoot PP and tourr paths.
@@ -553,35 +577,35 @@ server <- function(input, output, session) {
           t_path <- tourr::save_history(projDat(), max_bases = 6,
                                         tour_path = local_tour(rv$curr_basis, pi/4))
         }
-        rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
+        rv$anim_basis_array <- interpolate(t_path, angle = input$anim_angle)
       }
     ### end processing message for .gif 
     # setProgress(1)
     # })
   })
   
-  ### Update anim_slider when rv$tour_array changes.
-  observeEvent(rv$tour_array, {
+  ### Update anim_slider when rv$anim_basis_array changes.
+  observeEvent(rv$anim_basis_array, {
     if (input$tour_class != "Guided") return()
     rv$is_anim_playing <- FALSE
     updateSliderInput(session, "anim_slider", 
                       value = 1, 
                       min = 1, 
-                      max = dim(rv$tour_array)[3])
+                      max = dim(rv$anim_basis_array)[3])
   })
   
   ### Set curr basis when anim_slider changes.
   observeEvent(input$anim_slider, {
     if (input$tour_class != "Guided") return()
     if (basis_assumptions() == FALSE)     return()
-    format_basis()(matrix(rv$tour_array[,, input$anim_slider], ncol = 2))
+    format_basis()(matrix(rv$anim_basis_array[,, input$anim_slider], ncol = 2))
   })
   
   ### Change curr basis when slider changes
   observeEvent(input$anim_slider, {
     if (input$tour_class != "Guided") return()
     if (basis_assumptions() == FALSE)     return()
-    format_basis()(matrix(rv$tour_array[,, input$anim_slider],  ncol = 2 ))
+    format_basis()(matrix(rv$anim_basis_array[,, input$anim_slider],  ncol = 2))
   })
   
 
@@ -594,16 +618,16 @@ server <- function(input, output, session) {
     flea_std <- rescale(tourr::flea[,1:6])
     tpath <- save_history(flea_std, tour_path = grand_tour(), max = 3)
     str(tpath)
-    str(rv$tour_array)
+    str(rv$anim_basis_array)
     debug(interpolate)
     #debug(geodesic_path)
     writeClipboard("debug(tour)")
     browser()
     str(tpath)
-    str(rv$tour_array)
+    str(rv$anim_basis_array)
     cat("error in tourr::interpolate(tour(tour_path(geodesic_path(geodesic_info(is_orthonormal. it's functions all the way down...")
     cat("massive hair ball does a tumble")
-    play_tour_path(tour_path = rv$tour_array, data = projDat(),
+    play_tour_path(tour_path = rv$anim_basis_array, data = projDat(),
                    render_type = render_gganimate)
     writeClipboard("debug(tour_path)")
     undebug(interpolate)
@@ -614,14 +638,14 @@ server <- function(input, output, session) {
     ex <- play_tour_path(tour_path = tpath, data = flea_std,
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex)
-    ex2 <- play_tour_path(tour_path = rv$tour_array, data = projDat(),
+    ex2 <- play_tour_path(tour_path = rv$anim_basis_array, data = projDat(),
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex2)
     ##TODO: END
     
     
     withProgress(message = 'Rendering guided tour ...', value = 0, {
-      anim <- play_tour_path(tour_path = rv$tour_array,
+      anim <- play_tour_path(tour_path = rv$anim_basis_array,
                              data = projDat(),
                              col = col_of(col_var()), pch = pch_of(pch_var()),
                              axes = "right",
@@ -643,7 +667,7 @@ server <- function(input, output, session) {
       if (rv$is_anim_playing == TRUE) {
         isolate(updateSliderInput(session, "anim_slider", 
                                    value = input$anim_slider + 1))
-        if (input$anim_slider == dim(rv$tour_array)[3]) { ## pause on last slide 
+        if (input$anim_slider == dim(rv$anim_basis_array)[3]) { ## pause on last slide 
           rv$is_anim_playing <- !rv$is_anim_playing
         }
       }
@@ -659,7 +683,7 @@ server <- function(input, output, session) {
     }
   })
   observeEvent(input$anim_play, { ## Button label switching and end of anim handling
-    if (input$anim_slider == dim(rv$tour_array)[3]) { ## if at the last slide, start at slide 1
+    if (input$anim_slider == dim(rv$anim_basis_array)[3]) { ## if at the last slide, start at slide 1
       updateSliderInput(session, "anim_slider", value = 1)
     }
     rv$is_anim_playing <- !rv$is_anim_playing
