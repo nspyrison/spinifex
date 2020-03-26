@@ -7,10 +7,11 @@
 #' spinifex::run_app("intro")
 #' }
 
-requireNamespace("shiny")
-requireNamespace("plotly")
-requireNamespace("spinifex")
-requireNamespace("dplyr")
+library("shiny")
+library("shinythemes")
+library("spinifex")
+library("plotly")
+
 
 source('ui.R', local = TRUE)
 
@@ -30,7 +31,7 @@ server <- function(input, output, session) {
   })
   numericVars <- reactive(sapply(dat(), is.numeric))
   clusterVars <- reactive(sapply(dat(), function(x) is.character(x)|is.factor(x)))
-  numericDat  <- reactive(dat()[numericVars()]) # dat of only numeric vars
+  numericDat  <- reactive(dat()[numericVars()]) ## dat of only numeric vars
   clusterDat  <- reactive(dat()[clusterVars()])
   colToSelect <- reactive(min(ncol(numericDat()), 6))
   
@@ -40,11 +41,11 @@ server <- function(input, output, session) {
     if (input$rescale_data) x <- tourr::rescale(x)
     return(x)
   })
-  col_var <- reactive({ # a column of values
-    clusterDat()[, which(colnames(clusterDat()) == input$col_var)] 
+  col_var <- reactive({ ## a column of values
+    clusterDat()[, which(colnames(clusterDat()) == input$col_nm)] 
   })
-  pch_var <- reactive({ # a column of values
-    clusterDat()[, which(colnames(clusterDat()) == input$pch_var)] 
+  pch_var <- reactive({ ## a column of values
+    clusterDat()[, which(colnames(clusterDat()) == input$pch_nm)] 
   })
   n <- reactive(ncol(selected_dat()))
   manip_var <- reactive(which(colnames(numericDat()) == input$manip_var)) # number of var
@@ -70,18 +71,18 @@ server <- function(input, output, session) {
   observeEvent(clusterDat(), {
     if (length(clusterDat()) >= 1) {
       updateSelectInput(session,
-                        "col_var",
-                        choices = names(clusterDat()))
+                        "col_nm",
+                        choices = c(names(clusterDat()), "<none>"))
       updateSelectInput(session,
-                        "pch_var",
-                        choices = names(clusterDat()))
-    } else { # list "none", if there are not character or factor vars.
+                        "pch_nm",
+                        choices = c(names(clusterDat()), "<none>"))
+    } else { ## list "none", if there are not character or factor vars.
       updateSelectInput(session,
-                        "col_var",
-                        choices = c("None"))
+                        "col_nm",
+                        choices = c("<none>"))
       updateSelectInput(session,
-                        "pch_var",
-                        choices = c("None"))
+                        "pch_nm",
+                        choices = c("<none>"))
     }
   })
   
@@ -100,18 +101,12 @@ server <- function(input, output, session) {
                        manip_var = manip_var(),
                        col = col_of(col_var()),
                        pch = pch_of(pch_var()),
-                       axes = input$axes,
-                       angle = input$angle,
-                       fps = input$fps
+                       axes = "left",
+                       fps = 9
       )
     })
   }) ## end of radial tour
   
   output$str_data <- renderPrint({str(dat())})
-  
-  output$devMessage <- renderPrint({
-    paste0("Development Message: nSelected(): ", head(numVars()))
-  })
-  
 }
 shinyApp(ui, server)

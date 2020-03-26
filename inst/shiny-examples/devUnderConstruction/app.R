@@ -27,6 +27,8 @@ server <- function(input, output, session) {
   rv                      <- reactiveValues()
   rv$curr_basis           <- tourr::basis_random(6)
   rv$manual_basis_array   <- NULL
+  rv$manual_plot_array    <- NULL
+  rv$is_manual_debounced  <- TRUE
   rv$anim_basis_array     <- NULL
   rv$anim_slide           <- 1
   rv$is_anim_playing      <- FALSE
@@ -132,7 +134,7 @@ server <- function(input, output, session) {
   
   ### Throttle manip_slider
   manip_slider   <- reactive(input$manip_slider)
-  manip_slider_t <- throttle(manip_slider, 300)
+  manip_slider_index_t <- throttle(1 + 10 * manip_slider, 100)
   
   col_var <- reactive({
     if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
@@ -231,10 +233,12 @@ server <- function(input, output, session) {
   format_basis <- reactive({
     format_basis_func <- function(bas) {
       if (basis_assumptions() == FALSE) return()
+      #if (input$tour_class == "Manual" & rv$is_manual_debounced == TRUE) return()
+      rv$is_manual_debounced <<- TRUE
       colnames(bas)  <- c("x", "y")
       row.names(bas) <- colnames(projDat())
       
-      rv$curr_basis <- bas # can I assign rv$ from a reactive or use OBS?
+      rv$curr_basis <- bas
       return(bas)
     }
   })
@@ -262,24 +266,25 @@ server <- function(input, output, session) {
         phi_slide <- acos((0:10)/10) ## possible values of manip_slider.
         phi_vals  <- (phi_slide - phi_start) * - sign(mv_sp[1]) 
         
-        for (i in 1:length(phi_vals)){
+        i_max <- length(phi_vals) ## ~11; 1:11, by 1
+        for (i in 1:i_max){
           rv$manual_basis_array[,, i] <-
             oblique_basis(basis = rv$curr_basis, manip_var = m_var_num,
                           theta = theta, phi = phi_vals[i])
         }
-      }
-      
-      .basis_num <- manip_slider_t() * 10 + 1
-      format_basis()(rv$manual_basis_array[,, .basis_num])
-      
-      return(
-        spinifex::oblique_frame(basis     = rv$curr_basis,
-                                data      = dat,
-                                manip_var = m_var_num,
-                                col       = col_of(col_var()),
-                                pch       = pch_of(pch_var()),
-                                axes      = "right")
-      )
+        for (i in 1:i_max){
+          rv$manual_plot_array[,, i] <-
+            spinifex::oblique_frame(basis     = rv$manual_basis_array[,, i],
+                                    data      = dat,
+                                    manip_var = m_var_num,
+                                    col       = col_of(col_var()),
+                                    pch       = pch_of(pch_var()),
+                                    axes      = "right")
+        }
+      } ### End rv$manual_basis_array if null
+      .slider_index <- manip_slider_index_t()
+      format_basis()(rv$manual_basis_array[,, .slider_index])
+      return(rv$manual_plot_array[,, .slider_index])
     }
     if (input$tour_class == 'Guided') {
       anim_frame <- NULL
@@ -388,6 +393,7 @@ server <- function(input, output, session) {
     appObsMsg("rawDat")
     dat <- rawDat()
     nms <- names(dat)
+    rv$manual_basis_array <- NULL ## clear manual bases
     
     ### ... update projection variable choices
     updateCheckboxGroupInput(session,
@@ -428,7 +434,7 @@ server <- function(input, output, session) {
   observeEvent({input$projVar_nms}, {
     appObsMsg("input$projVar_nms")
     
-    ### Update manip var choices 
+    ### ...pdate manip var choices 
     updateSelectInput(session,
                       inputId  = "manip_nm", 
                       choices  = input$projVar_nms, 
@@ -490,14 +496,28 @@ server <- function(input, output, session) {
   
   
   ##### _Manual tour observes -----
+  ### Debounce manip changes for .5 sec
+  observe({
+    if (input$tour_class != "Manual") return()
+    if (rv$is_manual_debounced == TRUE) {
+      invalidateLater(2000, session)
+      isolate({
+        rv$is_manual_debounced <- FALSE
+      })
+    }
+  })
+  
   ### Update sliders
   observeEvent({
     rv$curr_basis
     manip_num()
   }, {
+    message(paste0("rv$is_manual_debounced: ", rv$is_manual_debounced))
+    if (input$tour_class != "Manual")   return()
+    if (basis_assumptions() == FALSE)   return()
+    #if (rv$is_manual_debounced == TRUE) return()
+    rv$is_manual_debounced <<- TRUE
     appObsMsg("rv$curr_basis, manip_num()")
-    if (input$tour_class != 'Manual') return()
-    if (basis_assumptions() == FALSE)       return()
     mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
     if (input$manip_type == "Horizontal") {
       phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
@@ -518,16 +538,15 @@ server <- function(input, output, session) {
   
   
   ##### _Guided tour observes -----
-  ### Set rv$anim_basis_array when related paramater changes.
+  ### When related paramaterx change...
   observeEvent({
     projDat()
     input$anim_type
     ## spinifex parameter change:
     manip_num()
-    input$anim_angle
     ## tourr param parameters change:
+    input$anim_angle
     input$pp_type
-    projDat()
     }, {
       if (input$tour_class != "Guided") return()
       ### Processing message for gif

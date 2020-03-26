@@ -2,22 +2,19 @@
 tabInput <- tabPanel(
   "Input", fluidPage(
     sidebarPanel(
-      # Input csv file
-      selectInput('dat', 'Data set', 
+      width = 3,
+      selectInput('dat', 'Dataset', 
                   c('flea', 'olive', 'weather', 'wine', 'breastcancer', 'mtcars')),
-      # include which variables in the projection
+      ## include which variables in the projection
       checkboxGroupInput(
         "variables",
-        label = "Variables to include",
+        label = "Projection variables",
         choices = "none"
       ),
-      # Point color, shape and rescale [0,1] data
-      selectInput('col_var', 'Point color', "none"),
-      selectInput('pch_var', 'Point shape', "none"),
-      tags$hr(),
-      checkboxInput("rescale_data", "Rescale values", value = TRUE)
+      checkboxInput("rescale_data", "Normalize values to [0, 1]", value = TRUE)
     ),
-    mainPanel(h3("Data structure"),
+    mainPanel(width = 3,
+              h3("Data structure"),
               verbatimTextOutput("str_data")
     )
     
@@ -25,39 +22,31 @@ tabInput <- tabPanel(
 )
 
 ### Radial Manual Tab ----
-tabRadial <-  tabPanel(
+tabRadial <- tabPanel(
   "Radial manual", fluidPage(
     sidebarPanel(
-      # generate tour button
-      actionButton("radial_button", "Generate tour"),
-      tags$hr(),
-      
-      # manip, col, and pch vars
+      width = 3,
       selectInput('manip_var', 'Manip var', "none"),
-      
-      # More options: axes placement and angle step size
-      tags$hr(),
-      selectInput('axes', 'Reference axes location', 
-                  c('center', 'bottomleft', 'off'),
-                  'center',  multiple = FALSE),
-      sliderInput('angle', 'Angle step size', value = .05, min = .01, max = .3),
-      sliderInput('fps', 'frames per second', value = 3, min = 1, max = 6)
+      fluidRow(column(6, selectInput("col_nm", "Point color", "<none>")),
+               column(6, selectInput("pch_nm", "Point shape", "<none>"))),
+      actionButton("radial_button", "Render tour")
     ),
     
     mainPanel(
-      plotly::plotlyOutput("plotlyAnim")
+      width = 9,
+      plotly::plotlyOutput("plotlyAnim",
+                           height = "600px")
     )
   )
 )
 
 ##### ui -----
 ### Tabs combined
-ui <- fluidPage(
+ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
   navbarPage(
     "Manual tours -- intro",
     tabInput,
     tabRadial
   )
-  #,verbatimTextOutput("devMessage")
 )
 
