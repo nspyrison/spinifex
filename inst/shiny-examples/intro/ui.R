@@ -13,7 +13,7 @@ tabInput <- tabPanel(
       ),
       checkboxInput("rescale_data", "Normalize values to [0, 1]", value = TRUE)
     ),
-    mainPanel(width = 3,
+    mainPanel(width = 9,
               h3("Data structure"),
               verbatimTextOutput("str_data")
     )

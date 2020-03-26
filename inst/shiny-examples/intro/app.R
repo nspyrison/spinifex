@@ -107,6 +107,6 @@ server <- function(input, output, session) {
     })
   }) ## end of radial tour
   
-  output$str_data <- renderPrint({str(dat())})
+  output$str_data <- renderPrint(tibble::as.tibble(dat()))
 }
 shinyApp(ui, server)
