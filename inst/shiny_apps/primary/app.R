@@ -12,6 +12,8 @@
 
 #TODO: Go to the other logging method. see spinifex_study app
 
+### PRIMARY app.R
+
 source('global.R', local = TRUE)
 source('ui.R', local = TRUE)
 
@@ -52,7 +54,7 @@ server <- function(input, output, session) {
     ret <- numDat[, which(colnames(numDat) == input$variables)]
     ret <- ret[complete.cases(ret), ] ## Rowwise complete
     if (input$rescale_data) ret <- tourr::rescale(ret)
-    return(ret)
+    return(as.data.frame(ret))
   })
   col_var <- reactive({
     if (input$col_var == "<none>") {rep("a", n())

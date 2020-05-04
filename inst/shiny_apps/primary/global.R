@@ -16,8 +16,8 @@ require("shinyjs")     ## Extend JS control and formating, see ?shinyjs::toggle
 contextLine <- paste0("Spinifex app --- spinifex (v" ,packageVersion("spinifex"),") --- ", Sys.Date())
 
 ## for saving files:
-# write.csv(tourr::flea, file="./inst/shiny-examples/comparison/flea.csv",row.names=FALSE)
-# save(df, file="./inst/shiny-examples/comparison/df.rda")
+# write.csv(tourr::flea, file="./inst/shiny_apps/comparison/flea.csv",row.names=FALSE)
+# save(df, file="./inst/shiny_apps/comparison/df.rda")
 
 
 appDebugMsg <- function(actionNm = NULL){

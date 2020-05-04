@@ -29,7 +29,7 @@ run_app <- function(example) {
   }
   
   # locate all the shiny app examples that exist
-  validExamples <- list.files(system.file("shiny-examples", package = "spinifex"))
+  validExamples <- list.files(system.file("shiny_apps", package = "spinifex"))
   
   validExamplesMsg <- paste0("Valid examples are: '",
                              paste(validExamples, collapse = "', '"),
@@ -45,6 +45,6 @@ run_app <- function(example) {
   }
   
   # find and launch the app
-  appDir <- system.file("shiny-examples", example, package = "spinifex")
+  appDir <- system.file("shiny_apps", example, package = "spinifex")
   shiny::runApp(appDir, display.mode = "normal")
 }

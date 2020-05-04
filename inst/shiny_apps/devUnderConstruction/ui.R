@@ -1,3 +1,5 @@
+### DEVUNDERCONSTRUCTION ui.R
+
 ##### Data tab -----
 tabData <- tabPanel(
   title = "Data", 
@@ -6,7 +8,7 @@ tabData <- tabPanel(
       width = 3,
       ## Input csv file
       radioButtons("data_source", "Data source",
-                   choices = c("Example", "Upload"),
+                   choices = c("Example", "Upload file"),
                    selected = "Example"),
       conditionalPanel("input.data_source == 'Example'",
                        selectInput("data_example", "Example data",
@@ -14,9 +16,9 @@ tabData <- tabPanel(
                                    selected = "flea"
                        )
       ),
-      conditionalPanel("input.data_source == 'Upload'",
+      conditionalPanel("input.data_source == 'Upload file'",
                        fileInput("data_file", "Data file",
-                                 placeholder = "<Select a .csv file>",
+                                 placeholder = "<Select a .csv or .rda file>",
                                  accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
                        ),
                        verbatimTextOutput("data_msg")

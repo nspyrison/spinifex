@@ -7,6 +7,8 @@
 #' spinifex::run_app("intro")
 #' }
 
+### INTRO app.R
+
 library("shiny")
 library("shinythemes")
 library("spinifex")
@@ -19,7 +21,7 @@ server <- function(input, output, session) {
   
   ##### Reactives ----
   ### Data initialize
-  dat <- reactive({
+  rawDat <- reactive({
     if (is.null(input$dat)) {return()}
     if (input$dat == "flea") return(tourr::flea)
     if (input$dat == "olive") return(tourr::olive)
@@ -27,18 +29,30 @@ server <- function(input, output, session) {
     if (input$dat == "weather") return(spinifex::weather)
     if (input$dat == "breastcancer") return(spinifex::breastcancer)
     if (input$dat == "mtcars") return(mtcars)
-    return()
+    if (input$data_source == "Upload .csv file"){
+      path <- input$data_file$datapath
+      ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
+      ## assumptions
+      if ((is.null(path) | length(path) == 0)) stop("Error in filepath length.")
+      if (!(ext %in% c(".csv", ".rda"))) stop("unexpected filepath extension.")
+      if (ext == ".csv")
+        return(read.csv(path, stringsAsFactors = FALSE))
+      if (ext == ".rda")
+        return(load(file = path))
+    }
+  stop("Unexpected error reading data.")
   })
-  numericVars <- reactive(sapply(dat(), is.numeric))
-  clusterVars <- reactive(sapply(dat(), function(x) is.character(x)|is.factor(x)))
-  numericDat  <- reactive(dat()[numericVars()]) ## dat of only numeric vars
-  clusterDat  <- reactive(dat()[clusterVars()])
+  numericVars <- reactive(sapply(rawDat(), is.numeric))
+  clusterVars <- reactive(sapply(rawDat(), function(x) is.character(x)|is.factor(x)))
+  numericDat  <- reactive(rawDat()[numericVars()]) ## dat of only numeric vars
+  clusterDat  <- reactive(rawDat()[clusterVars()])
   colToSelect <- reactive(min(ncol(numericDat()), 6))
   
   ### Input initialize
-  selected_dat <- reactive({
+  projMat <- reactive({
     x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
     if (input$rescale_data) x <- tourr::rescale(x)
+    x <- as.matrix(x)
     return(x)
   })
   col_var <- reactive({ ## a column of values
@@ -47,17 +61,18 @@ server <- function(input, output, session) {
   pch_var <- reactive({ ## a column of values
     clusterDat()[, which(colnames(clusterDat()) == input$pch_nm)] 
   })
-  n <- reactive(ncol(selected_dat()))
+  n <- reactive(ncol(projMat()))
   manip_var <- reactive(which(colnames(numericDat()) == input$manip_var)) # number of var
-  basis <- reactive({prcomp(selected_dat())[[2]][, 1:2]}) # init basis to PC1:2
+  basis <- reactive({prcomp(projMat())[[2]][, 1:2]}) # init basis to PC1:2
   
   ##### Observes -----
   ### Update include variable checkbox
-  observeEvent(dat() ,{
+  observeEvent(rawDat() ,{
+    numDat <- numericDat()
     updateCheckboxGroupInput(session,
                              "variables",
-                             choices = names(numericDat()),
-                             selected = names(numericDat()[1:colToSelect()]))
+                             choices = names(numDat),
+                             selected = names(numDat[1:colToSelect()]))
   })
   
   ### Update manip_var based on selected include varables
@@ -96,7 +111,7 @@ server <- function(input, output, session) {
     })
     
     output$plotlyAnim <- plotly::renderPlotly({
-      play_manual_tour(data = selected_dat(),
+      play_manual_tour(data = projMat(),
                        basis = basis(),
                        manip_var = manip_var(),
                        col = col_of(col_var()),
@@ -107,6 +122,13 @@ server <- function(input, output, session) {
     })
   }) ## end of radial tour
   
-  output$str_data <- renderPrint(tibble::as.tibble(dat()))
+  output$rawDat_summary <- renderPrint({
+    dat <- as.data.frame(rawDat())
+    tibble::as.tibble(dat)
+  })
+  output$projDat_summary <- renderPrint({
+    dat <- as.data.frame(projMat())
+    tibble::as.tibble(dat)
+  })
 }
 shinyApp(ui, server)
