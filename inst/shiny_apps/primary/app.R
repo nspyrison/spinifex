@@ -10,11 +10,11 @@
 #' spinifex::run_app("primary")
 #' }
 
-#TODO: Go to the other logging method. see spinifex_study app
-
 ### PRIMARY app.R
 
-source('global.R', local = TRUE)
+#TODO: Go to the other logging method. see spinifex_study app
+
+source('../global_shinyApps.r', local = TRUE)
 source('ui.R', local = TRUE)
 
 server <- function(input, output, session) {
@@ -29,7 +29,6 @@ server <- function(input, output, session) {
   rv$gallery_bases        <- NULL
   rv$gallery_n_rows       <- 0
   rv$gallery_rows_removed <- NULL
-  
   
   ### Data reactives -----
   rawDat <- reactive({

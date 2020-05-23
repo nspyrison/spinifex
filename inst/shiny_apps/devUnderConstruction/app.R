@@ -21,7 +21,7 @@
 ##TODO: Add input$alpha? see spinifex_study app
 
 
-source('global.R', local = TRUE)
+source('../global_shinyApps.r', local = TRUE)
 source('ui.R', local = TRUE)
 
 server <- function(input, output, session) {
@@ -39,10 +39,66 @@ server <- function(input, output, session) {
   rv$gallery_bases        <- NULL
   rv$gallery_n_rows       <- 0
   rv$gallery_rows_removed <- NULL
-
+  
   
   ####### REACTERS -----
-  ##### _Data reactives -----
+  ##### _Util reacs: dim and aesthetics ----
+  n <- reactive(nrow(projMat()))
+  p <- reactive(ncol(projMat()))
+  
+  ### Throttle manip_slider
+  manip_slider   <- reactive(input$manip_slider)
+  manip_slider_index_t <- throttle(1 + 10 * manip_slider, 100)
+  
+  col_var <- reactive({
+    if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
+    dat <- rawDat()
+    dat[, which(colnames(dat) %in% input$col_nm)]
+  })
+  
+  pch_var <- reactive({
+    if (input$pch_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
+    dat <- rawDat()
+    dat[, which(colnames(dat) %in% input$pch_nm)]
+  })
+  
+  manip_num <- reactive({ 
+    if (input$manip_nm == "<none>") {return(1)}
+    if (input$tour_class == "Guided") {return(1)}
+    which(colnames(projMat()) == input$manip_nm)
+  }) 
+  
+  manip_assumptions <- reactive({
+    mNum <- manip_num()
+    mSlider <- input$manip_slider
+    if (is.null(mNum) | length(mNum) == 0) 
+    {M(manip_assumptions);return(FALSE)}
+    if (mNum %in% 1:nrow(projMat()) == FALSE)  
+    {M(manip_assumptions);return(FALSE)}
+    if (mSlider < 0 | mSlider > 1) 
+    {M(manip_assumptions);return(FALSE)}
+    TRUE
+  })
+  
+  pch_assumptions <- reactive({
+    pchVarNm <- input$pch_nm
+    if (is.null(pchVarNm) | length(pchVarNm) == 0) 
+    {M(pch_assumptions);return(FALSE)}
+    if (pchVarNm %in% c(colnames(rawDat()), "<none>") == FALSE) 
+    {M(pch_assumptions);return(FALSE)}
+    TRUE
+  })
+  
+  col_assumptions <- reactive({
+    colVarNm <- input$col_nm
+    if (is.null(colVarNm) | length(colVarNm) == 0) 
+    {M(col_assumptions);return(FALSE)}
+    if ((colVarNm %in% c(colnames(rawDat()), "<none>")) == FALSE) 
+    {M(col_assumptions);return(FALSE)}
+    TRUE
+  })
+  
+  ##### _Data react -----
   inputPath_assumptions <- reactive({
     path <- input$data_file$datapath
     ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
@@ -54,18 +110,6 @@ server <- function(input, output, session) {
   })
   
   ## Raw input data
-  datNm <- reactive({
-    if (input$data_source == "Example"){
-      if (input$data_example == "flea" )         return("tourr::flea")
-      if (input$data_example == "wine" )         return("spinifex::wine")
-      if (input$data_example == "breastcancer" ) return("spinifex::breastcancer")
-      if (input$data_example == "weather" )      return("spinifex::weather")
-    }
-    if (input$data_source == "Upload"){
-      if (inputPath_assumptions() == FALSE) return("Data file upload failed.")
-      return(input$data_file$datapath)
-    }
-  })
   rawDat <- reactive({
     output$data_msg <- NULL
     if (input$data_source == "Example"){
@@ -100,7 +144,7 @@ server <- function(input, output, session) {
   ## Data to project
   projMat <- reactive({
     if (rawData_assumptions()  == FALSE) return()
-    if (projMata_assumptions() == FALSE) return()
+    if (projData_assumptions() == FALSE) return()
     
     dat <- rawDat()
     dat <- dat[, which(colnames(dat) %in% input$projVar_nms)]
@@ -111,10 +155,10 @@ server <- function(input, output, session) {
     return(dat)
   })
   
-  projMata_assumptions <- reactive({
+  projData_assumptions <- reactive({
     dat <- rawDat()
     if (is.null(dat) | length(dat) == 0) 
-      {M(projMata_assumptions);return(FALSE)}
+      {M(projData_assumptions);return(FALSE)}
     TRUE
   })
   
@@ -133,67 +177,11 @@ server <- function(input, output, session) {
     TRUE
   })
   
-  ##### _Util reactives: dim and aesthetics ----
-  n <- reactive(nrow(projMat()))
-  p <- reactive(ncol(projMat()))
   
-  ### Throttle manip_slider
-  manip_slider   <- reactive(input$manip_slider)
-  manip_slider_index_t <- throttle(1 + 10 * manip_slider, 100)
-  
-  col_var <- reactive({
-    if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
-    dat <- rawDat()
-    dat[, which(colnames(dat) %in% input$col_nm)]
-  })
-  
-  pch_var <- reactive({
-    if (input$pch_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
-    dat <- rawDat()
-    dat[, which(colnames(dat) %in% input$pch_nm)]
-  })
-  
-  manip_num <- reactive({ 
-    if (input$manip_nm == "<none>") {return(1)}
-    if (input$tour_class == "Guided") {return(1)}
-    which(colnames(projMat()) == input$manip_nm)
-  }) 
-  
-  manip_assumptions <- reactive({
-    mNum <- manip_num()
-    mSlider <- input$manip_slider
-    if (is.null(mNum) | length(mNum) == 0) 
-      {M(manip_assumptions);return(FALSE)}
-    if (mNum %in% 1:nrow(projMat()) == FALSE)  
-      {M(manip_assumptions);return(FALSE)}
-    if (mSlider < 0 | mSlider > 1) 
-      {M(manip_assumptions);return(FALSE)}
-    TRUE
-  })
-  
-  pch_assumptions <- reactive({
-    pchVarNm <- input$pch_nm
-    if (is.null(pchVarNm) | length(pchVarNm) == 0) 
-      {M(pch_assumptions);return(FALSE)}
-    if (pchVarNm %in% c(colnames(rawDat()), "<none>") == FALSE) 
-      {M(pch_assumptions);return(FALSE)}
-    TRUE
-  })
-  
-  col_assumptions <- reactive({
-    colVarNm <- input$col_nm
-    if (is.null(colVarNm) | length(colVarNm) == 0) 
-      {M(col_assumptions);return(FALSE)}
-    if ((colVarNm %in% c(colnames(rawDat()), "<none>")) == FALSE) 
-      {M(col_assumptions);return(FALSE)}
-    TRUE
-  })
-  
-  
-  #### _Basis reactives -----
+  #### _Basis react -----
   init_basis <- reactive({
     ### Condition handling
-    if (projMata_assumptions() == FALSE) return()
+    if (projData_assumptions() == FALSE) return()
     ## Causes issue for manual tour; due to othonormalization of manip sp:
     ## if (input$basis_init == "Identity") ret <- diag(p())[, 1:2] 
     if (input$basis_init == "Random")   ret <- tourr::basis_random(n = p(), d = 2)
@@ -248,10 +236,10 @@ server <- function(input, output, session) {
     }
   })
   
-  ### _main_plot() reactive ------
+  ### _main_plot react ------
   main_plot <- reactive({
     if (basis_assumptions()    == FALSE) return()
-    if (projMata_assumptions() == FALSE) return()
+    if (projData_assumptions() == FALSE) return()
     if (manip_assumptions()    == FALSE) return()
     if (pch_assumptions()      == FALSE) return()
     if (col_assumptions()      == FALSE) return()
@@ -312,7 +300,7 @@ server <- function(input, output, session) {
   })
   
   
-  ##### _Gallery reactives -----
+  ##### _Gallery react -----
   gallery_basis_assumptions <- reactive({
     bas <- rv$gallery_bases
     if (is.null(bas)) ## Can be length 0 if all rows removed
@@ -392,7 +380,7 @@ server <- function(input, output, session) {
   
   
   ####### OBERSERVERS -----
-  ##### _Data observes ----
+  ##### _Data obs ----
   ### When rawDat() changes...
   observeEvent({rawDat()}, {
     appObsMsg("rawDat")
@@ -500,7 +488,7 @@ server <- function(input, output, session) {
   })
   
   
-  ##### _Manual tour observes -----
+  ##### _Manual tour obs -----
   ### Debounce manip changes for .5 sec
   observe({
     if (input$tour_class != "Manual") return()
@@ -542,8 +530,8 @@ server <- function(input, output, session) {
   })
   
   
-  ##### _Guided tour observes -----
-  ### When related paramaterx change...
+  ##### _Guided tour obs -----
+  ### When related paramaters change...
   observeEvent({
     projMat()
     input$anim_type
@@ -559,7 +547,7 @@ server <- function(input, output, session) {
       ## Manual, guided tour
       app_manual_tour <- function(...) { ## For code reduction, to handle different theta values.
         if (basis_assumptions() == FALSE)    return()
-        if (projMata_assumptions() == FALSE) return()
+        if (projData_assumptions() == FALSE) return()
 
         manual_tour(basis = rv$currbasis,
                     data  = projMat(), 
@@ -632,7 +620,6 @@ server <- function(input, output, session) {
     format_basis()(matrix(rv$anim_basis_array[,, input$anim_slider],  ncol = 2))
   })
   
-
   ### Save guided tour to .gif
   observeEvent(input$anim_save, {
     if (input$tour_class != "Guided") return()
@@ -658,7 +645,7 @@ server <- function(input, output, session) {
     undebug(tour_path)
     undebug(geodesic_path)
     undebug(geodesic_info)
-    ##### --
+    ##### --TEMP DEBUG CODE:
     ex <- play_tour_path(tour_path = tpath, data = flea_std,
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex)
@@ -713,7 +700,7 @@ server <- function(input, output, session) {
     rv$is_anim_playing <- !rv$is_anim_playing
   })
   
-  ##### _Gallery observes -----
+  ##### _Gallery obs -----
   ### Plot button (gallery)
   observeEvent(input$gallery_plot, {
     selectedRow <- as.numeric(strsplit(input$gallery_plot, "_")[[1]][2])
@@ -762,7 +749,7 @@ server <- function(input, output, session) {
     tibble::tibble(rawDat())
   })
   output$projMat_summary <- renderPrint({
-    if (projMata_assumptions() == FALSE) return()
+    if (projData_assumptions() == FALSE) return()
     proj <- as.data.frame(projMat())
     tibble::tibble(proj)
   })

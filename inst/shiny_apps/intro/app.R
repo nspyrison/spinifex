@@ -9,12 +9,7 @@
 
 ### INTRO app.R
 
-library("shiny")
-library("shinythemes")
-library("spinifex")
-library("plotly")
-
-
+source('../global_shinyApps.r', local = TRUE)
 source('ui.R', local = TRUE)
 
 server <- function(input, output, session) {

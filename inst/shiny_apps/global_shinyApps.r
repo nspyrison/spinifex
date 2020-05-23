@@ -8,18 +8,30 @@ require("ggplot2")
 require("ggrepel")
 require("tibble")
 require("shinythemes") ## Themes for shiny, think css files.
-require("shinyBS")     ## BootStrap functionality, see ?shinyBS::bsTooltip
-require("shinyjs")     ## Extend JS control and formating, see ?shinyjs::toggle
+
+### Used in 'primary' and 'devUnderConstruction'.
+require("shinyBS")     ## BootStrap functionality, such as tooltips and popovers
+                       ##   also see ?shinyBS::bsTooltip   &   https://github.com/ebailey78/shinyBS/
+require("shinyjs")     ## Extend JavaScript (Think HTML interactivity) control and formating, 
+                       ##   also see ?shinyjs::toggle   &   https://daattali.com/shiny/shinyjs-basic/
 require("reactlog")    ## Custom shiny logging
 require("DT")          ## HTML tabbles for the gallery table
-
-contextLine <- paste0("Spinifex app --- spinifex (v" ,packageVersion("spinifex"),") --- ", Sys.Date())
 
 ## for saving files use:
 # write.csv(tourr::flea, file="./inst/shiny_apps/comparison/flea.csv",row.names=FALSE)
 # save(df, file="./inst/shiny_apps/comparison/df.rda")
 
+##### Creates a string for App name, spinifex version, and sys date.
+.wd <- getwd()
+.regex <- regexpr("\\/[^\\/]*$", .wd)
+.local_path <- substr(.wd, .regex + 1, nchar(.wd))
+contextLine <- paste0("Spinifex app, '", .local_path, 
+                      "' --- (spinifex v", packageVersion("spinifex"),
+                      ") --- Ran ", Sys.Date()
+)
 
+#' messages the console with OBServe counter and increments it 
+#' IFF .include_obs_msg == TRUE
 appObsMsg <- function(obsNm = NULL){
   if (.include_obs_msg == FALSE) return()
   if (!is.character(obsNm)) obsNm <- substitute(obsNm)
@@ -28,7 +40,9 @@ appObsMsg <- function(obsNm = NULL){
   if (is.null(obsNm) == T) environment()
   return()
 }
-M <- function(assumptionNm = "An assumption"){
+
+###  
+msgAssumption <- function(assumptionNm = "An assumption"){
   msg <- paste0(substitute(assumptionNm), " was not met.")
   message(msg)
 }

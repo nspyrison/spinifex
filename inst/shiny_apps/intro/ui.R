@@ -1,4 +1,4 @@
-### INTRO eu.R
+### INTRO ui.R
 
 ### Input Tab -----
 tabInput <- tabPanel(
