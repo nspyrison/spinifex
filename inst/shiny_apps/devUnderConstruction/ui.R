@@ -13,8 +13,7 @@ tabData <- tabPanel(
       conditionalPanel("input.data_source == 'Example'",
                        selectInput("data_example", "Example data",
                                    choice = c("flea", "wine", "breastcancer", "weather"), ## See tourr:: "olive", "ozone", "laser", "tao", "ratcns"
-                                   selected = "flea"
-                       )
+                                   selected = "flea")
       ),
       conditionalPanel("input.data_source == 'Upload file'",
                        fileInput("data_file", "Data file",
@@ -113,7 +112,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
                                      actionButton("anim_save", "Save anim"))) ## (gif)
     ),
     verbatimTextOutput("save_msg")
-  ),
+  ), ## End of sidebar
   
   ##### _MainPanel: Plot display ----
   mainPanel(
@@ -133,8 +132,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
       ), ## Align the play botton with a top margin:
       tags$style(type = "text/css", "#anim_play {margin-top: 40px;}")
     )
-  )
-))
+  ) ## End of main panel
+)) ## End of tabManual
 
 
 ##### Gallery tab -----
@@ -154,50 +153,20 @@ tabGallery <- tabPanel(
 )
 
 ###### Full app layout ----
-if (.include_dev_display == TRUE){ ## Display dev content.
 ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
                 ## Make the lines, hr() black:
-                tags$head(
-                  tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-                navbarPage("spinifex -- DEV app",
+                tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+                useShinyjs(),
+                #### Content::
+                navbarPage(paste0("Spinifex app -- ", .local_path, ""),
                            tabData,
                            tabManual,
                            tabGallery
                 ),
                 h5(contextLine, style = "color: #A9A9A9"),
-                actionButton("browser", "browser()"), 
-                verbatimTextOutput("dev_msg")
+                hidden(div(id = "dev_toggle",
+                           actionButton("browser", "browser()"),
+                           verbatimTextOutput("dev_msg")
+                ))
 )
-} else { ## Remove dev content
-  ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
-                  ## Make the lines, hr() black:
-                  tags$head(
-                    tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-                  navbarPage("spinifex -- DEV app",
-                             tabData,
-                             tabManual,
-                             tabGallery
-                  ),
-                  h5(signOff, style = "color: #A9A9A9"),
-  )
-}
 
-# ## DO.CALL -- the boolian is breaking conitional arg; returns html string rather than as html obj.
-# ui <- do.call(fluidPage, 
-#               c(list( ## unconitional args:
-#                 theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
-#                 ## Make the lines, hr() black:
-#                 tags$head(
-#                   tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-#                 navbarPage("spinifex -- DEV app",
-#                            tabData,
-#                            tabManual,
-#                            tabGallery
-#                 ),
-#                 h5(signOff, style = "color: #A9A9A9")
-#               ),
-#               list( ## unconitional args:
-#                 actionButton("browser", "browser()")[.include_dev_display],
-#                 verbatimTextOutput("dev_msg")[.include_dev_display]
-#               ))
-# )

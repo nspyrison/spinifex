@@ -58,10 +58,18 @@ tabRadial <- tabPanel(
 ##### ui -----
 ### Tabs combined
 ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
-  navbarPage(
-    "Manual tours -- intro",
-    tabInput,
-    tabRadial
-  )
+                ## Make the lines, hr() black:
+                tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+                useShinyjs(),
+                #### Content::
+                navbarPage(paste0("Spinifex app -- ", .local_path, ""),
+                           tabInput,
+                           tabRadial
+                ),
+                h5(contextLine, style = "color: #A9A9A9"),
+                hidden(div(id = "dev_toggle",
+                           actionButton("browser", "browser()"),
+                           verbatimTextOutput("dev_msg")
+                ))
 )
 

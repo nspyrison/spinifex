@@ -1,7 +1,6 @@
 ##### Setup ----
 .include_dev_display <- T
 .include_obs_msg     <- T
-.obs_msg_counter     <- 0
 
 require("spinifex")
 require("ggplot2")
@@ -21,13 +20,14 @@ require("DT")          ## HTML tabbles for the gallery table
 # write.csv(tourr::flea, file="./inst/shiny_apps/comparison/flea.csv",row.names=FALSE)
 # save(df, file="./inst/shiny_apps/comparison/df.rda")
 
+.obs_msg_counter     <- 0
 ##### Creates a string for App name, spinifex version, and sys date.
 .wd <- getwd()
 .regex <- regexpr("\\/[^\\/]*$", .wd)
 .local_path <- substr(.wd, .regex + 1, nchar(.wd))
 contextLine <- paste0("Spinifex app, '", .local_path, 
                       "' --- (spinifex v", packageVersion("spinifex"),
-                      ") --- Ran ", Sys.Date()
+                      ") --- Ran on ", Sys.Date()
 )
 
 #' messages the console with OBServe counter and increments it 
@@ -65,3 +65,4 @@ appShinyInput <- function(FUN, len, id, ...) {
   }
   inputs
 }
+

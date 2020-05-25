@@ -779,18 +779,20 @@ server <- function(input, output, session) {
   )
   ### Dev display
   output$dev_msg <- renderPrint({
-    cat("Dev msg -- \n",
-        "rv$curr_basis: ",         rv$curr_basis, "\n",
-        "is null? ",               is.null(rv$curr_basis), "\n",
-        "init_basis(): ",          init_basis(), "\n",
-        "input$manip_nm: ",        input$manip_nm, "\n",
-        "manip_num(): ",           manip_num(), "\n",
-        "rv$gallery_bases: ",      unlist(rv$gallery_bases), "\n",
-        "is.null? ",               is.null(rv$gallery_bases), "\n",
-        "input$pp_type: ",         input$pp_type, "\n",
-        "input$anim_pp_cluster: ", input$anim_pp_cluster, "\n",
-        sep = ""
-    )
+    if (.include_dev_display == TRUE){
+      cat("Dev msg -- \n",
+          "rv$curr_basis: ",         rv$curr_basis, "\n",
+          "is null? ",               is.null(rv$curr_basis), "\n",
+          "init_basis(): ",          init_basis(), "\n",
+          "input$manip_nm: ",        input$manip_nm, "\n",
+          "manip_num(): ",           manip_num(), "\n",
+          "rv$gallery_bases: ",      unlist(rv$gallery_bases), "\n",
+          "is.null? ",               is.null(rv$gallery_bases), "\n",
+          "input$pp_type: ",         input$pp_type, "\n",
+          "input$anim_pp_cluster: ", input$anim_pp_cluster, "\n",
+          sep = ""
+      )
+    }
   })
   
   

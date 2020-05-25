@@ -586,7 +586,13 @@ server <- function(input, output, session) {
     rv$gallery_rows_removed <- c(rv$gallery_rows_removed, selectedRow)
   })
   
-  ### Development help -- uncomment message at bottom on ui to use
+  ## Development help -- to display dev tools see the top of 'global_shinyApps.r'
+  if (.include_dev_display == TRUE) {
+    shinyjs::show("dev_toggle")
+  } ## else (.include_dev_display != TRUE) dev content remains hidden.
+  
+  ### Development display -- can be toggled by setting .include_dev_display at the top of global.R
+  observeEvent(input$browser, {browser()})
   output$dev_msg <- renderPrint({
     cat("Dev msg -- \n",
         "rv$curr_basis: ",         rv$curr_basis,             "\n",
@@ -605,5 +611,5 @@ server <- function(input, output, session) {
   #TODO: Go to the other logging method.
 }
 
-shinyApp(ui, server)
+shinyApp(ui = ui, server = server)
 

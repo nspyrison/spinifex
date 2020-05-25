@@ -125,5 +125,27 @@ server <- function(input, output, session) {
     dat <- as.data.frame(projMat())
     tibble::as.tibble(dat)
   })
+  
+  #### Dev tools -----
+  ## toggle display by setting .include_dev_display at the top of ../global_shinyApps.r
+  
+  ## Development help -- to display dev tools see the top of 'global_shinyApps.r'
+  if (.include_dev_display == TRUE) {
+    shinyjs::show("dev_toggle")
+  } ## else (.include_dev_display != TRUE) dev content remains hidden.
+  
+  ## Browser button
+  observeEvent(input$browser, {browser()})
+  
+  ## Development message 
+  output$dev_msg <- renderPrint({
+    cat("Dev msg -- \n",
+        "input$dat ", input$dat, "\n",
+        ## ect. add as needed.
+        sep = ""
+    )
+  })
 }
+
 shinyApp(ui, server)
+
