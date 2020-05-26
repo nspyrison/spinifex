@@ -147,5 +147,7 @@ server <- function(input, output, session) {
   })
 }
 
-shinyApp(ui, server)
-
+app <- shinyApp(ui = ui, server = server)
+if (.run_in_showcase_mode ==T) {
+  runApp(app, display.mode = "showcase")
+} else runApp(app)

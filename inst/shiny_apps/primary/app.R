@@ -611,5 +611,7 @@ server <- function(input, output, session) {
   #TODO: Go to the other logging method.
 }
 
-shinyApp(ui = ui, server = server)
-
+app <- shinyApp(ui = ui, server = server)
+if (.run_in_showcase_mode ==T) {
+  runApp(app, display.mode = "showcase")
+} else runApp(app)

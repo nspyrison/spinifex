@@ -1,6 +1,7 @@
 ##### Setup ----
-.include_dev_display <- T
-.include_obs_msg     <- T
+.include_dev_display  <- T
+.include_obs_msg      <- T
+.run_in_showcase_mode <- F
 
 require("spinifex")
 require("ggplot2")
