@@ -21,8 +21,9 @@
 
 ## Other changes:
 
-- adress issue with vignette erroring on some opperating systems
-- argument name and order consistency
+- argument naming and order consistency
+- address issue with vignette erroring on some opperating systems
+- ggrepel for gganimate and shiny displays (not supported in plotly)
 - more defensive coding
 - local is_orthonormal() overwrite that works correctly on identity matrices
 

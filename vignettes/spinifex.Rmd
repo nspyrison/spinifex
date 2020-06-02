@@ -58,9 +58,9 @@ We focus on the application of the *manual tours* in this document. In a manual 
 In the below examples we go through some use cases for manual tours. To get started we'll load a couple packages we use.
 
 ```{r pkgs}
-requireNamespace("spinifex")
-requireNamespace("GGally")
-requireNamespace("dplyr")
+library("spinifex")
+library("ggplot2")
+library("dplyr")
 ```
 
 ## Example 1 - Rotate an arbitrary basis (& utility functions)
@@ -137,8 +137,7 @@ rot_y     <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_y))
 
 # Combine rotations
 rot_xy <- bind_cols(rot_x, rot_y) %>% 
-  dplyr::select(X3, X31) %>% 
-  dplyr::rename(x = X3, y = X31)
+  select(x = proj_3...3, y = proj_3...6)
 
 ggplot(rot_xy, aes(x = x, y = y)) + geom_point(size = 0.3) +
   theme_bw() + labs(x = "", y = "")

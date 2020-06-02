@@ -272,7 +272,7 @@ as_xyz_df <- function(mat) {
 
 #' Test if a numeric matrix is orthonormal.
 #'
-#' Handles more cases than tourr::is_orthonormal(). Will yield to changlees made to tourr.
+#' Handles more cases than tourr::is_orthonormal().
 #'
 #' @param x numeric matrix
 #' @param tol tolerance used to test floating point differences
@@ -281,7 +281,7 @@ as_xyz_df <- function(mat) {
 #' is_orthonormal(tourr::basis_random(n = 6))
 #' is_orthonormal(matrix(1:12, ncol=2))
 #' @export
-is_orthonormal <- function(x, tol = 0.001) { ## TOLerance of SUM of element-wise error.
+is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wise error.
   stopifnot(is.matrix(x))
   
   actual <- t(x) %*% x ## Collapses to identity matrix IFF x is orthonormal

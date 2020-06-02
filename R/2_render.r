@@ -104,6 +104,7 @@ render_ <- function(slides,
                     cex = 1,
                     axes = "center",
                     alpha = 1,
+                    graphics = "plotly",
                     ...) {
   ## Initialize
   if (length(slides) == 2)
@@ -156,7 +157,7 @@ render_ <- function(slides,
     ggplot2::xlim(x_min, x_max) +
     ggplot2::ylim(y_min, y_max) +
     ## Projected data points
-    suppressWarnings( # Suppress for unused aes "frame".
+    suppressWarnings( ## Suppress for unused aes "frame".
       ggplot2::geom_point( 
         data = data_slides,
         shape = pch, color = col, fill = col, size = cex, alpha = alpha,
@@ -166,13 +167,13 @@ render_ <- function(slides,
   
   if (axes != "off"){
     gg <- gg +
-      ## Circle path 
+      ## Circle path
       ggplot2::geom_path(
         data = circ, color = "grey80", size = .3, inherit.aes = F,
         mapping = ggplot2::aes(x = x, y = y)
       ) +
       ## Basis axes segments
-      suppressWarnings( # Suppress for unused aes "frame".
+      suppressWarnings( ## Suppress for unused aes "frame".
         ggplot2::geom_segment( 
           data = basis_slides, size = axes_siz, colour = axes_col,
           mapping = ggplot2::aes(x = x,
@@ -180,16 +181,30 @@ render_ <- function(slides,
                                  xend = zero[, 1], yend = zero[, 2], 
                                  frame = slide)
         )
-      ) +
-      ## Basis axes text labels
-      suppressWarnings( # Suppress for unused aes "frame".
-        ggrepel::geom_text_repel(
-          data = basis_slides, 
-          mapping = ggplot2::aes(x = x, y = y, 
-                                 frame = slide, label = lab),
-          colour = axes_col, size = 4, vjust = "outward", hjust = "outward")
       )
-  }
+    if (graphics == "plotly"){
+      gg <- gg +
+        ## Basis axes text labels (ggrepel not supported in plotly)
+        suppressWarnings( ## Suppress for unused aes "frame".
+          ggplot2::geom_text(
+            data = basis_slides, 
+            mapping = ggplot2::aes(x = x, y = y, 
+                                   frame = slide, label = lab),
+            colour = axes_col, size = 4)
+        )
+    } else if (graphics %in% c("gganimate", "ggplot2")){
+      gg <- gg +
+        ## Basis axes text labels USING ggrepel::geom_text_repel()
+        suppressWarnings( ## Suppress for unused aes "frame".
+          ggrepel::geom_text_repel(vjust = "outward", hjust = "outward",
+                                   data = basis_slides, 
+                                   mapping = ggplot2::aes(x = x, y = y, 
+                                                          frame = slide, label = lab),
+                                   colour = axes_col, size = 4)
+        )
+      
+    } else warning("graphics package not specified, axes text labels will be off.")
+  } ## end of ploting axes -- if (axes != "off"){}
   
   gg
 }
@@ -231,9 +246,8 @@ render_gganimate <- function(fps = 3,
   # animate(anim, renderer = file_renderer('~/animation/'))[1:6]
   
   
-  gg <- render_(...) + 
+  gg <-  render_(graphics = "gganimate", ...) + 
     ggplot2::coord_fixed()
-  
   gga <- gg + 
     gganimate::transition_states(slide, 
                                  transition_length = 0, 
@@ -269,7 +283,7 @@ render_plotly <- function(fps = 3,
                           ...) {
   requireNamespace("plotly")
   
-  gg <- render_(...)
+  gg  <- render_(graphics = "plotly", ...)
   ggp <- plotly::ggplotly(p = gg, tooltip = "none") 
   ggp <- plotly::animation_opts(p = ggp, frame = 1 / fps * 1000, 
                                 transition = 0, redraw = FALSE)

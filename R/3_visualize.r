@@ -115,7 +115,7 @@ oblique_frame <- function(basis        = NULL,
     list(basis_slides = basis_slides, data_slides = data_slides)
   } else list(basis_slides = basis_slides)
   
-  gg <- render_(slides = slide, ...) +
+  gg <- render_(slides = slide, graphics = "ggplot2", ...) +
     ggplot2::coord_fixed()
   
   gg
@@ -166,10 +166,6 @@ play_tour_path <- function(tour_path,
   if (!is.matrix(data)) {
     messgae("Data is not a matrix, coearsing to matrix")
     data <- as.matrix(data)
-  }
-  if (is.null(basis)) {
-    message("NULL basis passed. Initializing random basis.")
-    basis <- tourr::basis_random(n = ncol(data))
   }
   if (rescale_data) data <- tourr::rescale(data)
   

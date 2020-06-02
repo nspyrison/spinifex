@@ -1,5 +1,6 @@
 context("manual_tour")
 
+library("spinifex")
 flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
 rb <- basis_random(n = ncol(flea_std))
 ret <- manual_tour(basis = rb, manip_var = 4)

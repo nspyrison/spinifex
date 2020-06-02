@@ -1,9 +1,10 @@
 context("oblique_frame")
 
+library("spinifex")
 flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
-theta <- runif(1, 0, 2*pi)
-phi <- runif(1, 0, 2*pi)
+theta <- runif(1, 0, 2 * pi)
+phi <-   runif(1, 0, 2 * pi)
 ret <- oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
 
 test_that("with data class and length", {
