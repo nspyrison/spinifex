@@ -6,9 +6,8 @@ docs/
 .RData
 .Ruserdata
 .pdf
+
 vignettes/introduction_files
 vignettes/introduction_cache
-
-
 *.txt
 *.gif

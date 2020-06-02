@@ -42,6 +42,9 @@ appObsMsg <- function(obsNm = NULL){
   return()
 }
 
+## If remote messaging/cat() is needed use the following:
+# cat(file=stderr(), ..., "\n")
+
 ###  
 msgAssumption <- function(assumptionNm = "An assumption"){
   msg <- paste0(substitute(assumptionNm), " was not met.")

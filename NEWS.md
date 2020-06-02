@@ -1,22 +1,31 @@
-# TODO: 
+# !!TODO:!! 
 
 - ADD size, height, width, and resolution, show_legend arguments to play_manual_tour
 - add gganimate::anim_save() to example code
 
-# spinifex 0.2.0
+# !!TODO end!!
 
-Intoduced shiny apps: 
+
+
+# spinifex 0.1.5
+
+## Intoduce shiny apps: 
 
 - run_app("intro")
 - run_app("primary")
 
-
-New functions to accomadate interactive use, rather than predefined paths:
+## New functions to accomadate interactive use, rather than predefined paths:
 
 - oblique_basis()
 - oblique_frame()
 
-And other minor corrections
+## Other changes:
+
+- adress issue with vignette erroring on some opperating systems
+- argument name and order consistency
+- more defensive coding
+- local is_orthonormal() overwrite that works correctly on identity matrices
+
 
 # spinifex 0.1.0
 
