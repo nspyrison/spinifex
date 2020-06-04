@@ -182,28 +182,22 @@ render_ <- function(slides,
                                  frame = slide)
         )
       )
-    if (graphics == "plotly"){
+    
+    if (graphics %in% c("plotly", "gganimate", "ggplot2")){
+      if (graphics == "plotly")
+        text_func <- ggplot2::geom_text
+      if (graphics %in% c("gganimate", "ggplot2"))
+        text_func <- ggrepel::geom_text_repel
       gg <- gg +
         ## Basis axes text labels (ggrepel not supported in plotly)
         suppressWarnings( ## Suppress for unused aes "frame".
-          ggplot2::geom_text(
-            data = basis_slides, 
-            mapping = ggplot2::aes(x = x, y = y, 
-                                   frame = slide, label = lab),
-            colour = axes_col, size = 4)
+          text_func(data = basis_slides, 
+                    mapping = ggplot2::aes(x = x, y = y, frame = slide, label = lab),
+                    vjust = "outward", hjust = "outward",
+                    colour = axes_col, size = 4)
         )
-    } else if (graphics %in% c("gganimate", "ggplot2")){
-      gg <- gg +
-        ## Basis axes text labels USING ggrepel::geom_text_repel()
-        suppressWarnings( ## Suppress for unused aes "frame".
-          ggrepel::geom_text_repel(vjust = "outward", hjust = "outward",
-                                   data = basis_slides, 
-                                   mapping = ggplot2::aes(x = x, y = y, 
-                                                          frame = slide, label = lab),
-                                   colour = axes_col, size = 4)
-        )
-      
-    } else warning("graphics package not specified, axes text labels will be off.")
+    } else ## !(graphics %in% c("plotly", "gganimate", "ggplot2")) ;
+      warning("graphics package not specified, axes text labels will be off.")
   } ## end of ploting axes -- if (axes != "off"){}
   
   gg
