@@ -84,6 +84,9 @@ array2df <- function(array,
 #' "right". Defaults to "center".
 #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @param ... Recieves arguments from `play_manual_tour()` and `play_tour_path()`
+#' @param repel Try to use ggrepel::geom_text_repel() for labels on the variable
+#' contributions. Defaults to FALSE
+#' @param graphics Graphics package to render with expects "plotly" or "gganimate".
 #' @return A ggplot2 object ready to be called by `render_plotly()` or 
 #'   `render_gganimate()`.
 #' @export
@@ -104,6 +107,7 @@ render_ <- function(slides,
                     cex = 1,
                     axes = "center",
                     alpha = 1,
+                    repel = FALSE,
                     graphics = "plotly",
                     ...) {
   ## Initialize
@@ -184,9 +188,9 @@ render_ <- function(slides,
       )
     
     if (graphics %in% c("plotly", "gganimate", "ggplot2")){
-      if (graphics == "plotly")
+      if (graphics == "plotly" | repel == F)
         text_func <- ggplot2::geom_text
-      if (graphics %in% c("gganimate", "ggplot2"))
+      if (graphics %in% c("gganimate", "ggplot2") & repel == T)
         text_func <- ggrepel::geom_text_repel
       gg <- gg +
         ## Basis axes text labels (ggrepel not supported in plotly)
@@ -209,7 +213,6 @@ render_ <- function(slides,
 #' Takes the result of `array2df()` and renders them into a 
 #' *gganimate* animation.
 #'
-
 #' @param fps Frames/slides shown per second. Defaults to 3.
 #' @param ... Optional, pass addition arguments to 
 #'   `gganimate::transition_states()`.
