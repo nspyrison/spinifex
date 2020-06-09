@@ -1,4 +1,4 @@
-# Preamble ------
+### "Primary" app.R -----
 # options(shiny.error = FALSE)
 
 #' Shiny app for exploring multivariate data, comparing manual tours with 
@@ -9,8 +9,6 @@
 #' @examples \dontrun{
 #' spinifex::run_app("primary")
 #' }
-
-### PRIMARY app.R
 
 #TODO: Go to the other logging method. see spinifex_study app
 
@@ -44,9 +42,8 @@ server <- function(input, output, session) {
   p <- reactive(ncol(projDat()))
   
   ### Throttle manip_slider
-  manip_slider   <- reactive(input$manip_slider)
-  manip_slider_t <- throttle(manip_slider, 300)
-  
+  manip_slider_t <- throttle(reactive(input$manip_slider), 100) ## throttle time in milliseconds
+
   ### Selected data
   projDat <- reactive({
     numDat <- numericDat()
@@ -611,7 +608,4 @@ server <- function(input, output, session) {
   #TODO: Go to the other logging method.
 }
 
-app <- shinyApp(ui = ui, server = server)
-if (.run_in_showcase_mode ==T) {
-  runApp(app, display.mode = "showcase")
-} else runApp(app)
+shinyApp(ui = ui, server = server)

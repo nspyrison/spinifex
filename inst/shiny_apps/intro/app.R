@@ -1,3 +1,6 @@
+### "Intro" app.R -----
+# options(shiny.error = FALSE)
+
 #' Shiny app for exploring toy multivariate datasets with the manual tour
 #' 
 #' @author Nicholas Spyrison
@@ -6,8 +9,6 @@
 #' \dontrun{
 #' spinifex::run_app("intro")
 #' }
-
-### INTRO app.R
 
 source('../global_shinyApps.r', local = TRUE)
 source('ui.R', local = TRUE)
@@ -147,7 +148,5 @@ server <- function(input, output, session) {
   })
 }
 
-app <- shinyApp(ui = ui, server = server)
-if (.run_in_showcase_mode ==T) {
-  runApp(app, display.mode = "showcase")
-} else runApp(app)
+shinyApp(ui = ui, server = server)
+

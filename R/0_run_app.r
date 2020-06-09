@@ -4,19 +4,21 @@
 #' traditional techniques for static projections of multivariate data sets.
 #' 
 #' @param example name of the shiny app to run. Expects "intro" or "primary".
+#' @param ... Other arguments passed into `shiny::runApp()`, 
+#' such as display.mode = "showcase".
 #' @return opens a local shiny app
 #' @export
 #' @examples 
 #' \dontrun{
 #' run_app(example = "intro")
-#' run_app(example = "primary")
+#' run_app(example = "primary", display.mode = "showcase")
 #' run_app(example = "devUnderConstruction")
 #' }
 
 
 # For adjusting or adding more apps it may be useful to read: 
 # https://deanattali.com/2015/04/21/r-package-shiny-app/
-run_app <- function(example) {
+run_app <- function(example, ...) {
   if (example %in% c("primary", "devUnderConstruction")) {
     requireNamespace("ggplot2")
     requireNamespace("tibble")
@@ -25,7 +27,6 @@ run_app <- function(example) {
     requireNamespace("shinyjs")     ## Extend JS control and formating, see ?shinyjs::toggle
     requireNamespace("reactlog")    ## Custom shiny logging
     requireNamespace("DT")          ## HTML tabbles for the gallery table
-    
   }
   
   # locate all the shiny app examples that exist
@@ -46,5 +47,5 @@ run_app <- function(example) {
   
   # find and launch the app
   appDir <- system.file("shiny_apps", example, package = "spinifex")
-  shiny::runApp(appDir, display.mode = "normal")
+  shiny::runApp(appDir, ...)
 }

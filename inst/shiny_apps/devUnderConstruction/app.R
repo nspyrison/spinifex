@@ -1,4 +1,4 @@
-# Preamble ------
+### "DevUnderConstruction" app.R -----
 # options(shiny.error = FALSE)
 
 #' Shiny app for exploring multivariate data, comparing manual tours with 
@@ -10,8 +10,6 @@
 #' spinifex::run_app("devUnderConstruction")
 #' }
 
-
-### DEVUNDERCONSTRUCTION app.R
 
 ##TODO: Debug guided tours
 ##TODO: Fix manip slider o.o...
@@ -47,8 +45,7 @@ server <- function(input, output, session) {
   p <- reactive(ncol(projMat()))
   
   ### Throttle manip_slider
-  manip_slider   <- reactive(input$manip_slider)
-  manip_slider_index_t <- throttle(1 + 10 * manip_slider, 100)
+  manip_slider_index_t <- 1 + 10 * throttle(reactive(input$manip_slider), 100) ## throttle time in milliseconds
   
   col_var <- reactive({
     if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
@@ -798,8 +795,6 @@ server <- function(input, output, session) {
   
 }
 
-app <- shinyApp(ui = ui, server = server)
-if (.run_in_showcase_mode ==T) {
-  runApp(app, display.mode = "showcase")
-} else runApp(app)
+shinyApp(ui = ui, server = server)
+
 
