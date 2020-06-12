@@ -13,7 +13,7 @@
 
 ##TODO: Debug guided tours
 ##TODO: Fix manip slider o.o...
-
+##TODO: remove all rv$is_manual_debounced lines?
 ##TODO: Add logging? see spinifex_study app
 ##TODO: Add input$size?
 ##TODO: Add input$alpha? see spinifex_study app
@@ -28,7 +28,7 @@ server <- function(input, output, session) {
   rv$curr_basis           <- tourr::basis_random(6)
   rv$manual_basis_array   <- NULL
   rv$manual_plot_array    <- NULL
-  rv$is_manual_debounced  <- TRUE
+  # rv$is_manual_debounced  <- TRUE 
   rv$anim_basis_array     <- NULL
   rv$anim_slide           <- 1
   rv$is_anim_playing      <- FALSE
@@ -41,70 +41,70 @@ server <- function(input, output, session) {
   
   ####### REACTERS -----
   ##### _Util reacs: dim and aesthetics ----
-  n <- reactive(nrow(projMat()))
-  p <- reactive(ncol(projMat()))
+  n <- reactive(nrow(selDat()))
+  p <- reactive(ncol(selDat()))
   
   ### Throttle manip_slider
-  manip_slider_index_t <- 1 + 10 * throttle(reactive(input$manip_slider), 100) ## throttle time in milliseconds
+  manip_slider_index   <- reactive(1 + 10 * isolate(input$manip_slider)) ## input$manip_slider in [0,1]
+  manip_slider_index_t <- throttle(manip_slider_index, 50) ## throttle time in milliseconds
+  anim_slider_index    <- reactive(input$anim_slider) ## anim_slider in [1:n_bases]
+  anim_slider_index_t  <- throttle(anim_slider_index, 50) ## throttle time in milliseconds
   
-  col_var <- reactive({
-    if (input$col_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
-    dat <- rawDat()
-    dat[, which(colnames(dat) %in% input$col_nm)]
+  sel_col <- reactive({
+    colVarNm <- input$col_nm
+    if (colVarNm == "<none>") {
+      var <- rep("a", n()) ## Create dummy column in "<none>"
+    } else {
+      dat <- rawDat()
+      var <- dat[, which(colnames(dat) == colVarNm)]
+    }
+    ret <- col_of(var)
+    
+    ## Assumptions and return
+    if (length(levels(ret)) > 12) 
+      warning(paste0("Selected col varable '", substitute(var), 
+                     "' has more then 12 levels. Consider subseting to contain less than 12 levels."))
+    if (is.null(colVarNm) | length(colVarNm) == 0) 
+      M(sel_col);return(FALSE)
+    if ((colVarNm %in% c(colnames(dat), "<none>")) == FALSE) 
+      M(sel_col);return(FALSE)
+    return(ret)
   })
   
-  pch_var <- reactive({
-    if (input$pch_nm == "<none>") return(rep("a", n())) ## Create dummy column in "<none>"
-    dat <- rawDat()
-    dat[, which(colnames(dat) %in% input$pch_nm)]
+  sel_pch <- reactive({
+    pchVarNm <- input$pch_nm
+    if (pchVarNm == "<none>") {
+      var <- rep("a", n()) ## Create dummy column in "<none>"
+    } else {
+      dat <- rawDat()
+      var <- dat[, which(colnames(dat) == pchVarNm)]
+    }
+    
+    ret <- pch_of(var)
+    ## Assumptions and return
+    if (length(levels(ret)) > 12) 
+      warning(paste0("Selected pch varable '", substitute(var), 
+                     "' has more then 12 levels. Consider subseting to contain less than 12 levels."))
+    if (is.null(pchVarNm) | length(pchVarNm) == 0) 
+      M(sel_pch);return(FALSE)
+    if (pchVarNm %in% c(colnames(dat), "<none>") == FALSE) 
+      M(sel_pch);return(FALSE)
+    return(ret)
   })
   
   manip_num <- reactive({ 
     if (input$manip_nm == "<none>") {return(1)}
     if (input$tour_class == "Guided") {return(1)}
-    which(colnames(projMat()) == input$manip_nm)
-  }) 
-  
-  manip_assumptions <- reactive({
-    mNum <- manip_num()
-    mSlider <- input$manip_slider
+    selDat <- selDat()
+    mNum <- which(colnames(selDat) == input$manip_nm)
+    
+    ## Assumptions and return
     if (is.null(mNum) | length(mNum) == 0) 
-    {M(manip_assumptions);return(FALSE)}
-    if (mNum %in% 1:nrow(projMat()) == FALSE)  
-    {M(manip_assumptions);return(FALSE)}
-    if (mSlider < 0 | mSlider > 1) 
-    {M(manip_assumptions);return(FALSE)}
-    TRUE
-  })
-  
-  pch_assumptions <- reactive({
-    pchVarNm <- input$pch_nm
-    if (is.null(pchVarNm) | length(pchVarNm) == 0) 
-    {M(pch_assumptions);return(FALSE)}
-    if (pchVarNm %in% c(colnames(rawDat()), "<none>") == FALSE) 
-    {M(pch_assumptions);return(FALSE)}
-    TRUE
-  })
-  
-  col_assumptions <- reactive({
-    colVarNm <- input$col_nm
-    if (is.null(colVarNm) | length(colVarNm) == 0) 
-    {M(col_assumptions);return(FALSE)}
-    if ((colVarNm %in% c(colnames(rawDat()), "<none>")) == FALSE) 
-    {M(col_assumptions);return(FALSE)}
-    TRUE
-  })
-  
-  ##### _Data react -----
-  inputPath_assumptions <- reactive({
-    path <- input$data_file$datapath
-    ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
-    if (is.null(path) | length(path) == 0) 
-      {M(inputPath_assumptions);return(FALSE)}
-    if (ext %in% c(".csv", ".rda") == FALSE) 
-      {M(inputPath_assumptions);return(FALSE)}
-    TRUE
-  })
+      M(manip_num);return(FALSE)
+    if (mNum < 1 | mNum > ncol(selDat))  
+      M(manip_num);return(FALSE)
+    return(mNum)
+  }) 
   
   ## Raw input data
   rawDat <- reactive({
@@ -117,13 +117,15 @@ server <- function(input, output, session) {
     }
     if (input$data_source == "Upload"){
       path <- input$data_file$datapath
-      if (inputPath_assumptions() == FALSE) {
-        if ((is.null(path) | length(path) == 0) == FALSE) {
-          output$data_msg <- renderPrint(paste0(
-            "Data file: '", path, "' failed to upload."))
-        }
-        return()
+      ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
+      ## Assumtions on input$data_file
+      if ((is.null(path) | length(path) == 0) |
+          (ext %in% c(".csv", ".rda") == FALSE)) {
+        output$data_msg <- renderPrint(paste0(
+          "Data file: '", path, "' failed to upload."))
+        M(init_basis);return(FALSE)
       }
+      
       if (ext == ".csv")
         return(read.csv(path, stringsAsFactors = FALSE))
       if (ext == ".rda")
@@ -131,62 +133,62 @@ server <- function(input, output, session) {
     }
   })
   
-  rawData_assumptions <- reactive({
+  rawDat_assumptions <- reactive({
     raw <- rawDat()
     if (is.null(raw) | length(raw) == 0) 
-      {M(rawData_assumptions);return(FALSE)}
+      {M(rawDat_assumptions);return(FALSE)}
     TRUE
   })
   
-  ## Data to project
-  projMat <- reactive({
-    if (rawData_assumptions()  == FALSE) return()
-    if (projData_assumptions() == FALSE) return()
+  ## Selected data to project
+  selDat <- reactive({
+    if (rawDat_assumptions()  == FALSE) return()
+    if (selDat() == FALSE) return()
     
     dat <- rawDat()
     dat <- dat[, which(colnames(dat) %in% input$projVar_nms)]
     dat <- dat[complete.cases(dat), ] ## Row-wise complete
     if (input$rescale_data) dat <- tourr::rescale(dat)
-    
     if (!is.matrix(dat))    dat <- as.matrix(dat)
+    
+    ## Assumptions and return
+    if (is.null(dat) | length(dat) == 0)
+      M(selDat);return(FALSE)
     return(dat)
   })
   
-  projData_assumptions <- reactive({
-    dat <- rawDat()
-    if (is.null(dat) | length(dat) == 0) 
-      {M(projData_assumptions);return(FALSE)}
-    TRUE
+  selNumVar_inputDefaultNms <- reactive({
+    if (rawDat_assumptions() == FALSE) return()
+    dat <- selDat()
+    numVar_nms <- sapply(dat, is.numeric)
+    .m <- min(6, length(numVar_nms))
+    ret <- colnames(dat[, 1:.m])
+    
+    ## Assumptions and return
+    if (is.null(ret) | length(ret) == 0)
+      M(selNumVar_assumptions);return(FALSE)
+    ret 
   })
   
-  projVars_defaultNms <- reactive({
-    if (rawData_assumptions() == FALSE) return()
-    dat <- rawDat()
-    numeric_col_nums <- sapply(dat, is.numeric)
-    colnames(dat[, numeric_col_nums])
-  })
-  
-  projVars_assumptions <- reactive({
-    if (rawData_assumptions() == FALSE) return()
-    varNms <- projVars_defaultNms()
-    if (is.null(varNms) | length(varNms) == 0)
-      {M(projVars_assumptions);return(FALSE)}
-    TRUE
-  })
   
   
   #### _Basis react -----
   init_basis <- reactive({
     ### Condition handling
-    if (projData_assumptions() == FALSE) return()
+    if (selDat() == FALSE) return()
     ## Causes issue for manual tour; due to othonormalization of manip sp:
-    ## if (input$basis_init == "Identity") ret <- diag(p())[, 1:2] 
+    if (input$basis_init == "Identity") ret <- diag(p())[, 1:2] 
     if (input$basis_init == "Random")   ret <- tourr::basis_random(n = p(), d = 2)
-    if (input$basis_init == "PCA")      ret <- prcomp(projMat())[[2]][, 1:2]
+    if (input$basis_init == "PCA")      ret <- prcomp(selDat())[[2]][, 1:2]
     if (input$basis_init == "From file") {
-      if (inputPath_assumptions() == FALSE) return()
-      path <- input$basis_file$datapath
+      ## Assumtions on input$basis_init
+      path <- input$basis_init$datapath
       ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
+      if (is.null(path) | length(path) == 0)
+        M(init_basis);return(FALSE)
+      if (ext %in% c(".csv", ".rda") == FALSE)
+        M(init_basis);return(FALSE)
+      
       if (ext == ".csv") x <- read.csv(path, stringsAsFactors = FALSE)
       if (ext == ".rda"){ ## load .rda object, not just name:
         tmp <- new.env()
@@ -201,13 +203,12 @@ server <- function(input, output, session) {
         basis_pp_cluster <- dat[input$basis_pp_cluster]
       }
       tour_func <- appGetGuidedTour(input$pp_type, basis_pp_cluster)
-      tour_hist <- save_history(projMat(), tour_func)
+      tour_hist <- save_history(selDat(), tour_func)
       tour_len  <- dim(tour_hist)[3]
       ret <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
     
-    ret <- format_basis()(ret)
-    return(ret)
+    return(format_basis()(ret))
   })
   
   basis_assumptions <- reactive({
@@ -223,10 +224,8 @@ server <- function(input, output, session) {
   format_basis <- reactive({
     format_basis_func <- function(bas) {
       if (basis_assumptions() == FALSE) return()
-      #if (input$tour_class == "Manual" & rv$is_manual_debounced == TRUE) return()
-      rv$is_manual_debounced <<- TRUE
       colnames(bas)  <- c("x", "y")
-      row.names(bas) <- colnames(projMat())
+      row.names(bas) <- colnames(selDat())
       
       rv$curr_basis <- bas
       return(bas)
@@ -235,14 +234,14 @@ server <- function(input, output, session) {
   
   ### _main_plot react ------
   main_plot <- reactive({
-    if (basis_assumptions()    == FALSE) return()
-    if (projData_assumptions() == FALSE) return()
-    if (manip_assumptions()    == FALSE) return()
-    if (pch_assumptions()      == FALSE) return()
-    if (col_assumptions()      == FALSE) return()
+    if (basis_assumptions() == FALSE) return()
+    if (selDat()            == FALSE) return()
+    if (manip_num()         == FALSE) return()
+    if (sel_pch()           == FALSE) return()
+    if (sel_col()           == FALSE) return()
     
     if (input$tour_class == 'Manual') {
-      dat <- projMat()
+      dat <- selDat()
       m_var_num <- manip_num()
       ### Make rv$manual_basis_array if null
       if(length(rv$manual_basis_array) == 0){
@@ -253,8 +252,8 @@ server <- function(input, output, session) {
         if(input$manip_type == "Vertical")   theta <- pi / 2
         if(input$manip_type == "Radial")     theta <- atan(mv_sp[2] / mv_sp[1])
         phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
-        phi_slide <- acos((0:10)/10) ## possible values of manip_slider.
-        phi_vals  <- (phi_slide - phi_start) * - sign(mv_sp[1]) 
+        phi_opts <- acos((0:10)/10) ## possible values of manip_slider.
+        phi_vals  <- (phi_opts - phi_start) * - sign(mv_sp[1]) 
         
         i_max <- length(phi_vals) ## ~11; 1:11, by 1
         for (i in 1:i_max){
@@ -267,12 +266,12 @@ server <- function(input, output, session) {
             spinifex::oblique_frame(basis     = rv$manual_basis_array[,, i],
                                     data      = dat,
                                     manip_var = m_var_num,
-                                    col       = col_of(col_var()),
-                                    pch       = pch_of(pch_var()),
+                                    col       = sel_col(),
+                                    pch       = sel_pch(),
                                     axes      = "right")
         }
       } ### End rv$manual_basis_array if null
-      .slider_index <- manip_slider_index_t()
+      .slider_index <- isolate(manip_slider_index_t())
       format_basis()(rv$manual_basis_array[,, .slider_index])
       return(rv$manual_plot_array[,, .slider_index])
     }
@@ -280,16 +279,16 @@ server <- function(input, output, session) {
       anim_frame <- NULL
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
         anim_frame <- spinifex::oblique_frame(basis     = rv$curr_basis,
-                                              data      = projMat(),
+                                              data      = selDat(),
                                               manip_var = manip_num(),
-                                              col       = col_of(col_var()),
-                                              pch       = pch_of(pch_var()),
+                                              col       = sel_col(),
+                                              pch       = sel_pch(),
                                               axes      = "right")
       } else { ## For tourr funcs without manip var.
         anim_frame <- spinifex::view_basis(basis = rv$curr_basis,
-                                           data  = projMat(),
-                                           col   = col_of(col_var()),
-                                           pch   = pch_of(pch_var()),
+                                           data  = selDat(),
+                                           col   = sel_col(),
+                                           pch   = sel_pch(),
                                            axes  = "right")
       }
       return(anim_frame)
@@ -299,19 +298,21 @@ server <- function(input, output, session) {
   
   ##### _Gallery react -----
   gallery_basis_assumptions <- reactive({
-    bas <- rv$gallery_bases
-    if (is.null(bas)) ## Can be length 0 if all rows removed
-    {M(gallery_basis_assumptions);return(FALSE)}
+    gal_bas <- rv$gallery_bases
+    if (is.null(gal_bas)){ ## Can be length 0 if all rows removed
+      output$gallery_msg <- renderPrint(cat("Send a basis to the gallery."))
+      M(gallery_basis_assumptions);return(FALSE)
+    }
+    if (length(gal_bas) == 0){ ## If all bases removed, change gallery message, but return TRUE.
+      output$gallery_msg <- renderPrint(cat("All bases removed, send a basis to the gallery."))
+    }
     TRUE
   })
   
   gallery_df <- reactive({
-    if (gallery_basis_assumptions() == FALSE) {
-      output$gallery_msg <- renderPrint(cat("Send a basis to the gallery."))
-      return()
-    }
-    bases <- rv$gallery_bases
-    n_bases <- nrow(bases)
+    if (gallery_basis_assumptions() == FALSE) return()
+    gal_bas <- rv$gallery_bases
+    n_bases <- nrow(gal_bas)
     full_gallery_df = data.frame(
       `Label` = 
         appShinyInput(textInput, n_bases, 'text_', label = "",
@@ -330,35 +331,31 @@ server <- function(input, output, session) {
       row.names = NULL,
       check.names = FALSE
     )
-    display_gallery_df <- 
+    subset_gallery_df <- 
       full_gallery_df[!rownames(full_gallery_df) %in% rv$gallery_rows_removed, ]
     
-    if (gallery_basis_assumptions() == FALSE) { ## _ie._ all bases removed
-      output$gallery_msg <- renderPrint(cat("Send a basis to the gallery."))
-      return()
-    }
     output$gallery_msg <- NULL
-    
-    return(display_gallery_df)
+    return(subset_gallery_df)
   })
   
   ##### Gallery icons with data
   gallery_icons <- reactive({
     if (gallery_basis_assumptions() == FALSE) return()
     
-    bases <- rv$gallery_bases
-    df <- bases[!rownames(bases) %in% rv$gallery_rows_removed, ]
-    n_bases <- nrow(df)
+    full <- rv$gallery_bases
+    subset <- full[!rownames(full) %in% rv$gallery_rows_removed, ]
+    n_bases <- nrow(subset)
     n <- n()
     
-    df_gg_data <- NULL ## Unlist bases
+    ## Unlist bases
+    icons_df <- NULL
     for (i in 1:n_bases){
-      rows <- data.frame(id = rep(df$Id[i], n),
-                         projMat() %*% df$basis[[i]],
-                         col = col_of(col_var()))
-      df_gg_data <- rbind(df_gg_data, rows)
+      .rows <- data.frame(id = rep(subset$Id[i], n),
+                         selDat() %*% subset$basis[[i]],
+                         col = sel_col())
+      icons_df <- rbind(icons_df, .rows)
     }
-    output$gallery_icons_str <- renderText(str(df_gg_data))
+    output$gallery_icons_str <- renderText(str(icons_df))
     
     ## Add data points to gallery icons
     ggplot2::ggplot() +
@@ -366,7 +363,7 @@ server <- function(input, output, session) {
       ggplot2::theme_void() +
       ggplot2::theme(legend.position = "none") +
       ggplot2::coord_fixed() +
-      ggplot2::geom_point(data = df_gg_data, size = .3,
+      ggplot2::geom_point(data = icons_df, size = .3,
                           mapping =  ggplot2::aes(x = x, y = y, 
                                                   color = col)) +
       ggplot2::facet_grid(rows = vars(id)) + 
@@ -381,7 +378,7 @@ server <- function(input, output, session) {
   ### When rawDat() changes...
   observeEvent({rawDat()}, {
     appObsMsg("rawDat")
-    dat <- rawDat()
+    dat <- selDat()
     nms <- names(dat)
     rv$manual_basis_array <- NULL ## clear manual bases
     
@@ -389,14 +386,14 @@ server <- function(input, output, session) {
     updateCheckboxGroupInput(session,
                              inputId  = "projVar_nms",
                              choices  = nms,
-                             selected = projVars_defaultNms())
+                             selected = rawNumVar_inputDefaultNms())
     
     ### ... update aes choices
     pos_cols <- sapply(dat, is.factor)
     if (length(pos_cols) == 0) 
       pos_cols <- sapply(dat, is.character)
     if (length(pos_cols) == 0) 
-      pos_cols <- sapply(dat, length(unique(x)) < 10)
+      pos_cols <- sapply(dat, length(unique(x)) < 13)
     
     if (length(pos_cols) == 0) {.select <- "<none>"
     } else {.select <- nms[pos_cols][1]}
@@ -424,17 +421,11 @@ server <- function(input, output, session) {
   observeEvent({input$projVar_nms}, {
     appObsMsg("input$projVar_nms")
     
-    ### ...pdate manip var choices 
+    ### ...update manip var choices 
     updateSelectInput(session,
                       inputId  = "manip_nm", 
                       choices  = input$projVar_nms, 
                       selected = input$projVar_nms[1])
-  })
-  
-  ### On "Initiaze to above parameters" button, set current basis to the initializ basis.
-  observeEvent(input$re_init, {
-    appObsMsg("input$re_init")
-    init_basis()
   })
   
   ### Save current basis (Manual)
@@ -446,11 +437,11 @@ server <- function(input, output, session) {
     save_file <- sprintf("spinifexApp_basis%03d", rv$png_save_cnt)
     write.csv(rv$curr_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
     
-    gg_out <- spinifex::oblique_frame(data = projMat(),
+    gg_out <- spinifex::oblique_frame(data = selDat(),
                                       basis = rv$curr_basis,
                                       manip_var = manip_num(),
-                                      col = col_of(col_var()),
-                                      pch = pch_of(pch_var()),
+                                      col = sel_col(),
+                                      pch = sel_pch(),
                                       axes = "right")
     ggplot2::ggsave(paste0(save_file, ".png"), gg_out,
                     width = 4, height = 4, units = "in")
@@ -487,28 +478,29 @@ server <- function(input, output, session) {
   
   ##### _Manual tour obs -----
   ### Debounce manip changes for .5 sec
-  observe({
-    if (input$tour_class != "Manual") return()
-    if (rv$is_manual_debounced == TRUE) {
-      invalidateLater(2000, session)
-      isolate({
-        rv$is_manual_debounced <- FALSE
-      })
-    }
-  })
+  # observe({
+  #   if (input$tour_class != "Manual") return()
+  #   if (rv$is_manual_debounced == TRUE) {
+  #     invalidateLater(2000, session)
+  #     isolate({
+  #       rv$is_manual_debounced <- FALSE
+  #     })
+  #   }
+  # })
   
   ### Update sliders
   observeEvent({
     rv$curr_basis
     manip_num()
   }, {
-    message(paste0("rv$is_manual_debounced: ", rv$is_manual_debounced))
+    # message(paste0("rv$is_manual_debounced: ", rv$is_manual_debounced))
     if (input$tour_class != "Manual")   return()
     if (basis_assumptions() == FALSE)   return()
     #if (rv$is_manual_debounced == TRUE) return()
-    rv$is_manual_debounced <<- TRUE
+    # rv$is_manual_debounced <<- TRUE
     appObsMsg("rv$curr_basis, manip_num()")
-    mv_sp <- create_manip_space(rv$curr_basis, manip_num())[manip_num(), ]
+    mNum <- manip_num()
+    mv_sp <- create_manip_space(rv$curr_basis, mNum)[mNum, ]
     if (input$manip_type == "Horizontal") {
       phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
       x_val <- round(-phi.x_zero / (pi/2), 1)
@@ -522,7 +514,9 @@ server <- function(input, output, session) {
     if (input$manip_type == "Radial") {
       phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
       rad_val <- round(cos(phi_i), 1)
-      updateSliderInput(session, "manip_slider", value = rad_val)
+      browser()
+      isolate(updateSliderInput(session, "manip_slider", value = rad_val))
+      ## Changes rv$currbasis, which inturn tries to change this manip slider here.
     }
   })
   
@@ -530,7 +524,7 @@ server <- function(input, output, session) {
   ##### _Guided tour obs -----
   ### When related paramaters change...
   observeEvent({
-    projMat()
+    selDat()
     input$anim_type
     ## spinifex parameter change:
     manip_num()
@@ -544,10 +538,10 @@ server <- function(input, output, session) {
       ## Manual, guided tour
       app_manual_tour <- function(...) { ## For code reduction, to handle different theta values.
         if (basis_assumptions() == FALSE)    return()
-        if (projData_assumptions() == FALSE) return()
+        if (selDat() == FALSE) return()
 
         manual_tour(basis = rv$currbasis,
-                    data  = projMat(), 
+                    data  = selDat(), 
                     manip_var = manip_num(),
                     angle = input$anim_angle,
                     ...) ## Allows theta to vary
@@ -570,20 +564,20 @@ server <- function(input, output, session) {
             pp_cluster <- dat[input$anim_pp_cluster]
           }
           tour_func <- appGetGuidedTour(input$anim_pp_type, pp_cluster)
-          t_path <- tourr::save_history(projMat(), tour_func, 
+          t_path <- tourr::save_history(selDat(), tour_func, 
                                         start = rv$curr_basis)
         }
         # Grand, little and local tours
         if (input$anim_type == "Grand (6 bases)") {
-          t_path <- tourr::save_history(projMat(), grand_tour(),
+          t_path <- tourr::save_history(selDat(), grand_tour(),
                                         max_bases = 6, start = rv$curr_basis)
         }
         if (input$anim_type == "Little (6 bases)") {
-          t_path <- tourr::save_history(projMat(), little_tour(),
+          t_path <- tourr::save_history(selDat(), little_tour(),
                                         max_bases = 6, start = rv$curr_basis)
         }
         if (input$anim_type == "Local (6 bases)") {
-          t_path <- tourr::save_history(projMat(), max_bases = 6,
+          t_path <- tourr::save_history(selDat(), max_bases = 6,
                                         tour_path = local_tour(rv$curr_basis, pi/4))
         }
         rv$anim_basis_array <- interpolate(t_path, angle = input$anim_angle)
@@ -635,7 +629,7 @@ server <- function(input, output, session) {
     str(rv$anim_basis_array)
     cat("error in tourr::interpolate(tour(tour_path(geodesic_path(geodesic_info(is_orthonormal. it's functions all the way down...")
     cat("massive hair ball does a tumble")
-    play_tour_path(tour_path = rv$anim_basis_array, data = projMat(),
+    play_tour_path(tour_path = rv$anim_basis_array, data = selDat(),
                    render_type = render_gganimate)
     writeClipboard("debug(tour_path)")
     undebug(interpolate)
@@ -646,7 +640,7 @@ server <- function(input, output, session) {
     ex <- play_tour_path(tour_path = tpath, data = flea_std,
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex)
-    ex2 <- play_tour_path(tour_path = rv$anim_basis_array, data = projMat(),
+    ex2 <- play_tour_path(tour_path = rv$anim_basis_array, data = selDat(),
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex2)
     ##TODO: END
@@ -654,8 +648,8 @@ server <- function(input, output, session) {
     
     withProgress(message = 'Rendering guided tour ...', value = 0, {
       anim <- play_tour_path(tour_path = rv$anim_basis_array,
-                             data = projMat(),
-                             col = col_of(col_var()), pch = pch_of(pch_var()),
+                             data = selDat(),
+                             col = sel_col(), pch = sel_pch(),
                              axes = "right",
                              render_type = render_gganimate,
                              angle = input$angle,
@@ -717,13 +711,13 @@ server <- function(input, output, session) {
       rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
     
     write.csv(save_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
-    gg_out <- spinifex::oblique_frame(data = projMat(),
+    gg_out <- spinifex::oblique_frame(data = selDat(),
                                       basis = save_basis,
                                       manip_var = manip_num(),
                                       theta = 0,
                                       phi = 0,
-                                      col = col_of(col_var()),
-                                      pch = pch_of(pch_var()),
+                                      col = sel_col(),
+                                      pch = sel_pch(),
                                       axes = "right")
     ggplot2::ggsave(paste0(save_file,".png"), gg_out,
                     width = 4, height = 4, units = "in")
@@ -742,13 +736,12 @@ server <- function(input, output, session) {
   ###### OUTPUTS -----
   ### Data tab
   output$rawDat_summary <- renderPrint({
-    if (rawData_assumptions() == FALSE) return()
-    tibble::tibble(rawDat())
+    if (rawDat_assumptions() == FALSE) return()
+    tibble::tibble(as.data.frame(rawDat()))
   })
-  output$projMat_summary <- renderPrint({
-    if (projData_assumptions() == FALSE) return()
-    proj <- as.data.frame(projMat())
-    tibble::tibble(proj)
+  output$selDat_summary <- renderPrint({
+    if (selDat() == FALSE) return()
+    tibble::tibble(as.data.frame(selDat()))
   })
   ### Main tab
   output$curr_basis_tbl  <- renderTable({
@@ -780,7 +773,6 @@ server <- function(input, output, session) {
       cat("Dev msg -- \n",
           "rv$curr_basis: ",         rv$curr_basis, "\n",
           "is null? ",               is.null(rv$curr_basis), "\n",
-          "init_basis(): ",          init_basis(), "\n",
           "input$manip_nm: ",        input$manip_nm, "\n",
           "manip_num(): ",           manip_num(), "\n",
           "rv$gallery_bases: ",      unlist(rv$gallery_bases), "\n",

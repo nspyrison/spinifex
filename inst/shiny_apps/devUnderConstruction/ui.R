@@ -1,4 +1,4 @@
-### DEVUNDERCONSTRUCTION ui.R
+### "DevUnderConstruction" ui.R -----
 
 ##### Data tab -----
 tabData <- tabPanel(
@@ -44,7 +44,7 @@ tabData <- tabPanel(
               h4("Input data summary"),
               verbatimTextOutput("rawDat_summary"),
               h4("Projection data summary"),
-              verbatimTextOutput("projDat_summary")
+              verbatimTextOutput("selDat_summary")
     )
   )
 )

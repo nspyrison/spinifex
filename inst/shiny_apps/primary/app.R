@@ -38,38 +38,49 @@ server <- function(input, output, session) {
   numericDat  <- reactive(rawDat()[numericVars()])
   clusterDat  <- reactive(rawDat()[clusterVars()])
   colToSelect <- reactive(min(ncol(numericDat()), 6))
-  n <- reactive(nrow(projDat()))
-  p <- reactive(ncol(projDat()))
+  n <- reactive(nrow(selDat()))
+  p <- reactive(ncol(selDat()))
   
   ### Throttle manip_slider
   manip_slider_t <- throttle(reactive(input$manip_slider), 100) ## throttle time in milliseconds
 
   ### Selected data
-  projDat <- reactive({
+  selDat <- reactive({
     numDat <- numericDat()
     ret <- numDat[, which(colnames(numDat) == input$variables)]
     ret <- ret[complete.cases(ret), ] ## Rowwise complete
     if (input$rescale_data) ret <- tourr::rescale(ret)
     return(as.data.frame(ret))
   })
-  col_var <- reactive({
-    if (input$col_var == "<none>") {rep("a", n())
-    } else {clusterDat()[, which(colnames(clusterDat()) == input$col_var)]}
+  sel_col <- reactive({
+    var_nm <- input$col_var
+    if (var_nm == "<none>") {ret <- rep("a", n())
+    } else {
+      dat <- rawDat()
+      ret <- dat[, which(colnames(dat == var_nm))]
+    }
+    col_of(ret)
   })
-  pch_var <- reactive({
-    if (input$pch_var == "<none>") {rep("a", n())
-    } else {clusterDat()[, which(colnames(clusterDat()) == input$col_var)]}
+  sel_pch <- reactive({
+    var_nm <- input$pch_var
+    if (var_nm == "<none>") {ret <- rep("a", n())
+    } else {
+      dat <- rawDat()
+      ret <- dat[, which(colnames(dat == var_nm))]
+    }
+    pch_of(ret)
   })
   manip_var <- reactive({ 
-    if (input$manip_var == "<none>") {return(1)}
+    m_var <- input$manip_var
+    if (m_var == "<none>") {return(1)}
     if (input$manual_method == "animation") {return(1)}
-    which(colnames(numericDat()) == input$manip_var)
+    which(colnames(numericDat()) == m_var)
   }) 
   
   ### basis
   basis <- reactive({
     if (input$basis_init == "Random") ret <- tourr::basis_random(n = p(), d = 2)
-    if (input$basis_init == "PCA")    ret <- prcomp(projDat())[[2]][, 1:2]
+    if (input$basis_init == "PCA")    ret <- prcomp(selDat())[[2]][, 1:2]
     if (input$basis_init == "From file") {
       ##TODO: trouble shoot
       browser()
@@ -88,12 +99,12 @@ server <- function(input, output, session) {
         pp_cluster <- clusterDat()[input$pp_cluster]
       }
       tour_func <- getGuidedTour(input$pp_type, pp_cluster)
-      tour_hist <- save_history(projDat(), tour_func)
+      tour_hist <- save_history(selDat(), tour_func)
       tour_len  <- dim(tour_hist)[3]
       ret <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
     colnames(ret) <- c("x", "y")
-    row.names(ret) <- colnames(projDat())
+    row.names(ret) <- colnames(selDat())
     return(ret)
   })
   
@@ -101,7 +112,7 @@ server <- function(input, output, session) {
   format_curr_basis <- reactive({
     function(basis){
       colnames(basis) <- c("x", "y")
-      row.names(basis) <- colnames(projDat())
+      row.names(basis) <- colnames(selDat())
       rv$curr_basis <- basis
       return(basis)
     }
@@ -113,10 +124,10 @@ server <- function(input, output, session) {
       if (is.null(rv$curr_basis)) {format_curr_basis()(basis())}
       return(
         spinifex::oblique_frame(basis     = rv$curr_basis,
-                                data      = projDat(),
+                                data      = selDat(),
                                 manip_var = manip_var(),
-                                col       = col_of(col_var()),
-                                pch       = pch_of(pch_var()),
+                                col       = sel_col(),
+                                pch       = sel_pch(),
                                 axes      = "right")
       )
     }
@@ -124,16 +135,16 @@ server <- function(input, output, session) {
       gg_anim <- NULL
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {# spinifex funcs with manip var.
         gg_anim <- oblique_frame(basis     = rv$curr_basis,
-                                 data      = projDat(),
+                                 data      = selDat(),
                                  manip_var = manip_var(),
-                                 col       = col_of(col_var()),
-                                 pch       = pch_of(pch_var()),
+                                 col       = sel_col(),
+                                 pch       = sel_pch(),
                                  axes      = "right")
       } else { # tourr funcs without manip var.
         gg_anim <- view_basis(basis = rv$curr_basis,
-                              data  = projDat(),
-                              col   = col_of(col_var()),
-                              pch   = pch_of(pch_var()),
+                              data  = selDat(),
+                              col   = sel_col(),
+                              pch   = sel_pch(),
                               axes  = "right")
       }
       return(gg_anim)
@@ -143,7 +154,7 @@ server <- function(input, output, session) {
   
   ### Data output
   output$rawDat_summary      <- renderPrint({tibble::tibble(rawDat())})
-  output$projDat_summary     <- renderPrint({tibble::tibble(projDat())})
+  output$selDat_summary     <- renderPrint({tibble::tibble(selDat())})
   output$curr_basis_tbl      <- renderTable(rv$curr_basis, rownames = TRUE)
   output$main_plot           <- renderPlot({suppressMessages(main_plot())})
   
@@ -190,13 +201,13 @@ server <- function(input, output, session) {
     save_file <- sprintf("tour_basis%03d", rv$png_save_cnt)
     write.csv(rv$curr_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
     
-    gg_out <- oblique_frame(data = projDat(),
+    gg_out <- oblique_frame(data = selDat(),
                             basis = rv$curr_basis,
                             manip_var = manip_var(),
                             theta = 0,
                             phi = 0,
-                            col = col_of(col_var()),
-                            pch = pch_of(pch_var()),
+                            col = sel_col(),
+                            pch = sel_pch(),
                             axes = "right")
     ggplot2::ggsave(paste0(save_file, ".png"), gg_out,
                     width = 4, height = 4, units = "in")
@@ -248,7 +259,7 @@ server <- function(input, output, session) {
       }
       ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
                            theta = theta, phi = phi)
-      row.names(ret) <- colnames(projDat())
+      row.names(ret) <- colnames(selDat())
       
       return(ret)
     }
@@ -293,7 +304,7 @@ server <- function(input, output, session) {
   ##### Animation reactives -----
   ### Set rv$tour_array when any param changes.
   observeEvent({
-    projDat()
+    selDat()
     input$anim_type
     ## spinifex param
     basis() 
@@ -308,7 +319,7 @@ server <- function(input, output, session) {
       ### Manual tour animation
       app_manual_tour <- function(...) { # for code reduction, handle different theta.
         manual_tour(basis = basis(), 
-                    data = projDat(), 
+                    data = selDat(), 
                     manip_var = manip_var(),
                     angle = input$anim_angle,
                     ...) # Allows theta to vary
@@ -329,20 +340,20 @@ server <- function(input, output, session) {
             pp_cluster <- clusterDat()[input$anim_pp_cluster]
           }
           tour_func <- getGuidedTour(input$anim_pp_type, pp_cluster)
-          t_path <- tourr::save_history(projDat(), tour_func, 
+          t_path <- tourr::save_history(selDat(), tour_func, 
                                         start = rv$curr_basis)
         }
         ### Grand, little and local tours
         if(input$anim_type == "Grand (6 bases)") {
-          t_path <- tourr::save_history(projDat(), grand_tour(),
+          t_path <- tourr::save_history(selDat(), grand_tour(),
                                         max_bases = 6, start = rv$curr_basis)
         }
         if(input$anim_type == "Little (6 bases)") {
-          t_path <- tourr::save_history(projDat(), little_tour(),
+          t_path <- tourr::save_history(selDat(), little_tour(),
                                         max_bases = 6, start = rv$curr_basis)
         }
         if(input$anim_type == "Local (6 bases)") {
-          t_path <- tourr::save_history(projDat(), max_bases = 6,
+          t_path <- tourr::save_history(selDat(), max_bases = 6,
                                         tour_path = local_tour(rv$curr_basis, pi/4))
         }
         rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
@@ -391,7 +402,7 @@ server <- function(input, output, session) {
     str(rv$tour_array)
     cat("error in tourr::interpolate(tour(tour_path(geodesic_path(geodesic_info(is_orthonormal. it's functions all the way down...")
     cat("massive hair ball does a tumble")
-    play_tour_path(tour_path = rv$tour_array, data = projDat(),
+    play_tour_path(tour_path = rv$tour_array, data = selDat(),
                    render_type = render_gganimate)
     writeClipboard("debug(tour_path)")
     undebug(interpolate)
@@ -402,7 +413,7 @@ server <- function(input, output, session) {
     ex <- play_tour_path(tour_path = tpath, data = flea_std,
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex)
-    ex2 <- play_tour_path(tour_path = rv$tour_array, data = projDat(),
+    ex2 <- play_tour_path(tour_path = rv$tour_array, data = selDat(),
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex2)
     ##TODO: END
@@ -410,8 +421,9 @@ server <- function(input, output, session) {
     
     withProgress(message = 'Rendering animation ...', value = 0, {
       anim <- play_tour_path(tour_path = rv$tour_array,
-                             data = projDat(),
-                             col = col_of(col_var()), pch = pch_of(pch_var()),
+                             data = selDat(),
+                             col = sel_col(), 
+                             pch = sel_pch(),
                              axes = "right",
                              render_type = render_gganimate,
                              angle = input$angle,
@@ -507,15 +519,15 @@ server <- function(input, output, session) {
     if (nrow(df) == 0) {return()}
     # Init
     n_bases <- nrow(df)
-    n <- nrow(projDat())
-    p <- ncol(projDat())
+    n <- nrow(selDat())
+    p <- ncol(selDat())
     
     df_gg_data <- NULL # Unlist basis into p rows
     for (i in 1:n_bases){
       rows <- data.frame(id = rep(df$Id[i], n),
-                         projDat() %*% df$basis[[i]],
-                         col = col_of(col_var()),
-                         pch = pch_of(pch_var()))
+                         selDat() %*% df$basis[[i]],
+                         col = sel_col(),
+                         pch = sel_pch())
       df_gg_data <- rbind(df_gg_data, rows)
     }
     ### Add data points to gallery icons
@@ -564,13 +576,13 @@ server <- function(input, output, session) {
       rv$gallery_bases[selectedRow, which(colnames(rv$gallery_bases) == "basis")][[1]]
     
     write.csv(save_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
-    gg_out <- oblique_frame(data = projDat(),
+    gg_out <- oblique_frame(data = selDat(),
                             basis = save_basis,
                             manip_var = manip_var(),
                             theta = 0,
                             phi = 0,
-                            col = col_of(col_var()),
-                            pch = pch_of(pch_var()),
+                            col = sel_col(),
+                            pch = sel_pch(),
                             axes = "right")
     ggplot2::ggsave(paste0(save_file,".png"), gg_out,
                     width = 4, height = 4, units = "in")

@@ -45,10 +45,10 @@ server <- function(input, output, session) {
   colToSelect <- reactive(min(ncol(numericDat()), 6))
   
   ### Input initialize
-  projMat <- reactive({
+  selDat <- reactive({
     x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
     if (input$rescale_data) x <- tourr::rescale(x)
-    x <- as.matrix(x)
+    if (!is.matrix(x)) x <- as.matrix(x)
     return(x)
   })
   col_var <- reactive({ ## a column of values
@@ -57,9 +57,9 @@ server <- function(input, output, session) {
   pch_var <- reactive({ ## a column of values
     clusterDat()[, which(colnames(clusterDat()) == input$pch_nm)] 
   })
-  n <- reactive(ncol(projMat()))
+  n <- reactive(ncol(selDat()))
   manip_var <- reactive(which(colnames(numericDat()) == input$manip_var)) # number of var
-  basis <- reactive({prcomp(projMat())[[2]][, 1:2]}) # init basis to PC1:2
+  basis <- reactive({prcomp(selDat())[[2]][, 1:2]}) # init basis to PC1:2
   
   ##### Observes -----
   ### Update include variable checkbox
@@ -107,7 +107,7 @@ server <- function(input, output, session) {
     })
     
     output$plotlyAnim <- plotly::renderPlotly({
-      play_manual_tour(data = projMat(),
+      play_manual_tour(data = selDat(),
                        basis = basis(),
                        manip_var = manip_var(),
                        col = col_of(col_var()),
@@ -120,11 +120,11 @@ server <- function(input, output, session) {
   
   output$rawDat_summary <- renderPrint({
     dat <- as.data.frame(rawDat())
-    tibble::as.tibble(dat)
+    tibble::as_tibble(dat)
   })
   output$projDat_summary <- renderPrint({
-    dat <- as.data.frame(projMat())
-    tibble::as.tibble(dat)
+    dat <- as.data.frame(selDat())
+    tibble::as_tibble(dat)
   })
   
   #### Dev tools -----

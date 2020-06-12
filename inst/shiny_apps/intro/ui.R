@@ -1,7 +1,7 @@
-### INTRO ui.R
+### "Intro" ui.R -----
 
-### Input Tab -----
-tabInput <- tabPanel(
+### Data Tab -----
+tabData <- tabPanel(
   "Data", fluidPage(
     sidebarPanel(
       width = 3,
@@ -18,7 +18,7 @@ tabInput <- tabPanel(
                        ),
                        verbatimTextOutput("data_msg")
       ),
-      ## include which variables in the projection
+      ## Include which variables in the projection
       checkboxGroupInput(
         "variables",
         label = "Projection variables",
@@ -29,8 +29,8 @@ tabInput <- tabPanel(
     mainPanel(width = 9,
               h4("Input data summary"),
               verbatimTextOutput("rawDat_summary"),
-              h4("Projection data summary"),
-              verbatimTextOutput("projDat_summary")
+              h4("Selected data summary"),
+              verbatimTextOutput("selDat_summary")
     )
     
   )
@@ -63,7 +63,7 @@ ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "sp
                 useShinyjs(),
                 #### Content::
                 navbarPage(paste0("Spinifex app -- ", .local_path, ""),
-                           tabInput,
+                           tabData,
                            tabRadial
                 ),
                 h5(contextLine, style = "color: #A9A9A9"),

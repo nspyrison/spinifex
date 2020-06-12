@@ -1,21 +1,21 @@
-### PRIMARY ui.R
+### "Primary" ui.R -----
 
-##### Data tab ----
+##### Data tab -----
 tabData <- tabPanel(
   "Data", fluidPage(
     sidebarPanel(
-      # Input csv file
+      ## Input csv file
       fileInput("data_file", "Data file (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
       ),
-      # include which variables
+      ## Include which variables
       checkboxGroupInput(
         "variables",
         label = "Variables to include",
-        choices = names(tourr::flea[, 1:6]),
+        choices =  names(tourr::flea[, 1:6]),
         selected = names(tourr::flea[, 1:6])
       ),
-      # Point color, shape and rescale
+      ## Point color, shape and rescale
       fluidRow(column(5, selectInput("col_var", "Point color", "<none>")),
                column(5, selectInput("pch_var", "Point shape", "<none>"))),
       checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
@@ -105,9 +105,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
       tags$style(type="text/css", "#anim_play {margin-top: 40px;}")
     )
   ) ## End plot display
-
 )) ## End tabManual
-
 
 
 ##### Gallery tab -----
@@ -130,7 +128,7 @@ ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "sp
                 ## Make the lines, hr() black:
                 tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
                 useShinyjs(),
-                #### Content::
+                #### Content:
                 navbarPage(paste0("Spinifex app -- ", .local_path, ""),
                            tabData,
                            tabManual,
