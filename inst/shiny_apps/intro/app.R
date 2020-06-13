@@ -10,7 +10,7 @@
 #' spinifex::run_app("intro")
 #' }
 
-source('../global_shinyApps.r', local = TRUE)
+## Don't source(~global_shinyApps.r), moved setup to 'ui.R'
 source('ui.R', local = TRUE)
 
 server <- function(input, output, session) {
@@ -18,7 +18,7 @@ server <- function(input, output, session) {
   ##### Reactives ----
   ### Data initialize
   rawDat <- reactive({
-    if (is.null(input$dat)) {return()}
+    if (is.null(input$dat)) {return(tourr::flea)}
     if (input$dat == "flea") return(tourr::flea)
     if (input$dat == "olive") return(tourr::olive)
     if (input$dat == "wine") return(spinifex::wine)
@@ -38,94 +38,103 @@ server <- function(input, output, session) {
     }
   stop("Unexpected error reading data.")
   })
-  numericVars <- reactive(sapply(rawDat(), is.numeric))
-  clusterVars <- reactive(sapply(rawDat(), function(x) is.character(x)|is.factor(x)))
-  numericDat  <- reactive(rawDat()[numericVars()]) ## dat of only numeric vars
-  clusterDat  <- reactive(rawDat()[clusterVars()])
-  colToSelect <- reactive(min(ncol(numericDat()), 6))
   
   ### Input initialize
   selDat <- reactive({
-    x <- numericDat()[, which(colnames(numericDat()) %in% input$variables)]
-    if (input$rescale_data) x <- tourr::rescale(x)
-    if (!is.matrix(x)) x <- as.matrix(x)
-    return(x)
+    dat <- rawDat()
+    ret <- dat[, which(colnames(dat) %in% input$projVars)]
+    if (input$rescale_data) ret <- tourr::rescale(ret)
+    if (!is.matrix(ret)) ret <- as.matrix(ret)
+    return(ret)
   })
-  col_var <- reactive({ ## a column of values
-    clusterDat()[, which(colnames(clusterDat()) == input$col_nm)] 
+  sel_col <- reactive({
+    var_nm <- input$col_var_nm
+    if (is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
+    if (var_nm == "<none>") {
+      var <- rep("a", n())
+    } else {
+      dat <- rawDat()
+      var <- dat[, which(colnames(dat) == var_nm)]
+    }
+    col_of(var) ## A column of hexidecmal color code strings
   })
-  pch_var <- reactive({ ## a column of values
-    clusterDat()[, which(colnames(clusterDat()) == input$pch_nm)] 
+  sel_pch <- reactive({
+    var_nm <- input$pch_var_nm
+    if (is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
+    if (var_nm == "<none>") {
+      var <- rep("a", n())
+    } else {
+      dat <- rawDat()
+      var <- dat[, which(colnames(dat) == var_nm)]
+    }
+    pch_of(var) ## A column of integers ,the 'pch' of the data point
   })
   n <- reactive(ncol(selDat()))
-  manip_var <- reactive(which(colnames(numericDat()) == input$manip_var)) # number of var
-  basis <- reactive({prcomp(selDat())[[2]][, 1:2]}) # init basis to PC1:2
+  manip_var_num <- reactive(which(colnames(selDat()) == input$manip_var_nm)) ## Number of the var
+  basis <- reactive({prcomp(selDat())[[2]][, 1:2]}) ## Init basis to PC1:2
+  
+  ## Tour and display
+  tour_path <- reactive({
+    manual_tour(basis = basis(),
+                manip_var = manip_var_num(),
+                angle = input$angle)
+  })
+  plotly_anim <- reactive({
+    play_manual_tour(data  = selDat(),
+                     basis = basis(),
+                     manip_var = manip_var_num(),
+                     col  = sel_col(),
+                     pch  = sel_pch(),
+                     axes = "left",
+                     fps  = 9
+    )
+  })
   
   ##### Observes -----
-  ### Update include variable checkbox
+  ## If rawDat() changes, update the projection variables.
   observeEvent(rawDat() ,{
-    numDat <- numericDat()
+    dat <- rawDat()
+    ## Logical for columns that are numeric AND column-complete
+    numVars_TF  <- sapply(dat, function(x) {
+      is.numeric(x) & all(complete.cases(x))
+    })
+    numVars_nms <- names(dat[numVars_TF])
+    numSelected <- 1:min(length(numVars_nms), 6)
     updateCheckboxGroupInput(session,
-                             "variables",
-                             choices = names(numDat),
-                             selected = names(numDat[1:colToSelect()]))
+                             "projVars",
+                             choices  = numVars_nms,
+                             selected = numVars_nms[numSelected])
   })
   
-  ### Update manip_var based on selected include varables
-  observeEvent(input$variables, {
-    updateSelectInput(session,
-                      "manip_var",
-                      choices = input$variables)
-  })
+  ### If rawDat() changes, Update pch/col var 
+  observeEvent({rawDat()}, {
+    dat  <- rawDat()
+    ## Logical for columns that are (character OR factor) AND column-complete
+    clusterVars_TF  <- sapply(dat,  function(x) {
+      (is.character(x) | is.factor(x)) & all(complete.cases(x))
+    })
+    clusterVars_nms <- names(dat)[clusterVars_TF]
+    opts <- c(clusterVars_nms, "<none>")
+    updateSelectInput(session, "col_var_nm", choices = opts)
+    updateSelectInput(session, "pch_var_nm", choices = opts)
+  }
+  )
   
-  ### Update pch/col var if clusterDat changes
-  observeEvent(clusterDat(), {
-    if (length(clusterDat()) >= 1) {
-      updateSelectInput(session,
-                        "col_nm",
-                        choices = c(names(clusterDat()), "<none>"))
-      updateSelectInput(session,
-                        "pch_nm",
-                        choices = c(names(clusterDat()), "<none>"))
-    } else { ## list "none", if there are not character or factor vars.
-      updateSelectInput(session,
-                        "col_nm",
-                        choices = c("<none>"))
-      updateSelectInput(session,
-                        "pch_nm",
-                        choices = c("<none>"))
-    }
+  ### If projection variables change, update input$manip_var_nm
+  observeEvent(input$projVars, {
+    updateSelectInput(session, "manip_var_nm", choices = input$projVars)
   })
-  
   
   ### Output ----
-  ## Radial tour
-  observeEvent(input$radial_button, {
-    tour_path <- reactive({manual_tour(basis = basis(),
-                                       manip_var = manip_var(),
-                                       angle = input$angle)
-    })
-    
-    output$plotlyAnim <- plotly::renderPlotly({
-      play_manual_tour(data = selDat(),
-                       basis = basis(),
-                       manip_var = manip_var(),
-                       col = col_of(col_var()),
-                       pch = pch_of(pch_var()),
-                       axes = "left",
-                       fps = 9
-      )
-    })
-  }) ## end of radial tour
-  
   output$rawDat_summary <- renderPrint({
-    dat <- as.data.frame(rawDat())
+    dat <- as.data.frame(rawDat()) ## For naming
     tibble::as_tibble(dat)
   })
-  output$projDat_summary <- renderPrint({
-    dat <- as.data.frame(selDat())
+  output$selDat_summary <- renderPrint({
+    dat <- as.data.frame(selDat()) ## For naming
     tibble::as_tibble(dat)
   })
+  output$plotlyAnim <- plotly::renderPlotly(plotly_anim())
   
   #### Dev tools -----
   ## toggle display by setting .include_dev_display at the top of ../global_shinyApps.r
@@ -142,6 +151,7 @@ server <- function(input, output, session) {
   output$dev_msg <- renderPrint({
     cat("Dev msg -- \n",
         "input$dat ", input$dat, "\n",
+        "input$col_var_nm ", input$col_var_nm, "\n",
         ## ect. add as needed.
         sep = ""
     )

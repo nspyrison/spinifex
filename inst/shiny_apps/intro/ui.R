@@ -1,10 +1,33 @@
 ### "Intro" ui.R -----
 
+##### Setup ----
+.include_dev_display  <- T
+.include_obs_msg      <- T
+.obs_msg_counter <- 0
+## Creat lontextLine, a string containing App name, spinifex version, and sys date.
+.wd <- getwd()
+.regex <- regexpr("\\/[^\\/]*$", .wd)
+.local_path <- substr(.wd, .regex + 1, nchar(.wd))
+contextLine <- paste0("Spinifex app, '", .local_path, 
+                      "' --- (spinifex v", packageVersion("spinifex"),
+                      ") --- Ran on ", Sys.Date())
+
+require("spinifex")
+require("ggplot2")
+require("ggrepel")
+require("tibble")
+require("shinythemes") ## Themes for shiny, think css files.
+require("shinyjs")     ## Extend JavaScript (Think HTML interactivity) control and formating, 
+## also see ?shinyjs::toggle   &   https://daattali.com/shiny/shinyjs-basic/
+
+default_projVars <- names(tourr::flea[, 1:6])
+
 ### Data Tab -----
 tabData <- tabPanel(
   "Data", fluidPage(
     sidebarPanel(
       width = 3,
+      ## Select data
       selectInput("dat", "Dataset", 
                   c("flea", "olive", "weather", 
                     "wine", "breastcancer", "mtcars", 
@@ -18,16 +41,17 @@ tabData <- tabPanel(
                        ),
                        verbatimTextOutput("data_msg")
       ),
-      ## Include which variables in the projection
+      ## Select the projection variables
       checkboxGroupInput(
-        "variables",
+        "projVars",
         label = "Projection variables",
-        choices = "none"
+        choices  = default_projVars,
+        selected = default_projVars
       ),
       checkboxInput("rescale_data", "Normalize values to [0, 1]", value = TRUE)
     ),
     mainPanel(width = 9,
-              h4("Input data summary"),
+              h4("Raw input data summary"),
               verbatimTextOutput("rawDat_summary"),
               h4("Selected data summary"),
               verbatimTextOutput("selDat_summary")
@@ -41,12 +65,10 @@ tabRadial <- tabPanel(
   "Radial manual tour", fluidPage(
     sidebarPanel(
       width = 3,
-      selectInput('manip_var', 'Manip var', "none"),
-      fluidRow(column(6, selectInput("col_nm", "Point color", "<none>")),
-               column(6, selectInput("pch_nm", "Point shape", "<none>"))),
-      actionButton("radial_button", "Render tour")
+      selectInput('manip_var_nm', 'Manip var', 1),
+      fluidRow(column(6, selectInput("col_var_nm", "Point color", "<none>")),
+               column(6, selectInput("pch_var_nm", "Point shape", "<none>")))
     ),
-    
     mainPanel(
       width = 9,
       plotly::plotlyOutput("plotlyAnim",
@@ -57,11 +79,12 @@ tabRadial <- tabPanel(
 
 ##### ui -----
 ### Tabs combined
-ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
+ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), 
+                ## Esp see the themes: "flatly", "spacelab", "journal"
                 ## Make the lines, hr() black:
                 tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
                 useShinyjs(),
-                #### Content::
+                #### Content:
                 navbarPage(paste0("Spinifex app -- ", .local_path, ""),
                            tabData,
                            tabRadial

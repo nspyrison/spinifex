@@ -81,9 +81,7 @@ oblique_frame <- function(basis        = NULL,
     message("NULL basis passed. Initializing random basis.")
     basis <- tourr::basis_random(n = ncol(data))
   }
-  if (!is.matrix(data)) {
-    messgae("Data is not a matrix, coearsing to matrix")
-    data <- as.matrix(data)
+  if (!is.matrix(data)) {data <- as.matrix(data)
   }
   
   p <- nrow(basis)
@@ -163,10 +161,7 @@ play_tour_path <- function(tour_path,
     message("data passed as NULL with a tourr object containing attached data; rendering the tour_path data.")
     data <- attributes(tour_path)$data
   }
-  if (!is.matrix(data)) {
-    messgae("Data is not a matrix, coearsing to matrix")
-    data <- as.matrix(data)
-  }
+  if (!is.matrix(data)) {data <- as.matrix(data)}
   if (rescale_data) data <- tourr::rescale(data)
   
   tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)

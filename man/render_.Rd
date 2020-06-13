@@ -12,6 +12,7 @@ render_(
   cex = 1,
   axes = "center",
   alpha = 1,
+  repel = FALSE,
   graphics = "plotly",
   ...
 )
@@ -32,6 +33,11 @@ Defaults to "blue".}
 "right". Defaults to "center".}
 
 \item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
+
+\item{repel}{Try to use ggrepel::geom_text_repel() for labels on the variable
+contributions. Defaults to FALSE}
+
+\item{graphics}{Graphics package to render with expects "plotly" or "gganimate".}
 
 \item{...}{Recieves arguments from \code{play_manual_tour()} and \code{play_tour_path()}}
 }

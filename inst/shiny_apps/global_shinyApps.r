@@ -7,16 +7,15 @@ require("ggplot2")
 require("ggrepel")
 require("tibble")
 require("shinythemes") ## Themes for shiny, think css files.
-
-### Used in 'primary' and 'devUnderConstruction'.
-require("shinyBS")     ## BootStrap functionality, such as tooltips and popovers
-                       ##   also see ?shinyBS::bsTooltip   &   https://github.com/ebailey78/shinyBS/
 require("shinyjs")     ## Extend JavaScript (Think HTML interactivity) control and formating, 
-                       ##   also see ?shinyjs::toggle   &   https://daattali.com/shiny/shinyjs-basic/
-require("reactlog")    ## Custom shiny logging
-require("DT")          ## HTML tabbles for the gallery table
+## Also see ?shinyjs::toggle   &   https://daattali.com/shiny/shinyjs-basic/
+##### Additionally used in 'primary' and 'devUnderConstruction':
+require("shinyBS")  ## BootStrap functionality, such as tooltips and popovers
+## Also see ?shinyBS::bsTooltip   &   https://github.com/ebailey78/shinyBS/
+require("reactlog") ## Custom shiny logging
+require("DT")       ## HTML tabbles for the gallery table
 
-## for saving files use:
+## For saving files use:
 # write.csv(tourr::flea, file="./inst/shiny_apps/comparison/flea.csv",row.names=FALSE)
 # save(df, file="./inst/shiny_apps/comparison/df.rda")
 
@@ -29,8 +28,8 @@ contextLine <- paste0("Spinifex app, '", .local_path,
                       "' --- (spinifex v", packageVersion("spinifex"),
                       ") --- Ran on ", Sys.Date())
 
-#' messages the console with OBServe counter and increments it 
-#' IFF .include_obs_msg == TRUE
+# messages the console with OBServe counter and increments it 
+# IFF .include_obs_msg == TRUE
 appObsMsg <- function(obsNm = NULL){
   if (.include_obs_msg == FALSE) return()
   if (!is.character(obsNm)) obsNm <- substitute(obsNm)
@@ -40,17 +39,9 @@ appObsMsg <- function(obsNm = NULL){
   return()
 }
 
-## If remote messaging/cat() is needed use the following:
-# cat(file=stderr(), ..., "\n")
-
-###  
-msgAssumption <- function(assumptionNm = "An assumption"){
-  msg <- paste0(substitute(assumptionNm), " was not met.")
-  message(msg)
-}
-
+##### GLOBALL HELPER FUNCTIONS:
 ### PROJECTION PURSUIT ----
-appGetGuidedTour <- function(indexName, clId = NA){ # returns a tour function
+appGetGuidedTour <- function(indexName, clId = NA){ ## Returns a guided_tour(PP()) tourr function
   if(indexName == "holes") {return(guided_tour(holes()))}
   if(indexName == "cmass") {return(guided_tour(cmass()))}
   if(indexName == "lda_pp"){return(guided_tour(lda_pp(clId)))}

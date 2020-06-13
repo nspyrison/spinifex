@@ -33,51 +33,65 @@ server <- function(input, output, session) {
     if (is.null(input$data_file)) {return(tourr::flea)}
     read.csv(input$data_file$datapath, stringsAsFactors = FALSE)
   })
-  numericVars <- reactive(sapply(rawDat(), is.numeric))
-  clusterVars <- reactive(sapply(rawDat(), function(x) {is.character(x)|is.factor(x)}))
-  numericDat  <- reactive(rawDat()[numericVars()])
-  clusterDat  <- reactive(rawDat()[clusterVars()])
-  colToSelect <- reactive(min(ncol(numericDat()), 6))
-  n <- reactive(nrow(selDat()))
-  p <- reactive(ncol(selDat()))
-  
-  ### Throttle manip_slider
-  manip_slider_t <- throttle(reactive(input$manip_slider), 100) ## throttle time in milliseconds
-
-  ### Selected data
   selDat <- reactive({
-    numDat <- numericDat()
-    ret <- numDat[, which(colnames(numDat) == input$variables)]
-    ret <- ret[complete.cases(ret), ] ## Rowwise complete
+    dat <- rawDat()
+    ret <- dat[, which(colnames(dat) %in% input$projVars)]
     if (input$rescale_data) ret <- tourr::rescale(ret)
     return(as.data.frame(ret))
   })
+  
+  n <- reactive(nrow(selDat()))
+  p <- reactive(ncol(selDat()))
+  numericVars_TF <- reactive({ ## Columns that are numeric AND column-complete
+    sapply(rawDat(), function(x) {
+      is.numeric(x) & all(complete.cases(x))
+    })
+  }) 
+  clusterVars_TF <- reactive({ ## Columns that are (character OR factor) AND column-complete
+    sapply(rawDat(), function(x) {
+      (is.character(x)|is.factor(x)) & all(complete.cases(x))
+    })
+  })
+
+  ## Throttle manip_slider, tries to return value while held
+  manip_slider   <- reactive(input$manip_slider)
+  manip_slider_t <- throttle(manip_slider, 50) ## Throttle time in milliseconds
+
+  #### Aesthetics
   sel_col <- reactive({
-    var_nm <- input$col_var
-    if (var_nm == "<none>") {ret <- rep("a", n())
+    var_nm <- input$col_var_nm
+    if (is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
+    if (var_nm == "<none>") {
+      var <- rep("a", n())
     } else {
       dat <- rawDat()
-      ret <- dat[, which(colnames(dat == var_nm))]
+      var <- dat[, which(colnames(dat) == var_nm)]
     }
-    col_of(ret)
+    col_of(var) ## A column of hexidecmal color code strings
   })
   sel_pch <- reactive({
-    var_nm <- input$pch_var
-    if (var_nm == "<none>") {ret <- rep("a", n())
+    var_nm <- input$pch_var_nm
+    if (is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
+    if (var_nm == "<none>") {
+      var <- rep("a", n())
     } else {
       dat <- rawDat()
-      ret <- dat[, which(colnames(dat == var_nm))]
+      var <- dat[, which(colnames(dat) == var_nm)]
     }
-    pch_of(ret)
+    pch_of(var) ## A column of integers ,the 'pch' of the data point
   })
-  manip_var <- reactive({ 
-    m_var <- input$manip_var
-    if (m_var == "<none>") {return(1)}
-    if (input$manual_method == "animation") {return(1)}
-    which(colnames(numericDat()) == m_var)
-  }) 
   
-  ### basis
+  ## Add col and row names  to the current basis
+  format_curr_basis <- reactive({
+    function(basis){
+      colnames(basis) <- c("x", "y")
+      row.names(basis) <- colnames(selDat())
+      rv$curr_basis <- basis
+      return(basis)
+    }
+  })
+  
+  ## Tour args:
   basis <- reactive({
     if (input$basis_init == "Random") ret <- tourr::basis_random(n = p(), d = 2)
     if (input$basis_init == "PCA")    ret <- prcomp(selDat())[[2]][, 1:2]
@@ -95,8 +109,10 @@ server <- function(input, output, session) {
     }
     if (input$basis_init == "Projection pursuit") {
       pp_cluster <- NA
+
       if (input$pp_type %in% c("lda_pp", "pda_pp")){
-        pp_cluster <- clusterDat()[input$pp_cluster]
+        culster_dat <- rawDat()[clusterVars_TF()]
+        pp_cluster <- culster_dat[input$pp_cluster]
       }
       tour_func <- getGuidedTour(input$pp_type, pp_cluster)
       tour_hist <- save_history(selDat(), tour_func)
@@ -108,35 +124,34 @@ server <- function(input, output, session) {
     return(ret)
   })
   
-  ### Add col and row names for curr basis tbl 
-  format_curr_basis <- reactive({
-    function(basis){
-      colnames(basis) <- c("x", "y")
-      row.names(basis) <- colnames(selDat())
-      rv$curr_basis <- basis
-      return(basis)
-    }
-  })
+  manip_var_num <- reactive({
+    m_var <- input$manip_var_nm
+    if (m_var == "<none>") {return(1)}
+    if (input$manual_method == "animation") {return(1)}
+    
+    num_dat <- rawDat()[numericVars_TF()]
+    which(colnames(num_dat) == m_var)
+  }) 
   
   ### Interactive and animated plot
   main_plot <- reactive({
     if (input$manual_method == 'Interactive') {
       if (is.null(rv$curr_basis)) {format_curr_basis()(basis())}
-      return(
+      return( ## A gg plot of the current frame
         spinifex::oblique_frame(basis     = rv$curr_basis,
                                 data      = selDat(),
-                                manip_var = manip_var(),
+                                manip_var = manip_var_num(),
                                 col       = sel_col(),
                                 pch       = sel_pch(),
-                                axes      = "right")
+                                axes      = "right") 
       )
-    }
+    } ## Close if (input$manual_method == 'Interactive')
     if (input$manual_method == 'Animation') {
       gg_anim <- NULL
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {# spinifex funcs with manip var.
         gg_anim <- oblique_frame(basis     = rv$curr_basis,
                                  data      = selDat(),
-                                 manip_var = manip_var(),
+                                 manip_var = manip_var_num(),
                                  col       = sel_col(),
                                  pch       = sel_pch(),
                                  axes      = "right")
@@ -147,46 +162,54 @@ server <- function(input, output, session) {
                               pch   = sel_pch(),
                               axes  = "right")
       }
-      return(gg_anim)
-    } # end of if (input$manual_method == 'Animation')
-
-  })
+      return(gg_anim) ## a 
+    } ## Close if (input$manual_method == 'Animation')
+  }) ## Close main_plot reactive function
   
-  ### Data output
-  output$rawDat_summary      <- renderPrint({tibble::tibble(rawDat())})
-  output$selDat_summary     <- renderPrint({tibble::tibble(selDat())})
-  output$curr_basis_tbl      <- renderTable(rv$curr_basis, rownames = TRUE)
-  output$main_plot           <- renderPlot({suppressMessages(main_plot())})
+  ### Output ----
+  output$rawDat_summary <- renderPrint({
+    dat <- as.data.frame(rawDat()) ## For naming
+    tibble::as_tibble(dat)
+  })
+  output$selDat_summary <- renderPrint({
+    dat <- as.data.frame(selDat()) ## For naming
+    tibble::as_tibble(dat)
+  })
+  output$curr_basis_tbl <- renderTable(rv$curr_basis, rownames = TRUE)
+  output$main_plot <- renderPlot(suppressMessages(main_plot()))
   
   ##### Data observes ----
+  ## If basis() changes, update rv$curr_basis
+  observeEvent(basis(), {rv$curr_basis <- basis()})
   
-  ### Set rv$curr_basis when basis() changes
-  observeEvent(basis(),{rv$curr_basis <- basis()})
-  
-  ### Update include variables when numeric data changes.
-  observeEvent({numericDat()}, {
-    updateCheckboxGroupInput(session, "variables",
-                             choices = names(numericDat()),
-                             selected = names(numericDat()[1:colToSelect()]))
+  ## If the rawDat() changes, update input$projVars
+  observeEvent(rawDat(), {
+    num_dat_nms <- names(rawDat()[numericVars_TF()])
+    colToSelect <- 1:min(length(num_dat_nms), 6)
+    updateCheckboxGroupInput(session, "projVars",
+                             choices  = num_dat_nms,
+                             selected = num_dat_nms[colToSelect])
   })
   
-  ### Update manip variable choices when include variables change
-  observeEvent({input$variables}, {
-    updateSelectInput(session, "manip_var", choices = input$variables, 
-                      selected = input$variables[1])
+  ### If input$projVars Update manip variable choices when projection variables change
+  observeEvent({input$projVars}, {
+    updateSelectInput(session, "manip_var_nm", choices = input$projVars, 
+                      selected = input$projVars[1])
   })
   
-  ### Update pch/col choices when cluster dat changes
-  observeEvent({clusterDat()}, {
-    cat_names <- c(names(clusterDat()), "<none>")
-    updateSelectInput(session, "col_var", choices = cat_names,
-                      selected = cat_names[1])
-    updateSelectInput(session, "pch_var", choices = cat_names,
-                      selected = cat_names[1])
-    updateSelectInput(session, "pp_cluster", choices = names(clusterDat()),
-                      selected = cat_names[1])
-    updateSelectInput(session, "anim_pp_cluster", choices = names(clusterDat()),
-                      selected = cat_names[1])
+  ### If rawDat() changes, update pch/col choices
+  observeEvent({rawDat()}, {
+    culster_dat <- rawDat()[clusterVars_TF()]
+    opts <- names(culster_dat)
+    opts_none <- c(opts, "<none>")
+    updateSelectInput(session, "col_var_nm", choices = opts_none,
+                      selected = opts_none[1])
+    updateSelectInput(session, "pch_var_nm", choices = opts_none,
+                      selected = opts_none[1])
+    updateSelectInput(session, "pp_cluster", choices = opts,
+                      selected = opts[1])
+    updateSelectInput(session, "anim_pp_cluster", choices = opts,
+                      selected = opts[1])
   })
   
   ### On "Back to start" button, set current basis to the initial basis.
@@ -203,7 +226,7 @@ server <- function(input, output, session) {
     
     gg_out <- oblique_frame(data = selDat(),
                             basis = rv$curr_basis,
-                            manip_var = manip_var(),
+                            manip_var = manip_var_num(),
                             theta = 0,
                             phi = 0,
                             col = sel_col(),
@@ -221,7 +244,7 @@ server <- function(input, output, session) {
     if (is.null(rv$curr_basis)) return()
     rv$gallery_n_rows <- rv$gallery_n_rows + 1
     gallery_row <- data.frame(Id = rv$gallery_n_rows,
-                              `Manip var`  = input$manip_var, 
+                              `Manip var`  = input$manip_var_nm, 
                               `Manip type` = input$manip_type, 
                               `Time saved` = substr(Sys.time(), 12, 19),
                               check.names = FALSE)
@@ -234,14 +257,16 @@ server <- function(input, output, session) {
   })
   
   
+  
+  
   ### Oblique reactives -----
   
   
   ### x, y, radius oblique motion 
   basis_obl <- reactive({
-    if (length(manip_var()) != 0) {
+    if (length(manip_var_num()) == 1) {
       theta <- phi <- NULL
-      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+      mv_sp <- create_manip_space(rv$curr_basis, manip_var_num())[manip_var_num(), ]
       if (input$manip_type == "Horizontal") {
         theta <- 0
         phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
@@ -257,7 +282,7 @@ server <- function(input, output, session) {
         phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
         phi <- (acos(manip_slider_t()) - phi_start) * - sign(mv_sp[1])
       }
-      ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var(),
+      ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var_num(),
                            theta = theta, phi = phi)
       row.names(ret) <- colnames(selDat())
       
@@ -277,11 +302,11 @@ server <- function(input, output, session) {
   ### Update sliders
   observeEvent({
     rv$curr_basis
-    manip_var()
+    manip_var_num()
   }, {
-    if (length(manip_var()) != 0 & input$manual_method == 'Interactive') {
+    if (length(manip_var_num()) != 0 & input$manual_method == 'Interactive') {
       if(is.null(rv$curr_basis)) {format_curr_basis()(basis())}
-      mv_sp <- create_manip_space(rv$curr_basis, manip_var())[manip_var(), ]
+      mv_sp <- create_manip_space(rv$curr_basis, manip_var_num())[manip_var_num(), ]
       if (input$manip_type == "Horizontal") {
         phi.x_zero <- atan(mv_sp[3] / mv_sp[1]) - (pi / 2 * sign(mv_sp[1]))
         x_val <- round(-phi.x_zero / (pi/2), 1)
@@ -308,21 +333,20 @@ server <- function(input, output, session) {
     input$anim_type
     ## spinifex param
     basis() 
-    manip_var()
+    manip_var_num()
     input$anim_angle
     ## tourr param 
     input$pp_type
-    numericDat()
     }, {
     ### Processing message for gif
     # withProgress(message = 'Rendering animation ...', value = 0, {
       ### Manual tour animation
-      app_manual_tour <- function(...) { # for code reduction, handle different theta.
+      app_manual_tour <- function(...) { ## for code reduction, handle different theta.
         manual_tour(basis = basis(), 
                     data = selDat(), 
-                    manip_var = manip_var(),
+                    manip_var = manip_var_num(),
                     angle = input$anim_angle,
-                    ...) # Allows theta to vary
+                    ...) ## Allows theta to vary
       }
       if (input$anim_type %in% c("Radial", "Horizontal", "Vertical")) {
         t_array <- NULL 
@@ -337,7 +361,8 @@ server <- function(input, output, session) {
         if (input$anim_type == "Projection pursuit") {
           pp_cluster <- NA
           if (input$anim_pp_type %in% c("lda_pp", "pda_pp")) {
-            pp_cluster <- clusterDat()[input$anim_pp_cluster]
+            culster_dat <- rawDat()[clusterVars_TF()]
+            pp_cluster <- culster_dat[input$anim_pp_cluster]
           }
           tour_func <- getGuidedTour(input$anim_pp_type, pp_cluster)
           t_path <- tourr::save_history(selDat(), tour_func, 
@@ -474,6 +499,13 @@ server <- function(input, output, session) {
       output$gallery_msg <- renderPrint(cat("Send a basis to the gallery."))
       return()
     }
+    shinyInput <- function(FUN, len, id, ...) {
+      inputs <- character(len)
+      for (i in seq_len(len)) {
+        inputs[i] <- as.character(FUN(paste0(id, i), ...))
+      }
+      inputs
+    }
     
     df_full = data.frame(
       Label = shinyInput(textInput, nrow(rv$gallery_bases), 'text_', label = "",
@@ -525,7 +557,7 @@ server <- function(input, output, session) {
     df_gg_data <- NULL # Unlist basis into p rows
     for (i in 1:n_bases){
       rows <- data.frame(id = rep(df$Id[i], n),
-                         selDat() %*% df$basis[[i]],
+                         as.matrix(selDat()) %*% as.matrix(df$basis[[i]]),
                          col = sel_col(),
                          pch = sel_pch())
       df_gg_data <- rbind(df_gg_data, rows)
@@ -539,7 +571,7 @@ server <- function(input, output, session) {
         ggplot2::geom_point(data = df_gg_data, size = .3,
                             mapping =  ggplot2::aes(x = x, y = y, 
                                                     color = col,
-                                                    pch = pch)) +
+                                                    shape = as.character(pch))) +
         ggplot2::facet_grid(rows = vars(id)) + 
         ggplot2::theme(strip.background = ggplot2::element_blank(),
                        strip.text.y     = ggplot2::element_blank(),
@@ -578,7 +610,7 @@ server <- function(input, output, session) {
     write.csv(save_basis, file = paste0(save_file, ".csv"), row.names = FALSE)
     gg_out <- oblique_frame(data = selDat(),
                             basis = save_basis,
-                            manip_var = manip_var(),
+                            manip_var = manip_var_num(),
                             theta = 0,
                             phi = 0,
                             col = sel_col(),
@@ -607,8 +639,8 @@ server <- function(input, output, session) {
         "rv$curr_basis: ",         rv$curr_basis,             "\n",
         "is null? ",               is.null(rv$curr_basis),    "\n",
         "basis(): ",               basis(),                   "\n",
-        "input$manip_var: ",       input$manip_var,           "\n",
-        "manip_var(): ",           manip_var(),               "\n",
+        "input$manip_var_nm: ",       input$manip_var_nm,           "\n",
+        "manip_var_num(): ",           manip_var_num(),               "\n",
         "rv$gallery_bases: ",      unlist(rv$gallery_bases),  "\n",
         "is.null? ",               is.null(rv$gallery_bases), "\n",
         "input$pp_type: ",         input$pp_type,             "\n",

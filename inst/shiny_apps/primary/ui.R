@@ -8,24 +8,24 @@ tabData <- tabPanel(
       fileInput("data_file", "Data file (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
       ),
-      ## Include which variables
-      checkboxGroupInput(
-        "variables",
-        label = "Variables to include",
-        choices =  names(tourr::flea[, 1:6]),
-        selected = names(tourr::flea[, 1:6])
+      ## Select the variables to project
+      checkboxGroupInput("projVars",
+                         label = "Projection variables",
+                         choices =  names(tourr::flea[, 1:6]),
+                         selected = names(tourr::flea[, 1:6])
       ),
-      ## Point color, shape and rescale
-      fluidRow(column(5, selectInput("col_var", "Point color", "<none>")),
-               column(5, selectInput("pch_var", "Point shape", "<none>"))),
+      ## Select aesthetics: Point color, shape and rescale
+      fluidRow(column(5, selectInput("col_var_nm", "Point color", "<none>")),
+               column(5, selectInput("pch_var_nm", "Point shape", "<none>"))),
       checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
     ),
-    mainPanel(h3("Data structure"),
+    mainPanel(h4("Raw input data summary"),
               verbatimTextOutput("rawDat_summary"),
-              verbatimTextOutput("projDat_summary")
+              h4("Selected data summary"),
+              verbatimTextOutput("selDat_summary")
     )
   )
-)
+) ## Close tabData
 
 
 ##### Manual tab ----
@@ -46,7 +46,7 @@ tabManual <- tabPanel("Manual tour", fluidPage(
     conditionalPanel("input.basis_init == 'From file'",
                      fileInput("basis_file", "Basis file (.csv or .rda, [p x 2] matrix)",
                                accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))),
-    selectInput("manip_var", "Manip var", "<none>"),
+    selectInput("manip_var_nm", "Manip var", "<none>"),
     actionButton("re_init", "Back to start"),
     radioButtons("manual_method", "",
                  choices = c("Interactive", "Animation"),
@@ -104,8 +104,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
       ), ## Align the play botton with a top margin:
       tags$style(type="text/css", "#anim_play {margin-top: 40px;}")
     )
-  ) ## End plot display
-)) ## End tabManual
+  ) ## Close plot display
+)) ## Close tabManual
 
 
 ##### Gallery tab -----
@@ -115,20 +115,21 @@ tabGallery <- tabPanel(
       verbatimTextOutput("gallery_msg")
       , fluidRow(column(2, plotOutput("gallery_icons")),
                  column(10, DT::dataTableOutput("gallery_df"))
-      ) ## align icons with a top margin: 
+      ) ## Align icons with a top margin: 
       , tags$style(type="text/css", "#gallery_icons {margin-top: 70px;}")
       , verbatimTextOutput("gallery_icons_str")
     )
   )
-)
+) ## Close tabGallery
 
 
 ###### Full app layout ----
-ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
+ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), 
+                ## Esp see the themes: "flatly", "spacelab", "journal"
                 ## Make the lines, hr() black:
                 tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
                 useShinyjs(),
-                #### Content:
+                ## Content:
                 navbarPage(paste0("Spinifex app -- ", .local_path, ""),
                            tabData,
                            tabManual,
