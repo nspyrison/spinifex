@@ -5,15 +5,18 @@
 #' Uses base graphics to plot the circle with axes representing
 #' the projection frame. Returns the corresponding table.
 #' 
-#' @param basis A (p, d) basis, XY linear combination of each dimension 
-#'   (numeric variable).
+#' @param basis A (p, d) orthonormal numeric maxtrix.
+#' The linear combination the original varaibles contribute to projection space.
+#' Required, no default.
 #' @param data Optional (n, p) data to plot on through the projection basis.
 #' @param lab Optional, labels for the reference frame of length 1 or the 
-#'   number of variables used. By default will abbriviate data if available.
+#' number of variables used. By default will abbriviate data if available.
+#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
+#' to "center".
 #' @param col Color of the projected points. Defaults to "black".
 #' @param pch Point character of the projected points. Defaults to 20.
-#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
-#'   to "center".
+
+#' @param cex Point size of the data. Defaults to 1.
 #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @return ggplot object of the basis.
 #' @import tourr
@@ -28,11 +31,11 @@
 view_basis <- function(basis,
                        data = NULL,
                        lab  = NULL,
+                       axes = "center",
                        col = "black",
                        pch = 20,
-                       axes = "center",
-                       alpha = 1
-) {
+                       cex = 1,
+                       alpha = 1) {
   # Initialize
   basis <- as.data.frame(basis)
   colnames(basis) = c("x", "y")
@@ -44,7 +47,7 @@ view_basis <- function(basis,
   } else {
     if(!is.null(data)) {abbreviate(colnames(data), 3)
     } else {paste0("V", 1:p)}}
-  ## scale axes
+  ## Scale axes
   zero  <- set_axes_position(0,     axes)
   basis <- set_axes_position(basis, axes)
   circ  <- set_axes_position(circ,  axes)
@@ -54,7 +57,7 @@ view_basis <- function(basis,
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
-    ggplot2::coord_fixed() # Do not use with plotly!
+    ggplot2::coord_fixed() ## Do not use with plotly!
   
   if(axes != "off")
   {
@@ -90,9 +93,11 @@ view_basis <- function(basis,
       tourr::rescale(as.matrix(data) %*% as.matrix(basis)) - .5)
     colnames(proj) <- c("x", "y")
     gg <- gg + 
-      ggplot2::geom_point(data = proj, 
-                          shape = pch, color = col, fill = col, alpha = alpha,
-                          mapping = ggplot2::aes(x = x, y = y))
+      ggplot2::geom_point(data = proj,
+                          mapping = ggplot2::aes(
+                            x = x, y = y,
+                            shape = pch, color = col, fill = col, 
+                            size = cex, alpha = alpha))
   }
   
   gg
@@ -103,8 +108,9 @@ view_basis <- function(basis,
 #' Uses base graphics to plot the circle with axes representing
 #' the projection frame. Returns the corresponding table.
 #' 
-#' @param basis A (p, d) basis, XY linear combination of each dimension 
-#'   (numeric variable).
+#' @param basis A (p, d) orthonormal numeric maxtrix.
+#' The linear combination the original varaibles contribute to projection space.
+#' Required, no default.
 #' @param manip_var Number of the column/dimension to rotate.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param tilt angle in radians to rotate the projection plane. 
@@ -149,7 +155,7 @@ view_manip_space <- function(basis,
   midpt_theta   <- round(nrow(theta_curve_r) / 2)
   midpt_phi     <- round(nrow(phi_curve_r) / 2)
   
-  m_sp_pp <- cbind(m_sp[,1:2],0) # Force to projection plane
+  m_sp_pp <- cbind(m_sp[,1:2],0) ## Force to projection plane
   circ_r  <- R3x_of(circ, tilt)
   m_sp_r  <- R3x_of(m_sp_pp, tilt)
   m_sp_z  <- data.frame(x    = m_sp_pp[manip_var, 1],
@@ -166,7 +172,7 @@ view_manip_space <- function(basis,
     ggplot2::ggplot() + 
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
-    ggplot2::coord_fixed() + # Do not use with plotly!
+    ggplot2::coord_fixed() + ## Do not use with plotly!
     ## XY Circle path 
     ggplot2::geom_path(data = circ_r, 
                        mapping = ggplot2::aes(x = x, y = z), 
@@ -238,9 +244,7 @@ col_of <- function(cat, pallet_name = "Dark2")
   if (length(cat) == 0) stop("Length cannot be zero.")
   n   <- length(unique(cat))
   pal <- suppressWarnings(RColorBrewer::brewer.pal(n, pallet_name))
-  ret <- pal[as.integer(factor(cat))]
-  
-  ret
+  pal[as.integer(factor(cat))]
 }
 
 #' Return `pch` values for a given categorical variable
@@ -248,15 +252,17 @@ col_of <- function(cat, pallet_name = "Dark2")
 #' Retruns integer `pch` values for a passed categorical variable.
 #' 
 #' @param cat The categorical variable to return the `pch` values for.
+#' @param pch_offset Integer to offset the values of `pch` by. Defaults to 20.
 #' @return The integer `pch` values for a passed categorical variable.
 #' 
 #' @examples 
 #' pch_of(tourr::flea$species)
 #' @export
-pch_of <- function(cat)
+pch_of <- function(cat,
+                   pch_offset = 20L)
 {
   if (length(cat) == 0) stop("Length cannot be zero.")
-  as.integer(factor(cat)) + 20L
+  as.integer(factor(cat)) + pch_offset
 }
 
 
@@ -404,7 +410,7 @@ find_angle <- function(a,b) { ## Find the angle [radians] between 2 vectors
   )
   }
 
-R3x_of <- function(mat, angle = tilt){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+R3x_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
   angle <- -angle ## Orientation as I imagine it defined, double check.
   mat <- as.matrix(mat)
   c <- cos(angle)
@@ -414,7 +420,7 @@ R3x_of <- function(mat, angle = tilt){ ## https://en.wikipedia.org/wiki/Rotation
                   0, s,  c), ncol = 3, byrow = T)
   as_xyz_df(mat %*% rot)
 }
-R3y_of <- function(mat, angle = tilt){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+R3y_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
   angle <- -angle ## Orientation as I imagine it defined, double check.
   mat <- as.matrix(mat)
   c <- cos(angle)
@@ -424,7 +430,7 @@ R3y_of <- function(mat, angle = tilt){ ## https://en.wikipedia.org/wiki/Rotation
                    -s, 0, c), ncol = 3, byrow = T)
   as_xyz_df(mat %*% rot)
 }
-R3z_of <- function(mat, angle = tilt){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+R3z_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
   angle <- -angle ## Orientation as I imagine it defined, double check.
   mat <- as.matrix(mat)
   c <- cos(angle)

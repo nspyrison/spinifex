@@ -16,7 +16,9 @@ manual_tour(
 )
 }
 \arguments{
-\item{basis}{A (p, d) dim orthonormal matrix. Required, no default.}
+\item{basis}{A (p, d) orthonormal numeric maxtrix.
+The linear combination the original varaibles contribute to projection space.
+Defaults to NULL, generating a random basis.}
 
 \item{manip_var}{Integer column number or string exact column name of the.
 variable to manipulate. Required, no default.}

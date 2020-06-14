@@ -36,7 +36,7 @@ array2df <- function(array,
   }
   colnames(basis_slides) <- c("x", "y", "slide")
   
-  # data; if exists,  array to long df
+  ## Data; if exists, array to long df
   if(!is.null(data)) {
     data <- as.matrix(data)
     data_slides <- NULL
@@ -49,7 +49,7 @@ array2df <- function(array,
     colnames(data_slides) <- c("x", "y", "slide")
   }
   
-  # Add labels, attribute, and list
+  ## Add labels, attribute, and list
   lab <- 
     if(!is.null(lab)){
       rep(lab, nrow(basis_slides) / length(lab))
@@ -75,18 +75,17 @@ array2df <- function(array,
 #' result of `array2df()`, and renders them into a ggplot2 object. 
 #'
 #' @param slides The result of `array2df()`, a long df of the projected frames.
-#' @param manip_col String of the color to highlight the `manip_var`.
-#'   Defaults to "blue".
-#' @param col Point color and fill of the data. Defaults to "black".
-#' @param pch Point shape of the data. Defaults to 20.
-#' @param cex Point size of the data. Defaults to 1.
+#' @param manip_col String of the color to highlight the `manip_var` with.
+#' Defaults to "blue".
 #' @param axes Position of the axes: "center", "bottomleft", "off", "left", 
 #' "right". Defaults to "center".
+#' @param col Point color (and fill) of the data. Defaults to "black".
+#' @param pch Point shape of the data. Defaults to 20.
+#' @param cex Point size of the data. Defaults to 1.
 #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @param ... Recieves arguments from `play_manual_tour()` and `play_tour_path()`
-#' @param repel Try to use ggrepel::geom_text_repel() for labels on the variable
 #' contributions. Defaults to FALSE
-#' @param graphics Graphics package to render with expects "plotly" or "gganimate".
+#
 #' @return A ggplot2 object ready to be called by `render_plotly()` or 
 #'   `render_gganimate()`.
 #' @export
@@ -101,14 +100,12 @@ array2df <- function(array,
 #' render_(slides = sshow, axes = "bottomleft", 
 #'         col = col_of(flea$species), pch = pch_of(flea$species), cex = 2, alpha = .5)
 render_ <- function(slides,
+                    axes = "center",
                     manip_col = "blue",
                     col = "black", 
                     pch = 20,
                     cex = 1,
-                    axes = "center",
                     alpha = 1,
-                    repel = FALSE,
-                    graphics = "plotly",
                     ...) {
   ## Initialize
   if (length(slides) == 2)
@@ -153,7 +150,7 @@ render_ <- function(slides,
   y_min <- min(c(circ[, 2], data_slides[, 2])) - .1
   y_max <- max(c(circ[, 2], data_slides[, 2])) + .1
   gg <- 
-    ## ggplot settings
+    ## Ggplot settings
     ggplot2::ggplot() +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
@@ -164,8 +161,9 @@ render_ <- function(slides,
     suppressWarnings( ## Suppress for unused aes "frame".
       ggplot2::geom_point( 
         data = data_slides,
-        shape = pch, color = col, fill = col, size = cex, alpha = alpha,
-        mapping = ggplot2::aes(x = x, y = y, frame = slide)
+        mapping = ggplot2::aes(x = x, y = y, frame = slide,
+                               shape = pch, color = col, fill = col,
+                               size = cex, alpha = alpha)
       )
     )
   
@@ -180,29 +178,21 @@ render_ <- function(slides,
       suppressWarnings( ## Suppress for unused aes "frame".
         ggplot2::geom_segment( 
           data = basis_slides, size = axes_siz, colour = axes_col,
-          mapping = ggplot2::aes(x = x,
-                                 y = y, 
-                                 xend = zero[, 1], yend = zero[, 2], 
-                                 frame = slide)
+          mapping = ggplot2::aes(x = x, y = y, frame = slide,
+                                 xend = zero[, 1], yend = zero[, 2])
         )
       )
     
-    if (graphics %in% c("plotly", "gganimate", "ggplot2")){
-      if (graphics == "plotly" | repel == F)
-        text_func <- ggplot2::geom_text
-      if (graphics %in% c("gganimate", "ggplot2") & repel == T)
-        text_func <- ggrepel::geom_text_repel
-      gg <- gg +
-        ## Basis axes text labels (ggrepel not supported in plotly)
-        suppressWarnings( ## Suppress for unused aes "frame".
-          text_func(data = basis_slides, 
-                    mapping = ggplot2::aes(x = x, y = y, frame = slide, label = lab),
-                    vjust = "outward", hjust = "outward",
-                    colour = axes_col, size = 4)
-        )
-    } else ## !(graphics %in% c("plotly", "gganimate", "ggplot2")) ;
-      warning("graphics package not specified, axes text labels will be off.")
-  } ## end of ploting axes -- if (axes != "off"){}
+    gg <- gg +
+      ## Basis axes text labels
+      suppressWarnings( ## Suppress for unused aes "frame".
+        ggplot2::geom_text(data = basis_slides, 
+                           mapping = ggplot2::aes(x = x, y = y, 
+                                                  frame = slide, label = lab),
+                           vjust = "outward", hjust = "outward",
+                           colour = axes_col, size = 4)
+      )
+  }
   
   gg
 }
@@ -214,6 +204,12 @@ render_ <- function(slides,
 #' *gganimate* animation.
 #'
 #' @param fps Frames/slides shown per second. Defaults to 3.
+#' @param rewind Play the animation backwards after reaching the end? 
+#' Default to FALSE.
+#' @param start_pause Number of seconds to pause on the first frame for.
+#' Defaults to 1.
+#' @param end_pause Number of seconds to pause on the last frame for.
+#' Defaults to 3.
 #' @param ... Optional, pass addition arguments to 
 #'   `gganimate::transition_states()`.
 #' @export
@@ -226,31 +222,27 @@ render_ <- function(slides,
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
 #' 
-#' render_gganimate(slides = sshow, col = flea$species, pch = flea$species,
-#'   axes = "bottomleft", fps = 2, alpha = .6)
+#' render_gganimate(slides = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
+#'   col = flea$species, pch = flea$species, size = 2, alpha = .6)
 #' }
 render_gganimate <- function(fps = 3,
+                             rewind = FALSE,
+                             start_pause = 1,
+                             end_pause = 3,
                              ...) {
   requireNamespace("gganimate")
-  ## TODO: SET OPTIONS WITH THE FOLLOWING. During the animation function call.
-  # # Change duration and framerate
-  # animate(anim, fps = 20, duration = 15)
-  # 
-  # # Make the animation pause at the end and then rewind
-  # animate(anim, nframes = 100, end_pause = 10, rewind = TRUE)
-  #  
-  # # Use a different renderer
-  # animate(anim, renderer = file_renderer('~/animation/'))[1:6]
   
-  
-  gg <-  render_(graphics = "gganimate", ...) + 
+  gg <-  render_( ...) + 
     ggplot2::coord_fixed()
   gga <- gg + 
-    gganimate::transition_states(slide, 
-                                 transition_length = 0, 
-                                 state_length = 1 / fps)
+    gganimate::transition_states(slide, transition_length = 0)
+                                 # ,state_length = 1 / fps) ## moving to animate args
   
-  gga
+  gganimate::animate(gga, 
+                     fps = fps,
+                     rewind = rewind,
+                     start_pause = fps * start_pause,
+                     end_pause = fps * end_pause)
 }
 
 
@@ -261,6 +253,10 @@ render_gganimate <- function(fps = 3,
 #' *plotly* animation.
 #'
 #' @param fps Frames/slides shown per second. Defaults to 3.
+#' @param tooltip Character vector of aesthetic mappings to show in the `plotly`
+#' hover-over tooltip. Defaults to "none". "all" shows all the 
+#' aesthetic mappings. The order of variables controls the order they appear. 
+#' For example, tooltip = c("Self_Defined_ID", "frame", "x", "y", "My_Category", "color").
 #' @param ... Optional, pass addition arguments to `plotly::animation_opts()` 
 #'   and `plotly::layout()`.
 #' @export
@@ -273,15 +269,16 @@ render_gganimate <- function(fps = 3,
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_plotly(slides = sshow)
 #' 
-#' render_plotly(slides = sshow, col = flea$species, pch = flea$species, 
-#'   axes = "bottomleft", fps = 2, alpha = .6)
+#' render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
+#' col = flea$species, pch = flea$species, size = 2, alpha = .6)
 #' }
 render_plotly <- function(fps = 3,
+                          tootip = "none",
                           ...) {
   requireNamespace("plotly")
   
   gg  <- render_(graphics = "plotly", ...)
-  ggp <- plotly::ggplotly(p = gg, tooltip = "none") 
+  ggp <- plotly::ggplotly(p = gg, tooltip = tooltip) 
   ggp <- plotly::animation_opts(p = ggp, frame = 1 / fps * 1000, 
                                 transition = 0, redraw = FALSE)
   ggp <- plotly::layout(

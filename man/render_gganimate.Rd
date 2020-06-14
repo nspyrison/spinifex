@@ -4,10 +4,19 @@
 \alias{render_gganimate}
 \title{Render the slides as a \emph{gganimate} animation}
 \usage{
-render_gganimate(fps = 3, ...)
+render_gganimate(fps = 3, rewind = FALSE, start_pause = 1, end_pause = 3, ...)
 }
 \arguments{
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
+
+\item{rewind}{Play the animation backwards after reaching the end?
+Default to FALSE.}
+
+\item{start_pause}{Number of seconds to pause on the first frame for.
+Defaults to 1.}
+
+\item{end_pause}{Number of seconds to pause on the last frame for.
+Defaults to 3.}
 
 \item{...}{Optional, pass addition arguments to
 \code{gganimate::transition_states()}.}
@@ -25,7 +34,7 @@ mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 render_gganimate(slides = sshow)
 
-render_gganimate(slides = sshow, col = flea$species, pch = flea$species,
-  axes = "bottomleft", fps = 2, alpha = .6)
+render_gganimate(slides = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
+  col = flea$species, pch = flea$species, size = 2, alpha = .6)
 }
 }

@@ -4,7 +4,9 @@
 #' the manipulation space from the given basis right concatenated with a zero 
 #' vector, with manip_var set to 1.
 #'
-#' @param basis A (p, d) orthonormal matrix.
+#' @param basis A (p, d) orthonormal numeric maxtrix.
+#' The linear combination the original varaibles contribute to projection space.
+#' Required, no default.
 #' @param manip_var Number of the column/dimension to rotate.
 #' @return A (p, d+1) orthonormal matrix, the manipulation space.
 #' @import tourr
@@ -99,7 +101,9 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' position to `phi_max`, to `phi_min`, and back to the start position.
 #'
 #' @name manual_tour
-#' @param basis A (p, d) dim orthonormal matrix. Required, no default.
+#' @param basis A (p, d) orthonormal numeric maxtrix. 
+#' The linear combination the original varaibles contribute to projection space.
+#' Defaults to NULL, generating a random basis.
 #' @param manip_var Integer column number or string exact column name of the.
 #'   variable to manipulate. Required, no default.
 #' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 

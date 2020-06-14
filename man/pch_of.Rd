@@ -4,10 +4,12 @@
 \alias{pch_of}
 \title{Return \code{pch} values for a given categorical variable}
 \usage{
-pch_of(cat)
+pch_of(cat, pch_offset = 20L)
 }
 \arguments{
 \item{cat}{The categorical variable to return the \code{pch} values for.}
+
+\item{pch_offset}{Integer to offset the values of \code{pch} by. Defaults to 20.}
 }
 \value{
 The integer \code{pch} values for a passed categorical variable.

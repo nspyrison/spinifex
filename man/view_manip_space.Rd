@@ -14,8 +14,9 @@ view_manip_space(
 )
 }
 \arguments{
-\item{basis}{A (p, d) basis, XY linear combination of each dimension
-(numeric variable).}
+\item{basis}{A (p, d) orthonormal numeric maxtrix.
+The linear combination the original varaibles contribute to projection space.
+Required, no default.}
 
 \item{manip_var}{Number of the column/dimension to rotate.}
 

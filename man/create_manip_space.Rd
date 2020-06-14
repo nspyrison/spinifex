@@ -7,7 +7,9 @@
 create_manip_space(basis, manip_var)
 }
 \arguments{
-\item{basis}{A (p, d) orthonormal matrix.}
+\item{basis}{A (p, d) orthonormal numeric maxtrix.
+The linear combination the original varaibles contribute to projection space.
+Required, no default.}
 
 \item{manip_var}{Number of the column/dimension to rotate.}
 }

@@ -7,8 +7,9 @@
 oblique_basis(basis = NULL, manip_var, theta = NULL, phi = NULL)
 }
 \arguments{
-\item{basis}{A (p, d) dim orthonormal numeric matrix.
-If it's left null, random basis will be used.}
+\item{basis}{A (p, d) orthonormal numeric maxtrix.
+The linear combination the original varaibles contribute to projection space.
+Defaults to NULL, generating a random basis.}
 
 \item{manip_var}{Number of the column/dimension to rotate.}
 
@@ -21,16 +22,16 @@ the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, no default.}
 }
 \value{
-(p, 2) matrix of the rotated basis
+(p, 2) matrix of the rotated basis.
 }
 \description{
 Rotates a basis returning (p, 2) basis describing \code{oblique_frame()}
 Used to create an oblique tour by small changes to the rotation.
 }
 \examples{
-rb <- tourr::basis_random(n = 6)
+rb    <- tourr::basis_random(n = 6)
 theta <- runif(1, 0, 2*pi)
-phi <- runif(1, 0, 2*pi)
+phi   <- runif(1, 0, 2*pi)
 
 oblique_basis(basis = rb, manip_var = 4, theta, phi)
 }

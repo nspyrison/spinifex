@@ -37,10 +37,10 @@ results in a 3 character abbriviation of the variable names.}
 Defaults to FALSE.}
 
 \item{...}{Optionally pass additional arguments \code{render_}.
-Especially to the col, pch, and cex, alpha}
+Especially for aesthetic mappings like col, pch, cex, and alpha.}
 }
 \value{
-a ggplot object of the rotated projection.
+A ggplot object of the rotated projection.
 }
 \description{
 Projects the specified rotation as a 2D ggplot object. One static frame of
@@ -48,9 +48,13 @@ manual tour. Useful for providing user-guided interaction.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])
-rb <- tourr::basis_random(n = ncol(flea_std))
-theta <- runif(1, 0, 2*pi)
-phi <- runif(1, 0, 2*pi)
+rb       <- tourr::basis_random(n = ncol(flea_std))
+theta    <- runif(1, 0, 2*pi)
+phi      <- runif(1, 0, 2*pi)
 
 oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
+
+oblique_frame(data = flea_std, basis = rb, manip_var = 4,
+              theta = 0, phi = 1,
+              lab = paste0("MyNm", 3:8), rescale_data = T)
 }

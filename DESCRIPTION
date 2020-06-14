@@ -25,7 +25,6 @@ Imports:
     ggplot2,
     gganimate,
     GGally,
-    ggrepel,
     plotly,
     shiny,
     RColorBrewer,

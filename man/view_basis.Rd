@@ -8,27 +8,31 @@ view_basis(
   basis,
   data = NULL,
   lab = NULL,
+  axes = "center",
   col = "black",
   pch = 20,
-  axes = "center",
+  cex = 1,
   alpha = 1
 )
 }
 \arguments{
-\item{basis}{A (p, d) basis, XY linear combination of each dimension
-(numeric variable).}
+\item{basis}{A (p, d) orthonormal numeric maxtrix.
+The linear combination the original varaibles contribute to projection space.
+Required, no default.}
 
 \item{data}{Optional (n, p) data to plot on through the projection basis.}
 
 \item{lab}{Optional, labels for the reference frame of length 1 or the
 number of variables used. By default will abbriviate data if available.}
 
+\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
+to "center".}
+
 \item{col}{Color of the projected points. Defaults to "black".}
 
 \item{pch}{Point character of the projected points. Defaults to 20.}
 
-\item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
-to "center".}
+\item{cex}{Point size of the data. Defaults to 1.}
 
 \item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
 }
