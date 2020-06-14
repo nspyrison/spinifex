@@ -538,7 +538,7 @@ server <- function(input, output, session) {
   ### gallery table output
   output$gallery_df <- DT::renderDataTable(
     gallery_df(), server = FALSE, escape = FALSE, selection = 'none', 
-    options = list(dom = 't', pageLength = 100)
+    options = list(om = 't', pageLength = 100)
   )
   
   ##### Gallery icons with data

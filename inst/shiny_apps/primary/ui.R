@@ -3,7 +3,7 @@
 ##### Data tab -----
 tabData <- tabPanel(
   "Data", fluidPage(
-    sidebarPanel(
+    sidebarPanel(width = 3,
       ## Input csv file
       fileInput("data_file", "Data file (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
@@ -15,8 +15,8 @@ tabData <- tabPanel(
                          selected = names(tourr::flea[, 1:6])
       ),
       ## Select aesthetics: Point color, shape and rescale
-      fluidRow(column(5, selectInput("col_var_nm", "Point color", "<none>")),
-               column(5, selectInput("pch_var_nm", "Point shape", "<none>"))),
+      fluidRow(column(6, selectInput("col_var_nm", "Point color", "<none>")),
+               column(6, selectInput("pch_var_nm", "Point shape", "<none>"))),
       checkboxInput("rescale_data", "Rescale values to [0, 1]", value = TRUE)
     ),
     mainPanel(h4("Raw input data summary"),
@@ -31,7 +31,7 @@ tabData <- tabPanel(
 ##### Manual tab ----
 tabManual <- tabPanel("Manual tour", fluidPage(
   ##### _Sidebar tour inputs ----
-  sidebarPanel(
+  sidebarPanel(width = 3,
     radioButtons("basis_init", "Start basis",
                  choices = c("PCA", "Projection pursuit", "Random", "From file"),
                  selected = "PCA"),
@@ -91,8 +91,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
   ##### _Plot display ----
   mainPanel(
     fluidRow(
-      column(10, plotOutput("main_plot")),
-      column(2, fluidRow(h4("Current basis"),
+      column(11, plotOutput("main_plot")),
+      column(1, fluidRow(HTML("<h3 style='white-space: nowrap;'>Current basis</h3>"),
                          tableOutput("curr_basis_tbl")))
     ),
     conditionalPanel(

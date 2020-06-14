@@ -118,8 +118,8 @@ tabManual <- tabPanel("Manual tour", fluidPage(
   mainPanel(
     width = 9,
     fluidRow(
-      column(10, plotOutput("main_plot")),
-      column(2, fluidRow(h4("Current basis"),
+      column(11, plotOutput("main_plot")),
+      column(1, fluidRow(HTML("<h3 style='white-space: nowrap;'>Current basis</h3>"),
                          tableOutput("curr_basis_tbl")))
     ),
     
