@@ -3,11 +3,11 @@
 #' Rotates a basis returning (p, 2) basis describing `oblique_frame()` 
 #' Used to create an oblique tour by small changes to the rotation.
 #' 
-#' @param basis A (p, d) orthonormal numeric maxtrix. 
-#' The linear combination the original varaibles contribute to projection space.
+#' @param basis A (p, d) orthonormal numeric matrix. 
+#' The linear combination the original variables contribute to projection space.
 #' Defaults to NULL, generating a random basis.
 #' @param manip_var Number of the column/dimension to rotate.
-#' @param theta Angle in radians of "in-plane" rotation, on the XY plane of the 
+#' @param theta Angle in radians of "in-plane" rotation, on the xy plane of the 
 #'   reference frame. Required, no default.
 #'   If left NULL, will initialize the radial angle of the `manip_var`.`
 #' @param phi Phi is angle in radians of 
@@ -45,9 +45,9 @@ oblique_basis <- function(basis = NULL,
 #' Defaults to NULL, giving a random basis.
 #' @param manip_var Number of the variable to rotate.
 #' @param theta Angle in radians of "in-projection plane" rotation, 
-#' on the XY plane of the reference frame. Defaults to 0, no rotaion.
+#' on the xy plane of the reference frame. Defaults to 0, no rotation.
 #' @param phi Angle in radians of the "out-of-projection plane" rotation, into 
-#' the z-direction of the axes. Defaults to 0, no rotaion.
+#' the z-direction of the axes. Defaults to 0, no rotation.
 #' @param lab Optionally, provide a character vector of length p (or 1) 
 #' to label the variable contributions to the axes, Default NULL, 
 #' results in a 3 character abbriviation of the variable names.
@@ -68,10 +68,10 @@ oblique_basis <- function(basis = NULL,
 #' 
 #' oblique_frame(data = flea_std, basis = rb, manip_var = 4,
 #'               theta = 0, phi = 1,
-#'               lab = paste0("MyNm", 3:8), rescale_data = T)
+#'               lab = paste0("MyNm", 3:8), rescale_data = TRUE)
 
 oblique_frame <- function(basis        = NULL,
-                          data         = NULL, ### TODO: when NULL data gets assigned small numeric 1x1 value, where & why?
+                          data         = NULL,
                           manip_var    = NULL,
                           theta        = 0,
                           phi          = 0,
@@ -102,20 +102,23 @@ oblique_frame <- function(basis        = NULL,
   
   ## Add labels, attribute, and list
   basis_slides$lab <- NULL
-    if(!is.null(lab)){
-      basis_slides$lab <- rep(lab, nrow(basis_slides) / length(lab))
-    } else {
-      if(!is.null(data)) {abbreviate(colnames(data), 3)
-      } else {
-        basis_slides$lab <- paste0("V", 1:p)
-      }
-    }
+   if(!is.null(lab)) {
+     basis_slides$lab <- rep(lab, p / length(lab))
+   } else {
+     if (!is.null(data)) {
+       basis_slides$lab <- abbreviate(colnames(data), 3)
+     } else {
+       basis_slides$lab <- paste0("V", 1:p)
+     }
+   }
   
   attr(basis_slides, "manip_var") <- manip_var
   
-  slide <- if(!is.null(data)) {
-    list(basis_slides = basis_slides, data_slides = data_slides)
-  } else list(basis_slides = basis_slides)
+  slide <- NULL
+  if(!is.null(data)) {
+    slide <- list(basis_slides = basis_slides, data_slides = data_slides)
+  } else 
+    slide <- list(basis_slides = basis_slides)
   
   gg <- render_(slides = slide, graphics = "ggplot2", ...) +
     ggplot2::coord_fixed()
@@ -186,8 +189,8 @@ play_tour_path <- function(tour_path,
 #' 
 #' @name play_manual_tour
 #' @param data (n, p) dataset to project, consisting of numeric variables.
-#' @param basis A (p, d) orthonormal numeric maxtrix. 
-#' The linear combination the original varaibles contribute to projection space.
+#' @param basis A (p, d) orthonormal numeric matrix. 
+#' The linear combination the original variables contribute to projection space.
 #' Defaults to NULL, generating a random basis.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #' @param rescale_data When TRUE scales the data to between 0 and 1.

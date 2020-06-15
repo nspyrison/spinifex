@@ -54,8 +54,8 @@ starting November 2007:
 \item Humid3pm, Relative humidity (percent) at 3pm.
 \item Pressure9am, Atmospheric pressure (hpa) reduced to mean sea level at 9am.
 \item Pressure3pm, Atmospheric pressure (hpa) reduced to mean sea level at 3pm.
-\item Cloud9am, Fraction of sky obscured by cloud at 9am. This is measured in "oktas", which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.
-\item Cloud3pm, Fraction of sky obscured by cloud (in "oktas": eighths) at 3pm. See Cload9am for a description of the values.
+\item Cloud9am, Fraction of sky obscured by cloud at 9am. This is measured in "oktas", which are a unit of eighths. It records how many eighths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.
+\item Cloud3pm, Fraction of sky obscured by cloud (in "oktas": eighths) at 3pm. See Cloud9am for a description of the values.
 \item Temp9am, Temperature (degrees C) at 9am.
 \item Temp3pm, Temperature (degrees C) at 3pm.
 \item RainToday, Integer: 1 if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0.

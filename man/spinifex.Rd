@@ -21,12 +21,12 @@ Its main functions are:
 \itemize{
 \item \code{\link[=run_app]{run_app()}}, running \code{run_app("intro")} will open an introductory \code{shiny} app demonstrating radial tours.
 \item \code{\link[=play_manual_tour]{play_manual_tour()}}, performs a manual tour, returning a \code{plotly} animate by default.
-\item \code{\link[=play_tour_path]{play_tour_path()}}, turns a tour path into an animatation, returning a \code{plotly} object by default.
+\item \code{\link[=play_tour_path]{play_tour_path()}}, turns a tour path into an animation, returning a \code{plotly} object by default.
 \item \code{\link[=view_basis]{view_basis()}}, plot a basis set on a reference axis.
-\item \code{\link[=view_manip_space]{view_manip_space()}}, plot a manipualation space highlighting the manip var.
+\item \code{\link[=view_manip_space]{view_manip_space()}}, plot a manipulation space highlighting the manip var.
 }
 
-GitHub repo: \url{https://github.com/nspyrison/spinifex}
+GitHub: \url{https://github.com/nspyrison/spinifex}
 }
 \seealso{
 tourr (package)

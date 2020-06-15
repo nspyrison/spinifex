@@ -78,7 +78,7 @@ flea_rb <- tourr::basis_random(n = ncol(flea_std), d = 2)
 view_basis(basis = flea_rb, lab = colnames(flea_std))
 ```
 
-We started from a random basis, that explains the orthogonal projection from $p$ to $d$ space. Use `view_basis()` to see the *reference axes*, a visual depiction of how the variables contributed to the XY directions of the 2D projection.
+We started from a random basis, that explains the orthogonal projection from $p$ to $d$ space. Use `view_basis()` to see the *reference axes*, a visual depiction of how the variables contributed to the xy directions of the 2D projection.
 
 We want to explore how the coefficients of `aede2`, the *manip var*, contributed to the structure in this projection. In order to change the contributions without breaking the orthogonality of the other variables, we need to add a dimension. We call this new space the manipulation space, which can be viewed with the function `view_manip_space()`. Note that the projection plane containing the reference frame is laid down on the surface, while the manipulation dimension is at a right angle out-of-plane, with a full contribution on the manip var.
 

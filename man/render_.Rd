@@ -32,8 +32,7 @@ Defaults to "blue".}
 
 \item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
 
-\item{...}{Recieves arguments from \code{play_manual_tour()} and \code{play_tour_path()}
-contributions. Defaults to FALSE}
+\item{...}{Optionally passes arguments to \code{play_manual_tour()} and \code{play_tour_path()}}
 }
 \value{
 A ggplot2 object ready to be called by \code{render_plotly()} or

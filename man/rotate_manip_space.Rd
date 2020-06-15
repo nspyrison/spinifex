@@ -10,9 +10,9 @@ rotate_manip_space(manip_space, theta, phi)
 \item{manip_space}{A (p, d+1) dim matrix (manipulation space) to be rotated.}
 
 \item{theta}{Angle (radians) of "in-projection-plane" rotation (ie. on xy-
-of the projection). Typically set by the manip_type arg in \code{proj_data()}.}
+of the projection). Typically set by the manip_type argument in \code{proj_data()}.}
 
-\item{phi}{Angle (radians) of "out-of-porjection-plane" rotation (ie. into
+\item{phi}{Angle (radians) of "out-of-projection-plane" rotation (ie. into
 the z-direction of the manipulation space. Effectively changes the norm
 of the manip_var in the projection plane.}
 }

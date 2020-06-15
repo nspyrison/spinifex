@@ -24,10 +24,10 @@ Defaults to NULL, giving a random basis.}
 \item{manip_var}{Number of the variable to rotate.}
 
 \item{theta}{Angle in radians of "in-projection plane" rotation,
-on the XY plane of the reference frame. Defaults to 0, no rotaion.}
+on the xy plane of the reference frame. Defaults to 0, no rotation.}
 
 \item{phi}{Angle in radians of the "out-of-projection plane" rotation, into
-the z-direction of the axes. Defaults to 0, no rotaion.}
+the z-direction of the axes. Defaults to 0, no rotation.}
 
 \item{lab}{Optionally, provide a character vector of length p (or 1)
 to label the variable contributions to the axes, Default NULL,
@@ -56,5 +56,5 @@ oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
 
 oblique_frame(data = flea_std, basis = rb, manip_var = 4,
               theta = 0, phi = 1,
-              lab = paste0("MyNm", 3:8), rescale_data = T)
+              lab = paste0("MyNm", 3:8), rescale_data = TRUE)
 }

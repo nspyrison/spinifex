@@ -2,7 +2,7 @@
 #'
 #' Typically called by a wrapper function, `play_manual_tour` or 
 #' `play_tour_path`. Takes the result of `tourr::save_history()` or 
-#' `manual_tour()` and restuctures the data from an array to a long data frame 
+#' `manual_tour()` and restructures the data from an array to a long data frame 
 #' for use in ggplots.
 #'
 #' @param array A (p, d, n_slides) array of a tour, the output of 
@@ -10,7 +10,7 @@
 #' @param data Optional, (n, p) dataset to project, consisting of numeric 
 #'   variables.
 #' @param lab Optional, labels for the reference frame of length 1 or the 
-#'   number of variables used. Defaults to an abbriviation of the variables.
+#'   number of variables used. Defaults to an abbreviation of the variables.
 #' @return A list containing the (p, d, n_slides) basis slides array, and
 #'   the (n, d, n_slides) data slides array.
 #' @export
@@ -23,12 +23,12 @@
 array2df <- function(array, 
                      data = NULL,
                      lab = NULL) {
-  # Initialize
+  ## Initialize
   manip_var <- attributes(array)$manip_var
   p <- nrow(array[,, 1])
   n_slides <- dim(array)[3]
   
-  # basis; array to long df
+  ## basis; array to long df
   basis_slides <- NULL
   for (slide in 1:n_slides) {
     basis_rows <- data.frame(cbind(array[,, slide], slide))
@@ -50,13 +50,15 @@ array2df <- function(array,
   }
   
   ## Add labels, attribute, and list
-  lab <- 
-    if(!is.null(lab)){
-      rep(lab, nrow(basis_slides) / length(lab))
+  basis_slides$lab <- NULL
+  if(!is.null(lab)){
+    basis_slides$lab <- rep(lab, nrow(basis_slides) / length(lab))
+  } else {
+    if(!is.null(data)) {basis_slides$lab <- abbreviate(colnames(data), 3)
     } else {
-      if(!is.null(data)) {abbreviate(colnames(data), 3)
-      } else {paste0("V", 1:p)}}
-  basis_slides$lab <- rep(lab, n_slides)
+      basis_slides$lab <- paste0("V", 1:p)
+    }
+  }
   
   attr(basis_slides, "manip_var") <- manip_var
   
@@ -83,9 +85,7 @@ array2df <- function(array,
 #' @param pch Point shape of the data. Defaults to 20.
 #' @param cex Point size of the data. Defaults to 1.
 #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
-#' @param ... Recieves arguments from `play_manual_tour()` and `play_tour_path()`
-#' contributions. Defaults to FALSE
-#
+#' @param ... Optionally passes arguments to `play_manual_tour()` and `play_tour_path()`
 #' @return A ggplot2 object ready to be called by `render_plotly()` or 
 #'   `render_gganimate()`.
 #' @export
@@ -149,6 +149,8 @@ render_ <- function(slides,
   x_max <- max(c(circ[, 1], data_slides[, 1])) + .1
   y_min <- min(c(circ[, 2], data_slides[, 2])) - .1
   y_max <- max(c(circ[, 2], data_slides[, 2])) + .1
+  
+  dat <- cbind(data_slides, pch, col, cex, alpha)
   gg <- 
     ## Ggplot settings
     ggplot2::ggplot() +
@@ -157,16 +159,18 @@ render_ <- function(slides,
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::xlim(x_min, x_max) +
     ggplot2::ylim(y_min, y_max) +
+    ggplot2::scale_shape_identity() + ## To accept numeric cex as shape
     ## Projected data points
     suppressWarnings( ## Suppress for unused aes "frame".
       ggplot2::geom_point( 
-        data = data_slides,
+        data = dat,
         mapping = ggplot2::aes(x = x, y = y, frame = slide,
                                shape = pch, color = col, fill = col,
                                size = cex, alpha = alpha)
       )
     )
   
+  ## Add axes directions if needed:
   if (axes != "off"){
     gg <- gg +
       ## Circle path
@@ -273,7 +277,7 @@ render_gganimate <- function(fps = 3,
 #' col = flea$species, pch = flea$species, size = 2, alpha = .6)
 #' }
 render_plotly <- function(fps = 3,
-                          tootip = "none",
+                          tooltip = "none",
                           ...) {
   requireNamespace("plotly")
   

@@ -1,31 +1,28 @@
-# !!TODO:!! 
+# spinifex 0.2.0
 
-- ADD size, height, width, and resolution, show_legend arguments to play_manual_tour
-- add gganimate::anim_save() to example code
-
-# !!TODO end!!
-
-
-
-# spinifex 0.1.5
-
-## Intoduce shiny apps: 
+## Demo shiny app: 
 
 - run_app("intro")
-- run_app("primary")
 
-## New functions to accomadate interactive use, rather than predefined paths:
+## New functions:
+To accommodate interactive use, rather than predefined paths.
 
 - oblique_basis()
 - oblique_frame()
+- run_app()
+
+Minor util/internally aimed functions:
+
+- pan_zoom
+- is_orthonormal()
 
 ## Other changes:
 
+- Added 'cex' (point size) and 'alpha' transparency arguments to rendering functions
 - argument naming and order consistency
-- address issue with vignette erroring on some opperating systems
-- ggrepel for gganimate and shiny displays (not supported in plotly)
+- clarified and more consistent documentation
 - more defensive coding
-- local is_orthonormal() overwrite that works correctly on identity matrices
+- temporary use of spinifex::is_orthonormal(), more general than tourr 0.5.6 is_orthonormal()
 
 
 # spinifex 0.1.0

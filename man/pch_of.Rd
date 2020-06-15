@@ -15,7 +15,7 @@ pch_of(cat, pch_offset = 20L)
 The integer \code{pch} values for a passed categorical variable.
 }
 \description{
-Retruns integer \code{pch} values for a passed categorical variable.
+Return \code{pch} values for a given categorical variable
 }
 \examples{
 pch_of(tourr::flea$species)

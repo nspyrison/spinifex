@@ -7,13 +7,13 @@
 oblique_basis(basis = NULL, manip_var, theta = NULL, phi = NULL)
 }
 \arguments{
-\item{basis}{A (p, d) orthonormal numeric maxtrix.
-The linear combination the original varaibles contribute to projection space.
+\item{basis}{A (p, d) orthonormal numeric matrix.
+The linear combination the original variables contribute to projection space.
 Defaults to NULL, generating a random basis.}
 
 \item{manip_var}{Number of the column/dimension to rotate.}
 
-\item{theta}{Angle in radians of "in-plane" rotation, on the XY plane of the
+\item{theta}{Angle in radians of "in-plane" rotation, on the xy plane of the
 reference frame. Required, no default.
 If left NULL, will initialize the radial angle of the \code{manip_var}.`}
 

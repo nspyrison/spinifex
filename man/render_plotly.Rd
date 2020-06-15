@@ -4,18 +4,18 @@
 \alias{render_plotly}
 \title{Render the slides as a \emph{plotly} animation}
 \usage{
-render_plotly(fps = 3, tootip = "none", ...)
+render_plotly(fps = 3, tooltip = "none", ...)
 }
 \arguments{
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
-
-\item{...}{Optional, pass addition arguments to \code{plotly::animation_opts()}
-and \code{plotly::layout()}.}
 
 \item{tooltip}{Character vector of aesthetic mappings to show in the \code{plotly}
 hover-over tooltip. Defaults to "none". "all" shows all the
 aesthetic mappings. The order of variables controls the order they appear.
 For example, tooltip = c("Self_Defined_ID", "frame", "x", "y", "My_Category", "color").}
+
+\item{...}{Optional, pass addition arguments to \code{plotly::animation_opts()}
+and \code{plotly::layout()}.}
 }
 \description{
 Takes the result of \code{array2df()} and renders them into a

@@ -13,8 +13,8 @@ play_manual_tour(
 )
 }
 \arguments{
-\item{basis}{A (p, d) orthonormal numeric maxtrix.
-The linear combination the original varaibles contribute to projection space.
+\item{basis}{A (p, d) orthonormal numeric matrix.
+The linear combination the original variables contribute to projection space.
 Defaults to NULL, generating a random basis.}
 
 \item{data}{(n, p) dataset to project, consisting of numeric variables.}

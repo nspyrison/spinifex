@@ -16,7 +16,7 @@ from. Defaults to "Dark2"}
 The integer \code{col} values for a passed categorical variable.
 }
 \description{
-Retruns string \code{col} values for a passed categorical variable.
+Return \code{col} values for a given categorical variable
 }
 \examples{
 col_of(tourr::flea$species)

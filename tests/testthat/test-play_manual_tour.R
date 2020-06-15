@@ -3,7 +3,7 @@ context("play_manual_tour")
 library("spinifex")
 flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
-ret      <- play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
+ret <- play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
 
 test_that("plotly class and length", {
   expect_is(ret, "plotly")
@@ -15,10 +15,8 @@ ret <- play_manual_tour(basis = rb, data = flea_std, manip_var = 4,
                         render_type = render_gganimate)
 
 test_that("gganimate class and length", {
-  expect_is(ret, "gganim")
-  expect_is(ret, "gg")
-  expect_is(ret, "ggplot")
-  expect_equal(length(ret), 14)
+  expect_is(ret, "gif_image")
+  expect_equal(length(ret), 1)
 })
 
 cat <- flea[1:2, 7]

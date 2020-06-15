@@ -7,7 +7,7 @@
 pan_zoom(x, x_offset = 0, y_offset = 0, scale = 1)
 }
 \arguments{
-\item{x}{Numeric data obeject with 2 columns (or scaler) to scale and offset}
+\item{x}{Numeric data object with 2 columns (or scaler) to scale and offset}
 
 \item{x_offset}{Numeric value to pan in the x-direction}
 

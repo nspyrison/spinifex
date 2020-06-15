@@ -14,7 +14,7 @@ array2df(array, data = NULL, lab = NULL)
 variables.}
 
 \item{lab}{Optional, labels for the reference frame of length 1 or the
-number of variables used. Defaults to an abbriviation of the variables.}
+number of variables used. Defaults to an abbreviation of the variables.}
 }
 \value{
 A list containing the (p, d, n_slides) basis slides array, and
@@ -23,7 +23,7 @@ the (n, d, n_slides) data slides array.
 \description{
 Typically called by a wrapper function, \code{play_manual_tour} or
 \code{play_tour_path}. Takes the result of \code{tourr::save_history()} or
-\code{manual_tour()} and restuctures the data from an array to a long data frame
+\code{manual_tour()} and restructures the data from an array to a long data frame
 for use in ggplots.
 }
 \examples{

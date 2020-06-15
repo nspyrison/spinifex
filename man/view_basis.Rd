@@ -16,14 +16,14 @@ view_basis(
 )
 }
 \arguments{
-\item{basis}{A (p, d) orthonormal numeric maxtrix.
-The linear combination the original varaibles contribute to projection space.
+\item{basis}{A (p, d) orthonormal numeric matrix.
+The linear combination the original variables contribute to projection space.
 Required, no default.}
 
 \item{data}{Optional (n, p) data to plot on through the projection basis.}
 
 \item{lab}{Optional, labels for the reference frame of length 1 or the
-number of variables used. By default will abbriviate data if available.}
+number of variables used. By default will abbreviate data if available.}
 
 \item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
 to "center".}
