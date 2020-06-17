@@ -44,7 +44,7 @@ Uses base graphics to plot the circle with axes representing
 the projection frame. Returns the corresponding table.
 }
 \examples{
-rb <- basis_random(4, 2)
+rb <- tourr::basis_random(4, 2)
 view_basis(basis = rb)
 
 flea_std <- tourr::rescale(tourr::flea[, 1:4])

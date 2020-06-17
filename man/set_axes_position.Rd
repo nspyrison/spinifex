@@ -19,6 +19,6 @@ axis_scale and axis_scale
 Typically called, by other functions to scale axes.
 }
 \examples{
-rb <- basis_random(4, 2)
+rb <- tourr::basis_random(4, 2)
 set_axes_position(x = rb, axes = "bottomleft")
 }

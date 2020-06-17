@@ -1,4 +1,5 @@
 context("play_manual_tour")
+library("testthat")
 
 library("spinifex")
 flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
@@ -14,14 +15,17 @@ test_that("plotly class and length", {
 ret <- play_manual_tour(basis = rb, data = flea_std, manip_var = 4,
                         render_type = render_gganimate)
 
+cat(paste0("class(ret): ", class(ret)))
+cat(paste0("length(ret): ", length(ret)))
+
 test_that("gganimate class and length", {
   expect_is(ret, "gif_image")
   expect_equal(length(ret), 1)
 })
 
-cat <- flea[1:2, 7]
+category <- tourr::flea[1:2, 7]
 ret <- play_manual_tour(basis = rb, data = flea_std, manip_var = 4,
-                        col = cat, pch = cat, 
+                        col = category, pch = category, 
                         lab = paste0("a", 1:6), axes = "off")
 
 test_that("col, pch, lab, axes args returns plotly object", {

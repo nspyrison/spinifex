@@ -22,7 +22,7 @@
 #' @import tourr
 #' @export
 #' @examples 
-#' rb <- basis_random(4, 2)
+#' rb <- tourr::basis_random(4, 2)
 #' view_basis(basis = rb)
 #' 
 #' flea_std <- tourr::rescale(tourr::flea[, 1:4])
@@ -129,7 +129,7 @@ view_basis <- function(basis,
 #' @export
 #' @examples 
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' rb <- basis_random(ncol(flea_std), 2)
+#' rb <- tourr::basis_random(ncol(flea_std), 2)
 #' 
 #' view_manip_space(basis = rb, manip_var = 4)
 view_manip_space <- function(basis,
@@ -369,7 +369,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' @return axis_scale and axis_scale
 #' @export
 #' @examples 
-#' rb <- basis_random(4, 2)
+#' rb <- tourr::basis_random(4, 2)
 #' set_axes_position(x = rb, axes = "bottomleft")
 set_axes_position <- function(x, axes) {
   if (length(x) == 1) {x <- data.frame(x = x, y = x)}
@@ -442,7 +442,7 @@ set_axes_position <- function(x, axes) {
 #' @return Transformed numeric data object
 #' @export
 #' @examples 
-#' ib <- basis_init(6, 2)
+#' ib <- tourr::basis_init(6, 2)
 #' pan_zoom(x = ib, x_offset = -1, y_offset = 0, scale = 2/3)
 pan_zoom <- function(x, 
                      x_offset = 0, 

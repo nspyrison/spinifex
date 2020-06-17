@@ -19,7 +19,7 @@ test_that("gganimate class and length", {
   expect_equal(length(ret), 1)
 })
 
-cat <- flea[1:2, 7]
+cat <- tourr::flea[1:2, 7]
 ret <- play_tour_path(tour_path = tpath, data = flea_std, 
                       col = cat, pch = cat, lab <- paste0("a", 1:6), axes="off")
 

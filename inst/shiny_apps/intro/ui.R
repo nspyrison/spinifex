@@ -14,7 +14,6 @@ contextLine <- paste0("Spinifex app, '", .local_path,
 
 require("spinifex")
 require("ggplot2")
-require("ggrepel")
 require("tibble")
 require("shinythemes") ## Themes for shiny, think css files.
 require("shinyjs")     ## Extend JavaScript (Think HTML interactivity) control and formating, 
@@ -83,16 +82,18 @@ ui <- fluidPage(theme = shinythemes::shinytheme("flatly"),
                 ## Esp see the themes: "flatly", "spacelab", "journal"
                 ## Make the lines, hr() black:
                 tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-                useShinyjs(),
+                shinyjs::useShinyjs(),
                 #### Content:
                 navbarPage(paste0("Spinifex app -- ", .local_path, ""),
                            tabData,
                            tabRadial
                 ),
                 h5(contextLine, style = "color: #A9A9A9"),
-                hidden(div(id = "dev_toggle",
-                           actionButton("browser", "browser()"),
-                           verbatimTextOutput("dev_msg")
-                ))
+                shinyjs::hidden(
+                  div(id = "dev_toggle",
+                      actionButton("browser", "browser()"),
+                      verbatimTextOutput("dev_msg")
+                  )
+                )
 )
 

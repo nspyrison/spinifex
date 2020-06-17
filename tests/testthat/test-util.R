@@ -2,7 +2,7 @@ context("util")
 
 library("spinifex")
 flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
-rb <- basis_random(ncol(flea_std), 2)
+rb <- tourr::basis_random(ncol(flea_std), 2)
 
 ret <- set_axes_position(x = rb, axes = "bottomleft")
 

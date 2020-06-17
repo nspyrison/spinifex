@@ -17,7 +17,7 @@
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
-#' rb <- basis_random(n = ncol(flea_std))
+#' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' array2df(array = mtour, data = flea_std)
 array2df <- function(array, 
@@ -85,6 +85,11 @@ array2df <- function(array,
 #' @param pch Point shape of the data. Defaults to 20.
 #' @param cex Point size of the data. Defaults to 1.
 #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
+#' @param palette String of the ColorBrewer2 palette to apply to color and fill.
+#' Defaults to "Dark2"
+#' @param theme_obj Optional `ggplot2::theme()` to apply to the tour. 
+#' Especially for specifying a legend. 
+#' Defaults to `ggplot2::theme(legend.position = "none")`.
 #' @param ... Optionally passes arguments to `play_manual_tour()` and `play_tour_path()`
 #' @return A ggplot2 object ready to be called by `render_plotly()` or 
 #'   `render_gganimate()`.
@@ -92,7 +97,7 @@ array2df <- function(array,
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
-#' rb <- basis_random(n = ncol(flea_std))
+#' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_(slides = sshow)
@@ -106,6 +111,8 @@ render_ <- function(slides,
                     pch = 20,
                     cex = 1,
                     alpha = 1,
+                    palette = "Dark2",
+                    theme_obj = ggplot2::theme(legend.position = "none"),
                     ...) {
   ## Initialize
   if (length(slides) == 2)
@@ -155,11 +162,13 @@ render_ <- function(slides,
     ## Ggplot settings
     ggplot2::ggplot() +
     ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none") +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::xlim(x_min, x_max) +
     ggplot2::ylim(y_min, y_max) +
+    theme_obj +
+    ggplot2::scale_color_brewer(palette = palette) +
+    ggplot2::scale_fill_brewer(palette = palette) +
     ggplot2::scale_shape_identity() + ## To accept numeric cex as shape
+    ggplot2::scale_shape_identity() +
     ## Projected data points
     suppressWarnings( ## Suppress for unused aes "frame".
       ggplot2::geom_point( 
@@ -221,7 +230,7 @@ render_ <- function(slides,
 #' \dontrun{
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
-#' rb <- basis_random(n = ncol(flea_std))
+#' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_gganimate(slides = sshow)
@@ -268,7 +277,7 @@ render_gganimate <- function(fps = 3,
 #' \dontrun{
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
-#' rb <- basis_random(n = ncol(flea_std))
+#' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
 #' render_plotly(slides = sshow)

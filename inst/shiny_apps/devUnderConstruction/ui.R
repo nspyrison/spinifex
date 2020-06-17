@@ -156,7 +156,7 @@ tabGallery <- tabPanel(
 ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "spacelab", "journal"
                 ## Make the lines, hr() black:
                 tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-                useShinyjs(),
+                shinyjs::useShinyjs(),
                 #### Content::
                 navbarPage(paste0("Spinifex app -- ", .local_path, ""),
                            tabData,
@@ -164,7 +164,7 @@ ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), ## Esp: "flatly", "sp
                            tabGallery
                 ),
                 h5(contextLine, style = "color: #A9A9A9"),
-                hidden(div(id = "dev_toggle",
+                shinyjs::hidden(div(id = "dev_toggle",
                            actionButton("browser", "browser()"),
                            verbatimTextOutput("dev_msg")
                 ))

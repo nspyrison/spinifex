@@ -767,6 +767,12 @@ server <- function(input, output, session) {
       97 * n_icons
     }
   )
+  
+  ## Development help -- to display dev tools see the top of 'global_shinyApps.r'
+  if (.include_dev_display == TRUE) {
+    shinyjs::show("dev_toggle")
+  } ## else (.include_dev_display != TRUE) dev content remains hidden.
+  
   ### Dev display
   output$dev_msg <- renderPrint({
     if (.include_dev_display == TRUE){

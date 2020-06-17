@@ -24,6 +24,6 @@ vector, with manip_var set to 1.
 \examples{
 flea_std <- tourr::rescale(tourr::flea[,1:6])
 
-rb <- basis_random(n = ncol(flea_std))
+rb <- tourr::basis_random(n = ncol(flea_std))
 create_manip_space(basis = rb, manip_var = 4)
 }

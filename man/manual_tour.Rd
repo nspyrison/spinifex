@@ -51,6 +51,6 @@ position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
-rb <- basis_random(n = ncol(flea_std))
+rb <- tourr::basis_random(n = ncol(flea_std))
 manual_tour(basis = rb, manip_var = 4)
 }

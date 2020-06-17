@@ -56,7 +56,7 @@ server <- function(input, output, session) {
       dat <- rawDat()
       var <- dat[, which(colnames(dat) == var_nm)]
     }
-    col_of(var) ## A column of hexidecmal color code strings
+    var
   })
   sel_pch <- reactive({
     var_nm <- input$pch_var_nm
@@ -67,7 +67,7 @@ server <- function(input, output, session) {
       dat <- rawDat()
       var <- dat[, which(colnames(dat) == var_nm)]
     }
-    pch_of(var) ## A column of integers ,the 'pch' of the data point
+    var
   })
   n <- reactive(ncol(selDat()))
   manip_var_num <- reactive(which(colnames(selDat()) == input$manip_var_nm)) ## Number of the var
@@ -85,6 +85,7 @@ server <- function(input, output, session) {
                      manip_var = manip_var_num(),
                      col  = sel_col(),
                      pch  = sel_pch(),
+                     cex  = .5,
                      axes = "left",
                      fps  = 9
     )

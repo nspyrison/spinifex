@@ -14,7 +14,7 @@
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
 #' 
-#' rb <- basis_random(n = ncol(flea_std))
+#' rb <- tourr::basis_random(n = ncol(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
 create_manip_space <- function(basis, 
                                manip_var) {
@@ -53,7 +53,7 @@ create_manip_space <- function(basis,
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[,1:6])
-#' rb  <- basis_random(n = ncol(flea_std))
+#' rb  <- tourr::basis_random(n = ncol(flea_std))
 #' msp <- create_manip_space(basis = rb, manip_var = 4)
 #' 
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
@@ -123,7 +123,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
-#' rb <- basis_random(n = ncol(flea_std))
+#' rb <- tourr::basis_random(n = ncol(flea_std))
 #' manual_tour(basis = rb, manip_var = 4)
 manual_tour <- function(basis   = NULL,
                         manip_var,
@@ -133,7 +133,7 @@ manual_tour <- function(basis   = NULL,
                         angle   = .05,
                         ...) {
   ## === Test setup:
-  # f<-tourr::rescale(tourr::flea[,1:6]);rb<-basis_random(n=ncol(flea_std));
+  # f<-tourr::rescale(tourr::flea[,1:6]);rb<-tourr::basis_random(n=ncol(flea_std));
   # basis = rb; manip_var=4;
   # basis = NULL;theta = NULL;phi_min = 0;phi_max = .5 * pi;angle   = .05;
   ## === End test setup

@@ -4,10 +4,10 @@
 \alias{run_app}
 \title{Runs a shiny app demonstrating manual tours}
 \usage{
-run_app(example, ...)
+run_app(app_nm = "intro", ...)
 }
 \arguments{
-\item{example}{name of the shiny app to run. Expects "intro" or "primary".}
+\item{app_nm}{name of the shiny app to run. Expects "intro" .}
 
 \item{...}{Other arguments passed into \code{shiny::runApp()}.
 Such as display.mode = "showcase".}
@@ -21,7 +21,7 @@ traditional techniques for static projections of multivariate data sets.
 }
 \examples{
 \dontrun{
-run_app(example = "intro")
-run_app(example = "intro", display.mode = "showcase")
+run_app(app_nm= "intro")
+run_app(app_nm= "intro", display.mode = "showcase")
 }
 }

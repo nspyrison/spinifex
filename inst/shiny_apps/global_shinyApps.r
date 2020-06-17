@@ -4,7 +4,6 @@
 
 require("spinifex")
 require("ggplot2")
-require("ggrepel")
 require("tibble")
 require("shinythemes") ## Themes for shiny, think css files.
 require("shinyjs")     ## Extend JavaScript (Think HTML interactivity) control and formating, 

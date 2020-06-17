@@ -22,6 +22,6 @@ Transformed numeric data object
 Pan and zoom a 2 column matrix, dataframe or scaler number
 }
 \examples{
-ib <- basis_init(6, 2)
+ib <- tourr::basis_init(6, 2)
 pan_zoom(x = ib, x_offset = -1, y_offset = 0, scale = 2/3)
 }

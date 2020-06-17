@@ -12,6 +12,8 @@ render_(
   pch = 20,
   cex = 1,
   alpha = 1,
+  palette = "Dark2",
+  theme_obj = ggplot2::theme(legend.position = "none"),
   ...
 )
 }
@@ -32,6 +34,13 @@ Defaults to "blue".}
 
 \item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
 
+\item{palette}{String of the ColorBrewer2 palette to apply to color and fill.
+Defaults to "Dark2"}
+
+\item{theme_obj}{Optional \code{ggplot2::theme()} to apply to the tour.
+Especially for specifying a legend.
+Defaults to \code{ggplot2::theme(legend.position = "none")}.}
+
 \item{...}{Optionally passes arguments to \code{play_manual_tour()} and \code{play_tour_path()}}
 }
 \value{
@@ -45,7 +54,7 @@ result of \code{array2df()}, and renders them into a ggplot2 object.
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
-rb <- basis_random(n = ncol(flea_std))
+rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 render_(slides = sshow)
