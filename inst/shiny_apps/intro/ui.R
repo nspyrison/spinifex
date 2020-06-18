@@ -13,6 +13,7 @@ contextLine <- paste0("Spinifex app, '", .local_path,
                       ") --- Ran on ", Sys.Date())
 
 require("spinifex")
+require("tourr")
 require("ggplot2")
 require("tibble")
 require("shinythemes") ## Themes for shiny, think css files.

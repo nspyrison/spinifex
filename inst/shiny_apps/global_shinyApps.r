@@ -3,6 +3,7 @@
 .include_obs_msg      <- T
 
 require("spinifex")
+require("tourr")
 require("ggplot2")
 require("tibble")
 require("shinythemes") ## Themes for shiny, think css files.
@@ -40,13 +41,13 @@ appObsMsg <- function(obsNm = NULL){
 
 ##### GLOBALL HELPER FUNCTIONS:
 ### PROJECTION PURSUIT ----
-appGetGuidedTour <- function(indexName, clId = NA){ ## Returns a guided_tour(PP()) tourr function
+appGetGuidedTour <- function(indexName, clId = NA){ ## Returns a tourr::guided_tour(PP()) tourr function
   if(indexName == "holes") {return(guided_tour(holes()))}
   if(indexName == "cmass") {return(guided_tour(cmass()))}
   if(indexName == "lda_pp"){return(guided_tour(lda_pp(clId)))}
   if(indexName == "pda_pp"){return(guided_tour(pda_pp(clId)))}
   else return(error("index not found"))
-} #ex # animate_xy(flea[, 1:6], guided_tour(pda_pp(flea$species)), sphere = TRUE)
+} #ex # animate_xy(flea[, 1:6], tourr::guided_tour(tourr::pda_pp(flea$species)), sphere = TRUE)
 ### END OF PROJECTION PURSUIT
 
 ##### GALLERY ----

@@ -31,6 +31,6 @@ sshow <- array2df(array = mtour, data = flea_std)
 render_plotly(slides = sshow)
 
 render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
-col = flea$species, pch = flea$species, size = 2, alpha = .6)
+col = tourr::flea$species, pch = tourr::flea$species, size = 2, alpha = .6)
 }
 }

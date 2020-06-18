@@ -50,7 +50,7 @@ oblique_basis <- function(basis = NULL,
 #' the z-direction of the axes. Defaults to 0, no rotation.
 #' @param lab Optionally, provide a character vector of length p (or 1) 
 #' to label the variable contributions to the axes, Default NULL, 
-#' results in a 3 character abbriviation of the variable names.
+#' results in a 3 character abbreviation of the variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
 #' @param ... Optionally pass additional arguments `render_`.
@@ -146,8 +146,8 @@ oblique_frame <- function(basis        = NULL,
 #' @import tourr
 #' @export
 #' @examples
-#' flea_std <- rescale(tourr::flea[,1:6])
-#' tpath <- save_history(flea_std, tour_path = grand_tour(),max = 3)
+#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(),max = 3)
 #' class <- tourr::flea$species
 #' 
 #' \dontrun{

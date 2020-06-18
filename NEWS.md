@@ -11,7 +11,7 @@ To accommodate interactive use, rather than predefined paths.
 - oblique_frame()
 - run_app()
 
-Minor util/internally aimed functions:
+Utility & internally-aimed functions:
 
 - pan_zoom
 - is_orthonormal()
@@ -34,7 +34,7 @@ Initial submission to CRAN. Vignette: "spinifex"
 - play_tour_path()
 - play_manual_tour()
 
-## Primary util functions
+## Primary utility functions
 
 - view_basis()
 - view_manip_space()

@@ -142,7 +142,7 @@
 #'   \item Flavanoids, Flavanoids
 #'   \item Nonflavanoids, Nonflavanoid phenols
 #'   \item Proanthocyanins, Proanthocyanins
-#'   \item Color, Color intsity
+#'   \item Color, Color intensity
 #'   \item Hue, Hue
 #'   \item Dilution, D280/OD315 of diluted wines
 #'   \item Proline, Proline

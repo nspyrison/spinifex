@@ -31,7 +31,7 @@ the z-direction of the axes. Defaults to 0, no rotation.}
 
 \item{lab}{Optionally, provide a character vector of length p (or 1)
 to label the variable contributions to the axes, Default NULL,
-results in a 3 character abbriviation of the variable names.}
+results in a 3 character abbreviation of the variable names.}
 
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}

@@ -33,8 +33,8 @@ Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interp
 over the path and renders into a selected \code{render_type}.
 }
 \examples{
-flea_std <- rescale(tourr::flea[,1:6])
-tpath <- save_history(flea_std, tour_path = grand_tour(),max = 3)
+flea_std <- tourr::rescale(tourr::flea[,1:6])
+tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(),max = 3)
 class <- tourr::flea$species
 
 \dontrun{

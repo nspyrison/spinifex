@@ -1,8 +1,8 @@
 context("play_tour_path")
 
 library("spinifex")
-flea_std <- rescale(tourr::flea[1:2, 1:6])
-tpath    <- save_history(flea_std, tour_path = grand_tour(), max = 1)
+flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
+tpath    <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 1)
 ret      <- play_tour_path(tour_path = tpath, data = flea_std, angle = .15)
 
 test_that("plotly class and length", {
@@ -14,9 +14,8 @@ test_that("plotly class and length", {
 ret <- play_tour_path(tour_path = tpath, data = flea_std, 
                       render_type = render_gganimate)
 
-test_that("gganimate class and length", {
-  expect_is(ret, "gif_image")
-  expect_equal(length(ret), 1)
+test_that("gganimate type", {
+  expect_type(ret, "character")
 })
 
 cat <- tourr::flea[1:2, 7]

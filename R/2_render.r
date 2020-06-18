@@ -103,7 +103,7 @@ array2df <- function(array,
 #' render_(slides = sshow)
 #' 
 #' render_(slides = sshow, axes = "bottomleft", 
-#'         col = col_of(flea$species), pch = pch_of(flea$species), cex = 2, alpha = .5)
+#'         col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
 render_ <- function(slides,
                     axes = "center",
                     manip_col = "blue",
@@ -236,7 +236,7 @@ render_ <- function(slides,
 #' render_gganimate(slides = sshow)
 #' 
 #' render_gganimate(slides = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
-#'   col = flea$species, pch = flea$species, size = 2, alpha = .6)
+#'   col = tourr::flea$species, pch = tourr::flea$species, size = 2, alpha = .6)
 #' }
 render_gganimate <- function(fps = 3,
                              rewind = FALSE,
@@ -283,7 +283,7 @@ render_gganimate <- function(fps = 3,
 #' render_plotly(slides = sshow)
 #' 
 #' render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
-#' col = flea$species, pch = flea$species, size = 2, alpha = .6)
+#' col = tourr::flea$species, pch = tourr::flea$species, size = 2, alpha = .6)
 #' }
 render_plotly <- function(fps = 3,
                           tooltip = "none",

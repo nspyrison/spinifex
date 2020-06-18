@@ -115,7 +115,7 @@ server <- function(input, output, session) {
         pp_cluster <- culster_dat[input$pp_cluster]
       }
       tour_func <- getGuidedTour(input$pp_type, pp_cluster)
-      tour_hist <- save_history(selDat(), tour_func)
+      tour_hist <- tourr::save_history(selDat(), tour_func)
       tour_len  <- dim(tour_hist)[3]
       ret <- matrix(as.numeric(tour_hist[,, tour_len]), ncol = 2)
     }
@@ -370,7 +370,7 @@ server <- function(input, output, session) {
         }
         ### Grand, little and local tours
         if(input$anim_type == "Grand (6 bases)") {
-          t_path <- tourr::save_history(selDat(), grand_tour(),
+          t_path <- tourr::save_history(selDat(), tourr::grand_tour(),
                                         max_bases = 6, start = rv$curr_basis)
         }
         if(input$anim_type == "Little (6 bases)") {
@@ -381,7 +381,7 @@ server <- function(input, output, session) {
           t_path <- tourr::save_history(selDat(), max_bases = 6,
                                         tour_path = local_tour(rv$curr_basis, pi/4))
         }
-        rv$tour_array <- interpolate(t_path, angle = input$anim_angle)
+        rv$tour_array <- tourr::interpolate(t_path, angle = input$anim_angle)
       }
       
     ### end processing message for .gif 
@@ -415,8 +415,8 @@ server <- function(input, output, session) {
     rv$gif_save_cnt <- rv$gif_save_cnt + 1
     
     ##TODO:: DEBUGGING
-    flea_std <- rescale(tourr::flea[,1:6])
-    tpath <- save_history(flea_std, tour_path = grand_tour(), max = 3)
+    flea_std <- tourr::rescale(tourr::flea[,1:6])
+    tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 3)
     str(tpath)
     str(rv$tour_array)
     debug(interpolate)

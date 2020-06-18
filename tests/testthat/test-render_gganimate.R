@@ -7,16 +7,15 @@ mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 ret <- render_gganimate(slides = sshow)
 
-
-test_that("gganimate class and length", {
-  expect_is(ret, "gif_image")
-  expect_equal(length(ret), 1)
+test_that("gganimate type", {
+  expect_type(ret, "character")
 })
+
 
 cat <- tourr::flea[1:2, 7]
 ret <- render_gganimate(slides = sshow, col = cat, pch = cat,
                         lab = paste0("a", 1:6), axes = "off")
-test_that("col, pch, lab, axes arguments returns ggplot", {
-  expect_is(ret, "gif_image")
-  expect_equal(length(ret), 1)
+
+test_that("gganimate type", {
+  expect_type(ret, "character")
 })

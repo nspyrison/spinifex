@@ -41,3 +41,6 @@ nsChecks_prev <- function(validated_email = "list_validated_emails()[1]",
   beepr::beep(4)
 }
 
+####
+
+devtools::release()

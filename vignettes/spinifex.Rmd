@@ -59,6 +59,7 @@ In the below examples we go through some use cases for manual tours. To get star
 
 ```{r pkgs}
 library("spinifex")
+library("tourr")
 library("ggplot2")
 library("dplyr")
 ```
@@ -154,7 +155,7 @@ fpath    <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes()))
 ```
 ```{r, eval=F}
 play_tour_path(tour_path = fpath, data = flea_std, angle = .15, 
-  render_type = render_gganimate, col = flea$species, fps = 4)
+  render_type = render_gganimate, col = tourr::flea$species, fps = 4)
 ```
 
 This shows the optimization path of the holes index. We'll grab the reference axes from the last frame and used that a starting orientation for a manual tour.
@@ -168,7 +169,7 @@ We'll select `aede2` as the manip_var, as it is mostly orthogonal to four of the
 
 ```{r, eval=F}
 play_manual_tour(data = flea_std, basis = f_holes_bas, 
-                 manip_var = 5, col = flea$species)
+                 manip_var = 5, col = tourr::flea$species)
 ```
 
 We can see that `aede2` is important in distinguishing between the purple cluster and the green cluster. However, even when its contribution is zeros the contribution of `tars1` is enough to keep the cluster from overlapping.

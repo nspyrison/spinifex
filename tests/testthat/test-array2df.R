@@ -2,7 +2,7 @@ context("array2df")
 
 library("spinifex")
 flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
-rb <- basis_random(n = ncol(flea_std))
+rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 ret <- array2df(array = mtour, data = flea_std)
 
