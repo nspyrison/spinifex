@@ -1,39 +1,27 @@
+##### Setup -----
 library(ggplot2)
 
 server <- function(input, output, session) {
-  ##### Initialize ----
-  rv <- reactiveValues() # rv needed for x,y,r sliders
-  rv$x <- NULL
-  rv$y <- NULL
-  rv$rad <- NULL
-  
+  ##### Reacters -----
   myPlot <- reactive({
-    .ang <- seq(0,360, length.out = 360) * pi / 180
-    ggplot() + theme_bw() + geom_point(mapping = aes(rv$x, rv$y)) +
-      xlim(-1,1) + ylim(-1,1) + coord_fixed() + 
-      geom_path(mapping = aes(x=cos(.ang),y=sin(.ang)))
+    .ang <- seq(0, 360, length.out = 360) * pi / 180
+    .circ <- data.frame(x = cos(.ang), y = sin(.ang))
+    ggplot() + theme_bw() + 
+      geom_point(mapping = aes(input$x_slider, input$y_slider)) +
+      xlim(-1, 1) + ylim(-1, 1) + coord_fixed() + 
+      geom_path(data = .circ, mapping = aes(x, y))
   })
+  output$myPlot <- renderPlot(myPlot())
   
-  ### Display interactive
-  observeEvent(input$obl_run, {
-    rv$x <- round(runif(1,-1,1),1)
-    rv$y <- round(runif(1,-1,1),1)
-    rv$rad <- sqrt(rv$x^2 + rv$y^2)
-  })
-  output$obl_plot <- renderPlot(myPlot())
+  rad <- reactive(round(sqrt(input$x_slider^2 + input$y_slider^2), 2))
+  output$rad_val <- renderText(rad()) 
   
-  ### Observe sliders
-  observe({
-    rv$x <- input$x_slider
-    rv$y <- input$y_slider
-    rv$rad <- input$rad_slider
-  })
-  
-  observe({
-    rv$rad <- sqrt(rv$x^2 + rv$y^2)
-    updateSliderInput(session, "x_slider", value = rv$x)
-    updateSliderInput(session, "y_slider", value = rv$y)
-    updateSliderInput(session, "rad_slider", value = rv$rad)
+  ##### Observers -----
+  observeEvent(input$rand_basis, {
+    x <- round(runif(1, -1, 1), 1)
+    y <- round(runif(1, -1, 1), 1)
+    updateSliderInput(session, "x_slider", value = x)
+    updateSliderInput(session, "y_slider", value = y)
   })
   
   ### Development help -- uncomment message at bottom on ui to use
@@ -41,27 +29,24 @@ server <- function(input, output, session) {
     cat("Dev msg -- \n",
         "x_slider: ", input$x_slider, "\n",
         "y_slider: ", input$y_slider, "\n",
-        "rad_slider: ", input$rad_slider, "\n",
-        "rv:x: ", rv$x, "\n",
-        "rv:y: ", rv$y, "\n",
+        "rad(): ", rad(), "\n",
         sep = "")
   })
 }
 
-
-###### UI ----
+###### ur.r -----
 ui <- fluidPage(
-  sliderInput("x_slider", "X",
-              min = -1, max = 1, value = 0, step = .1)
-  ,sliderInput("y_slider", "Y",
-               min = -1, max = 1, value = 0, step = .1)
-  ,sliderInput("rad_slider", "radius",
-               min = 0, max = 1.4, value = 0, step = .1)
-  ,actionButton("obl_run", "Random point")
-  , plotOutput("obl_plot")
-  , verbatimTextOutput("dev_msg")
+  sliderInput("x_slider", "X value",
+              min = -1, max = 1, value = 0, step = .1),
+  sliderInput("y_slider", "Y value",
+               min = -1, max = 1, value = 0, step = .1),
+  h5("Radius value"),
+  textOutput("rad_val"),
+  actionButton("rand_basis", "Random point"),
+  plotOutput("myPlot"),
+  verbatimTextOutput("dev_msg")
 )
 
-
+## shinyApp call
 shinyApp(ui, server)
 
