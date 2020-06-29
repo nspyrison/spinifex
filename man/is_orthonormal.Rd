@@ -7,9 +7,12 @@
 is_orthonormal(x, tol = 0.001)
 }
 \arguments{
-\item{x}{numeric matrix}
+\item{x}{Numeric matrix}
 
-\item{tol}{tolerance used to test floating point differences}
+\item{tol}{Tolerance of (the sum of element-wise) floating point differences.}
+}
+\value{
+Single logical of the orthonormal matrix of the matrix.
 }
 \description{
 Handles more cases than tourr::is_orthonormal().

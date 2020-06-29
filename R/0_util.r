@@ -1,9 +1,8 @@
 ### DISPLAYS -----
 
-#' Plot projection frame and return the axes table
+#' Plot the axes directions of the basis table without data points
 #' 
-#' Uses base graphics to plot the circle with axes representing
-#' the projection frame. Returns the corresponding table.
+#' ggplot2 object of axes contribution inscribed in a unit circle.
 #' 
 #' @param basis A (p, d) orthonormal numeric matrix.
 #' The linear combination the original variables contribute to projection space.
@@ -15,7 +14,6 @@
 #' to "center".
 #' @param col Color of the projected points. Defaults to "black".
 #' @param pch Point character of the projected points. Defaults to 20.
-
 #' @param cex Point size of the data. Defaults to 1.
 #' @param alpha Opacity of the data points between 0 and 1. Defaults to 1.
 #' @return ggplot object of the basis.
@@ -26,37 +24,33 @@
 #' view_basis(basis = rb)
 #' 
 #' flea_std <- tourr::rescale(tourr::flea[, 1:4])
-#' view_basis(basis = rb, data = flea_std, axes = "bottomleft", 
-#'            col = tourr::flea[, 7], pch = tourr::flea[,7])
+#' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
+#'
+#' view_basis(basis = rb, data = flea_std, axes = "right", 
+#'            col = col_of(tourr::flea[, 7], "Paired"), 
+#'            pch = pch_of(tourr::flea[,7]),
+#'            alpha = .7, size = 2)
 view_basis <- function(basis,
-                       data = NULL,
-                       lab  = NULL,
-                       axes = "center",
-                       col = "black",
-                       pch = 20,
-                       cex = 1,
-                       alpha = 1) {
+                        data = NULL,
+                        lab  = NULL,
+                        axes = "center",
+                        ...) {
   # Initialize
-  basis <- as.data.frame(basis)
-  colnames(basis) = c("x", "y")
-  angle <- seq(0, 2 * pi, length = 360)
-  circ  <- data.frame(x = cos(angle), y = sin(angle))
   p     <- nrow(basis)
-  .lab  <- NULL
-  if(!is.null(lab)){
+  basis <- as.data.frame(basis) ## for plotting
+  colnames(basis) <- c("x", "y")
+  
+  .lab <- NULL
+  if(is.null(lab) == FALSE){
     .lab <- rep(lab, p / length(lab))
-  } else {
-    if(!is.null(data)) {.lab<- abbreviate(colnames(data), 3)
-    } else {
+  } else { ## lab is NULL
+    if(is.null(data) == FALSE) {.lab <- abbreviate(colnames(data), 3)
+    } else { ## lab and data NULL
       .lab <- paste0("V", 1:p)
     }
   }
   
-  ## Scale axes
-  zero  <- set_axes_position(0,     axes)
-  basis <- set_axes_position(basis, axes)
-  circ  <- set_axes_position(circ,  axes)
-  
+  ## Plot
   gg <- 
     ggplot2::ggplot() +
     ggplot2::scale_color_brewer(palette = "Dark2") +
@@ -64,49 +58,47 @@ view_basis <- function(basis,
     ggplot2::theme(legend.position = "none") +
     ggplot2::coord_fixed() ## Do not use with plotly!
   
-  if(axes != "off")
+  if(axes != "off") ## Then add axes
   {
+    angle <- seq(0, 2 * pi, length = 360)
+    circ  <- data.frame(x = cos(angle), y = sin(angle))
+    zero  <- set_axes_position(0,     axes)
+    disp_basis <- set_axes_position(basis, axes)
+    circ  <- set_axes_position(circ,  axes)
+    
     gg <- gg +
-    ## Cirle path
+    ## Axes unit cirle path
     ggplot2::geom_path(
       data = circ, 
       mapping = ggplot2::aes(x = x, y = y),
       color = "grey80", size = .3, inherit.aes = F) +
     ## Basis axes line segments
     ggplot2::geom_segment(
-      data = basis, 
+      data = disp_basis, 
       mapping = ggplot2::aes(x = x, y = y, xend = zero[, 1], yend = zero[, 2])) +
     ## Basis variable text labels
     ggplot2::geom_text(
-      data = basis, 
-      mapping = ggplot2::aes(x = x, y = y, label = .lab),
+      data = disp_basis, 
+      mapping = ggplot2::aes(x = x, y = y), label = .lab,
       size = 4, hjust = 0, vjust = 0, color = "black")
   }
   
-  if (!is.null(data))
-  {
-    ## projection color and point char asethetics
-    if(length(col) != 1) {
-      if (is.factor(col)) {col <- col_of(col)}
-    }
-    if(length(pch) != 1) {
-      if (is.factor(pch)) {pch <- pch_of(pch)}
-    }
-    
-    ## Project data and plot
+  if (is.null(data) == FALSE){ ## Then project data
     proj <- as.data.frame(
       tourr::rescale(as.matrix(data) %*% as.matrix(basis)) - .5)
     colnames(proj) <- c("x", "y")
+    
+    ## Project data and plot
     gg <- gg + 
-      ggplot2::scale_shape_identity() ## to allow numeric pch for scale.
+      ggplot2::scale_shape_identity() + ## to allow numeric pch for scale.
       ggplot2::geom_point(data = proj,
                           mapping = ggplot2::aes(
-                            x = x, y = y,
-                            shape = pch, color = col, fill = col, 
-                            size = cex, alpha = alpha))
+                            x = x, y = y),
+                          ...
+      )
   }
   
-  gg
+  return(gg)
 }
 
 #' Plot projection frame and return the axes table.
@@ -305,46 +297,50 @@ view_manip_space <- function(basis,
 
 ### FORMATING ------
 
-#' Return `col` values for a given categorical variable
+#' Return hex color code for a given discrete categorical variable
 #' 
-#' @param cat The categorical variable to return the `col` values for.
-#' @param pallet_name The name of the `RColorBrewer` pallet to get the colors 
-#'   from. Defaults to "Dark2"
-#' @return The integer `col` values for a passed categorical variable.
+#' @param class The discrete categorical variable to return the color of.
+#' @param pallet_name The name of the `RColorBrewer` pallet to get the colors
+#' from. Defaults to "Dark2".
+#' @return Vector of character hex color code of the passed categorical variable.
 #' @export
 #' @examples 
 #' col_of(tourr::flea$species)
-col_of <- function(cat, pallet_name = "Dark2") {
-  if (length(cat) == 0) stop("Length cannot be zero.")
-  n   <- length(unique(cat))
-  pal <- suppressWarnings(RColorBrewer::brewer.pal(n, pallet_name))
-  pal[as.integer(factor(cat))]
+col_of <- function(class, pallet_name = "Dark2") {
+  .l_lvls <- length(levels(class))
+  if (.l_lvls == 0) stop("Length of 'class' cannot be zero.")
+  if (.l_lvls > 12) stop("'class' has more than the expected max of 12 levels.")
+  pal <- suppressWarnings(RColorBrewer::brewer.pal(.l_lvls, pallet_name))
+  pal[as.integer(factor(class))]
 }
-
-#' Return `pch` values for a given categorical variable
+#' Return shape integers for a given discrete categorical variable
 #' 
-#' @param cat The categorical variable to return the `pch` values for.
-#' @param pch_offset Integer to offset the values of `pch` by. Defaults to 20.
-#' @return The integer `pch` values for a passed categorical variable.
+#' @param class The discrete categorical variable to return the shape of.
+#' @return Vector of integer shape values of the discrete categorical variable.
 #' @export
 #' @examples 
 #' pch_of(tourr::flea$species)
-pch_of <- function(cat,
-                   pch_offset = 20L)
-{
-  if (length(cat) == 0) stop("Length cannot be zero.")
-  as.integer(factor(cat)) + pch_offset
+pch_of <- function(class) {
+  .shape_ord <- c(21:25, 3:4, 7:14)
+  .l_shapes  <- length(unique(.shape_ord))
+  if (is.factor(class) == FALSE) class <- as.factor(class)
+  .l_classes <- length(levels(class))
+  if (.l_classes == 0) stop("Length of 'class' cannot be zero.")
+  if (.l_classes > 12)
+    stop(paste0("'class' has more than the expected max of ", .l_shapes, " levels."))
+  .int_lvls <- as.integer(class)
+  .shape_ord[.int_lvls]
 }
 
 
 ### MATH AND TRANSFORMS -----
-
 #' Test if a numeric matrix is orthonormal.
 #'
 #' Handles more cases than tourr::is_orthonormal().
 #'
-#' @param x numeric matrix
-#' @param tol tolerance used to test floating point differences
+#' @param x Numeric matrix
+#' @param tol Tolerance of (the sum of element-wise) floating point differences.
+#' @return Single logical of the orthonormal matrix of the matrix.
 #' @export
 #' @examples 
 #' is_orthonormal(tourr::basis_random(n = 6))
@@ -363,10 +359,11 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' 
 #' Typically called, by other functions to scale axes.
 #' 
-#' @param x numeric data object to scale and offset
+#' @param x Numeric data object to scale and offset.
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #'   to "center".
-#' @return axis_scale and axis_scale
+#' @return Scaled and offset `x`` typically controling axes placment.
+#' @seealso \code{\link{pan_zoom}} to set the scale and offset.
 #' @export
 #' @examples 
 #' rb <- tourr::basis_random(4, 2)
@@ -401,45 +398,17 @@ set_axes_position <- function(x, axes) {
   ret[, 2] <- ret[, 2] + y_off
   return(ret)
 }
-# # set_axes_position <- function(x, axes) { ## alias old and set new name to set_3x3_position?
-# #   ## Expects
-# #   if (length(x) == 1) {x <- data.frame(x = x, y = x)}
-# #   if (ncol(x) != 2) stop("set_axes_position is only defined for 2 variables.")
-# #   #### Contains atleast 1 expected string
-# #   expected_strings <- c("off", "center", "top", "bottom", "left", "right", "middle", "far")
-# #   axes_contains <- data.frame(0)
-# #   for (i in 1:length(expected_strings)){
-# #     axes_contains[1, i] <- as.numeric(grepl(expected_strings[i], axes))
-# #   }
-# #   colnames(axes_contains) <- expected_strings
-# #   stopifnot((class(axes) == "character" & max(axes_contains) == TRUE) | 
-# #               axes %in% c(0, F))
-# #   
-# #   if (axes %in% c("off", 0, F)) return()
-# #   scale <- 2 / 3
-# #   if((axes_contains$top  + axes_contains$bottom +
-# #       axes_contains$left + axes_contains$right) >= 2) {scale <- 1 / 4}
-# #   
-# #   offset_x <- offset_y <- 0
-# #   if (axes_contains$top)    {offset_y <-  5 / 3}
-# #   if (axes_contains$bottom) {offset_y <- -5 / 3}
-# #   if (axes_contains$left)   {offset_x <- -5 / 3}
-# #   if (axes_contains$right)  {offset_x <-  5 / 3}
-# #   
-# #   ret <- scale * x
-# #   ret[, 1] <- ret[, 1] + offset_x
-# #   ret[, 2] <- ret[, 2] + offset_y
-# #   return(ret)
-# # }
 
 
-#' Pan and zoom a 2 column matrix, dataframe or scaler number
+
+#' Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scaler number
 #' 
 #' @param x Numeric data object with 2 columns (or scaler) to scale and offset
 #' @param x_offset Numeric value to pan in the x-direction
 #' @param y_offset Numeric value to pan in the x-direction
-#' @param scale Numeric value to scale/zoom the size for x
-#' @return Transformed numeric data object
+#' @param scale Numeric value to scale/zoom the size for x.
+#' @return Scaled and offset `x`. A manual variant of set_axes_position().
+#' @seealso \code{\link{set_axes_position}} for preset choices.
 #' @export
 #' @examples 
 #' ib <- tourr::basis_init(6, 2)

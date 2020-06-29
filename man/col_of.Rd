@@ -2,21 +2,21 @@
 % Please edit documentation in R/0_util.r
 \name{col_of}
 \alias{col_of}
-\title{Return \code{col} values for a given categorical variable}
+\title{Return hex color code for a given discrete categorical variable}
 \usage{
-col_of(cat, pallet_name = "Dark2")
+col_of(class, pallet_name = "Dark2")
 }
 \arguments{
-\item{cat}{The categorical variable to return the \code{col} values for.}
+\item{class}{The discrete categorical variable to return the color of.}
 
 \item{pallet_name}{The name of the \code{RColorBrewer} pallet to get the colors
-from. Defaults to "Dark2"}
+from. Defaults to "Dark2".}
 }
 \value{
-The integer \code{col} values for a passed categorical variable.
+Vector of character hex color code of the passed categorical variable.
 }
 \description{
-Return \code{col} values for a given categorical variable
+Return hex color code for a given discrete categorical variable
 }
 \examples{
 col_of(tourr::flea$species)

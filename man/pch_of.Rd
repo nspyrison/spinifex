@@ -2,20 +2,18 @@
 % Please edit documentation in R/0_util.r
 \name{pch_of}
 \alias{pch_of}
-\title{Return \code{pch} values for a given categorical variable}
+\title{Return shape integers for a given discrete categorical variable}
 \usage{
-pch_of(cat, pch_offset = 20L)
+pch_of(class)
 }
 \arguments{
-\item{cat}{The categorical variable to return the \code{pch} values for.}
-
-\item{pch_offset}{Integer to offset the values of \code{pch} by. Defaults to 20.}
+\item{class}{The discrete categorical variable to return the shape of.}
 }
 \value{
-The integer \code{pch} values for a passed categorical variable.
+Vector of integer shape values of the discrete categorical variable.
 }
 \description{
-Return \code{pch} values for a given categorical variable
+Return shape integers for a given discrete categorical variable
 }
 \examples{
 pch_of(tourr::flea$species)
