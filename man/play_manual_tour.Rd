@@ -24,7 +24,8 @@ Defaults to NULL, generating a random basis.}
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.}
 
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
-plotting options.}
+projection point aesthetics; \code{geom_point(aes(...))}.
+OR pass additional arguments to manual_tour().}
 }
 \value{
 An animation of a radial tour.
@@ -34,7 +35,7 @@ Performs the a manual tour and returns an animation of \code{render_type}.
 For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[, 1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
 class <- tourr::flea$species
 

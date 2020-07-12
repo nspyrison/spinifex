@@ -2,16 +2,12 @@
 % Please edit documentation in R/2_render.r
 \name{render_}
 \alias{render_}
-\title{Render the ggplot before the animation package}
+\title{Prepate the ggplot object before passing to either animation package.}
 \usage{
 render_(
   slides,
   axes = "center",
   manip_col = "blue",
-  col = "black",
-  pch = 20,
-  cex = 1,
-  alpha = 1,
   palette = "Dark2",
   theme_obj = ggplot2::theme(legend.position = "none"),
   ...
@@ -26,26 +22,12 @@ render_(
 \item{manip_col}{String of the color to highlight the \code{manip_var} with.
 Defaults to "blue".}
 
-\item{col}{Point color (and fill) of the data. Defaults to "black".}
-
-\item{pch}{Point shape of the data. Defaults to 20.}
-
-\item{cex}{Point size of the data. Defaults to 1.}
-
-\item{alpha}{Opacity of the data points between 0 and 1. Defaults to 1.}
-
-\item{palette}{String of the ColorBrewer2 palette to apply to color and fill.
-Defaults to "Dark2"}
-
 \item{theme_obj}{Optional \code{ggplot2::theme()} to apply to the tour.
 Especially for specifying a legend.
 Defaults to \code{ggplot2::theme(legend.position = "none")}.}
 
-\item{...}{Optionally passes arguments to \code{play_manual_tour()} and \code{play_tour_path()}}
-}
-\value{
-A ggplot2 object ready to be called by \code{render_plotly()} or
-\code{render_gganimate()}.
+\item{...}{Optionally passes arguments to the projection points inside the
+aesthetics; \code{geom_point(aes(...))}.}
 }
 \description{
 Typically called by \code{render_plotly()} or \code{render_gganimate()}. Takes the
@@ -59,6 +41,9 @@ mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 render_(slides = sshow)
 
+render_(slides = sshow, axes = "bottomleft", 
+        col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
+        
 render_(slides = sshow, axes = "bottomleft", 
         col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
 }

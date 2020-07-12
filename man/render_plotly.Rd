@@ -2,9 +2,9 @@
 % Please edit documentation in R/2_render.r
 \name{render_plotly}
 \alias{render_plotly}
-\title{Render the slides as a \emph{plotly} animation}
+\title{Render the slides as a \emph{plotly} animation.}
 \usage{
-render_plotly(fps = 3, tooltip = "none", ...)
+render_plotly(fps = 3L, tooltip = "none", ...)
 }
 \arguments{
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
@@ -12,25 +12,27 @@ render_plotly(fps = 3, tooltip = "none", ...)
 \item{tooltip}{Character vector of aesthetic mappings to show in the \code{plotly}
 hover-over tooltip. Defaults to "none". "all" shows all the
 aesthetic mappings. The order of variables controls the order they appear.
-For example, tooltip = c("Self_Defined_ID", "frame", "x", "y", "My_Category", "color").}
+For example, tooltip = c("id", "frame", "x", "y", "category", "color").}
 
-\item{...}{Optional, pass addition arguments to \code{plotly::animation_opts()}
-and \code{plotly::layout()}.}
+\item{...}{Optionally passes arguments to the projection points inside the
+aesthetics; \code{geom_point(aes(...))}.}
 }
 \description{
 Takes the result of \code{array2df()} and renders them into a
 \emph{plotly} animation.
 }
 \examples{
-\dontrun{
-flea_std <- tourr::rescale(tourr::flea[, 1:6])
-
+flea_std   <- tourr::rescale(tourr::flea[, 1:6])
+flea_class <- tourr::flea$species
 rb <- tourr::basis_random(n = ncol(flea_std))
+
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
+
+\dontrun{
 render_plotly(slides = sshow)
 
 render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
-col = tourr::flea$species, pch = tourr::flea$species, size = 2, alpha = .6)
+col = flea_class, pch = flea_class, size = 2, alpha = .6)
 }
 }

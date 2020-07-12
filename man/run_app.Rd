@@ -7,7 +7,7 @@
 run_app(app_nm = "intro", ...)
 }
 \arguments{
-\item{app_nm}{name of the shiny app to run. Expects "intro" .}
+\item{app_nm}{name of the shiny app to run. Expects "intro".}
 
 \item{...}{Other arguments passed into \code{shiny::runApp()}.
 Such as display.mode = "showcase".}

@@ -22,17 +22,17 @@
 #' phi   <- runif(1, 0, 2*pi)
 #' 
 #' oblique_basis(basis = rb, manip_var = 4, theta, phi)
-
 oblique_basis <- function(basis = NULL,
                           manip_var,
                           theta = NULL,
                           phi   = NULL) {
   
   m_sp <- create_manip_space(basis, manip_var)
-  ret  <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1:2]
+  ret  <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1L:2L]
   
   ret
 }
+
 
 
 #' Plot a single frame of a manual tour
@@ -53,8 +53,8 @@ oblique_basis <- function(basis = NULL,
 #' results in a 3 character abbreviation of the variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
-#' @param ... Optionally pass additional arguments `render_`.
-#' Especially for aesthetic mappings like col, pch, cex, and alpha.
+#' @param ... Optionally pass additional arguments to the `render_type` for 
+#' projection point aesthetics; `geom_point(aes(...))`. 
 #' @return A ggplot object of the rotated projection.
 #' @import tourr
 #' @export
@@ -69,34 +69,31 @@ oblique_basis <- function(basis = NULL,
 #' oblique_frame(data = flea_std, basis = rb, manip_var = 4,
 #'               theta = 0, phi = 1,
 #'               lab = paste0("MyNm", 3:8), rescale_data = TRUE)
-
 oblique_frame <- function(basis        = NULL,
                           data         = NULL,
                           manip_var    = NULL,
-                          theta        = 0,
-                          phi          = 0,
+                          theta        = 0L,
+                          phi          = 0L,
                           lab          = NULL,
                           rescale_data = FALSE,
                           ...) {
-  
   if (is.null(basis) & !is.null(data)) {
     message("NULL basis passed. Initializing random basis.")
     basis <- tourr::basis_random(n = ncol(data))
   }
-  if (!is.matrix(data)) {data <- as.matrix(data)
-  }
+  if (!is.matrix(data)) data <- as.matrix(data)
   
   p <- nrow(basis)
   m_sp <- create_manip_space(basis, manip_var)
   r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
   
-  basis_slides <- cbind(as.data.frame(r_m_sp), slide = 1)
+  basis_slides <- cbind(as.data.frame(r_m_sp), slide = 1L)
   colnames(basis_slides) <- c("x", "y", "z", "slide")
   if(!is.null(data)){
     if (rescale_data) {data <- tourr::rescale(data)}
-    data_slides  <- cbind(as.data.frame(data %*% r_m_sp), slide = 1)
-    data_slides[, 1] <- scale(data_slides[, 1], scale = FALSE)
-    data_slides[, 2] <- scale(data_slides[, 2], scale = FALSE)
+    data_slides  <- cbind(as.data.frame(data %*% r_m_sp), slide = 1L)
+    data_slides[, 1L] <- scale(data_slides[, 1L], scale = FALSE)
+    data_slides[, 2L] <- scale(data_slides[, 2L], scale = FALSE)
     colnames(data_slides) <- c("x", "y", "z", "slide")
   }
   
@@ -106,9 +103,9 @@ oblique_frame <- function(basis        = NULL,
      basis_slides$lab <- rep(lab, p / length(lab))
    } else {
      if (!is.null(data)) {
-       basis_slides$lab <- abbreviate(colnames(data), 3)
+       basis_slides$lab <- abbreviate(colnames(data), 3L)
      } else {
-       basis_slides$lab <- paste0("V", 1:p)
+       basis_slides$lab <- paste0("V", 1L:p)
      }
    }
   
@@ -128,8 +125,6 @@ oblique_frame <- function(basis        = NULL,
 
 
 
-
-
 #' Render display of a provided tour path
 #'
 #' Takes the result of `tourr::save_history()` or `manual_tour()`, interpolates
@@ -142,28 +137,28 @@ oblique_frame <- function(basis        = NULL,
 #'   alternative use render_gganimate.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #'   Defaults to FALSE.
-#' @param ... Optionally pass additional arguments to `render_type`.
+#' @param ... Optionally pass additional arguments to the `render_type` for 
+#' projection point aesthetics; `geom_point(aes(...))`. 
 #' @import tourr
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[,1:6])
-#' tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(),max = 3)
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
+#' tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 3)
 #' class <- tourr::flea$species
 #' 
 #' \dontrun{
 #' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
 #' play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
-#'   render_type = render_gganimate, col = class, pch = class, axes = "bottomleft")
+#'   render_type = render_gganimate, color = class, shape = class, axes = "bottomleft")
 #' }
-
 play_tour_path <- function(tour_path,
                            data  = NULL,
                            angle = .15,
                            render_type = render_plotly,
                            rescale_data = FALSE,
                            ...) {
-  # if data missing, but an attribute, use that.
+  ## Find data
   if(is.null(data) & !is.null(attributes(tour_path)$data)){ 
     message("data passed as NULL with a tourr object containing attached data; rendering the tour_path data.")
     data <- attributes(tour_path)$data
@@ -181,7 +176,6 @@ play_tour_path <- function(tour_path,
 
 
 
-
 #' Animate a manual tour
 #'
 #' Performs the a manual tour and returns an animation of `render_type`.
@@ -195,12 +189,13 @@ play_tour_path <- function(tour_path,
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
-#'   plotting options.
+#' projection point aesthetics; `geom_point(aes(...))`. 
+#' OR pass additional arguments to manual_tour().
 #' @return An animation of a radial tour.
 #' @import tourr
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' class <- tourr::flea$species
 #' 
@@ -220,9 +215,8 @@ play_manual_tour <- function(basis = NULL,
     message("NULL basis passed. Initializing random basis.")
     basis <- tourr::basis_random(n = ncol(data))
   }
-  if (!is.matrix(data)) {data <- as.matrix(data)}
+  if (!is.matrix(data)) data <- as.matrix(data)
   if (rescale_data) data <- tourr::rescale(data)
-  
   
   tour_hist <- manual_tour(basis = basis, ...)
   tour_df <- array2df(array = tour_hist, data = data)

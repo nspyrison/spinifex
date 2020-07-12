@@ -2,15 +2,21 @@
 % Please edit documentation in R/2_render.r
 \name{render_gganimate}
 \alias{render_gganimate}
-\title{Render the slides as a \emph{gganimate} animation}
+\title{Render the slides as a \emph{gganimate} animation.}
 \usage{
-render_gganimate(fps = 3, rewind = FALSE, start_pause = 1, end_pause = 3, ...)
+render_gganimate(
+  fps = 3L,
+  rewind = FALSE,
+  start_pause = 1L,
+  end_pause = 3L,
+  ...
+)
 }
 \arguments{
 \item{fps}{Frames/slides shown per second. Defaults to 3.}
 
-\item{rewind}{Play the animation backwards after reaching the end?
-Default to FALSE.}
+\item{rewind}{Logical, should the animation play backwards after reaching
+the end? Default to FALSE.}
 
 \item{start_pause}{Number of seconds to pause on the first frame for.
 Defaults to 1.}
@@ -18,8 +24,8 @@ Defaults to 1.}
 \item{end_pause}{Number of seconds to pause on the last frame for.
 Defaults to 3.}
 
-\item{...}{Optional, pass addition arguments to
-\code{gganimate::transition_states()}.}
+\item{...}{Optionally passes arguments to the projection points inside the
+aesthetics; \code{geom_point(aes(...))}.}
 }
 \description{
 Takes the result of \code{array2df()} and renders them into a

@@ -2,7 +2,7 @@
 % Please edit documentation in R/0_util.r
 \name{set_axes_position}
 \alias{set_axes_position}
-\title{Returns the axis scale and position}
+\title{Returns the axis scale and position.}
 \usage{
 set_axes_position(x, axes)
 }

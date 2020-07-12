@@ -1,14 +1,15 @@
-#' Create a manipulation space
+#' Create a manipulation space to rotate the manip variable in.
 #'
 #' Typically called by `manual_tour()`. Creates a (p, d) orthonormal matrix,
 #' the manipulation space from the given basis right concatenated with a zero 
 #' vector, with manip_var set to 1.
 #'
-#' @param basis A (p, d) orthonormal numeric matrix.
-#' The linear combination the original variables contribute to projection space.
+#' @param basis A (p, d) orthonormal numeric matrix,
+#' the linear combination the original variables contribute to projection frame.
 #' Required, no default.
-#' @param manip_var Number of the column/dimension to rotate.
-#' @return A (p, d+1) orthonormal matrix, the manipulation space.
+#' @param manip_var The number of the variable/column to rotate.
+#' @return A (p, d + 1) orthonormal matrix, the manipulation space to 
+#' manipulate the projection in.
 #' @import tourr
 #' @export
 #' @examples
@@ -16,25 +17,26 @@
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
-create_manip_space <- function(basis, 
-                               manip_var) {
-  if (is.null(basis) | nrow(basis) == 0) stop("non empty basis required.")
+create_manip_space <- function(basis, manip_var) {
   if (!is.matrix(basis)) as.matrix(basis)
   
-  manip_space <- cbind(basis, rep(0, len = nrow(basis) ))
-  manip_space[manip_var, 3] <- 1
-  
-  manip_space  <- tourr::orthonormalise(manip_space)
-  colnames(manip_space) <- NULL
+  manip_space <- cbind(basis, rep(0L, len = nrow(basis)))
+  manip_space[manip_var, 3L] <- 1L
+  manip_space <- tourr::orthonormalise(manip_space)
+
+  ## Checks and formating
+  stopifnot(spinifex::is_orthonormal(manip_space))
+  if (is.null(colnames(basis)) == FALSE)
+    colnames(manip_space) <- colnames(basis)
+  if (is.null(rownames(manip_space)) == FALSE)
+    rownames(manip_space) <- rownames(basis)
   
   manip_space
 }
 
 
 
-
-
-#' Performs a rotation on the manipulation space
+#' Performs a rotation on the manipulation space of the given manip var.
 #'
 #' A specific R3 rotation of the manipulation space for a 2D tour.
 #' Typically called by `manual_tour()`. The first 2 columns are x and y in 
@@ -59,42 +61,40 @@ create_manip_space <- function(basis,
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
 #'                    phi = runif(1, max = 2 * pi) )
 rotate_manip_space <- function(manip_space, theta, phi) {
-  ## Initialize
   s_theta <- sin(theta)
   c_theta <- cos(theta)
   s_phi   <- sin(phi)
   c_phi   <- cos(phi)
   
   ## 3D rotation matrix, as a function of theta and phi.
-  R3 <- matrix(c(c_theta^2 * c_phi + s_theta^2,
+  R3 <- matrix(c(c_theta^2L * c_phi + s_theta^2L,
+                 -c_theta * s_theta * (1L - c_phi),
+                 -c_theta * s_phi,                  # 3 of 9
                  -c_theta * s_theta * (1 - c_phi),
-                 -c_theta * s_phi,                      # 3 of 9
-                 -c_theta * s_theta * (1 - c_phi),
-                 s_theta^2 * c_phi + c_theta^2,
-                 -s_theta * s_phi,                      # 6 of 9
+                 s_theta^2L * c_phi + c_theta^2L,
+                 -s_theta * s_phi,                  # 6 of 9
                  c_theta * s_phi,
                  s_theta * s_phi,
-                 c_phi),                                # 9 of 9
-               nrow = 3, ncol = 3, byrow = TRUE)
+                 c_phi),                            # 9 of 9
+               nrow = 3L, ncol = 3L, byrow = TRUE)
   rotated_space <- manip_space %*% R3
   
   ## Checks and formating
   stopifnot(spinifex::is_orthonormal(rotated_space))
   if (is.null(colnames(manip_space)) == FALSE) {
     colnames(rotated_space) <- colnames(manip_space)
-  } else {colnames(rotated_space) <- paste0("proj_", 1:ncol(rotated_space))}
+  } else {colnames(rotated_space) <- paste0("proj_", 1L:ncol(rotated_space))}
   if (is.null(rownames(manip_space)) == FALSE) {
     rownames(rotated_space) <- rownames(manip_space)
-  } else {rownames(rotated_space) <- paste0("orig_", 1:nrow(rotated_space))}
+  } else {rownames(rotated_space) <- paste0("var_", 1L:nrow(rotated_space))}
   
   rotated_space
 }
 
 
 
-
 #' Produce the series of projection bases to rotate a variable into and out 
-#' of a projection
+#' of a projection.
 #'
 #' Typically called by `array2af()`. An array of projections, 
 #' the radial tour of the `manip_var`, which is rotated from phi's starting 
@@ -105,65 +105,54 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' The linear combination the original variables contribute to projection space.
 #' Defaults to NULL, generating a random basis.
 #' @param manip_var Integer column number or string exact column name of the.
-#'   variable to manipulate. Required, no default.
+#' variable to manipulate. Required, no default.
 #' @param theta Angle in radians of "in-plane" rotation, on the xy plane of the 
-#'   reference frame. Defaults to theta of the basis for a radial tour.
+#' reference frame. Defaults to theta of the basis for a radial tour.
 #' @param phi_min Minimum value phi should move to. Phi is angle in radians of 
-#'   the "out-of-plane" rotation, the z-axis of the reference frame. 
-#'   Required, defaults to 0.
+#' the "out-of-plane" rotation, the z-axis of the reference frame. 
+#' Required, defaults to 0.
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
-#'   the "out-of-plane" rotation, the z-axis of the reference frame. 
-#'   Required, defaults to pi/2.
+#' the "out-of-plane" rotation, the z-axis of the reference frame. 
+#' Required, defaults to pi/2.
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
-#' @param ... Optionally passes arguments to `play_manual_tour()` and `play_tour_path()`
 #' @return A (p, d, 4) history_array of the radial tour. The bases set for
-#'   phi_start, `phi_min`, `phi_max`, and back to phi_start. To be called by
-#'   `tourr::interpolate()`.
+#' phi_start, `phi_min`, `phi_max`, and back to phi_start.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
+#' 
 #' manual_tour(basis = rb, manip_var = 4)
+#' 
+#' manual_tour(basis = rb, manip_var = 6, 
+#'             theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .1)
 manual_tour <- function(basis   = NULL,
                         manip_var,
                         theta   = NULL,
-                        phi_min = 0,
+                        phi_min = 0L,
                         phi_max = .5 * pi,
-                        angle   = .05,
-                        ...) {
-  ## === Test setup:
-  # f<-tourr::rescale(tourr::flea[,1:6]);rb<-tourr::basis_random(n=ncol(flea_std));
-  # basis = rb; manip_var=4;
-  # basis = NULL;theta = NULL;phi_min = 0;phi_max = .5 * pi;angle   = .05;
-  ## === End test setup
-  # Initalize
+                        angle   = .05) {
   if (!is.matrix(basis)) basis <- as.matrix(basis)
-  p <- nrow(basis)
-  d <- ncol(basis)
-  manip_space <- create_manip_space(basis = basis, manip_var = manip_var)
-  mv_sp <- manip_space[manip_var, ]
-  if (is.null(theta)) {
-    theta <- atan(basis[manip_var, 2] / basis[manip_var, 1])
-    ### Was trying to incorprate the below this after CRAN ver, but not working. 
-    # ang_minor <- atan(mv_sp[2] / mv_sp[1])
-    # offset <- 270 + sign(mv_sp[1]) * 90
-    # theta <- (offset + sign(mv_sp[1]) * sign(mv_sp[2]) * ang_minor) %% 360
+  
+  .theta <- theta
+  if (is.null(.theta)) {
+    .theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
   }
-  phi_start <- acos(sqrt(basis[manip_var, 1]^2 + basis[manip_var, 2]^2))
+  phi_start <- acos(sqrt(basis[manip_var, 1L]^2L + basis[manip_var, 2L]^2L))
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)
   
   ## Find the values of phi for each 'leg' (direction of motion)
-  phi_segment <- function(start, end) {
-    mvar_xsign <- -sign(basis[manip_var, 1])
-    start <- mvar_xsign * (start - phi_start)
-    end   <- mvar_xsign * (end   - phi_start)
-    dist  <- abs(end - start)
-    remainder <- dist %% angle
-    sign  <- ifelse(end > start, 1, -1)
+  phi_segment  <- function(start, end) {
+    mvar_xsign <- -sign(basis[manip_var, 1L])
+    start      <- mvar_xsign * (start - phi_start)
+    end        <- mvar_xsign * (end   - phi_start)
+    dist       <- abs(end - start)
+    remainder  <- dist %% angle
+    sign       <- ifelse(end > start, 1L, -1L)
     
     segment <- seq(from = start, to = end - remainder, by = sign * angle)
-    if (remainder != 0) segment <- c(segment, end) ## If Add remaining partial step less than a full step to the end
+    ## If Add remaining partial step less than a full step to the end
+    if (remainder != 0L) segment <- c(segment, end) 
     
     segment
   }
@@ -174,12 +163,15 @@ manual_tour <- function(basis   = NULL,
   
   ## Make projected basis array
   n_frames <- length(phi_path)
-  
+  i_s  <- 1L:n_frames
+  p    <- nrow(basis)
+  d    <- ncol(basis)
+  m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
   basis_set <- array(NA, dim = c(p, d, n_frames))
-  for (i in 1:n_frames) {
-    thisFrame <- rotate_manip_space(manip_space = manip_space, theta = theta,
-                                    phi = phi_path[i])
-    basis_set[,, i] <- thisFrame[, 1:d]
+  for (i in i_s) {
+    thisProj <- 
+      rotate_manip_space(manip_space = m_sp, theta = .theta, phi = phi_path[i])
+    basis_set[,, i] <- thisProj[, 1L:d]
   }
   
   attr(basis_set, "manip_var") <- manip_var

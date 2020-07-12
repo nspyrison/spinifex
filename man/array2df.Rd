@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_render.r
 \name{array2df}
 \alias{array2df}
-\title{Turns a tour path array into a long data frame}
+\title{Turns a tour path array into a long data frame.}
 \usage{
 array2df(array, data = NULL, lab = NULL)
 }
@@ -17,8 +17,8 @@ variables.}
 number of variables used. Defaults to an abbreviation of the variables.}
 }
 \value{
-A list containing the (p, d, n_slides) basis slides array, and
-the (n, d, n_slides) data slides array.
+A list containing an array of basis slides (p, d, n_slides) and
+an array of data slides (n, d, n_slides) if data is present.
 }
 \description{
 Typically called by a wrapper function, \code{play_manual_tour} or

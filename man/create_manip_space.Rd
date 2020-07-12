@@ -2,19 +2,20 @@
 % Please edit documentation in R/1_manual_tour.r
 \name{create_manip_space}
 \alias{create_manip_space}
-\title{Create a manipulation space}
+\title{Create a manipulation space to rotate the manip variable in.}
 \usage{
 create_manip_space(basis, manip_var)
 }
 \arguments{
-\item{basis}{A (p, d) orthonormal numeric matrix.
-The linear combination the original variables contribute to projection space.
+\item{basis}{A (p, d) orthonormal numeric matrix,
+the linear combination the original variables contribute to projection frame.
 Required, no default.}
 
-\item{manip_var}{Number of the column/dimension to rotate.}
+\item{manip_var}{The number of the variable/column to rotate.}
 }
 \value{
-A (p, d+1) orthonormal matrix, the manipulation space.
+A (p, d + 1) orthonormal matrix, the manipulation space to
+manipulate the projection in.
 }
 \description{
 Typically called by \code{manual_tour()}. Creates a (p, d) orthonormal matrix,

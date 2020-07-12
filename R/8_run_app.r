@@ -3,7 +3,7 @@
 #' Runs a local shiny app that demonstrates manual tour and comparable 
 #' traditional techniques for static projections of multivariate data sets.
 #' 
-#' @param app_nm name of the shiny app to run. Expects "intro" .
+#' @param app_nm name of the shiny app to run. Expects "intro".
 #' @param ... Other arguments passed into `shiny::runApp()`. 
 #' Such as display.mode = "showcase".
 #' @return opens a local shiny app
@@ -13,7 +13,6 @@
 #' run_app(app_nm= "intro")
 #' run_app(app_nm= "intro", display.mode = "showcase")
 #' }
-
 ## #' run_app(app_nm= "primary", display.mode = "showcase")
 ## #' run_app(app_nm= "devUnderConstruction")
 # For adjusting or adding more apps it may be useful to read: 
@@ -21,7 +20,7 @@
 run_app <- function(app_nm = "intro", ...) {
   ### Additional dependancies for shiny app.
   shiny_depends <-  c("tibble", "shinythemes", "shinyjs")
-  # ## Not applicable for v 0.1.5.
+  # ## Not applicable for v0.2.0.
   # if (app_nm %in% c("primary", "devUnderConstruction")) {
   #   shiny_depends <- c(shiny_depends, "shinyBS", "reactlog", "DT")
   # }
@@ -38,8 +37,8 @@ run_app <- function(app_nm = "intro", ...) {
     )
   }
   
-  
   ## Locate all the shiny app names that exist
+  #TODO: Need to reapply when there are more than 1 shiny app.
   # valid_app_nms <- list.files(system.file("shiny_apps", package = "spinifex"))
   valid_app_nms <- "intro"
   # valid_msg <- paste0("Valid app_nm : '",
@@ -51,13 +50,14 @@ run_app <- function(app_nm = "intro", ...) {
       !(app_nm %in% valid_app_nms)) {
     stop(paste0('App_nm was missing or invalid. \n',
                 #valid_msg,
-                "'intro' is the only valid app_nm at the for this version."),
+                "'intro'",
+                "is the only valid app_nm at the for this version."),
          call. = FALSE
     )
     
   }
   
-  # find and launch the app
+  ## Find and launch the app
   app_dir <- system.file("shiny_apps", app_nm, package = "spinifex")
   shiny::runApp(app_dir, ...)
 }

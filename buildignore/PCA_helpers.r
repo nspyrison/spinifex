@@ -6,7 +6,7 @@ ggplot() + ggprto_pcaScreeplot(data = dat, rescale = F) + theme_minimal()
 
 
 if(F)
-  data <- tourr::flea[, 1:6]; rescale <- T;
+  data <- tourr::flea[, 1:6]; rescale <- T; library(ggplot2);
 ggprto_pcaScreeplot <- function(data, rescale = T){
   if (is.matrix(data) == FALSE) data <- as.matrix(data)
   if (rescale == TRUE) data <- tourr::rescale(data)

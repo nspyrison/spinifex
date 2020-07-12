@@ -2,7 +2,7 @@
 % Please edit documentation in R/0_util.r
 \name{col_of}
 \alias{col_of}
-\title{Return hex color code for a given discrete categorical variable}
+\title{Return hex color code for a given discrete categorical variable.}
 \usage{
 col_of(class, pallet_name = "Dark2")
 }
@@ -16,7 +16,7 @@ from. Defaults to "Dark2".}
 Vector of character hex color code of the passed categorical variable.
 }
 \description{
-Return hex color code for a given discrete categorical variable
+Return hex color code for a given discrete categorical variable.
 }
 \examples{
 col_of(tourr::flea$species)

@@ -26,21 +26,22 @@ alternative use render_gganimate.}
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
-\item{...}{Optionally pass additional arguments to \code{render_type}.}
+\item{...}{Optionally pass additional arguments to the \code{render_type} for
+projection point aesthetics; \code{geom_point(aes(...))}.}
 }
 \description{
 Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interpolates
 over the path and renders into a selected \code{render_type}.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[,1:6])
-tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(),max = 3)
+flea_std <- tourr::rescale(tourr::flea[, 1:6])
+tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 3)
 class <- tourr::flea$species
 
 \dontrun{
 play_tour_path(tour_path = tpath, data = flea_std)
 
 play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
-  render_type = render_gganimate, col = class, pch = class, axes = "bottomleft")
+  render_type = render_gganimate, color = class, shape = class, axes = "bottomleft")
 }
 }

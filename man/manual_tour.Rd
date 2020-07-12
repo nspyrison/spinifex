@@ -3,16 +3,15 @@
 \name{manual_tour}
 \alias{manual_tour}
 \title{Produce the series of projection bases to rotate a variable into and out
-of a projection}
+of a projection.}
 \usage{
 manual_tour(
   basis = NULL,
   manip_var,
   theta = NULL,
-  phi_min = 0,
+  phi_min = 0L,
   phi_max = 0.5 * pi,
-  angle = 0.05,
-  ...
+  angle = 0.05
 )
 }
 \arguments{
@@ -35,13 +34,10 @@ the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
 
 \item{angle}{Target distance (in radians) between steps. Defaults to .05.}
-
-\item{...}{Optionally passes arguments to \code{play_manual_tour()} and \code{play_tour_path()}}
 }
 \value{
 A (p, d, 4) history_array of the radial tour. The bases set for
-phi_start, \code{phi_min}, \code{phi_max}, and back to phi_start. To be called by
-\code{tourr::interpolate()}.
+phi_start, \code{phi_min}, \code{phi_max}, and back to phi_start.
 }
 \description{
 Typically called by \code{array2af()}. An array of projections,
@@ -50,7 +46,10 @@ position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
-
 rb <- tourr::basis_random(n = ncol(flea_std))
+
 manual_tour(basis = rb, manip_var = 4)
+
+manual_tour(basis = rb, manip_var = 6, 
+            theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .1)
 }

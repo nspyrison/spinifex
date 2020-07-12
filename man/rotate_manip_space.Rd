@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_manual_tour.r
 \name{rotate_manip_space}
 \alias{rotate_manip_space}
-\title{Performs a rotation on the manipulation space}
+\title{Performs a rotation on the manipulation space of the given manip var.}
 \usage{
 rotate_manip_space(manip_space, theta, phi)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/0_util.r
 \name{pch_of}
 \alias{pch_of}
-\title{Return shape integers for a given discrete categorical variable}
+\title{Return shape integers for a given discrete categorical variable.}
 \usage{
 pch_of(class)
 }
@@ -13,7 +13,7 @@ pch_of(class)
 Vector of integer shape values of the discrete categorical variable.
 }
 \description{
-Return shape integers for a given discrete categorical variable
+Return shape integers for a given discrete categorical variable.
 }
 \examples{
 pch_of(tourr::flea$species)

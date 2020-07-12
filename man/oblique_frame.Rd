@@ -8,8 +8,8 @@ oblique_frame(
   basis = NULL,
   data = NULL,
   manip_var = NULL,
-  theta = 0,
-  phi = 0,
+  theta = 0L,
+  phi = 0L,
   lab = NULL,
   rescale_data = FALSE,
   ...
@@ -36,8 +36,8 @@ results in a 3 character abbreviation of the variable names.}
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
-\item{...}{Optionally pass additional arguments \code{render_}.
-Especially for aesthetic mappings like col, pch, cex, and alpha.}
+\item{...}{Optionally pass additional arguments to the \code{render_type} for
+projection point aesthetics; \code{geom_point(aes(...))}.}
 }
 \value{
 A ggplot object of the rotated projection.
