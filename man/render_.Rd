@@ -4,14 +4,7 @@
 \alias{render_}
 \title{Prepate the ggplot object before passing to either animation package.}
 \usage{
-render_(
-  slides,
-  axes = "center",
-  manip_col = "blue",
-  palette = "Dark2",
-  theme_obj = ggplot2::theme(legend.position = "none"),
-  ...
-)
+render_(slides, axes = "center", manip_col = "blue", ...)
 }
 \arguments{
 \item{slides}{The result of \code{array2df()}, a long df of the projected frames.}
@@ -22,10 +15,6 @@ render_(
 \item{manip_col}{String of the color to highlight the \code{manip_var} with.
 Defaults to "blue".}
 
-\item{theme_obj}{Optional \code{ggplot2::theme()} to apply to the tour.
-Especially for specifying a legend.
-Defaults to \code{ggplot2::theme(legend.position = "none")}.}
-
 \item{...}{Optionally passes arguments to the projection points inside the
 aesthetics; \code{geom_point(aes(...))}.}
 }
@@ -35,10 +24,10 @@ result of \code{array2df()}, and renders them into a ggplot2 object.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
-
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
+
 render_(slides = sshow)
 
 render_(slides = sshow, axes = "bottomleft", 

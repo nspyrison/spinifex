@@ -345,7 +345,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' @param x Numeric data object to scale and offset.
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #' to "center".
-#' @return Scaled and offset `x`` typically controling axes placment.
+#' @return Scaled and offset `x`` typically controling axes placement.
 #' @seealso \code{\link{pan_zoom}} to set the scale and offset.
 #' @export
 #' @examples 

@@ -182,15 +182,26 @@ play_tour_path <- function(tour_path,
 #' For use with `tourr::save_history()` tour paths see `play_tour_path()`. 
 #' 
 #' @name play_manual_tour
-#' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) orthonormal numeric matrix. 
 #' The linear combination the original variables contribute to projection space.
 #' Defaults to NULL, generating a random basis.
+#' @param data (n, p) dataset to project, consisting of numeric variables.
+#' @param manip_var Integer column number or string exact column name of the.
+#' variable to manipulate. Required, no default.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
+#' @param theta Angle in radians of "in-plane" rotation, on the xy plane of the 
+#' reference frame. Defaults to theta of the basis for a radial tour.
+#' @param phi_min Minimum value phi should move to. Phi is angle in radians of 
+#' the "out-of-plane" rotation, the z-axis of the reference frame. 
+#' Required, defaults to 0.
+#' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
+#' the "out-of-plane" rotation, the z-axis of the reference frame. 
+#' Required, defaults to pi/2.
+#' @param angle Target distance (in radians) between steps. Defaults to .05.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
-#' projection point aesthetics; `geom_point(aes(...))`. 
-#' OR pass additional arguments to manual_tour().
+#' projection point aesthetics; `geom_point(aes(...))`. OR passes optional
+#' arguments to `manual_tour`, 
 #' @return An animation of a radial tour.
 #' @import tourr
 #' @export
@@ -207,9 +218,14 @@ play_tour_path <- function(tour_path,
 #'                  axes = "bottomleft", fps = 5)
 #' }
 play_manual_tour <- function(basis = NULL,
-                             data, 
+                             data,
+                             manip_var,
                              render_type = render_plotly,
                              rescale_data = FALSE,
+                             theta = NULL,
+                             phi_min = 0L,
+                             phi_max = .5 * pi,
+                             angle = .05,
                              ...) {
   if (is.null(basis)) {
     message("NULL basis passed. Initializing random basis.")
@@ -218,7 +234,7 @@ play_manual_tour <- function(basis = NULL,
   if (!is.matrix(data)) data <- as.matrix(data)
   if (rescale_data) data <- tourr::rescale(data)
   
-  tour_hist <- manual_tour(basis = basis, ...)
+  tour_hist <- manual_tour(basis = basis, manip_var = manip_var, ...)
   tour_df <- array2df(array = tour_hist, data = data)
   anim <- render_type(slides = tour_df, ...)
   

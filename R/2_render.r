@@ -81,18 +81,15 @@ array2df <- function(array,
 #' Defaults to "blue".
 #' @param axes Position of the axes: "center", "bottomleft", "off", "left", 
 #' "right". Defaults to "center".
-#' @param theme_obj Optional `ggplot2::theme()` to apply to the tour. 
-#' Especially for specifying a legend. 
-#' Defaults to `ggplot2::theme(legend.position = "none")`.
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
+#' 
 #' render_(slides = sshow)
 #' 
 #' render_(slides = sshow, axes = "bottomleft", 
@@ -103,20 +100,36 @@ array2df <- function(array,
 render_ <- function(slides,
                     axes = "center",
                     manip_col = "blue",
-                    palette = "Dark2",
-                    theme_obj = ggplot2::theme(legend.position = "none"),
                     ...) {
-  prev_theme <-  theme_get()
-  theme_set(theme_void()) #capture current theme
+  if(axes == "off" & length(slides) == 1) stop("render_ called with no data and axes = 'off'")
   
   ## Initialize
-  if (length(slides) == 2L)
+  basis_slides <- data.frame(slides[["basis_slides"]])
+  manip_var    <- attributes(slides$basis_slides)$manip_var
+  n_slides     <- length(unique(basis_slides$slide))
+  p            <- nrow(basis_slides) / n_slides
+  d            <- 2L ## Hardcoded assumtion for 2D display
+  ## If data exsists
+  data_slides  <- NULL
+  if (length(slides) == 2L) {
     data_slides <- data.frame(slides[["data_slides"]])
-  basis_slides  <- data.frame(slides[["basis_slides"]])
-  manip_var     <- attributes(slides$basis_slides)$manip_var
-  n_slides      <- length(unique(basis_slides$slide))
-  p             <- nrow(basis_slides) / n_slides
-  d             <- 2L
+    ##### Bare with me here,:
+    args        <- list(...) ## An empty list behaves well too.
+    n_tgt_len   <- nrow(data_slides)
+    ## Replicate aesthetic args to correct length
+    tform_args  <- lapply(X = args, FUN = function(x) {rep_len(x, n_tgt_len)})
+    my_geom_pts <- function(...) {
+      suppressWarnings( ## Suppress for unused aes "frame", AND potential others from the ellipsis '...'
+        ggplot2::geom_point(data = data_slides,
+                            mapping = ggplot2::aes(x = x, 
+                                                   y = y, 
+                                                   frame = slide,
+                                                   ...)
+        )
+      )
+    }
+    proj_pts <- do.call(my_geom_pts, args = tform_args)
+  }
   ## Axes unit circle
   angle         <- seq(0L, 2L * pi, length = 360L)
   circ          <- data.frame(x = cos(angle), y = sin(angle))
@@ -144,21 +157,16 @@ render_ <- function(slides,
   y_min <- min(c(circ[, 2L], data_slides[, 2L])) - .1
   y_max <- max(c(circ[, 2L], data_slides[, 2L])) + .1
   
+  ## Ploting
   gg <- 
-    ## Ggplot settings
     ggplot2::ggplot() +
     ggplot2::xlim(x_min, x_max) +
-    ggplot2::ylim(y_min, y_max) +
-    ## Projected data points
-    suppressWarnings( ## Suppress for unused aes "frame".
-      ggplot2::geom_point( 
-        data = dat,
-        mapping = ggplot2::aes(x = x, 
-                               y = y, 
-                               frame = slide,
-                               ...)
-      )
-    )
+    ggplot2::ylim(y_min, y_max)
+    
+  ## Project data points, if data exsists 
+  if (!is.null(data_slides)) {
+    gg <- gg + proj_pts
+  }
   
   ## Add axes directions if needed:
   if (axes != "off"){
@@ -186,7 +194,6 @@ render_ <- function(slides,
       )
   }
   
-  theme_set(prev_theme)
   gg
 }
 
@@ -203,37 +210,56 @@ render_ <- function(slides,
 #' Defaults to 1.
 #' @param end_pause Number of seconds to pause on the last frame for.
 #' Defaults to 3.
+#' @param gif_filename Optional, saves the animation as a GIF to this string 
+#' (without folderpath) . Defaults to NULL (no GIF saved). For more control call 
+#' `gganimate::anim_save()` on a return object of `render_gganimate()`.
+#' @param gif_path Optional, A string of the directory path (without filename) 
+#' to save a GIF to. Defaults to NULL (current work directory).
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
 #' @export
 #' @examples
-#' \dontrun{
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' 
+#' flea_class <- tourr::flea$species
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
+#' \dontrun{
 #' render_gganimate(slides = sshow)
 #' 
 #' render_gganimate(slides = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
-#'   col = tourr::flea$species, pch = tourr::flea$species, size = 2, alpha = .6)
+#'   col = flea_class, pch = flea_class, size = 2, alpha = .6)
+#'   
+#' if(F){
+#'   render_gganimate(slides = sshow, axes = "right", fps = 4, rewind = TRUE,
+#'     col = flea_class, pch = flea_class, size = 2,
+#'     gif_filename = "myRadialTour.gif", gif_path = "./docs")
+#' }
 #' }
 render_gganimate <- function(fps = 3L,
                              rewind = FALSE,
                              start_pause = 1L,
                              end_pause = 3L,
+                             gif_filename = NULL,
+                             gif_path = NULL,
                              ...) {
   requireNamespace("gganimate")
   
   gg  <- render_(...) + ggplot2::coord_fixed()
   gga <- gg + gganimate::transition_states(slide, 
                                            transition_length = 0L)
+  anim <- gganimate::animate(gga, 
+                             fps = fps,
+                             rewind = rewind,
+                             start_pause = fps * start_pause,
+                             end_pause = fps * end_pause)
   
-  gganimate::animate(gga, 
-                     fps = fps,
-                     rewind = rewind,
-                     start_pause = fps * start_pause,
-                     end_pause = fps * end_pause)
+  if(is.null(gif_filename) == FALSE)
+    gganimate::anim_save(gif_filename, anim, gif_path)
+  if(is.null(gif_path)) 
+    warning("gif_path supplied with no gif_filename. Add a gif_filename to save a .gif.")
+  
+  anim
 }
 
 
@@ -248,30 +274,37 @@ render_gganimate <- function(fps = 3L,
 #' hover-over tooltip. Defaults to "none". "all" shows all the 
 #' aesthetic mappings. The order of variables controls the order they appear. 
 #' For example, tooltip = c("id", "frame", "x", "y", "category", "color").
+#' @param html_filename Optional, saves the plotly object as an HTML widget to this string 
+#' (without folderpath). Defaults to NULL (not saved). For more control call 
+#' `htmlwidgets::saveWidget()` on a return object of `render_plotly()`.
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
 #' @export
-#' @examples
 #' flea_std   <- tourr::rescale(tourr::flea[, 1:6])
 #' flea_class <- tourr::flea$species
 #' rb <- tourr::basis_random(n = ncol(flea_std))
-#' 
 #' mtour <- manual_tour(basis = rb, manip_var = 4)
 #' sshow <- array2df(array = mtour, data = flea_std)
-#' 
 #' \dontrun{
 #' render_plotly(slides = sshow)
 #' 
 #' render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
 #' col = flea_class, pch = flea_class, size = 2, alpha = .6)
+#' 
+#' if(F){
+#'   render_plotly(slides = sshow, axes = "right", fps = 4, tooltip = "all",
+#'     col = class, pch = class, size = 2,
+#'     html_filename = "myRadialTour.html")
+#' }
 #' }
 render_plotly <- function(fps = 3L,
                           tooltip = "none",
+                          html_filename = NULL,
                           ...) {
   requireNamespace("plotly")
   
   gg  <- render_(graphics = "plotly", ...)
-  ggp <- plotly::ggplotly(p = gg, tooltip = tooltip) 
+  ggp <- plotly::ggplotly(p = gg, tooltip = tooltip)
   ggp <- plotly::animation_opts(p = ggp, 
                                 frame = 1L / fps * 1000L, 
                                 transition = 0L, 
@@ -282,6 +315,35 @@ render_plotly <- function(fps = 3L,
                                      showgrid = FALSE, showline = FALSE)
   )
   
+  if (is.null(html_filename) == FALSE)
+    htmlwidgets::saveWidget(ggp, html_filename)
+  
   ggp
+}
+
+
+
+#' Aesthetic settings that can be applied to a ggplot object.
+#'
+#' A `ggplot2` theme (group of aesthetic settings), that can be added to a ggplot. 
+#'
+#' @export
+#' flea_std   <- tourr::rescale(tourr::flea[, 1:6])
+#' flea_class <- tourr::flea$species
+#' rb <- tourr::basis_random(n = ncol(flea_std))
+#' mtour <- manual_tour(basis = rb, manip_var = 4)
+#' sshow <- array2df(array = mtour, data = flea_std)
+#' \dontrun{
+#' render_plotly(slides = sshow)
+#' 
+#' render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
+#' col = flea_class, pch = flea_class, size = 2, alpha = .6)
+#' }
+theme_spinifex <- function(){
+  ggplot2::theme_minimal() + 
+    ggplot2::theme(axis.title = ggplot2::element_blank(),
+                   axis.ticks = ggplot2::element_blank(),
+                   axis.text  = ggplot2::element_blank(),
+                   legend.position = "none") 
 }
 

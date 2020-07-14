@@ -115,6 +115,8 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' the "out-of-plane" rotation, the z-axis of the reference frame. 
 #' Required, defaults to pi/2.
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
+#' @param ... Handles unused arguments that are being also being passed from 
+#' `play_manual_tour()` to `render_()`.
 #' @return A (p, d, 4) history_array of the radial tour. The bases set for
 #' phi_start, `phi_min`, `phi_max`, and back to phi_start.
 #' @export
@@ -131,8 +133,11 @@ manual_tour <- function(basis   = NULL,
                         theta   = NULL,
                         phi_min = 0L,
                         phi_max = .5 * pi,
-                        angle   = .05) {
+                        angle   = .05,
+                        ...) {
+  if (missing(manip_var)) stop("Required 'manip_var' is missing.")
   if (!is.matrix(basis)) basis <- as.matrix(basis)
+  xArgs <- list(...) ## Terminate args meant for `render_()` also passed in `play_manual_tour()`.
   
   .theta <- theta
   if (is.null(.theta)) {

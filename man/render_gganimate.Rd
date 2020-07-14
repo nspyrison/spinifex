@@ -9,6 +9,8 @@ render_gganimate(
   rewind = FALSE,
   start_pause = 1L,
   end_pause = 3L,
+  gif_filename = NULL,
+  gif_path = NULL,
   ...
 )
 }
@@ -24,6 +26,13 @@ Defaults to 1.}
 \item{end_pause}{Number of seconds to pause on the last frame for.
 Defaults to 3.}
 
+\item{gif_filename}{Optional, saves the animation as a GIF to this string
+(without folderpath) . Defaults to NULL (no GIF saved). For more control call
+\code{gganimate::anim_save()} on a return object of \code{render_gganimate()}.}
+
+\item{gif_path}{Optional, A string of the directory path (without filename)
+to save a GIF to. Defaults to NULL (current work directory).}
+
 \item{...}{Optionally passes arguments to the projection points inside the
 aesthetics; \code{geom_point(aes(...))}.}
 }
@@ -32,15 +41,21 @@ Takes the result of \code{array2df()} and renders them into a
 \emph{gganimate} animation.
 }
 \examples{
-\dontrun{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
-
+flea_class <- tourr::flea$species
 rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
+\dontrun{
 render_gganimate(slides = sshow)
 
 render_gganimate(slides = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
-  col = tourr::flea$species, pch = tourr::flea$species, size = 2, alpha = .6)
+  col = flea_class, pch = flea_class, size = 2, alpha = .6)
+  
+if(F){
+  render_gganimate(slides = sshow, axes = "right", fps = 4, rewind = TRUE,
+    col = flea_class, pch = flea_class, size = 2,
+    gif_filename = "myRadialTour.gif", gif_path = "./docs")
+}
 }
 }

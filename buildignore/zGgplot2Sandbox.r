@@ -5,22 +5,14 @@ col <- as.factor(x$species)
 col <- "blue"
 
 old<-  theme_get()
+theme_set(theme_minimal()) #capture current theme
+z <- ggplot(tourr::flea, aes(x=tars1, y=tars2, color = col)) +
+  geom_point(size = 5) + 
+  geom_abline(slope = .5, color="green", size= 4) +
+  theme(legend.position = "none")
+theme_set(old)
+z
 
-
-theme_set(theme_void()) #capture current theme
-
-myPlot <- function(...){
-  ggplot(tourr::flea, aes(x=tars1, y=tars2)) +
-    geom_point(size = 5, 
-               mapping = aes(
-                 ...
-               )
-    ) + 
-    theme_bw() +
-    theme_dark() +
-    geom_abline(slope = .5, color="green", size= 4)
-}
-myPlot(color = c("blue", "red", "green"))
 
 
 g + scale_color_brewer(palette = "Set1") + scale_color_identity()

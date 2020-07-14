@@ -13,7 +13,7 @@ set_axes_position(x, axes)
 to "center".}
 }
 \value{
-Scaled and offset `x`` typically controling axes placment.
+Scaled and offset `x`` typically controling axes placement.
 }
 \description{
 Typically called, by other functions to scale axes.
