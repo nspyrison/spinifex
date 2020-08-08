@@ -18,19 +18,13 @@
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
 create_manip_space <- function(basis, manip_var) {
-  if (!is.matrix(basis)) as.matrix(basis)
-  
+  basis <-  as.matrix(basis)
   manip_space <- cbind(basis, rep(0L, len = nrow(basis)))
   manip_space[manip_var, 3L] <- 1L
   manip_space <- tourr::orthonormalise(manip_space)
 
-  ## Checks and formating
+  ## Check
   stopifnot(spinifex::is_orthonormal(manip_space))
-  if (is.null(colnames(basis)) == FALSE)
-    colnames(manip_space) <- colnames(basis)
-  if (is.null(rownames(manip_space)) == FALSE)
-    rownames(manip_space) <- rownames(basis)
-  
   manip_space
 }
 
@@ -81,12 +75,8 @@ rotate_manip_space <- function(manip_space, theta, phi) {
   
   ## Checks and formating
   stopifnot(spinifex::is_orthonormal(rotated_space))
-  if (is.null(colnames(manip_space)) == FALSE) {
-    colnames(rotated_space) <- colnames(manip_space)
-  } else {colnames(rotated_space) <- paste0("proj_", 1L:ncol(rotated_space))}
-  if (is.null(rownames(manip_space)) == FALSE) {
-    rownames(rotated_space) <- rownames(manip_space)
-  } else {rownames(rotated_space) <- paste0("var_", 1L:nrow(rotated_space))}
+  colnames(rotated_space) <- paste0("proj_", 1L:ncol(rotated_space))
+  rownames(rotated_space) <- paste0("V", 1L:nrow(rotated_space))
   
   rotated_space
 }
@@ -128,15 +118,14 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' 
 #' manual_tour(basis = rb, manip_var = 6, 
 #'             theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .1)
-manual_tour <- function(basis   = NULL,
+manual_tour <- function(basis,
                         manip_var,
                         theta   = NULL,
                         phi_min = 0L,
                         phi_max = .5 * pi,
                         angle   = .05,
                         ...) {
-  if (missing(manip_var)) stop("Required 'manip_var' is missing.")
-  if (!is.matrix(basis)) basis <- as.matrix(basis)
+  basis <- as.matrix(basis)
   xArgs <- list(...) ## Terminate args meant for `render_()` also passed in `play_manual_tour()`.
   
   .theta <- theta

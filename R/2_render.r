@@ -92,10 +92,7 @@ array2df <- function(array,
 #' 
 #' render_(slides = sshow)
 #' 
-#' render_(slides = sshow, axes = "bottomleft", 
-#'         col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
-#'         
-#' render_(slides = sshow, axes = "bottomleft", 
+#' render_(slides = sshow, axes = "bottomleft", manip_col = "purple",
 #'         col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
 render_ <- function(slides,
                     axes = "center",
@@ -114,10 +111,10 @@ render_ <- function(slides,
   if (length(slides) == 2L) {
     data_slides <- data.frame(slides[["data_slides"]])
     ##### Bare with me here,:
-    args        <- list(...) ## An empty list behaves well too.
-    n_tgt_len   <- nrow(data_slides)
+    args    <- list(...) ## Empty list behaves well too.
+    tgt_len <- nrow(data_slides)
     ## Replicate aesthetic args to correct length
-    tform_args  <- lapply(X = args, FUN = function(x) {rep_len(x, n_tgt_len)})
+    tform_args  <- lapply(X = args, FUN = function(x) {rep_len(x, tgt_len)})
     my_geom_pts <- function(...) {
       suppressWarnings( ## Suppress for unused aes "frame", AND potential others from the ellipsis '...'
         ggplot2::geom_point(data = data_slides,
@@ -230,10 +227,10 @@ render_ <- function(slides,
 #' render_gganimate(slides = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
 #'   col = flea_class, pch = flea_class, size = 2, alpha = .6)
 #'   
-#' if(F){
+#' if(F){ ## Don't run, saves a .gif of the animation.
 #'   render_gganimate(slides = sshow, axes = "right", fps = 4, rewind = TRUE,
 #'     col = flea_class, pch = flea_class, size = 2,
-#'     gif_filename = "myRadialTour.gif", gif_path = "./docs")
+#'     gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
 #' }
 render_gganimate <- function(fps = 3L,
@@ -280,6 +277,7 @@ render_gganimate <- function(fps = 3L,
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
 #' @export
+#' @examples
 #' flea_std   <- tourr::rescale(tourr::flea[, 1:6])
 #' flea_class <- tourr::flea$species
 #' rb <- tourr::basis_random(n = ncol(flea_std))
@@ -289,12 +287,12 @@ render_gganimate <- function(fps = 3L,
 #' render_plotly(slides = sshow)
 #' 
 #' render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
-#' col = flea_class, pch = flea_class, size = 2, alpha = .6)
+#'               col = flea_class, pch = flea_class, size = 2, alpha = .6)
 #' 
-#' if(F){
-#'   render_plotly(slides = sshow, axes = "right", fps = 4, tooltip = "all",
-#'     col = class, pch = class, size = 2,
-#'     html_filename = "myRadialTour.html")
+#' if(F){ ## Don't run, saves a html widget of the animation.
+#'   render_plotly(slides = sshow, axes = "right", fps = 4.5,
+#'                 col = flea_class, pch = flea_class, size = 1.5,
+#'                 html_filename = "myRadialTour.html")
 #' }
 #' }
 render_plotly <- function(fps = 3L,
@@ -303,7 +301,7 @@ render_plotly <- function(fps = 3L,
                           ...) {
   requireNamespace("plotly")
   
-  gg  <- render_(graphics = "plotly", ...)
+  gg  <- render_(...)
   ggp <- plotly::ggplotly(p = gg, tooltip = tooltip)
   ggp <- plotly::animation_opts(p = ggp, 
                                 frame = 1L / fps * 1000L, 
@@ -326,19 +324,18 @@ render_plotly <- function(fps = 3L,
 #' Aesthetic settings that can be applied to a ggplot object.
 #'
 #' A `ggplot2` theme (group of aesthetic settings), that can be added to a ggplot. 
-#'
 #' @export
-#' flea_std   <- tourr::rescale(tourr::flea[, 1:6])
-#' flea_class <- tourr::flea$species
-#' rb <- tourr::basis_random(n = ncol(flea_std))
-#' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- array2df(array = mtour, data = flea_std)
-#' \dontrun{
-#' render_plotly(slides = sshow)
+#' @examples
+#' require(ggplot2)
+#' df <- data.frame(x = rnorm(10), y = rnorm(10))
+#' ggplot(df, aes(x, y)) + geom_point() + theme_spinifex()
 #' 
-#' render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
-#' col = flea_class, pch = flea_class, size = 2, alpha = .6)
-#' }
+#' rb    <- tourr::basis_random(n = 6)
+#' theta <- runif(1, 0, 2*pi)
+#' phi   <- runif(1, 0, 2*pi)
+#' 
+#' oblique_basis(basis = rb, manip_var = 4, theta, phi) + theme_spinifex()
+
 theme_spinifex <- function(){
   ggplot2::theme_minimal() + 
     ggplot2::theme(axis.title = ggplot2::element_blank(),

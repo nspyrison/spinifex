@@ -52,10 +52,10 @@ render_gganimate(slides = sshow)
 render_gganimate(slides = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
   col = flea_class, pch = flea_class, size = 2, alpha = .6)
   
-if(F){
+if(F){ ## Don't run, saves a .gif of the animation.
   render_gganimate(slides = sshow, axes = "right", fps = 4, rewind = TRUE,
     col = flea_class, pch = flea_class, size = 2,
-    gif_filename = "myRadialTour.gif", gif_path = "./docs")
+    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }
 }
 }

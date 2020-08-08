@@ -25,3 +25,22 @@ aesthetics; \code{geom_point(aes(...))}.}
 Takes the result of \code{array2df()} and renders them into a
 \emph{plotly} animation.
 }
+\examples{
+flea_std   <- tourr::rescale(tourr::flea[, 1:6])
+flea_class <- tourr::flea$species
+rb <- tourr::basis_random(n = ncol(flea_std))
+mtour <- manual_tour(basis = rb, manip_var = 4)
+sshow <- array2df(array = mtour, data = flea_std)
+\dontrun{
+render_plotly(slides = sshow)
+
+render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
+              col = flea_class, pch = flea_class, size = 2, alpha = .6)
+
+if(F){ ## Don't run, saves a html widget of the animation.
+  render_plotly(slides = sshow, axes = "right", fps = 4.5,
+                col = flea_class, pch = flea_class, size = 1.5,
+                html_filename = "myRadialTour.html")
+}
+}
+}

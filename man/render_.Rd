@@ -30,9 +30,6 @@ sshow <- array2df(array = mtour, data = flea_std)
 
 render_(slides = sshow)
 
-render_(slides = sshow, axes = "bottomleft", 
-        col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
-        
-render_(slides = sshow, axes = "bottomleft", 
+render_(slides = sshow, axes = "bottomleft", manip_col = "purple",
         col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
 }

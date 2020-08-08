@@ -66,5 +66,20 @@ play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
 play_manual_tour(basis = rb, data = flea_std, manip_var = 6, theta = .5 * pi,
                  render_type = render_gganimate, col = class, pch = class, 
                  axes = "bottomleft", fps = 5)
+
+
+## Exporting may require additonal setup:
+do_run <- FALSE
+if (do_run){
+  ## Export plotly html widget
+  play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
+                   render_type = render_plotly
+                   html_filename = "myRadialTour.html")
+                   
+  ## Export gganimate .gif
+  play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
+                   render_type = render_gganimate
+                   gif_filename = "myRadialTour.gif", gif_path = "./output"_
+}
 }
 }

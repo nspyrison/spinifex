@@ -9,3 +9,14 @@ theme_spinifex()
 \description{
 A \code{ggplot2} theme (group of aesthetic settings), that can be added to a ggplot.
 }
+\examples{
+require(ggplot2)
+df <- data.frame(x = rnorm(10), y = rnorm(10))
+ggplot(df, aes(x, y)) + geom_point() + theme_spinifex()
+
+rb    <- tourr::basis_random(n = 6)
+theta <- runif(1, 0, 2*pi)
+phi   <- runif(1, 0, 2*pi)
+
+oblique_basis(basis = rb, manip_var = 4, theta, phi) + theme_spinifex()
+}

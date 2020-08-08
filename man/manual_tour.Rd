@@ -6,7 +6,7 @@
 of a projection.}
 \usage{
 manual_tour(
-  basis = NULL,
+  basis,
   manip_var,
   theta = NULL,
   phi_min = 0L,

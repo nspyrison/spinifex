@@ -81,7 +81,7 @@ oblique_frame <- function(basis        = NULL,
     message("NULL basis passed. Initializing random basis.")
     basis <- tourr::basis_random(n = ncol(data))
   }
-  if (!is.matrix(data)) data <- as.matrix(data)
+  data <- as.matrix(data)
   
   p <- nrow(basis)
   m_sp <- create_manip_space(basis, manip_var)
@@ -163,7 +163,7 @@ play_tour_path <- function(tour_path,
     message("data passed as NULL with a tourr object containing attached data; rendering the tour_path data.")
     data <- attributes(tour_path)$data
   }
-  if (!is.matrix(data)) data <- as.matrix(data)
+  data <- as.matrix(data)
   if (rescale_data) data <- tourr::rescale(data)
   
   tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
@@ -216,6 +216,21 @@ play_tour_path <- function(tour_path,
 #' play_manual_tour(basis = rb, data = flea_std, manip_var = 6, theta = .5 * pi,
 #'                  render_type = render_gganimate, col = class, pch = class, 
 #'                  axes = "bottomleft", fps = 5)
+#' 
+#' 
+#' ## Exporting may require additonal setup:
+#' do_run <- FALSE
+#' if (do_run){
+#'   ## Export plotly html widget
+#'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
+#'                    render_type = render_plotly
+#'                    html_filename = "myRadialTour.html")
+#'                    
+#'   ## Export gganimate .gif
+#'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
+#'                    render_type = render_gganimate
+#'                    gif_filename = "myRadialTour.gif", gif_path = "./output"_
+#' }
 #' }
 play_manual_tour <- function(basis = NULL,
                              data,
@@ -231,7 +246,7 @@ play_manual_tour <- function(basis = NULL,
     message("NULL basis passed. Initializing random basis.")
     basis <- tourr::basis_random(n = ncol(data))
   }
-  if (!is.matrix(data)) data <- as.matrix(data)
+  data <- as.matrix(data)
   if (rescale_data) data <- tourr::rescale(data)
   
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, ...)
