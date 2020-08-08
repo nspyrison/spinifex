@@ -1,3 +1,10 @@
+# spinifex 0.2.6
+
+- minor code clean-up
+- minor example clean-up
+- minor export fixes
+
+
 # spinifex 0.2.5
 
 ## New utility
