@@ -42,6 +42,6 @@ class <- tourr::flea$species
 play_tour_path(tour_path = tpath, data = flea_std)
 
 play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
-  render_type = render_gganimate, color = class, shape = class, axes = "bottomleft")
+               render_type = render_gganimate, color = class, shape = class, axes = "bottomleft")
 }
 }

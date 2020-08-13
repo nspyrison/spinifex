@@ -253,7 +253,7 @@ render_gganimate <- function(fps = 3L,
   
   if(is.null(gif_filename) == FALSE)
     gganimate::anim_save(gif_filename, anim, gif_path)
-  if(is.null(gif_path)) 
+  if(is.null(gif_path) == FALSE & is.null(gif_filename) == TRUE) 
     warning("gif_path supplied with no gif_filename. Add a gif_filename to save a .gif.")
   
   anim
