@@ -87,37 +87,37 @@ oblique_frame <- function(basis        = NULL,
   m_sp <- create_manip_space(basis, manip_var)
   r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
   
-  basis_slides <- cbind(as.data.frame(r_m_sp), slide = 1L)
-  colnames(basis_slides) <- c("x", "y", "z", "slide")
+  basis_frames <- cbind(as.data.frame(r_m_sp), frame = 1L)
+  colnames(basis_frames) <- c("x", "y", "z", "frame")
   if(!is.null(data)){
     if (rescale_data) {data <- tourr::rescale(data)}
-    data_slides  <- cbind(as.data.frame(data %*% r_m_sp), slide = 1L)
-    data_slides[, 1L] <- scale(data_slides[, 1L], scale = FALSE)
-    data_slides[, 2L] <- scale(data_slides[, 2L], scale = FALSE)
-    colnames(data_slides) <- c("x", "y", "z", "slide")
+    data_frames  <- cbind(as.data.frame(data %*% r_m_sp), frame = 1L)
+    data_frames[, 1L] <- scale(data_frames[, 1L], scale = FALSE)
+    data_frames[, 2L] <- scale(data_frames[, 2L], scale = FALSE)
+    colnames(data_frames) <- c("x", "y", "z", "frame")
   }
   
   ## Add labels, attribute, and list
-  basis_slides$lab <- NULL
+  basis_frames$lab <- NULL
    if(!is.null(lab)) {
-     basis_slides$lab <- rep(lab, p / length(lab))
+     basis_frames$lab <- rep(lab, p / length(lab))
    } else {
      if (!is.null(data)) {
-       basis_slides$lab <- abbreviate(colnames(data), 3L)
+       basis_frames$lab <- abbreviate(colnames(data), 3L)
      } else {
-       basis_slides$lab <- paste0("V", 1L:p)
+       basis_frames$lab <- paste0("V", 1L:p)
      }
    }
   
-  attr(basis_slides, "manip_var") <- manip_var
+  attr(basis_frames, "manip_var") <- manip_var
   
-  slide <- NULL
+  frame <- NULL
   if(!is.null(data)) {
-    slide <- list(basis_slides = basis_slides, data_slides = data_slides)
+    frame <- list(basis_frames = basis_frames, data_frames = data_frames)
   } else 
-    slide <- list(basis_slides = basis_slides)
+    frame <- list(basis_frames = basis_frames)
   
-  gg <- render_(slides = slide, graphics = "ggplot2", ...) +
+  gg <- render_(frames = frame, graphics = "ggplot2", ...) +
     ggplot2::coord_fixed()
   
   gg
@@ -150,7 +150,12 @@ oblique_frame <- function(basis        = NULL,
 #' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
 #' play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
-#'                render_type = render_gganimate, color = class, shape = class, axes = "bottomleft")
+#'                color = class, shape = class, axes = "bottomleft",
+#'                render_type = render_gganimate, 
+#'                gif_path = "myOutput", gif_filename = "myRadialTour.gif")
+#'                
+#' play_tour_path(tour_path = tpath, data = flea_std, axes = "right"
+#'                color = "red", size = 2, html_filename = "myRadialTour.html")
 #' }
 play_tour_path <- function(tour_path,
                            data  = NULL,
@@ -169,11 +174,10 @@ play_tour_path <- function(tour_path,
   tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
   attr(tour_path, "class") <- "array"
   tour_df <- array2df(array = tour_path, data = data)
-  disp <- render_type(slides = tour_df, ...)
+  disp <- render_type(frames = tour_df, ...)
   
   disp
 }
-
 
 
 #' Animate a manual tour
@@ -251,7 +255,7 @@ play_manual_tour <- function(basis = NULL,
   
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, ...)
   tour_df <- array2df(array = tour_hist, data = data)
-  anim <- render_type(slides = tour_df, ...)
+  anim <- render_type(frames = tour_df, ...)
   
   return(anim)
 }

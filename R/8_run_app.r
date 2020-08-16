@@ -6,9 +6,9 @@
 #' @param app_nm name of the shiny app to run. Expects "intro".
 #' @param ... Other arguments passed into `shiny::runApp()`. 
 #' Such as display.mode = "showcase".
-#' @return opens a local shiny app
+#' @return Runs a locally hosted shiny app.
 #' @export
-#' @examples 
+#' @examples
 #' \dontrun{
 #' run_app(app_nm= "intro")
 #' run_app(app_nm= "intro", display.mode = "showcase")

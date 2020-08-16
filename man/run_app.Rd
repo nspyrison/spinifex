@@ -13,7 +13,7 @@ run_app(app_nm = "intro", ...)
 Such as display.mode = "showcase".}
 }
 \value{
-opens a local shiny app
+Runs a locally hosted shiny app.
 }
 \description{
 Runs a local shiny app that demonstrates manual tour and comparable

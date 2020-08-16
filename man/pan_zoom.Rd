@@ -4,26 +4,28 @@
 \alias{pan_zoom}
 \title{Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scaler number.}
 \usage{
-pan_zoom(x, x_offset = 0L, y_offset = 0L, scale = 1L)
+pan_zoom(x, x_pan = 0L, y_pan = 0L, x_zoom = 1L, y_zoom = 1L)
 }
 \arguments{
 \item{x}{Numeric data object with 2 columns (or scaler) to scale and offset.}
 
-\item{x_offset}{Numeric value to pan in the x-direction.}
+\item{x_pan}{Numeric value to offset/pan in the x-direction.}
 
-\item{y_offset}{Numeric value to pan in the x-directionl}
+\item{y_pan}{Numeric value to offset/pan in the y-direction.}
 
-\item{scale}{Numeric value to scale/zoom the size for x.}
+\item{x_zoom}{Numeric value to scale/zoom the size for the 1st column of \code{x}.}
+
+\item{y_zoom}{Numeric value to scale/zoom the size for the 2nd column of \code{x}.}
 }
 \value{
-Scaled and offset \code{x}. A manual variant of set_axes_position().
+Scaled and offset \code{x}. A manual variant of \code{set_axes_position()}.
 }
 \description{
 Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scaler number.
 }
 \examples{
 ib <- tourr::basis_init(6, 2)
-pan_zoom(x = ib, x_offset = -1, y_offset = 0, scale = 2/3)
+pan_zoom(x = ib, x_pan = -1, y_pan = 0, x_zomm = 2/3, y_zoom = 1/2)
 }
 \seealso{
 \code{\link{set_axes_position}} for preset choices.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_render.r
 \name{render_gganimate}
 \alias{render_gganimate}
-\title{Render the slides as a \emph{gganimate} animation.}
+\title{Render the frames as a \emph{gganimate} animation.}
 \usage{
 render_gganimate(
   fps = 3L,
@@ -15,7 +15,7 @@ render_gganimate(
 )
 }
 \arguments{
-\item{fps}{Frames/slides shown per second. Defaults to 3.}
+\item{fps}{Frames/frames shown per second. Defaults to 3.}
 
 \item{rewind}{Logical, should the animation play backwards after reaching
 the end? Default to FALSE.}
@@ -47,13 +47,13 @@ rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 \dontrun{
-render_gganimate(slides = sshow)
+render_gganimate(frames = sshow)
 
-render_gganimate(slides = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
+render_gganimate(frames = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
   col = flea_class, pch = flea_class, size = 2, alpha = .6)
   
 if(F){ ## Don't run, saves a .gif of the animation.
-  render_gganimate(slides = sshow, axes = "right", fps = 4, rewind = TRUE,
+  render_gganimate(frames = sshow, axes = "right", fps = 4, rewind = TRUE,
     col = flea_class, pch = flea_class, size = 2,
     gif_filename = "myRadialTour.gif", gif_path = "./output")
 }

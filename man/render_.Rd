@@ -4,10 +4,10 @@
 \alias{render_}
 \title{Prepate the ggplot object before passing to either animation package.}
 \usage{
-render_(slides, axes = "center", manip_col = "blue", ...)
+render_(frames, axes = "center", manip_col = "blue", ...)
 }
 \arguments{
-\item{slides}{The result of \code{array2df()}, a long df of the projected frames.}
+\item{frames}{The result of \code{array2df()}, a long df of the projected frames.}
 
 \item{axes}{Position of the axes: "center", "bottomleft", "off", "left",
 "right". Defaults to "center".}
@@ -28,8 +28,8 @@ rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 
-render_(slides = sshow)
+render_(frames = sshow)
 
-render_(slides = sshow, axes = "bottomleft", manip_col = "purple",
+render_(frames = sshow, axes = "bottomleft", manip_col = "purple",
         col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
 }

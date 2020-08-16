@@ -345,40 +345,61 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' @param x Numeric data object to scale and offset.
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
 #' to "center".
-#' @return Scaled and offset `x`` typically controling axes placement.
-#' @seealso \code{\link{pan_zoom}} to set the scale and offset.
+#' @param to output range (numeric vector of length two). Min and max that x is 
+#' scaled to.
+#' @return Scaled and offset `x` typically controling axes placement.
+#' @seealso \code{\link{pan_zoom}} for more manual control.
 #' @export
-#' @examples 
+#' @examples
 #' rb <- tourr::basis_random(4, 2)
 #' set_axes_position(x = rb, axes = "bottomleft")
-set_axes_position <- function(x, axes) {
+#' set_axes_position(x = rb, axes = "right", to = mtcars[, 1:2])
+set_axes_position <- function(x, 
+                              axes = c("center", "bottomleft", "topright", "off", "left", "right"), 
+                              to = data.frame(x = c(0, 1), y = c(0, 1))
+) {
+  ## Assumptions
+  if (axes == "off") return()
   if (length(x) == 1L) {x <- data.frame(x = x, y = x)}
   stopifnot(ncol(x) == 2L)
-  stopifnot(axes %in% c("center", "bottomleft", "topright", "off", "left", "right"))
-  if (axes == "off") return()
+  axes <- match.arg(tolower(axes))
+  ## Initialize
+  x_to <- c(min(to[, 1L]), max(to[, 1L]))
+  y_to <- c(min(to[, 2L]), max(to[, 2L]))
+  xdiff   <- diff(x_to)
+  xcenter <- xdiff / 2L
+  ydiff   <- diff(y_to)
+  ycenter <- ydiff / 2L
+  ## Condition handling of axes.
   if (axes == "center") {
-    scale <- 2L / 3L
-    x_off <- y_off <- 0L
+    xscale <- 2L / 3L * xdiff
+    yscale <- 2L / 3L * ydiff
+    xoff  <- xcenter
+    yoff  <- ycenter
   } else if (axes == "bottomleft") {
-    scale <- 1L / 4L
-    x_off <- y_off <- -2L / 3L
+    xscale <- 1L / 4L * xdiff
+    yscale <- 1L / 4L * ydiff
+    xoff <- -2L / 3L * xdiff + xcenter
+    yoff <- -2L / 3L * ydiff + ycenter
   } else if (axes == "topright") {
-    scale <- 1L / 4L
-    x_off <- y_off <- 2L / 3L
+    xscale <- 1L / 4L * xdiff
+    yscale <- 1L / 4L * ydiff
+    xoff <- 2L / 3L * xdiff + xcenter
+    yoff <- 2L / 3L * ydiff + ycenter
   } else if (axes == "left") {
-    scale <- 2L / 3L
-    x_off <- -5L / 3L
-    y_off <- 0L
+    xscale <- 2L / 3L * xdiff
+    yscale <- 2L / 3L * ydiff
+    xoff <- -5L / 3L * xdiff + xcenter
+    yoff <- ycenter
   } else if (axes == "right") {
-    scale <- 2L / 3L
-    x_off <- 5L / 3L
-    y_off <- 0L
+    xscale <- 2L / 3L * xdiff
+    xoff <- 5L / 3L * xdiff + xcenter
+    yoff <- ycenter
   }
-  
-  ret <- scale * x
-  ret[, 1L] <- ret[, 1L] + x_off
-  ret[, 2L] <- ret[, 2L] + y_off
-  return(ret)
+  ## Apply scale and return
+  x[, 1L] <- xscale * x[, 1L] + xoff
+  x[, 2L] <- yscale * x[, 2L] + yoff
+  return(x)
 }
 
 
@@ -386,26 +407,27 @@ set_axes_position <- function(x, axes) {
 #' Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scaler number.
 #' 
 #' @param x Numeric data object with 2 columns (or scaler) to scale and offset.
-#' @param x_offset Numeric value to pan in the x-direction.
-#' @param y_offset Numeric value to pan in the x-directionl
-#' @param scale Numeric value to scale/zoom the size for x.
-#' @return Scaled and offset `x`. A manual variant of set_axes_position().
+#' @param x_pan Numeric value to offset/pan in the x-direction.
+#' @param y_pan Numeric value to offset/pan in the y-direction.
+#' @param x_zoom Numeric value to scale/zoom the size for the 1st column of `x`.
+#' @param y_zoom Numeric value to scale/zoom the size for the 2nd column of `x`.
+#' @return Scaled and offset `x`. A manual variant of `set_axes_position()`.
 #' @seealso \code{\link{set_axes_position}} for preset choices.
 #' @export
 #' @examples 
 #' ib <- tourr::basis_init(6, 2)
-#' pan_zoom(x = ib, x_offset = -1, y_offset = 0, scale = 2/3)
+#' pan_zoom(x = ib, x_pan = -1, y_pan = 0, x_zomm = 2/3, y_zoom = 1/2)
 pan_zoom <- function(x, 
-                     x_offset = 0L, 
-                     y_offset = 0L, 
-                     scale = 1L) {
-  ## assumptions
+                     x_pan = 0L, 
+                     y_pan = 0L, 
+                     x_zoom = 1L,
+                     y_zoom = 1L
+) {
+  ## Assumptions
   if (length(x) == 1L) {x <- data.frame(x = x, y = x)}
   if (ncol(x) != 2L) stop("pan_zoom is only defined for 2 variables.")
-  
-  ret       <- x * scale
-  ret[, 1L] <- ret[, 1L] + x_offset
-  ret[, 2L] <- ret[, 2L] + y_offset
-  
+  ## Apply scale and return
+  ret[, 1L] <- ret[, 1L] * x_zoom + x_offset 
+  ret[, 2L] <- ret[, 2L] * y_zoom + y_offset
   return(ret)
 }

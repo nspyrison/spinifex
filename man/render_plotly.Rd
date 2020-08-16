@@ -2,12 +2,12 @@
 % Please edit documentation in R/2_render.r
 \name{render_plotly}
 \alias{render_plotly}
-\title{Render the slides as a \emph{plotly} animation.}
+\title{Render the frames as a \emph{plotly} animation.}
 \usage{
 render_plotly(fps = 3L, tooltip = "none", html_filename = NULL, ...)
 }
 \arguments{
-\item{fps}{Frames/slides shown per second. Defaults to 3.}
+\item{fps}{Frames/frames shown per second. Defaults to 3.}
 
 \item{tooltip}{Character vector of aesthetic mappings to show in the \code{plotly}
 hover-over tooltip. Defaults to "none". "all" shows all the
@@ -32,13 +32,13 @@ rb <- tourr::basis_random(n = ncol(flea_std))
 mtour <- manual_tour(basis = rb, manip_var = 4)
 sshow <- array2df(array = mtour, data = flea_std)
 \dontrun{
-render_plotly(slides = sshow)
+render_plotly(frames = sshow)
 
-render_plotly(slides = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
+render_plotly(frames = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
               col = flea_class, pch = flea_class, size = 2, alpha = .6)
 
 if(F){ ## Don't run, saves a html widget of the animation.
-  render_plotly(slides = sshow, axes = "right", fps = 4.5,
+  render_plotly(frames = sshow, axes = "right", fps = 4.5,
                 col = flea_class, pch = flea_class, size = 1.5,
                 html_filename = "myRadialTour.html")
 }

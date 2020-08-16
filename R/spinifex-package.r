@@ -33,7 +33,7 @@ globalVariables(c("col",
                   "phi_max",
                   "manip_col",
                   "manip_type",
-                  "n_slides",
+                  "n_frames",
                   "theta",
                   "angle")
 )
@@ -45,5 +45,5 @@ globalVariables(c("x",
                   "xend",
                   "yend",
                   "lab",
-                  "slide")
+                  "frame")
 )

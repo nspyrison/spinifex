@@ -7,7 +7,7 @@
 array2df(array, data = NULL, lab = NULL)
 }
 \arguments{
-\item{array}{A (p, d, n_slides) array of a tour, the output of
+\item{array}{A (p, d, n_frames) array of a tour, the output of
 \code{manual_tour()}.}
 
 \item{data}{Optional, (n, p) dataset to project, consisting of numeric
@@ -17,8 +17,8 @@ variables.}
 number of variables used. Defaults to an abbreviation of the variables.}
 }
 \value{
-A list containing an array of basis slides (p, d, n_slides) and
-an array of data slides (n, d, n_slides) if data is present.
+A list containing an array of basis frames (p, d, n_frames) and
+an array of data frames (n, d, n_frames) if data is present.
 }
 \description{
 Typically called by a wrapper function, \code{play_manual_tour} or
