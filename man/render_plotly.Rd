@@ -29,16 +29,16 @@ Takes the result of \code{array2df()} and renders them into a
 flea_std   <- tourr::rescale(tourr::flea[, 1:6])
 flea_class <- tourr::flea$species
 rb <- tourr::basis_random(n = ncol(flea_std))
-mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- array2df(array = mtour, data = flea_std)
+array_frames <- manual_tour(basis = rb, manip_var = 4)
+df_frames <- array2df(array = array_frames, data = flea_std)
 \dontrun{
-render_plotly(frames = sshow)
+render_plotly(frames = df_frames)
 
-render_plotly(frames = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
+render_plotly(frames = df_frames, axes = "bottomleft", fps = 2, tooltip = "all",
               col = flea_class, pch = flea_class, size = 2, alpha = .6)
 
-if(F){ ## Don't run, saves a html widget of the animation.
-  render_plotly(frames = sshow, axes = "right", fps = 4.5,
+if(F){ ## Saving .html may require additional setup
+  render_plotly(frames = df_frames, axes = "right", fps = 4.5,
                 col = flea_class, pch = flea_class, size = 1.5,
                 html_filename = "myRadialTour.html")
 }

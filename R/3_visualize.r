@@ -149,13 +149,18 @@ oblique_frame <- function(basis        = NULL,
 #' \dontrun{
 #' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
-#' play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
-#'                color = class, shape = class, axes = "bottomleft",
-#'                render_type = render_gganimate, 
-#'                gif_path = "myOutput", gif_filename = "myRadialTour.gif")
+
+#' if (F){ ## Saving output may require additional setup
+#'   ## Export plotly html widget
+#'   play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
+#'                  color = class, shape = class, axes = "bottomleft",
+#'                  render_type = render_gganimate, 
+#'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 #'                
-#' play_tour_path(tour_path = tpath, data = flea_std, axes = "right"
-#'                color = "red", size = 2, html_filename = "myRadialTour.html")
+#'   ## Export gganimate .gif
+#'   play_tour_path(tour_path = tpath, data = flea_std, axes = "right"
+#'                  color = "red", size = 2, html_filename = "myRadialTour.html")
+#' }
 #' }
 play_tour_path <- function(tour_path,
                            data  = NULL,
@@ -221,19 +226,16 @@ play_tour_path <- function(tour_path,
 #'                  render_type = render_gganimate, col = class, pch = class, 
 #'                  axes = "bottomleft", fps = 5)
 #' 
-#' 
-#' ## Exporting may require additonal setup:
-#' do_run <- FALSE
-#' if (do_run){
+#' if (F){ ## Saving output may require additional setup
 #'   ## Export plotly html widget
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
 #'                    render_type = render_plotly
 #'                    html_filename = "myRadialTour.html")
-#'                    
+#'   
 #'   ## Export gganimate .gif
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
 #'                    render_type = render_gganimate
-#'                    gif_filename = "myRadialTour.gif", gif_path = "./output"_
+#'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
 #' }
 play_manual_tour <- function(basis = NULL,

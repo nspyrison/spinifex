@@ -30,6 +30,6 @@ for use in ggplots.
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
 
 rb <- tourr::basis_random(n = ncol(flea_std))
-mtour <- manual_tour(basis = rb, manip_var = 4)
-array2df(array = mtour, data = flea_std)
+array_frames <- manual_tour(basis = rb, manip_var = 4)
+array2df(array = array_frames, data = flea_std)
 }

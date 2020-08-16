@@ -18,8 +18,8 @@
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
-#' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' array2df(array = mtour, data = flea_std)
+#' array_frames <- manual_tour(basis = rb, manip_var = 4)
+#' array2df(array = array_frames, data = flea_std)
 array2df <- function(array, 
                      data = NULL,
                      lab = NULL) {
@@ -87,12 +87,12 @@ array2df <- function(array,
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
-#' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- array2df(array = mtour, data = flea_std)
+#' array_frames <- manual_tour(basis = rb, manip_var = 4)
+#' df_frames <- array2df(array = array_frames, data = flea_std)
 #' 
-#' render_(frames = sshow)
+#' render_(frames = df_frames)
 #' 
-#' render_(frames = sshow, axes = "bottomleft", manip_col = "purple",
+#' render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
 #'         col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
 render_ <- function(frames,
                     axes = "center",
@@ -106,10 +106,12 @@ render_ <- function(frames,
   n_frames     <- length(unique(basis_frames$frame))
   p            <- nrow(basis_frames) / n_frames
   d            <- 2L ## Hardcoded assumtion for 2D display
-  ## If data exsists
+  ## If data exists
   data_frames  <- NULL
+  axes_to <- data.frame(x = c(0, 1), y = c(0, 1))
   if (length(frames) == 2L) {
     data_frames <- data.frame(frames[["data_frames"]])
+    axes_to <- data_frames
     ##### Bare with me here,:
     args    <- list(...) ## Empty list behaves well too.
     tgt_len <- nrow(data_frames)
@@ -132,8 +134,8 @@ render_ <- function(frames,
   circ          <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes/circle
   if (axes != "off"){
-    zero         <- set_axes_position(0L, axes)
-    circ         <- set_axes_position(circ, axes)
+    center       <- set_axes_position(0L, axes, to = data_frames)
+    circ         <- set_axes_position(circ, axes, to = data_frames)
     basis_frames <- data.frame(set_axes_position(basis_frames[, 1L:d], axes), 
                                basis_frames[, (d + 1L):ncol(basis_frames)])
   }
@@ -178,7 +180,7 @@ render_ <- function(frames,
         ggplot2::geom_segment( 
           data = basis_frames, size = axes_siz, colour = axes_col,
           mapping = ggplot2::aes(x = x, y = y, frame = frame,
-                                 xend = zero[, 1L], yend = zero[, 2L])
+                                 xend = center[, 1L], yend = center[, 2L])
         )
       ) +
       ## Basis axes text labels
@@ -219,16 +221,16 @@ render_ <- function(frames,
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' flea_class <- tourr::flea$species
 #' rb <- tourr::basis_random(n = ncol(flea_std))
-#' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- array2df(array = mtour, data = flea_std)
+#' array_frames <- manual_tour(basis = rb, manip_var = 4)
+#' df_frames <- array2df(array = array_frames, data = flea_std)
 #' \dontrun{
-#' render_gganimate(frames = sshow)
+#' render_gganimate(frames = df_frames)
 #' 
-#' render_gganimate(frames = sshow, axes = "bottomleft", fps = 2, rewind = TRUE,
+#' render_gganimate(frames = df_frames, axes = "bottomleft", fps = 2, rewind = TRUE,
 #'   col = flea_class, pch = flea_class, size = 2, alpha = .6)
 #'   
-#' if(F){ ## Don't run, saves a .gif of the animation.
-#'   render_gganimate(frames = sshow, axes = "right", fps = 4, rewind = TRUE,
+#' if(F){ ## Saving .gif may require additional setup
+#'   render_gganimate(frames = df_frames, axes = "right", fps = 4, rewind = TRUE,
 #'     col = flea_class, pch = flea_class, size = 2,
 #'     gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
@@ -281,16 +283,16 @@ render_gganimate <- function(fps = 3L,
 #' flea_std   <- tourr::rescale(tourr::flea[, 1:6])
 #' flea_class <- tourr::flea$species
 #' rb <- tourr::basis_random(n = ncol(flea_std))
-#' mtour <- manual_tour(basis = rb, manip_var = 4)
-#' sshow <- array2df(array = mtour, data = flea_std)
+#' array_frames <- manual_tour(basis = rb, manip_var = 4)
+#' df_frames <- array2df(array = array_frames, data = flea_std)
 #' \dontrun{
-#' render_plotly(frames = sshow)
+#' render_plotly(frames = df_frames)
 #' 
-#' render_plotly(frames = sshow, axes = "bottomleft", fps = 2, tooltip = "all",
+#' render_plotly(frames = df_frames, axes = "bottomleft", fps = 2, tooltip = "all",
 #'               col = flea_class, pch = flea_class, size = 2, alpha = .6)
 #' 
-#' if(F){ ## Don't run, saves a html widget of the animation.
-#'   render_plotly(frames = sshow, axes = "right", fps = 4.5,
+#' if(F){ ## Saving .html may require additional setup
+#'   render_plotly(frames = df_frames, axes = "right", fps = 4.5,
 #'                 col = flea_class, pch = flea_class, size = 1.5,
 #'                 html_filename = "myRadialTour.html")
 #' }

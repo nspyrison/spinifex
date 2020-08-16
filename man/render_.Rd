@@ -25,11 +25,11 @@ result of \code{array2df()}, and renders them into a ggplot2 object.
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
-mtour <- manual_tour(basis = rb, manip_var = 4)
-sshow <- array2df(array = mtour, data = flea_std)
+array_frames <- manual_tour(basis = rb, manip_var = 4)
+df_frames <- array2df(array = array_frames, data = flea_std)
 
-render_(frames = sshow)
+render_(frames = df_frames)
 
-render_(frames = sshow, axes = "bottomleft", manip_col = "purple",
+render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
         col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
 }

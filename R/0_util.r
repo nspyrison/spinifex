@@ -37,7 +37,7 @@ view_basis <- function(basis,
   p     <- nrow(basis)
   basis <- as.data.frame(basis) ## for plotting
   colnames(basis) <- c("x", "y")
-  
+  ## basis text label conditional handling
   .lab <- NULL
   if(is.null(lab) == FALSE){
     .lab <- rep(lab, p / length(lab))
@@ -47,25 +47,36 @@ view_basis <- function(basis,
       .lab <- paste0("V", 1L:p)
     }
   }
-  
-  ## Ploting
+  ## Ploting initialization
   gg <- 
     ggplot2::ggplot() +
     ggplot2::scale_color_brewer(palette = "Dark2") +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "none") +
-    ggplot2::coord_fixed() ## Do not use with plotly!
-  
+    ggplot2::coord_fixed()
+  ## Project data if present
+  axes_to <- data.frame(x = c(0, 1), y = c(0, 1))
+  if (is.null(data) == FALSE) {
+    proj <- as.data.frame(
+      tourr::rescale(as.matrix(data) %*% as.matrix(basis)) - .5)
+    colnames(proj) <- c("x", "y")
+    axes_to <- proj
+    ## Project data and plot
+    gg <- gg + 
+      ggplot2::scale_shape_identity() + ## Allows numeric pch for scale.
+      ggplot2::geom_point(data = proj,
+                          mapping = ggplot2::aes(x = x, y = y, ...),
+      )
+  }
   ## Add axes if needed
-  if(axes != "off") 
-  {
-    ## Init
+  if(axes != "off") {
+    ## Initialize
     angle <- seq(0L, 2L * pi, length = 360L)
     circ <- data.frame(x = cos(angle), y = sin(angle))
-    zero <- set_axes_position(0L, axes)
-    disp_basis <- set_axes_position(basis, axes)
-    circ <- set_axes_position(circ, axes)
-    
+    center <- set_axes_position(0L, axes, to = axes_to)
+    circ <- set_axes_position(circ, axes, axes_to)
+    disp_basis <- set_axes_position(basis, axes, axes_to)
+    ## Append
     gg <- gg +
       ## Axes unit cirle path
       ggplot2::geom_path(
@@ -75,28 +86,14 @@ view_basis <- function(basis,
       ## Basis axes line segments
       ggplot2::geom_segment(
         data = disp_basis, 
-        mapping = ggplot2::aes(x = x, y = y, xend = zero[, 1L], yend = zero[, 2L])) +
+        mapping = ggplot2::aes(x = x, y = y, xend = center[, 1L], yend = center[, 2L])) +
       ## Basis variable text labels
       ggplot2::geom_text(
         data = disp_basis, 
         mapping = ggplot2::aes(x = x, y = y), label = .lab,
         size = 4L, hjust = 0L, vjust = 0L, color = "black")
   }
-  
-  ## Then project data if present
-  if (is.null(data) == FALSE) {
-    proj <- as.data.frame(
-      tourr::rescale(as.matrix(data) %*% as.matrix(basis)) - .5)
-    colnames(proj) <- c("x", "y")
-    
-    ## Project data and plot
-    gg <- gg + 
-      ggplot2::scale_shape_identity() + ## to allow numeric pch for scale.
-      ggplot2::geom_point(data = proj,
-                          mapping = ggplot2::aes(x = x, y = y, ...),
-      )
-  }
-  
+  ## Return
   return(gg)
 }
 
@@ -362,7 +359,8 @@ set_axes_position <- function(x,
   if (axes == "off") return()
   if (length(x) == 1L) {x <- data.frame(x = x, y = x)}
   stopifnot(ncol(x) == 2L)
-  axes <- match.arg(tolower(axes))
+  axes <- match.arg(tolower(axes), several.ok = FALSE,
+                    choices = c("center", "bottomleft", "topright", "off", "left", "right"))
   ## Initialize
   x_to <- c(min(to[, 1L]), max(to[, 1L]))
   y_to <- c(min(to[, 2L]), max(to[, 2L]))

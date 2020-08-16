@@ -41,12 +41,16 @@ class <- tourr::flea$species
 \dontrun{
 play_tour_path(tour_path = tpath, data = flea_std)
 
-play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
-               color = class, shape = class, axes = "bottomleft",
-               render_type = render_gganimate, 
-               gif_path = "myOutput", gif_filename = "myRadialTour.gif")
+if (F){ ## Saving output may require additional setup
+  ## Export plotly html widget
+  play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
+                 color = class, shape = class, axes = "bottomleft",
+                 render_type = render_gganimate, 
+                 gif_path = "myOutput", gif_filename = "myRadialTour.gif")
                
-play_tour_path(tour_path = tpath, data = flea_std, axes = "right"
-               color = "red", size = 2, html_filename = "myRadialTour.html")
+  ## Export gganimate .gif
+  play_tour_path(tour_path = tpath, data = flea_std, axes = "right"
+                 color = "red", size = 2, html_filename = "myRadialTour.html")
+}
 }
 }
