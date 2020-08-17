@@ -1,6 +1,7 @@
 ---
 title: "spinifex"
 author: "Nicholas Spyrison"
+date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette
 vignette: >
