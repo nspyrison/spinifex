@@ -1,0 +1,22 @@
+url: https://nspyrison.netlify.app/
+
+template:
+  params:
+    bootswatch: cerulean
+    docsearch: 
+      index_name:  spinifex
+
+home:
+  links:
+    - text: GitHub repository
+      href: https://github.com/nspyrison/spinifex
+
+navbar:
+  left:
+  - text: News
+    href: news/index.html
+  - text: vignette
+    href: articles/spinifex.html
+    
+
+destination: docs
