@@ -17,6 +17,6 @@ navbar:
     href: news/index.html
   - text: vignette
     href: articles/spinifex.html
-    
+
 
 destination: docs
