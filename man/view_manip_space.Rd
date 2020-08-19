@@ -10,7 +10,8 @@ view_manip_space(
   tilt = 1/12 * pi,
   lab = paste0("V", 1:nrow(basis)),
   manip_col = "blue",
-  z_col = "red"
+  z_col = "red",
+  ggtheme = theme_spinifex()
 )
 }
 \arguments{

@@ -15,8 +15,8 @@ df <- data.frame(x = rnorm(10), y = rnorm(10))
 ggplot(df, aes(x, y)) + geom_point() + theme_spinifex()
 
 rb    <- tourr::basis_random(n = 6)
-theta <- runif(1, 0, 2*pi)
-phi   <- runif(1, 0, 2*pi)
+theta <- runif(1, 0, 2 * pi)
+phi   <- runif(1, 0, 2L *pi)
 
 oblique_basis(basis = rb, manip_var = 4, theta, phi) + theme_spinifex()
 }

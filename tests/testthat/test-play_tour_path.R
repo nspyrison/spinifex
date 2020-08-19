@@ -9,12 +9,15 @@ test_that("plotly class and length", {
   expect_is(ret, "plotly")
   expect_is(ret, "htmlwidget")
   expect_equal(length(ret), 9)
+  expect_type(ret, "list")
 })
 
 ret <- play_tour_path(tour_path = tpath, data = flea_std, 
                       render_type = render_gganimate)
 
 test_that("gganimate type", {
+  expect_is(ret, "gif_image")
+  expect_equal(length(ret), 1)
   expect_type(ret, "character")
 })
 
@@ -26,4 +29,5 @@ test_that("col, pch, lab, axes args returns plotly object", {
   expect_is(ret, "plotly")
   expect_is(ret, "htmlwidget")
   expect_equal(length(ret), 9)
+  expect_type(ret, "list")
 })

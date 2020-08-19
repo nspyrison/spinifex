@@ -28,7 +28,7 @@ array2df <- function(array,
   p <- nrow(array[,, 1L])
   n_frames <- dim(array)[3L]
   
-  ## basis; array to long df
+  ## Basis condition handling
   basis_frames <- NULL
   for (frame in 1:n_frames) {
     basis_rows <- data.frame(cbind(array[,, frame], frame))
@@ -49,7 +49,7 @@ array2df <- function(array,
     colnames(data_frames) <- c("x", "y", "frame")
   }
   
-  ## Add labels, attribute, and list
+  ## Labels and  attribute condition handling
   basis_frames$lab <- NULL
   if(!is.null(lab)){
     basis_frames$lab <- rep(lab, nrow(basis_frames) / length(lab))
@@ -59,13 +59,14 @@ array2df <- function(array,
       basis_frames$lab <- paste0("V", 1L:p)
     }
   }
-  
   attr(basis_frames, "manip_var") <- manip_var
   
+  ## Frame condition handling
   frames <- if(!is.null(data)) {
     list(basis_frames = basis_frames, data_frames = data_frames)
   } else list(basis_frames = basis_frames)
   
+  ## Return
   frames
 }
 
@@ -77,10 +78,12 @@ array2df <- function(array,
 #' result of `array2df()`, and renders them into a ggplot2 object. 
 #'
 #' @param frames The result of `array2df()`, a long df of the projected frames.
-#' @param manip_col String of the color to highlight the `manip_var` with.
-#' Defaults to "blue".
 #' @param axes Position of the axes: "center", "bottomleft", "off", "left", 
 #' "right". Defaults to "center".
+#' @param manip_col String of the color to highlight the `manip_var` with.
+#' Defaults to "blue".
+#' @param ggtheme Intended for passing theme and legend settings to ggplot2.
+#' Alternatively accepts a list of gg functions.
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
 #' @export
@@ -97,6 +100,7 @@ array2df <- function(array,
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
+                    ggtheme = theme_spinifex(),
                     ...) {
   if(axes == "off" & length(frames) == 1) stop("render_ called with no data and axes = 'off'")
   
@@ -107,8 +111,8 @@ render_ <- function(frames,
   p            <- nrow(basis_frames) / n_frames
   d            <- 2L ## Hardcoded assumtion for 2D display
   ## If data exists
-  data_frames  <- NULL
-  axes_to <- data.frame(x = c(0, 1), y = c(0, 1))
+  data_frames <- NULL
+  axes_to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))
   if (length(frames) == 2L) {
     data_frames <- data.frame(frames[["data_frames"]])
     axes_to <- data_frames
@@ -160,7 +164,8 @@ render_ <- function(frames,
   gg <- 
     ggplot2::ggplot() +
     ggplot2::xlim(x_min, x_max) +
-    ggplot2::ylim(y_min, y_max)
+    ggplot2::ylim(y_min, y_max) +
+    ggtheme
     
   ## Project data points, if data exsists 
   if (!is.null(data_frames)) {
@@ -202,13 +207,15 @@ render_ <- function(frames,
 #' Takes the result of `array2df()` and renders them into a 
 #' *gganimate* animation.
 #'
-#' @param fps Frames/frames shown per second. Defaults to 3.
+#' @param fps Frames animated per second. Defaults to 30.
+#' @param ggtheme Intended for passing theme and legend settings to ggplot2.
+#' Alternatively accepts a list of gg functions.
 #' @param rewind Logical, should the animation play backwards after reaching 
 #' the end? Default to FALSE.
 #' @param start_pause Number of seconds to pause on the first frame for.
 #' Defaults to 1.
 #' @param end_pause Number of seconds to pause on the last frame for.
-#' Defaults to 3.
+#' Defaults to 2.
 #' @param gif_filename Optional, saves the animation as a GIF to this string 
 #' (without folderpath) . Defaults to NULL (no GIF saved). For more control call 
 #' `gganimate::anim_save()` on a return object of `render_gganimate()`.
@@ -226,38 +233,37 @@ render_ <- function(frames,
 #' \dontrun{
 #' render_gganimate(frames = df_frames)
 #' 
-#' render_gganimate(frames = df_frames, axes = "bottomleft", fps = 2, rewind = TRUE,
+#' render_gganimate(frames = df_frames, axes = "bottomleft", fps = 15, rewind = TRUE,
 #'   col = flea_class, pch = flea_class, size = 2, alpha = .6)
 #'   
 #' if(F){ ## Saving .gif may require additional setup
-#'   render_gganimate(frames = df_frames, axes = "right", fps = 4, rewind = TRUE,
+#'   render_gganimate(frames = df_frames, axes = "right", fps = 40, rewind = TRUE,
 #'     col = flea_class, pch = flea_class, size = 2,
 #'     gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
 #' }
-render_gganimate <- function(fps = 3L,
+render_gganimate <- function(fps = 30L,
+                             ggtheme = theme_spinifex(),
                              rewind = FALSE,
                              start_pause = 1L,
-                             end_pause = 3L,
+                             end_pause = 2L,
                              gif_filename = NULL,
                              gif_path = NULL,
                              ...) {
   requireNamespace("gganimate")
-  
-  gg  <- render_(...) + ggplot2::coord_fixed()
-  gga <- gg + gganimate::transition_states(frame, 
-                                           transition_length = 0L)
+  ## Render and animate
+  gg  <- render_(ggtheme = ggtheme, ...) # + ggplot2::coord_fixed()
+  gga <- gg + gganimate::transition_states(frame, transition_length = 0L)
   anim <- gganimate::animate(gga, 
                              fps = fps,
                              rewind = rewind,
                              start_pause = fps * start_pause,
                              end_pause = fps * end_pause)
-  
+  ## Save condition handling
   if(is.null(gif_filename) == FALSE)
     gganimate::anim_save(gif_filename, anim, gif_path)
   if(is.null(gif_path) == FALSE & is.null(gif_filename) == TRUE) 
     warning("gif_path supplied with no gif_filename. Add a gif_filename to save a .gif.")
-  
   anim
 }
 
@@ -268,7 +274,9 @@ render_gganimate <- function(fps = 3L,
 #' Takes the result of `array2df()` and renders them into a 
 #' *plotly* animation.
 #'
-#' @param fps Frames/frames shown per second. Defaults to 3.
+#' @param fps Frames animated per second. Defaults to 30.
+#' @param ggtheme Intended for passing theme and legend settings to ggplot2.
+#' Alternatively accepts a list of gg functions.
 #' @param tooltip Character vector of aesthetic mappings to show in the `plotly`
 #' hover-over tooltip. Defaults to "none". "all" shows all the 
 #' aesthetic mappings. The order of variables controls the order they appear. 
@@ -288,22 +296,23 @@ render_gganimate <- function(fps = 3L,
 #' \dontrun{
 #' render_plotly(frames = df_frames)
 #' 
-#' render_plotly(frames = df_frames, axes = "bottomleft", fps = 2, tooltip = "all",
+#' render_plotly(frames = df_frames, axes = "bottomleft", fps = 20, tooltip = "all",
 #'               col = flea_class, pch = flea_class, size = 2, alpha = .6)
 #' 
 #' if(F){ ## Saving .html may require additional setup
-#'   render_plotly(frames = df_frames, axes = "right", fps = 4.5,
+#'   render_plotly(frames = df_frames, axes = "right", fps = 45,
 #'                 col = flea_class, pch = flea_class, size = 1.5,
 #'                 html_filename = "myRadialTour.html")
 #' }
 #' }
-render_plotly <- function(fps = 3L,
+render_plotly <- function(fps = 30L,
+                          ggtheme = theme_spinifex(),
                           tooltip = "none",
                           html_filename = NULL,
                           ...) {
   requireNamespace("plotly")
-  
-  gg  <- render_(...)
+  ## Render
+  gg  <- render_(ggtheme = ggtheme, ...)
   ggp <- plotly::ggplotly(p = gg, tooltip = tooltip)
   ggp <- plotly::animation_opts(p = ggp, 
                                 frame = 1L / fps * 1000L, 
@@ -314,13 +323,12 @@ render_plotly <- function(fps = 3L,
                         xaxis = list(scaleanchor = "y", scaleratio = 1L,
                                      showgrid = FALSE, showline = FALSE)
   )
-  
+  ## Save condition handling
   if (is.null(html_filename) == FALSE)
     htmlwidgets::saveWidget(ggp, html_filename)
-  
+  ## Return
   ggp
 }
-
 
 
 #' Aesthetic settings that can be applied to a ggplot object.
@@ -333,11 +341,10 @@ render_plotly <- function(fps = 3L,
 #' ggplot(df, aes(x, y)) + geom_point() + theme_spinifex()
 #' 
 #' rb    <- tourr::basis_random(n = 6)
-#' theta <- runif(1, 0, 2*pi)
-#' phi   <- runif(1, 0, 2*pi)
+#' theta <- runif(1, 0, 2 * pi)
+#' phi   <- runif(1, 0, 2L *pi)
 #' 
 #' oblique_basis(basis = rb, manip_var = 4, theta, phi) + theme_spinifex()
-
 theme_spinifex <- function(){
   ggplot2::theme_minimal() + 
     ggplot2::theme(axis.title = ggplot2::element_blank(),

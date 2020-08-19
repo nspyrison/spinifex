@@ -25,13 +25,13 @@ Required, no default.}
 (p, 2) matrix of the rotated basis.
 }
 \description{
-Rotates a basis returning (p, 2) basis describing \code{oblique_frame()}
+Rotates a basis returning (p, 2) basis describing \code{oblique_frame()}.
 Used to create an oblique tour by small changes to the rotation.
 }
 \examples{
 rb    <- tourr::basis_random(n = 6)
-theta <- runif(1, 0, 2*pi)
-phi   <- runif(1, 0, 2*pi)
+theta <- runif(1, 0, 2 * pi)
+phi   <- runif(1, 0, 2L *pi)
 
 oblique_basis(basis = rb, manip_var = 4, theta, phi)
 }

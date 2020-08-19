@@ -5,9 +5,10 @@
 \title{Render display of a provided tour path}
 \usage{
 play_tour_path(
-  tour_path,
+  tour_path = NULL,
   data = NULL,
-  angle = 0.15,
+  angle = 0.05,
+  ggtheme = theme_spinifex(),
   render_type = render_plotly,
   rescale_data = FALSE,
   ...
@@ -18,7 +19,7 @@ play_tour_path(
 
 \item{data}{Optional, number of columns must match that of \code{tour_path}.}
 
-\item{angle}{Target distance (in radians) between steps. Defaults to .15.}
+\item{angle}{Target distance (in radians) between steps. Defaults to .05.}
 
 \item{render_type}{Graphics to render to. Defaults to render_plotly,
 alternative use render_gganimate.}
@@ -43,7 +44,7 @@ play_tour_path(tour_path = tpath, data = flea_std)
 
 if (F){ ## Saving output may require additional setup
   ## Export plotly html widget
-  play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
+  play_tour_path(tour_path = tpath, data = flea_std, angle = .08, fps = 40,
                  color = class, shape = class, axes = "bottomleft",
                  render_type = render_gganimate, 
                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")

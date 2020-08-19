@@ -13,16 +13,23 @@
 #' @import tourr
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' create_manip_space(basis = rb, manip_var = 4)
 create_manip_space <- function(basis, manip_var) {
-  basis <-  as.matrix(basis)
+  ## Assumptions
+  basis <- as.matrix(basis)
+  stopifnot(spinifex::is_orthonormal(basis))
+  if(ncol(basis) >= 3){
+    warning(paste0("Basis of d = ", ncol(basis), 
+                   " used. Spinifex is only implemented for d = 2 at the momment. The basis as been truncated to 2 dimensions."))
+    basis <- basis[, 1L:2L]
+  }
+  ## Add manip variable and orthonormalize
   manip_space <- cbind(basis, rep(0L, len = nrow(basis)))
-  manip_space[manip_var, 3L] <- 1L
+  manip_space[manip_var, ncol(manip_space)] <- 1L
   manip_space <- tourr::orthonormalise(manip_space)
-
   ## Check
   stopifnot(spinifex::is_orthonormal(manip_space))
   manip_space
@@ -48,13 +55,15 @@ create_manip_space <- function(basis, manip_var) {
 #' extends "in the z-direction" orthogonal to the projection plane.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' rb  <- tourr::basis_random(n = ncol(flea_std))
 #' msp <- create_manip_space(basis = rb, manip_var = 4)
 #' 
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi), 
 #'                    phi = runif(1, max = 2 * pi) )
 rotate_manip_space <- function(manip_space, theta, phi) {
+  stopifnot(spinifex::is_orthonormal(manip_space))
+  ## Initalize
   s_theta <- sin(theta)
   c_theta <- cos(theta)
   s_phi   <- sin(phi)
@@ -78,6 +87,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
   colnames(rotated_space) <- paste0("proj_", 1L:ncol(rotated_space))
   rownames(rotated_space) <- paste0("V", 1L:nrow(rotated_space))
   
+  ## Return 
   rotated_space
 }
 
@@ -125,32 +135,33 @@ manual_tour <- function(basis,
                         phi_max = .5 * pi,
                         angle   = .05,
                         ...) {
+  ## Initalize
   basis <- as.matrix(basis)
   xArgs <- list(...) ## Terminate args meant for `render_()` also passed in `play_manual_tour()`.
-  
   .theta <- theta
-  if (is.null(.theta)) {
+  if (is.null(.theta))
     .theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
-  }
   phi_start <- acos(sqrt(basis[manip_var, 1L]^2L + basis[manip_var, 2L]^2L))
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)
   
   ## Find the values of phi for each 'leg' (direction of motion)
-  phi_segment  <- function(start, end) {
+  phi_segment  <- function(start, end){
+    ## Initalize
     mvar_xsign <- -sign(basis[manip_var, 1L])
     start      <- mvar_xsign * (start - phi_start)
     end        <- mvar_xsign * (end   - phi_start)
     dist       <- abs(end - start)
     remainder  <- dist %% angle
     sign       <- ifelse(end > start, 1L, -1L)
-    
+    ## Define segments
     segment <- seq(from = start, to = end - remainder, by = sign * angle)
-    ## If Add remaining partial step less than a full step to the end
-    if (remainder != 0L) segment <- c(segment, end) 
-    
+    ## Add remaining partial step to the end if needed.
+    if (remainder != 0L) segment <- c(segment, end)
+    ## Return
     segment
   }
   
+  ## Find the phi values for the animation frames
   phi_path <- c(phi_segment(start = phi_start, end = phi_min),
                 phi_segment(start = phi_min,   end = phi_max),
                 phi_segment(start = phi_max,   end = phi_start))
@@ -159,17 +170,17 @@ manual_tour <- function(basis,
   n_frames <- length(phi_path)
   i_s  <- 1L:n_frames
   p    <- nrow(basis)
-  d    <- ncol(basis)
+  d    <- 2L #ncol(basis) ## d fixed to 2 atm.
   m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
   basis_set <- array(NA, dim = c(p, d, n_frames))
-  for (i in i_s) {
-    thisProj <- 
+  for(i in i_s){
+    thisProj <-
       rotate_manip_space(manip_space = m_sp, theta = .theta, phi = phi_path[i])
-    basis_set[,, i] <- thisProj[, 1L:d]
+    basis_set[,, i] <- thisProj[, 1L:2L]
   }
-  
   attr(basis_set, "manip_var") <- manip_var
   
+  ## Return
   basis_set
 }
 

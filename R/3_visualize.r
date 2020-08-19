@@ -1,9 +1,9 @@
 #' Return the basis of an oblique frame
 #'
-#' Rotates a basis returning (p, 2) basis describing `oblique_frame()` 
+#' Rotates a basis returning (p, 2) basis describing `oblique_frame()`.
 #' Used to create an oblique tour by small changes to the rotation.
 #' 
-#' @param basis A (p, d) orthonormal numeric matrix. 
+#' @param basis A (p, d) orthonormal numeric matrix.
 #' The linear combination the original variables contribute to projection space.
 #' Defaults to NULL, generating a random basis.
 #' @param manip_var Number of the column/dimension to rotate.
@@ -18,21 +18,17 @@
 #' @export
 #' @examples
 #' rb    <- tourr::basis_random(n = 6)
-#' theta <- runif(1, 0, 2*pi)
-#' phi   <- runif(1, 0, 2*pi)
+#' theta <- runif(1, 0, 2 * pi)
+#' phi   <- runif(1, 0, 2L *pi)
 #' 
 #' oblique_basis(basis = rb, manip_var = 4, theta, phi)
 oblique_basis <- function(basis = NULL,
                           manip_var,
                           theta = NULL,
                           phi   = NULL) {
-  
   m_sp <- create_manip_space(basis, manip_var)
-  ret  <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1L:2L]
-  
-  ret
+  rotate_manip_space(manip_space = m_sp, theta, phi)
 }
-
 
 
 #' Plot a single frame of a manual tour
@@ -41,7 +37,7 @@ oblique_basis <- function(basis = NULL,
 #' manual tour. Useful for providing user-guided interaction.
 #' 
 #' @param data A  (n, p) dataset to project, consisting of numeric variables.
-#' @param basis A (p, d) dim orthonormal numeric matrix. 
+#' @param basis A (p, d) dim orthonormal numeric matrix.
 #' Defaults to NULL, giving a random basis.
 #' @param manip_var Number of the variable to rotate.
 #' @param theta Angle in radians of "in-projection plane" rotation, 
@@ -54,15 +50,15 @@ oblique_basis <- function(basis = NULL,
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
-#' projection point aesthetics; `geom_point(aes(...))`. 
+#' projection point aesthetics; `geom_point(aes(...))`.
 #' @return A ggplot object of the rotated projection.
 #' @import tourr
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[,1:6])
+#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' rb       <- tourr::basis_random(n = ncol(flea_std))
-#' theta    <- runif(1, 0, 2*pi)
-#' phi      <- runif(1, 0, 2*pi)
+#' theta    <- runif(1, 0, 2L *pi)
+#' phi      <- runif(1, 0, 2L *pi)
 #' 
 #' oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
 #' 
@@ -76,28 +72,37 @@ oblique_frame <- function(basis        = NULL,
                           phi          = 0L,
                           lab          = NULL,
                           rescale_data = FALSE,
+                          ggtheme = theme_spinifex(),
                           ...) {
+  if (is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
+  ## Basis condition handling
   if (is.null(basis) & !is.null(data)) {
-    message("NULL basis passed. Initializing random basis.")
-    basis <- tourr::basis_random(n = ncol(data))
+    basis <- prcomp(data)$rotation[, 1L:2L]
+    message("NULL basis passed. Set to PCA basis.")
   }
-  data <- as.matrix(data)
   
-  p <- nrow(basis)
-  m_sp <- create_manip_space(basis, manip_var)
+  ## Initalize
+  data   <- as.matrix(data)
+  p      <- nrow(basis)
+  m_sp   <- create_manip_space(basis, manip_var)
   r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
-  
   basis_frames <- cbind(as.data.frame(r_m_sp), frame = 1L)
   colnames(basis_frames) <- c("x", "y", "z", "frame")
+  
+  ## Data condition handling
+  frames <- NULL
   if(!is.null(data)){
     if (rescale_data) {data <- tourr::rescale(data)}
     data_frames  <- cbind(as.data.frame(data %*% r_m_sp), frame = 1L)
     data_frames[, 1L] <- scale(data_frames[, 1L], scale = FALSE)
     data_frames[, 2L] <- scale(data_frames[, 2L], scale = FALSE)
     colnames(data_frames) <- c("x", "y", "z", "frame")
-  }
+    ## Frames with data
+    frames <- list(basis_frames = basis_frames, data_frames = data_frames)
+  } else ## Frames without data
+    frames <- list(basis_frames = basis_frames)
   
-  ## Add labels, attribute, and list
+  ## Labels and attribute condition handling
   basis_frames$lab <- NULL
    if(!is.null(lab)) {
      basis_frames$lab <- rep(lab, p / length(lab))
@@ -108,18 +113,12 @@ oblique_frame <- function(basis        = NULL,
        basis_frames$lab <- paste0("V", 1L:p)
      }
    }
-  
   attr(basis_frames, "manip_var") <- manip_var
   
-  frame <- NULL
-  if(!is.null(data)) {
-    frame <- list(basis_frames = basis_frames, data_frames = data_frames)
-  } else 
-    frame <- list(basis_frames = basis_frames)
-  
-  gg <- render_(frames = frame, graphics = "ggplot2", ...) +
-    ggplot2::coord_fixed()
-  
+  ## Render
+  gg <- render_(frames = frames, ggtheme = ggtheme, ...) #+
+    #ggplot2::coord_fixed()
+  ## Return
   gg
 }
 
@@ -132,11 +131,11 @@ oblique_frame <- function(basis        = NULL,
 #'
 #' @param tour_path The result of `tourr::save_history()` or `manual_tour()`.
 #' @param data Optional, number of columns must match that of `tour_path`.
-#' @param angle Target distance (in radians) between steps. Defaults to .15.
-#' @param render_type Graphics to render to. Defaults to render_plotly, 
-#'   alternative use render_gganimate.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
-#'   Defaults to FALSE.
+#' Defaults to FALSE.
+#' @param angle Target distance (in radians) between steps. Defaults to .05.
+#' @param render_type Graphics to render to. Defaults to render_plotly, 
+#' alternative use render_gganimate.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #' projection point aesthetics; `geom_point(aes(...))`. 
 #' @import tourr
@@ -152,7 +151,7 @@ oblique_frame <- function(basis        = NULL,
 
 #' if (F){ ## Saving output may require additional setup
 #'   ## Export plotly html widget
-#'   play_tour_path(tour_path = tpath, data = flea_std, angle = .25, fps = 4,
+#'   play_tour_path(tour_path = tpath, data = flea_std, angle = .08, fps = 40,
 #'                  color = class, shape = class, axes = "bottomleft",
 #'                  render_type = render_gganimate, 
 #'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
@@ -162,26 +161,35 @@ oblique_frame <- function(basis        = NULL,
 #'                  color = "red", size = 2, html_filename = "myRadialTour.html")
 #' }
 #' }
-play_tour_path <- function(tour_path,
+play_tour_path <- function(tour_path = NULL,
                            data  = NULL,
-                           angle = .15,
+                           angle = .05,
+                           ggtheme = theme_spinifex(),
                            render_type = render_plotly,
                            rescale_data = FALSE,
                            ...) {
-  ## Find data
+  if (is.null(tour_path) & is.null(data)) stop("tour_path or data must be supplied.")
+  ## Data condition handling
   if(is.null(data) & !is.null(attributes(tour_path)$data)){ 
-    message("data passed as NULL with a tourr object containing attached data; rendering the tour_path data.")
     data <- attributes(tour_path)$data
+    message("data is NULL with a tourr object containing data; using its data.")
+    
   }
-  data <- as.matrix(data)
-  if (rescale_data) data <- tourr::rescale(data)
   
+  ## Initialization
+  data <- as.matrix(data)
+  if(rescale_data) data <- tourr::rescale(data)
+  
+  ## Tour array to tour df
   tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
   attr(tour_path, "class") <- "array"
   tour_df <- array2df(array = tour_path, data = data)
-  disp <- render_type(frames = tour_df, ...)
   
-  disp
+  ## Render
+  anim <- render_type(frames = tour_df, ggtheme = ggtheme, ...)
+  
+  ## Return
+  anim
 }
 
 
@@ -197,7 +205,6 @@ play_tour_path <- function(tour_path,
 #' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param manip_var Integer column number or string exact column name of the.
 #' variable to manipulate. Required, no default.
-#' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' @param theta Angle in radians of "in-plane" rotation, on the xy plane of the 
 #' reference frame. Defaults to theta of the basis for a radial tour.
@@ -208,9 +215,14 @@ play_tour_path <- function(tour_path,
 #' the "out-of-plane" rotation, the z-axis of the reference frame. 
 #' Required, defaults to pi/2.
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
+#' @param ggtheme Intended for passing theme and legend settings to ggplot2.
+#' Alternatively accepts a list of gg functions.
+#' @param render_type Graphics to render to. Defaults to render_plotly, 
+#' alternative use render_gganimate.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
-#' projection point aesthetics; `geom_point(aes(...))`. OR passes optional
-#' arguments to `manual_tour`, 
+#' projection point aesthetics; `geom_point(aes(...))` or passes optional
+#' arguments to `manual_tour`.
+#' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #' @return An animation of a radial tour.
 #' @import tourr
 #' @export
@@ -224,41 +236,55 @@ play_tour_path <- function(tour_path,
 #' 
 #' play_manual_tour(basis = rb, data = flea_std, manip_var = 6, theta = .5 * pi,
 #'                  render_type = render_gganimate, col = class, pch = class, 
-#'                  axes = "bottomleft", fps = 5)
+#'                  axes = "bottomleft", fps = 15)
 #' 
-#' if (F){ ## Saving output may require additional setup
+#' if(F){ ## Saving output may require additional setup
 #'   ## Export plotly html widget
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
-#'                    render_type = render_plotly
+#'                    render_type = render_plotly,
 #'                    html_filename = "myRadialTour.html")
 #'   
 #'   ## Export gganimate .gif
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
-#'                    render_type = render_gganimate
+#'                    render_type = render_gganimate,
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
 #' }
 play_manual_tour <- function(basis = NULL,
-                             data,
-                             manip_var,
-                             render_type = render_plotly,
+                             data = NULL,
+                             manip_var = NULL,
                              rescale_data = FALSE,
                              theta = NULL,
                              phi_min = 0L,
                              phi_max = .5 * pi,
                              angle = .05,
+                             ggtheme = theme_spinifex(),
+                             render_type = render_plotly,
                              ...) {
-  if (is.null(basis)) {
-    message("NULL basis passed. Initializing random basis.")
-    basis <- tourr::basis_random(n = ncol(data))
+  if (is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
+  ## Basis condition handling
+  if (is.null(basis) & !is.null(data)) {
+    basis <- prcomp(data)$rotation[, 1L:2L]
+    message("NULL basis passed. Set to PCA basis.")
   }
+  ## manip_var condition handling
+  if (is.null(manip_var) & !is.null(data)) {
+    manip_var <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
+    message(paste0("NULL manip_var passed. Set to ", manip_var,
+                   ", the number of the variable with largest contribution in the first column of the basis."))
+  }
+  if (is.null(manip_var)) stop("manip_var must be supplied.")
+  
+  ## Initialization
   data <- as.matrix(data)
   if (rescale_data) data <- tourr::rescale(data)
   
+  ## Render
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, ...)
   tour_df <- array2df(array = tour_hist, data = data)
   anim <- render_type(frames = tour_df, ...)
   
-  return(anim)
+  ## Return
+  anim
 }
 

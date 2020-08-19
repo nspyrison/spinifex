@@ -4,7 +4,14 @@
 \alias{view_basis}
 \title{Plot the axes directions of the basis table without data points.}
 \usage{
-view_basis(basis, data = NULL, lab = NULL, axes = "center", ...)
+view_basis(
+  basis,
+  data = NULL,
+  lab = NULL,
+  axes = "center",
+  ggtheme = theme_spinifex(),
+  ...
+)
 }
 \arguments{
 \item{basis}{A (p, d) orthonormal numeric matrix.

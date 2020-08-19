@@ -12,6 +12,7 @@ oblique_frame(
   phi = 0L,
   lab = NULL,
   rescale_data = FALSE,
+  ggtheme = theme_spinifex(),
   ...
 )
 }
@@ -47,10 +48,10 @@ Projects the specified rotation as a 2D ggplot object. One static frame of
 manual tour. Useful for providing user-guided interaction.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[, 1:6])
 rb       <- tourr::basis_random(n = ncol(flea_std))
-theta    <- runif(1, 0, 2*pi)
-phi      <- runif(1, 0, 2*pi)
+theta    <- runif(1, 0, 2L *pi)
+phi      <- runif(1, 0, 2L *pi)
 
 oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
 

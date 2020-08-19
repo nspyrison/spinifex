@@ -5,17 +5,21 @@
 \title{Render the frames as a \emph{gganimate} animation.}
 \usage{
 render_gganimate(
-  fps = 3L,
+  fps = 30L,
+  ggtheme = theme_spinifex(),
   rewind = FALSE,
   start_pause = 1L,
-  end_pause = 3L,
+  end_pause = 2L,
   gif_filename = NULL,
   gif_path = NULL,
   ...
 )
 }
 \arguments{
-\item{fps}{Frames/frames shown per second. Defaults to 3.}
+\item{fps}{Frames animated per second. Defaults to 30.}
+
+\item{ggtheme}{Intended for passing theme and legend settings to ggplot2.
+Alternatively accepts a list of gg functions.}
 
 \item{rewind}{Logical, should the animation play backwards after reaching
 the end? Default to FALSE.}
@@ -24,7 +28,7 @@ the end? Default to FALSE.}
 Defaults to 1.}
 
 \item{end_pause}{Number of seconds to pause on the last frame for.
-Defaults to 3.}
+Defaults to 2.}
 
 \item{gif_filename}{Optional, saves the animation as a GIF to this string
 (without folderpath) . Defaults to NULL (no GIF saved). For more control call
@@ -49,11 +53,11 @@ df_frames <- array2df(array = array_frames, data = flea_std)
 \dontrun{
 render_gganimate(frames = df_frames)
 
-render_gganimate(frames = df_frames, axes = "bottomleft", fps = 2, rewind = TRUE,
+render_gganimate(frames = df_frames, axes = "bottomleft", fps = 15, rewind = TRUE,
   col = flea_class, pch = flea_class, size = 2, alpha = .6)
   
 if(F){ ## Saving .gif may require additional setup
-  render_gganimate(frames = df_frames, axes = "right", fps = 4, rewind = TRUE,
+  render_gganimate(frames = df_frames, axes = "right", fps = 40, rewind = TRUE,
     col = flea_class, pch = flea_class, size = 2,
     gif_filename = "myRadialTour.gif", gif_path = "./output")
 }

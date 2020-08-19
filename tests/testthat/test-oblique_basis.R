@@ -8,9 +8,11 @@ ret <- oblique_basis(basis = rb, manip_var = 4, theta, phi)
 
 test_that("class and dim", {
   expect_is(ret, "matrix")
-  expect_equal(dim(ret), c(6, 2))
+  expect_is(ret, "array")
+  expect_type(ret, "double")
+  expect_equal(dim(ret), c(6, 3))
 })
 
 test_that("is orthonormal", {
-  expect_true(tourr::is_orthonormal(ret))
+  expect_true(spinifex::is_orthonormal(ret))
 })

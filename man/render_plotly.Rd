@@ -4,10 +4,19 @@
 \alias{render_plotly}
 \title{Render the frames as a \emph{plotly} animation.}
 \usage{
-render_plotly(fps = 3L, tooltip = "none", html_filename = NULL, ...)
+render_plotly(
+  fps = 30L,
+  ggtheme = theme_spinifex(),
+  tooltip = "none",
+  html_filename = NULL,
+  ...
+)
 }
 \arguments{
-\item{fps}{Frames/frames shown per second. Defaults to 3.}
+\item{fps}{Frames animated per second. Defaults to 30.}
+
+\item{ggtheme}{Intended for passing theme and legend settings to ggplot2.
+Alternatively accepts a list of gg functions.}
 
 \item{tooltip}{Character vector of aesthetic mappings to show in the \code{plotly}
 hover-over tooltip. Defaults to "none". "all" shows all the
@@ -34,11 +43,11 @@ df_frames <- array2df(array = array_frames, data = flea_std)
 \dontrun{
 render_plotly(frames = df_frames)
 
-render_plotly(frames = df_frames, axes = "bottomleft", fps = 2, tooltip = "all",
+render_plotly(frames = df_frames, axes = "bottomleft", fps = 20, tooltip = "all",
               col = flea_class, pch = flea_class, size = 2, alpha = .6)
 
 if(F){ ## Saving .html may require additional setup
-  render_plotly(frames = df_frames, axes = "right", fps = 4.5,
+  render_plotly(frames = df_frames, axes = "right", fps = 45,
                 col = flea_class, pch = flea_class, size = 1.5,
                 html_filename = "myRadialTour.html")
 }

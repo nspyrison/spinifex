@@ -4,7 +4,13 @@
 \alias{render_}
 \title{Prepate the ggplot object before passing to either animation package.}
 \usage{
-render_(frames, axes = "center", manip_col = "blue", ...)
+render_(
+  frames,
+  axes = "center",
+  manip_col = "blue",
+  ggtheme = theme_spinifex(),
+  ...
+)
 }
 \arguments{
 \item{frames}{The result of \code{array2df()}, a long df of the projected frames.}
@@ -14,6 +20,9 @@ render_(frames, axes = "center", manip_col = "blue", ...)
 
 \item{manip_col}{String of the color to highlight the \code{manip_var} with.
 Defaults to "blue".}
+
+\item{ggtheme}{Intended for passing theme and legend settings to ggplot2.
+Alternatively accepts a list of gg functions.}
 
 \item{...}{Optionally passes arguments to the projection points inside the
 aesthetics; \code{geom_point(aes(...))}.}

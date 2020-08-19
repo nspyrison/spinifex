@@ -24,20 +24,23 @@
 #' flea_std <- tourr::rescale(tourr::flea[, 1:4])
 #' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 #'
-#' view_basis(basis = rb, data = flea_std, axes = "right", 
-#'            col = col_of(tourr::flea[, 7], "Paired"), 
+#' view_basis(basis = rb, data = flea_std, axes = "right",
+#'            col = col_of(tourr::flea[, 7], "Paired"),
 #'            pch = pch_of(tourr::flea[,7]),
 #'            alpha = .7, size = 2)
 view_basis <- function(basis,
                        data = NULL,
                        lab  = NULL,
                        axes = "center",
+                       ggtheme = theme_spinifex(),
                        ...) {
   ## Initialize
   p     <- nrow(basis)
   basis <- as.data.frame(basis) ## for plotting
   colnames(basis) <- c("x", "y")
-  ## basis text label conditional handling
+  axes_to <- data.frame(x = c(0, 1), y = c(0, 1))
+  
+  ## Basis text label conditional handling
   .lab <- NULL
   if(is.null(lab) == FALSE){
     .lab <- rep(lab, p / length(lab))
@@ -47,27 +50,26 @@ view_basis <- function(basis,
       .lab <- paste0("V", 1L:p)
     }
   }
-  ## Ploting initialization
+  
+  ## Settings and asethetics 
   gg <- 
     ggplot2::ggplot() +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
-    ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none") +
-    ggplot2::coord_fixed()
-  ## Project data if present
-  axes_to <- data.frame(x = c(0, 1), y = c(0, 1))
+    ggtheme #+
+    # ggplot2::coord_fixed()
+  
+  ## Initalize data if present
   if (is.null(data) == FALSE) {
     proj <- as.data.frame(
       tourr::rescale(as.matrix(data) %*% as.matrix(basis)) - .5)
     colnames(proj) <- c("x", "y")
     axes_to <- proj
-    ## Project data and plot
+    ## Rendering
     gg <- gg + 
-      ggplot2::scale_shape_identity() + ## Allows numeric pch for scale.
       ggplot2::geom_point(data = proj,
                           mapping = ggplot2::aes(x = x, y = y, ...),
       )
   }
+  
   ## Add axes if needed
   if(axes != "off") {
     ## Initialize
@@ -93,8 +95,9 @@ view_basis <- function(basis,
         mapping = ggplot2::aes(x = x, y = y), label = .lab,
         size = 4L, hjust = 0L, vjust = 0L, color = "black")
   }
+  
   ## Return
-  return(gg)
+  gg
 }
 
 #' Plot projection frame and return the axes table.
@@ -125,14 +128,15 @@ view_manip_space <- function(basis,
                              tilt = 1/12 * pi,
                              lab = paste0("V", 1:nrow(basis)),
                              manip_col = "blue",
-                             z_col = "red") {
-  ### NEEDS DOC for external:
+                             z_col = "red",
+                             ggtheme = theme_spinifex()
+) {
+  #### Initialize local functions
+  ## Make a df with colnames xyz
   as_xyz_df <- function(mat) {
     colnames(mat) <- c("x", "y", "z")
     as.data.frame(mat)
   }
-  
-  #### Init local functions
   ## Make a curved line segment, 1 row per degree.
   make_curve <- function(rad_st = 0L, rad_stop = 2L * pi) {
     angle <- seq(rad_st, rad_stop, 
@@ -144,8 +148,7 @@ view_manip_space <- function(basis,
     acos(sum(a*b) /
            (sqrt(sum(a * a)) * sqrt(sum(b * b))))
   }
-  
-  ### NEEDS DOC for external:
+  ## R3 rotation for an angle in the x-dimension
   R3x_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
     angle <- -angle ## Orientation as I imagine it defined, double check.
     mat <- as.matrix(mat)
@@ -156,7 +159,7 @@ view_manip_space <- function(basis,
                     0L,  s,  c), ncol = 3L, byrow = TRUE)
     as_xyz_df(mat %*% rot)
   }
-  ### NEEDS DOC for external:
+  ## R3 rotation for an angle in the y-dimension
   R3y_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
     angle <- -angle ## Orientation as I imagine it defined, double check.
     mat <- as.matrix(mat)
@@ -167,7 +170,7 @@ view_manip_space <- function(basis,
                      -s, 0L, c), ncol = 3L, byrow = TRUE)
     as_xyz_df(mat %*% rot)
   }
-  ### NEEDS DOC for external:
+  ## R3 rotation for an angle in the z-dimension
   R3z_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
     angle <- -angle ## Orientation as I imagine it defined, double check.
     mat <- as.matrix(mat)
@@ -179,30 +182,29 @@ view_manip_space <- function(basis,
     as_xyz_df(mat %*% rot)
   }
   
-  
   #### Initialize
   p <- nrow(basis)
   m_sp <- as.matrix(create_manip_space(basis, manip_var))
-  ## manip var asethetics
+  ## Manip var asethetics
   col_v            <- rep("grey80", p)
   col_v[manip_var] <- manip_col
   siz_v            <- rep(0.3, p)
   siz_v[manip_var] <- 1L
-  
+  ## Angles
   theta <- find_angle(m_sp[manip_var, 1L:2L], 
                       c(1L, 0L)) * sign(m_sp[manip_var, 2L])
   phi   <- find_angle(m_sp[manip_var, ], c(m_sp[manip_var, 1L:2L], 0L))
-  
+  ## Axes circle
   circ          <- make_curve()
   theta_curve_r <- R3x_of(make_curve(0L, theta) / 5L, tilt)
   phi_curve_r   <- R3x_of(make_curve(0L, phi)   / 3L, tilt) 
   ##TODO: needs to be based and oriented from end of V4.
   ## already have this point in the grey projection line, pare back to that?
   phi_curve_r   <- R3z_of(phi_curve_r, theta) ##TODO: theta isn't suppose to be tilt?
-  
+  ## Angle label placment
   midpt_theta   <- round(nrow(theta_curve_r) / 2L)
   midpt_phi     <- round(nrow(phi_curve_r)   / 2L)
-  
+  ## Rotated objects
   m_sp_pp <- cbind(m_sp[, 1L:2L], 0L) ## *_pp; on projection plane
   circ_r  <- R3x_of(circ, tilt)
   m_sp_r  <- R3x_of(m_sp_pp, tilt)
@@ -212,15 +214,14 @@ view_manip_space <- function(basis,
                         xend =  m_sp_r[manip_var, 1L],
                         yend =  m_sp_r[manip_var, 3L],
                         lab  = lab[manip_var])
+  #### End of initialization
   
-  
-  ## Ploting
+  ## Render
   gg <- 
     ## ggplot options
     ggplot2::ggplot() + 
-    ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "none") +
-    ggplot2::coord_fixed() +
+    ggtheme +
+    #ggplot2::coord_fixed() +
     ## xy circle path 
     ggplot2::geom_path(data = circ_r, 
                        mapping = ggplot2::aes(x = x, y = z), 
@@ -271,11 +272,11 @@ view_manip_space <- function(basis,
                        size = 4L, color = z_col, parse = TRUE,
                        vjust = "outward", hjust = "outward")
   
+  ## Return
   gg
 }
 
 ### FORMATING ------
-
 #' Return hex color code for a given discrete categorical variable.
 #' 
 #' @param class The discrete categorical variable to return the color of.
@@ -301,7 +302,7 @@ col_of <- function(class, pallet_name = "Dark2") {
 #' @examples 
 #' pch_of(tourr::flea$species)
 pch_of <- function(class) {
-  class <- as.factor(class)
+  class <- as.factor(as.vector(class))
   .shape_ord <- c(21L:25L, 3L:4L, 7L:14L)
   .l_shapes  <- length(unique(.shape_ord))
   class <- as.factor(class)
@@ -330,7 +331,6 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
   x <- as.matrix(x)
   actual <- t(x) %*% x ## Collapses to identity matrix IFF x is orthonormal
   expected <- diag(ncol(x))
-  
   if (max(actual - expected) < tol) {TRUE} else {FALSE}
 }
 
@@ -368,6 +368,7 @@ set_axes_position <- function(x,
   xcenter <- xdiff / 2L
   ydiff   <- diff(y_to)
   ycenter <- ydiff / 2L
+  
   ## Condition handling of axes.
   if (axes == "center") {
     xscale <- 2L / 3L * xdiff
@@ -394,6 +395,7 @@ set_axes_position <- function(x,
     xoff <- 5L / 3L * xdiff + xcenter
     yoff <- ycenter
   }
+  
   ## Apply scale and return
   x[, 1L] <- xscale * x[, 1L] + xoff
   x[, 2L] <- yscale * x[, 2L] + yoff

@@ -28,7 +28,7 @@ the projection plane. The 3rd column extends "in the z-direction" orthogonal
 to the projection plane.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[,1:6])
+flea_std <- tourr::rescale(tourr::flea[, 1:6])
 rb  <- tourr::basis_random(n = ncol(flea_std))
 msp <- create_manip_space(basis = rb, manip_var = 4)
 

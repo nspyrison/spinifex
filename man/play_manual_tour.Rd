@@ -6,14 +6,15 @@
 \usage{
 play_manual_tour(
   basis = NULL,
-  data,
-  manip_var,
-  render_type = render_plotly,
+  data = NULL,
+  manip_var = NULL,
   rescale_data = FALSE,
   theta = NULL,
   phi_min = 0L,
   phi_max = 0.5 * pi,
   angle = 0.05,
+  ggtheme = theme_spinifex(),
+  render_type = render_plotly,
   ...
 )
 }
@@ -26,8 +27,6 @@ Defaults to NULL, generating a random basis.}
 
 \item{manip_var}{Integer column number or string exact column name of the.
 variable to manipulate. Required, no default.}
-
-\item{render_type}{Which graphics to render to. Defaults to render_plotly,}
 
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.}
 
@@ -44,9 +43,14 @@ Required, defaults to pi/2.}
 
 \item{angle}{Target distance (in radians) between steps. Defaults to .05.}
 
+\item{ggtheme}{Intended for passing theme and legend settings to ggplot2.
+Alternatively accepts a list of gg functions.}
+
+\item{render_type}{Which graphics to render to. Defaults to render_plotly,}
+
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
-projection point aesthetics; \code{geom_point(aes(...))}. OR passes optional
-arguments to \code{manual_tour},}
+projection point aesthetics; \code{geom_point(aes(...))} or passes optional
+arguments to \code{manual_tour}.}
 }
 \value{
 An animation of a radial tour.
@@ -65,17 +69,17 @@ play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
 
 play_manual_tour(basis = rb, data = flea_std, manip_var = 6, theta = .5 * pi,
                  render_type = render_gganimate, col = class, pch = class, 
-                 axes = "bottomleft", fps = 5)
+                 axes = "bottomleft", fps = 15)
 
-if (F){ ## Saving output may require additional setup
+if(F){ ## Saving output may require additional setup
   ## Export plotly html widget
   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
-                   render_type = render_plotly
+                   render_type = render_plotly,
                    html_filename = "myRadialTour.html")
   
   ## Export gganimate .gif
   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
-                   render_type = render_gganimate
+                   render_type = render_gganimate,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }
 }
