@@ -1,5 +1,3 @@
-url: https://nspyrison.netlify.app/
-
 template:
   params:
     bootswatch: cerulean

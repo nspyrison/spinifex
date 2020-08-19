@@ -5,9 +5,9 @@
 \alias{weather}
 \title{Sample dataset of daily weather observations from Canberra airport in Australia.}
 \format{
-Data frame of 366 observations of 20 variables, one year of
+Data frame of 366 observations of 20 variables. One year of
 daily observations of weather variables at Canberra airport in Australia
-starting November 2007.
+between November 1, 2007 and October 31, 2008.
 }
 \source{
 The daily observations are available from http://www.bom.gov.au/climate/data.
@@ -30,22 +30,22 @@ data mining using R and Rattle.
 
 The data has been processed to provide a target variable RainTomorrow
 (whether there is rain on the following day - No/Yes) and a risk variable
-`RISK_MM`` (how much rain recorded in millimeters). Various transformations
+\code{RISK_MM} (how much rain recorded in millimeters). Various transformations
 were performed on the source data. The dataset is quite small and is useful
 only for repeatable demonstration of various data science operations.
 
 The source dataset is Copyright by the Australian Commonwealth Bureau of
 Meteorology and is provided as part of the rattle package with permission.
 
-Data frame of 366 observations of 20 variables, one year of
+Data frame of 366 observations of 20 variables. One year of
 daily observations of weather variables at Canberra airport in Australia
 starting November 2007:
 \itemize{
-\item Date, The date of observation (a Date object).
+\item Date, The date of observation (Date class).
 \item MinTemp, The minimum temperature in degrees Celsius.
 \item MaxTemp, The maximum temperature in degrees Celsius.
 \item Rainfall, The amount of rainfall recorded for the day in mm.
-\item Evaporation, The so-called Class A pan evaporation (mm) in the 24 hours to 9am.
+\item Evaporation, The "Class A pan evaporation" (mm) in the 24 hours to 9am.
 \item Sunshine, The number of hours of bright sunshine in the day.
 \item WindGustSpeed, The speed (km/h) of the strongest wind gust in the 24 hours to midnight.
 \item WindSpeed9am, Wind speed (km/hr) averaged over 10 minutes prior to 9am.
@@ -58,19 +58,27 @@ starting November 2007:
 \item Cloud3pm, Fraction of sky obscured by cloud (in "oktas": eighths) at 3pm. See Cloud9am for a description of the values.
 \item Temp9am, Temperature (degrees C) at 9am.
 \item Temp3pm, Temperature (degrees C) at 3pm.
-\item RainToday, Integer: 1 if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0.
 \item RISK_MM, The amount of rain. A kind of measure of the "risk".
-\item RainTomorrow, The target variable. Did it rain tomorrow?
+\item RainToday, Factor: "yes" if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0.
+\item RainTomorrow, Factor: "yes" if it rained the following day, the target variable.
 }
 
-Reproducing this dataset:\preformatted{requireNamespace("rattle.data")
-weather <- weather[, c(1,3:7,9,12:24)]
+Reproducing this dataset:\preformatted{require("rattle.data")
+weather <- weather[, c(1, 3:7, 9, 12:21, 23, 22, 24)]
+## save(weather, file = "./data/weather.rda")
 }
 }
 \examples{
 str(weather)
 \dontrun{
-play_manual_tour(data = weather[, 2:17], manip_var = 5, rescale_data = TRUE)
+dat <- tourr::rescale(weather[, 2:18])
+clas_x <- weather$RainToday
+clas_y <- weather$RainTomorrow
+bas <- prcomp(dat)$rotation[, 1:2]
+mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
+
+play_manual_tour(basis = bas, data = dat, manip_var = mvar,
+                 render_type = render_gganimate, color = clas_y, shape = clas_x)
 }
 }
 \references{

@@ -5,7 +5,7 @@
 \alias{wine}
 \title{The wine dataset from the UCI Machine Learning Repository.}
 \format{
-data frame of 178 observations of 13 variables, target
+Data frame of 178 observations of 13 variables, target
 class \code{Type} and 12 numeric variables.
 }
 \usage{
@@ -24,7 +24,7 @@ three class target variable (Type) for classification.
 Data frame of 178 observations of 13 variables, target
 class \code{Type} and 12 numeric variables:
 \itemize{
-\item Type, The type of wine, into one of three classes, 1 (59 obs),
+\item Type, The type of wine, taget factor, 1 (59 obs),
 2(71 obs), and 3 (48 obs).
 \item Alcohol, Alcohol
 \item Malic, Malic acid
@@ -48,7 +48,13 @@ wine
 \examples{
 str(wine)
 \dontrun{
-play_manual_tour(data = wine[, 2:14], manip_var = 1, rescale_data = TRUE)
+dat <- tourr::rescale(wine[, 2:14])
+clas <- wine$Type
+bas <- prcomp(dat)$rotation[, 1:2]
+mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
+
+play_manual_tour(basis = bas, data = dat, manip_var = mvar,
+                 render_type = render_gganimate, color = clas, shape = clas)
 }
 }
 \keyword{datasets}
