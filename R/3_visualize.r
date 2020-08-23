@@ -17,15 +17,19 @@
 #' @import tourr
 #' @export
 #' @examples
-#' rb    <- tourr::basis_random(n = 6)
-#' theta <- runif(1, 0, 2 * pi)
-#' phi   <- runif(1, 0, 2L *pi)
+#' dat <- tourr::flea[, 1:6]
+#' bas_pca <- prcomp(dat)$rotation[, 1L:2L]
+#' mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
+#' oblique_basis(bas_pca, mvar)
 #' 
-#' oblique_basis(basis = rb, manip_var = 4, theta, phi)
+#' rb    <- tourr::basis_random(n = 6)
+#' rtheta <- runif(1, 0, 2 * pi)
+#' rphi   <- runif(1, 0, 2 *pi)
+#' oblique_basis(basis = rb, manip_var = 4, rtheta, rphi)
 oblique_basis <- function(basis = NULL,
                           manip_var,
-                          theta = NULL,
-                          phi   = NULL) {
+                          theta = 0L,
+                          phi   = 0L){
   m_sp <- create_manip_space(basis, manip_var)
   rotate_manip_space(manip_space = m_sp, theta, phi)
 }
@@ -36,7 +40,7 @@ oblique_basis <- function(basis = NULL,
 #' Projects the specified rotation as a 2D ggplot object. One static frame of 
 #' manual tour. Useful for providing user-guided interaction.
 #' 
-#' @param data A  (n, p) dataset to project, consisting of numeric variables.
+#' @param data A (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix.
 #' Defaults to NULL, giving a random basis.
 #' @param manip_var Number of the variable to rotate.
@@ -55,19 +59,20 @@ oblique_basis <- function(basis = NULL,
 #' @import tourr
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' rb       <- tourr::basis_random(n = ncol(flea_std))
-#' theta    <- runif(1, 0, 2L *pi)
-#' phi      <- runif(1, 0, 2L *pi)
+#' dat <- tourr::flea[, 1:6]
+#' bas_pca <- prcomp(dat)$rotation[, 1L:2L]
+#' mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
+#' oblique_frame(bas_pca, dat, mvar)
 #' 
-#' oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
-#' 
-#' oblique_frame(data = flea_std, basis = rb, manip_var = 4,
-#'               theta = 0, phi = 1,
-#'               lab = paste0("MyNm", 3:8), rescale_data = TRUE)
+#' rb        <- tourr::basis_random(n = ncol(flea_std))
+#' rtheta    <- runif(1, 0, 2L * pi)
+#' rphi      <- runif(1, 0, 2L * pi)
+#' oblique_frame(basis = rb, data = dat, manip_var = 4,
+#'               theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
+#'               rescale_data = TRUE)
 oblique_frame <- function(basis        = NULL,
                           data         = NULL,
-                          manip_var    = NULL,
+                          manip_var,
                           theta        = 0L,
                           phi          = 0L,
                           lab          = NULL,
@@ -86,37 +91,13 @@ oblique_frame <- function(basis        = NULL,
   p      <- nrow(basis)
   m_sp   <- create_manip_space(basis, manip_var)
   r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
-  basis_frames <- cbind(as.data.frame(r_m_sp), frame = 1L)
-  colnames(basis_frames) <- c("x", "y", "z", "frame")
   
-  ## Data condition handling
-  frames <- NULL
-  if(!is.null(data)){
-    if (rescale_data) {data <- tourr::rescale(data)}
-    data_frames  <- cbind(as.data.frame(data %*% r_m_sp), frame = 1L)
-    data_frames[, 1L] <- scale(data_frames[, 1L], scale = FALSE)
-    data_frames[, 2L] <- scale(data_frames[, 2L], scale = FALSE)
-    colnames(data_frames) <- c("x", "y", "z", "frame")
-    ## Frames with data
-    frames <- list(basis_frames = basis_frames, data_frames = data_frames)
-  } else ## Frames without data
-    frames <- list(basis_frames = basis_frames)
-  
-  ## Labels and attribute condition handling
-  basis_frames$lab <- NULL
-   if(!is.null(lab)) {
-     basis_frames$lab <- rep(lab, p / length(lab))
-   } else {
-     if (!is.null(data)) {
-       basis_frames$lab <- abbreviate(colnames(data), 3L)
-     } else {
-       basis_frames$lab <- paste0("V", 1L:p)
-     }
-   }
-  attr(basis_frames, "manip_var") <- manip_var
+  tour_array <- array(basis, dim = c(dim(basis), 1))
+  attr(tour_array, "manip_var") <- manip_var
   
   ## Render
-  gg <- render_(frames = frames, ggtheme = ggtheme, ...) #+
+  df_frames <- array2df(array = tour_array, data = data, lab = lab)
+  gg <- render_(frames = df_frames, ggtheme = ggtheme, ...) #+
     #ggplot2::coord_fixed()
   ## Return
   gg

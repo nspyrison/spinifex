@@ -7,7 +7,7 @@
 oblique_frame(
   basis = NULL,
   data = NULL,
-  manip_var = NULL,
+  manip_var,
   theta = 0L,
   phi = 0L,
   lab = NULL,
@@ -20,7 +20,7 @@ oblique_frame(
 \item{basis}{A (p, d) dim orthonormal numeric matrix.
 Defaults to NULL, giving a random basis.}
 
-\item{data}{A  (n, p) dataset to project, consisting of numeric variables.}
+\item{data}{A (n, p) dataset to project, consisting of numeric variables.}
 
 \item{manip_var}{Number of the variable to rotate.}
 
@@ -48,14 +48,15 @@ Projects the specified rotation as a 2D ggplot object. One static frame of
 manual tour. Useful for providing user-guided interaction.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[, 1:6])
-rb       <- tourr::basis_random(n = ncol(flea_std))
-theta    <- runif(1, 0, 2L *pi)
-phi      <- runif(1, 0, 2L *pi)
+dat <- tourr::flea[, 1:6]
+bas_pca <- prcomp(dat)$rotation[, 1L:2L]
+mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
+oblique_frame(bas_pca, dat, mvar)
 
-oblique_frame(data = flea_std, basis = rb, manip_var = 4, theta, phi)
-
-oblique_frame(data = flea_std, basis = rb, manip_var = 4,
-              theta = 0, phi = 1,
-              lab = paste0("MyNm", 3:8), rescale_data = TRUE)
+rb        <- tourr::basis_random(n = ncol(flea_std))
+rtheta    <- runif(1, 0, 2L * pi)
+rphi      <- runif(1, 0, 2L * pi)
+oblique_frame(basis = rb, data = dat, manip_var = 4,
+              theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
+              rescale_data = TRUE)
 }

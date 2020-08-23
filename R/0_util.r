@@ -356,8 +356,9 @@ set_axes_position <- function(x,
                               to = data.frame(x = c(0, 1), y = c(0, 1))
 ) {
   ## Assumptions
-  if (axes == "off") return()
-  if (length(x) == 1L) {x <- data.frame(x = x, y = x)}
+  if (axes == "off")   return()
+  if (length(x) == 1L) x  <- data.frame(x = x, y = x)
+  if (is.null(to))     to <- data.frame(x = c(0, 1), y = c(0, 1))
   stopifnot(ncol(x) == 2L)
   axes <- match.arg(tolower(axes), several.ok = FALSE,
                     choices = c("center", "bottomleft", "topright", "off", "left", "right"))

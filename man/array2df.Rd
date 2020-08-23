@@ -28,8 +28,11 @@ for use in ggplots.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
-
 rb <- tourr::basis_random(n = ncol(flea_std))
-array_frames <- manual_tour(basis = rb, manip_var = 4)
-array2df(array = array_frames, data = flea_std)
+dummy_array <- array(rb, dim = c(dim(rb), 1))
+attr(dummy_array, "manip_var") <- sample(1:ncol(flea_std), 1)
+array2df(array = dummy_array)
+
+tour_array <- manual_tour(basis = rb, manip_var = 4)
+array2df(array = tour_array, data = flea_std, lab = paste0("MyLabs", 1:nrow(rb)))
 }

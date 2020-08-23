@@ -16,16 +16,19 @@
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' 
 #' rb <- tourr::basis_random(n = ncol(flea_std))
-#' array_frames <- manual_tour(basis = rb, manip_var = 4)
-#' array2df(array = array_frames, data = flea_std)
+#' dummy_array <- array(rb, dim = c(dim(rb), 1))
+#' attr(dummy_array, "manip_var") <- sample(1:ncol(flea_std), 1)
+#' array2df(array = dummy_array)
+#' 
+#' tour_array <- manual_tour(basis = rb, manip_var = 4)
+#' array2df(array = tour_array, data = flea_std, lab = paste0("MyLabs", 1:nrow(rb)))
 array2df <- function(array, 
                      data = NULL,
                      lab = NULL) {
   ## Initialize
   manip_var <- attributes(array)$manip_var
-  p <- nrow(array[,, 1L])
+  p <- dim(array)[1L]
   n_frames <- dim(array)[3L]
   
   ## Basis condition handling
@@ -37,21 +40,21 @@ array2df <- function(array,
   colnames(basis_frames) <- c("x", "y", "frame")
   
   ## Data; if exists, array to long df
-  if(!is.null(data)) {
+  if(is.null(data) == FALSE){
     data <- as.matrix(data)
     data_frames <- NULL
     for (frame in 1L:n_frames) {
-      data_rows <- cbind(data %*% array[,, frame], frame)
-      data_rows[, 1L] <- scale(data_rows[, 1L], scale = FALSE)
-      data_rows[, 2L] <- scale(data_rows[, 2L], scale = FALSE)
-      data_frames <- data.frame(rbind(data_frames, data_rows))
+      new_frame <- tourr::rescale(data %*% array[,, frame])
+      new_frame <- cbind(new_frame, frame)
+      data_frames <- rbind(data_frames, new_frame)
     }
+    data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c("x", "y", "frame")
   }
   
-  ## Labels and  attribute condition handling
+  ## Labels and attribute condition handling
   basis_frames$lab <- NULL
-  if(!is.null(lab)){
+  if(is.null(lab) == FALSE){
     basis_frames$lab <- rep(lab, nrow(basis_frames) / length(lab))
   } else {
     if(!is.null(data)) {basis_frames$lab <- abbreviate(colnames(data), 3L)
@@ -62,12 +65,13 @@ array2df <- function(array,
   attr(basis_frames, "manip_var") <- manip_var
   
   ## Frame condition handling
-  frames <- if(!is.null(data)) {
-    list(basis_frames = basis_frames, data_frames = data_frames)
-  } else list(basis_frames = basis_frames)
+  df_frames <- list(basis_frames = basis_frames)
+  if(is.null(data) == FALSE) {
+    df_frames <- list(basis_frames = basis_frames, data_frames = data_frames)
+  }
   
   ## Return
-  frames
+  df_frames
 }
 
 
@@ -102,7 +106,7 @@ render_ <- function(frames,
                     manip_col = "blue",
                     ggtheme = theme_spinifex(),
                     ...) {
-  if(axes == "off" & length(frames) == 1) stop("render_ called with no data and axes = 'off'")
+  if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
   
   ## Initialize
   basis_frames <- data.frame(frames[["basis_frames"]])
@@ -110,6 +114,7 @@ render_ <- function(frames,
   n_frames     <- length(unique(basis_frames$frame))
   p            <- nrow(basis_frames) / n_frames
   d            <- 2L ## Hardcoded assumtion for 2D display
+  
   ## If data exists
   data_frames <- NULL
   axes_to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))

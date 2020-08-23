@@ -42,8 +42,8 @@ view_basis(basis = rb)
 flea_std <- tourr::rescale(tourr::flea[, 1:4])
 view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 
-view_basis(basis = rb, data = flea_std, axes = "right", 
-           col = col_of(tourr::flea[, 7], "Paired"), 
+view_basis(basis = rb, data = flea_std, axes = "right",
+           col = col_of(tourr::flea[, 7], "Paired"),
            pch = pch_of(tourr::flea[,7]),
            alpha = .7, size = 2)
 }

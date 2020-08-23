@@ -4,7 +4,7 @@
 \alias{oblique_basis}
 \title{Return the basis of an oblique frame}
 \usage{
-oblique_basis(basis = NULL, manip_var, theta = NULL, phi = NULL)
+oblique_basis(basis = NULL, manip_var, theta = 0L, phi = 0L)
 }
 \arguments{
 \item{basis}{A (p, d) orthonormal numeric matrix.
@@ -29,9 +29,13 @@ Rotates a basis returning (p, 2) basis describing \code{oblique_frame()}.
 Used to create an oblique tour by small changes to the rotation.
 }
 \examples{
-rb    <- tourr::basis_random(n = 6)
-theta <- runif(1, 0, 2 * pi)
-phi   <- runif(1, 0, 2L *pi)
+dat <- tourr::flea[, 1:6]
+bas_pca <- prcomp(dat)$rotation[, 1L:2L]
+mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
+oblique_basis(bas_pca, mvar)
 
-oblique_basis(basis = rb, manip_var = 4, theta, phi)
+rb    <- tourr::basis_random(n = 6)
+rtheta <- runif(1, 0, 2 * pi)
+rphi   <- runif(1, 0, 2 *pi)
+oblique_basis(basis = rb, manip_var = 4, rtheta, rphi)
 }

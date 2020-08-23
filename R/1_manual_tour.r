@@ -84,7 +84,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
   
   ## Checks and formating
   stopifnot(spinifex::is_orthonormal(rotated_space))
-  colnames(rotated_space) <- paste0("proj_", 1L:ncol(rotated_space))
+  colnames(rotated_space) <- c(paste0("P", 1L:(ncol(rotated_space) - 1)), "manip_sp")
   rownames(rotated_space) <- paste0("V", 1L:nrow(rotated_space))
   
   ## Return 
@@ -170,7 +170,7 @@ manual_tour <- function(basis,
   n_frames <- length(phi_path)
   i_s  <- 1L:n_frames
   p    <- nrow(basis)
-  d    <- 2L #ncol(basis) ## d fixed to 2 atm.
+  d    <- 2L ## d fixed to 2 atm.
   m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
   basis_set <- array(NA, dim = c(p, d, n_frames))
   for(i in i_s){
