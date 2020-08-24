@@ -1,8 +1,8 @@
 ### "Intro" ui.R -----
 
 ##### Setup ----
-.include_dev_display  <- T
-.include_obs_msg      <- T
+.include_dev_display  <- FALSE
+.include_obs_msg      <- FALSE
 .obs_msg_counter <- 0
 ## Creat lontextLine, a string containing App name, spinifex version, and sys date.
 .wd <- getwd()
