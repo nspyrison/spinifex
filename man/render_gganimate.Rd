@@ -18,8 +18,7 @@ render_gganimate(
 \arguments{
 \item{fps}{Frames animated per second. Defaults to 30.}
 
-\item{ggtheme}{Intended for passing theme and legend settings to ggplot2.
-Alternatively accepts a list of gg functions.}
+\item{ggtheme}{Intended for passing  a ggplot2::theme().}
 
 \item{rewind}{Logical, should the animation play backwards after reaching
 the end? Default to FALSE.}

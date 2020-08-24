@@ -7,7 +7,7 @@
 oblique_frame(
   basis = NULL,
   data = NULL,
-  manip_var,
+  manip_var = NULL,
   theta = 0L,
   phi = 0L,
   lab = NULL,
@@ -22,7 +22,8 @@ Defaults to NULL, giving a random basis.}
 
 \item{data}{A (n, p) dataset to project, consisting of numeric variables.}
 
-\item{manip_var}{Number of the variable to rotate.}
+\item{manip_var}{Optional, number of the variable to rotate.
+If NULL, theta and phi must be 0 as is no manip space to rotate.}
 
 \item{theta}{Angle in radians of "in-projection plane" rotation,
 on the xy plane of the reference frame. Defaults to 0, no rotation.}
@@ -37,6 +38,9 @@ results in a 3 character abbreviation of the variable names.}
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
+\item{ggtheme}{Intended for passing  a ggplot2::theme().
+Alternatively accepts a list of gg functions.}
+
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
 projection point aesthetics; \code{geom_point(aes(...))}.}
 }
@@ -49,13 +53,13 @@ manual tour. Useful for providing user-guided interaction.
 }
 \examples{
 dat <- tourr::flea[, 1:6]
-bas_pca <- prcomp(dat)$rotation[, 1L:2L]
+bas_pca <- stats::prcomp(dat)$rotation[, 1L:2L]
 mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
-oblique_frame(bas_pca, dat, mvar)
+oblique_frame(bas_pca, manip_var = mvar)
 
-rb        <- tourr::basis_random(n = ncol(flea_std))
-rtheta    <- runif(1, 0, 2L * pi)
-rphi      <- runif(1, 0, 2L * pi)
+rb     <- tourr::basis_random(n = ncol(dat))
+rtheta <- runif(1, 0, 2 * pi)
+rphi   <- runif(1, 0, 2 * pi)
 oblique_frame(basis = rb, data = dat, manip_var = 4,
               theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
               rescale_data = TRUE)

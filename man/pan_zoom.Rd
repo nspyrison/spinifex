@@ -25,7 +25,7 @@ Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scaler number.
 }
 \examples{
 ib <- tourr::basis_init(6, 2)
-pan_zoom(x = ib, x_pan = -1, y_pan = 0, x_zomm = 2/3, y_zoom = 1/2)
+pan_zoom(x = ib, x_pan = -1, y_pan = 0, x_zoom = 2/3, y_zoom = 1/2)
 }
 \seealso{
 \code{\link{set_axes_position}} for preset choices.

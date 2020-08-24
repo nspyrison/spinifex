@@ -26,6 +26,9 @@ number of variables used. By default will abbreviate data if available.}
 \item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
 to "center".}
 
+\item{ggtheme}{Intended for passing  a ggplot2::theme().
+Alternatively accepts a list of gg functions.}
+
 \item{...}{Optionally passes arguments to the projection points inside the
 aesthetics; \code{geom_point(aes(...))}.}
 }
@@ -42,8 +45,8 @@ view_basis(basis = rb)
 flea_std <- tourr::rescale(tourr::flea[, 1:4])
 view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 
+class <- tourr::flea$species
 view_basis(basis = rb, data = flea_std, axes = "right",
-           col = col_of(tourr::flea[, 7], "Paired"),
-           pch = pch_of(tourr::flea[,7]),
+           color = class, shape = class,
            alpha = .7, size = 2)
 }

@@ -84,10 +84,9 @@ array2df <- function(array,
 #' @param frames The result of `array2df()`, a long df of the projected frames.
 #' @param axes Position of the axes: "center", "bottomleft", "off", "left", 
 #' "right". Defaults to "center".
-#' @param manip_col String of the color to highlight the `manip_var` with.
+#' @param manip_col String of the color to highlight the `manip_var`, if used.
 #' Defaults to "blue".
-#' @param ggtheme Intended for passing theme and legend settings to ggplot2.
-#' Alternatively accepts a list of gg functions.
+#' @param ggtheme Intended for passing  a ggplot2::theme().
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
 #' @export
@@ -151,7 +150,7 @@ render_ <- function(frames,
   ## manip var axes asethetics
   axes_col <- "grey50"
   axes_siz <- 0.3
-  if(!is.null(manip_var)) {
+  if(is.null(manip_var) == FALSE) {
     axes_col            <- rep("grey50", p) 
     axes_col[manip_var] <- manip_col
     axes_col            <- rep(axes_col, n_frames)
@@ -170,7 +169,8 @@ render_ <- function(frames,
     ggplot2::ggplot() +
     ggplot2::xlim(x_min, x_max) +
     ggplot2::ylim(y_min, y_max) +
-    ggtheme
+    ggplot2::coord_fixed() +
+    ggtheme 
     
   ## Project data points, if data exsists 
   if (!is.null(data_frames)) {
@@ -182,7 +182,7 @@ render_ <- function(frames,
     gg <- gg +
       ## Circle path
       ggplot2::geom_path(
-        data = circ, color = "grey80", size = .3, inherit.aes = F,
+        data = circ, color = "grey80", size = .3, inherit.aes = FALSE,
         mapping = ggplot2::aes(x = x, y = y)
       ) +
       ## Basis axes segments
@@ -213,8 +213,7 @@ render_ <- function(frames,
 #' *gganimate* animation.
 #'
 #' @param fps Frames animated per second. Defaults to 30.
-#' @param ggtheme Intended for passing theme and legend settings to ggplot2.
-#' Alternatively accepts a list of gg functions.
+#' @param ggtheme Intended for passing  a ggplot2::theme().
 #' @param rewind Logical, should the animation play backwards after reaching 
 #' the end? Default to FALSE.
 #' @param start_pause Number of seconds to pause on the first frame for.
@@ -257,7 +256,7 @@ render_gganimate <- function(fps = 30L,
                              ...) {
   requireNamespace("gganimate")
   ## Render and animate
-  gg  <- render_(ggtheme = ggtheme, ...) # + ggplot2::coord_fixed()
+  gg  <- render_(ggtheme = ggtheme, ...) + ggplot2::coord_fixed()
   gga <- gg + gganimate::transition_states(frame, transition_length = 0L)
   anim <- gganimate::animate(gga, 
                              fps = fps,
@@ -280,8 +279,7 @@ render_gganimate <- function(fps = 30L,
 #' *plotly* animation.
 #'
 #' @param fps Frames animated per second. Defaults to 30.
-#' @param ggtheme Intended for passing theme and legend settings to ggplot2.
-#' Alternatively accepts a list of gg functions.
+#' @param ggtheme Intended for passing  a ggplot2::theme().
 #' @param tooltip Character vector of aesthetic mappings to show in the `plotly`
 #' hover-over tooltip. Defaults to "none". "all" shows all the 
 #' aesthetic mappings. The order of variables controls the order they appear. 

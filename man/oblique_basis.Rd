@@ -30,7 +30,7 @@ Used to create an oblique tour by small changes to the rotation.
 }
 \examples{
 dat <- tourr::flea[, 1:6]
-bas_pca <- prcomp(dat)$rotation[, 1L:2L]
+bas_pca <- stats::prcomp(dat)$rotation[, 1L:2L]
 mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
 oblique_basis(bas_pca, mvar)
 

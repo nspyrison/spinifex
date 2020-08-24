@@ -31,6 +31,9 @@ in the reference frame, typically the variable names.}
 
 \item{z_col}{Color to illustrate the z direction or out of the projection
 plane.}
+
+\item{ggtheme}{Intended for passing  a ggplot2::theme().
+Alternatively accepts a list of gg functions.}
 }
 \value{
 ggplot object of the basis.

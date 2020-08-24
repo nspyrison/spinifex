@@ -43,7 +43,7 @@ Required, defaults to pi/2.}
 
 \item{angle}{Target distance (in radians) between steps. Defaults to .05.}
 
-\item{ggtheme}{Intended for passing theme and legend settings to ggplot2.
+\item{ggtheme}{Intended for passing  a ggplot2::theme().
 Alternatively accepts a list of gg functions.}
 
 \item{render_type}{Which graphics to render to. Defaults to render_plotly,}

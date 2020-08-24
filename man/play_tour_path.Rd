@@ -8,9 +8,9 @@ play_tour_path(
   tour_path = NULL,
   data = NULL,
   angle = 0.05,
-  ggtheme = theme_spinifex(),
   render_type = render_plotly,
   rescale_data = FALSE,
+  ggtheme = theme_spinifex(),
   ...
 )
 }
@@ -26,6 +26,9 @@ alternative use render_gganimate.}
 
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
+
+\item{ggtheme}{Intended for passing  a ggplot2::theme().
+Alternatively accepts a list of gg functions.}
 
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
 projection point aesthetics; \code{geom_point(aes(...))}.}

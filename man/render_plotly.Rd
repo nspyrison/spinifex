@@ -15,8 +15,7 @@ render_plotly(
 \arguments{
 \item{fps}{Frames animated per second. Defaults to 30.}
 
-\item{ggtheme}{Intended for passing theme and legend settings to ggplot2.
-Alternatively accepts a list of gg functions.}
+\item{ggtheme}{Intended for passing  a ggplot2::theme().}
 
 \item{tooltip}{Character vector of aesthetic mappings to show in the \code{plotly}
 hover-over tooltip. Defaults to "none". "all" shows all the

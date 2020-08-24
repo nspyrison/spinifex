@@ -18,11 +18,10 @@ render_(
 \item{axes}{Position of the axes: "center", "bottomleft", "off", "left",
 "right". Defaults to "center".}
 
-\item{manip_col}{String of the color to highlight the \code{manip_var} with.
+\item{manip_col}{String of the color to highlight the \code{manip_var}, if used.
 Defaults to "blue".}
 
-\item{ggtheme}{Intended for passing theme and legend settings to ggplot2.
-Alternatively accepts a list of gg functions.}
+\item{ggtheme}{Intended for passing  a ggplot2::theme().}
 
 \item{...}{Optionally passes arguments to the projection points inside the
 aesthetics; \code{geom_point(aes(...))}.}

@@ -8,11 +8,13 @@
 #' The linear combination the original variables contribute to projection space.
 #' Required, no default.
 #' @param data Optional (n, p) data to plot on through the projection basis.
-#' @param lab Optional, labels for the reference frame of length 1 or the 
+#' @param lab Optional, labels for the reference frame of length 1 or the
 #' number of variables used. By default will abbreviate data if available.
-#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
+#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults
 #' to "center".
-#' @param ... Optionally passes arguments to the projection points inside the 
+#' @param ggtheme Intended for passing  a ggplot2::theme().
+#' Alternatively accepts a list of gg functions.
+#' @param ... Optionally passes arguments to the projection points inside the
 #' aesthetics; `geom_point(aes(...))`.
 #' @return ggplot object of the basis.
 #' @import tourr
@@ -24,9 +26,9 @@
 #' flea_std <- tourr::rescale(tourr::flea[, 1:4])
 #' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 #'
+#' class <- tourr::flea$species
 #' view_basis(basis = rb, data = flea_std, axes = "right",
-#'            col = col_of(tourr::flea[, 7], "Paired"),
-#'            pch = pch_of(tourr::flea[,7]),
+#'            color = class, shape = class,
 #'            alpha = .7, size = 2)
 view_basis <- function(basis,
                        data = NULL,
@@ -34,6 +36,7 @@ view_basis <- function(basis,
                        axes = "center",
                        ggtheme = theme_spinifex(),
                        ...) {
+  .Deprecated("oblique_frame")
   ## Initialize
   p     <- nrow(basis)
   basis <- as.data.frame(basis) ## for plotting
@@ -54,8 +57,8 @@ view_basis <- function(basis,
   ## Settings and asethetics 
   gg <- 
     ggplot2::ggplot() +
-    ggtheme #+
-    # ggplot2::coord_fixed()
+    ggplot2::coord_fixed() +
+    ggtheme
   
   ## Initalize data if present
   if (is.null(data) == FALSE) {
@@ -109,13 +112,15 @@ view_basis <- function(basis,
 #' The linear combination the original variables contribute to projection space.
 #' Required, no default.
 #' @param manip_var Number of the column/dimension to rotate.
-#' @param manip_col String of the color to highlight the `manip_var`.
 #' @param tilt angle in radians to rotate the projection plane. 
 #' Defaults to pi * 5/12.
-#' @param z_col Color to illustrate the z direction or out of the projection 
-#' plane.
 #' @param lab Optional, character vector of `p` length, add name to the axes 
 #' in the reference frame, typically the variable names.
+#' @param manip_col String of the color to highlight the `manip_var`.
+#' @param z_col Color to illustrate the z direction or out of the projection 
+#' plane.
+#' @param ggtheme Intended for passing  a ggplot2::theme().
+#' Alternatively accepts a list of gg functions.
 #' @return ggplot object of the basis.
 #' @export
 #' @examples 
@@ -129,14 +134,8 @@ view_manip_space <- function(basis,
                              lab = paste0("V", 1:nrow(basis)),
                              manip_col = "blue",
                              z_col = "red",
-                             ggtheme = theme_spinifex()
-) {
+                             ggtheme = theme_spinifex()) {
   #### Initialize local functions
-  ## Make a df with colnames xyz
-  as_xyz_df <- function(mat) {
-    colnames(mat) <- c("x", "y", "z")
-    as.data.frame(mat)
-  }
   ## Make a curved line segment, 1 row per degree.
   make_curve <- function(rad_st = 0L, rad_stop = 2L * pi) {
     angle <- seq(rad_st, rad_stop, 
@@ -144,9 +143,13 @@ view_manip_space <- function(basis,
     as.matrix(data.frame(x = cos(angle), y = sin(angle), z = 0L))
   }
   ## Find the angle [in radians] between 2 vectors
-  find_angle <- function(a, b) { 
-    acos(sum(a*b) /
-           (sqrt(sum(a * a)) * sqrt(sum(b * b))))
+  find_angle <- function(a, b = c(1L, 0L)){
+    acos(sum(a*b) / (sqrt(sum(a * a)) * sqrt(sum(b * b))))
+  }
+  ## Cast as df with colnames xyz
+  as_xyz_df <- function(mat) {
+    colnames(mat) <- c("x", "y", "z")
+    as.data.frame(mat)
   }
   ## R3 rotation for an angle in the x-dimension
   R3x_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
@@ -159,28 +162,28 @@ view_manip_space <- function(basis,
                     0L,  s,  c), ncol = 3L, byrow = TRUE)
     as_xyz_df(mat %*% rot)
   }
-  ## R3 rotation for an angle in the y-dimension
-  R3y_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
-    angle <- -angle ## Orientation as I imagine it defined, double check.
-    mat <- as.matrix(mat)
-    c <- cos(angle)
-    s <- sin(angle)
-    rot <- matrix(c(  c, 0L, s,
-                     0L, 1L, 0L,
-                     -s, 0L, c), ncol = 3L, byrow = TRUE)
-    as_xyz_df(mat %*% rot)
-  }
-  ## R3 rotation for an angle in the z-dimension
-  R3z_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
-    angle <- -angle ## Orientation as I imagine it defined, double check.
-    mat <- as.matrix(mat)
-    c <- cos(angle)
-    s <- sin(angle)
-    rot <- matrix(c(c,  -s, 0L,
-                    s,   c, 0L,
-                    0L, 0L, 1L), ncol = 3, byrow = T)
-    as_xyz_df(mat %*% rot)
-  }
+  # ## R3 rotation for an angle in the y-dimension
+  # R3y_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+  #   angle <- -angle ## Orientation as I imagine it defined, double check.
+  #   mat <- as.matrix(mat)
+  #   c <- cos(angle)
+  #   s <- sin(angle)
+  #   rot <- matrix(c(  c, 0L, s,
+  #                    0L, 1L, 0L,
+  #                    -s, 0L, c), ncol = 3L, byrow = TRUE)
+  #   as_xyz_df(mat %*% rot)
+  # }
+  # ## R3 rotation for an angle in the z-dimension
+  # R3z_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
+  #   angle <- -angle ## Orientation as I imagine it defined, double check.
+  #   mat <- as.matrix(mat)
+  #   c <- cos(angle)
+  #   s <- sin(angle)
+  #   rot <- matrix(c(c,  -s, 0L,
+  #                   s,   c, 0L,
+  #                   0L, 0L, 1L), ncol = 3, byrow = T)
+  #   as_xyz_df(mat %*% rot)
+  # }
   
   #### Initialize
   p <- nrow(basis)
@@ -190,29 +193,27 @@ view_manip_space <- function(basis,
   col_v[manip_var] <- manip_col
   siz_v            <- rep(0.3, p)
   siz_v[manip_var] <- 1L
-  ## Angles
-  theta <- find_angle(m_sp[manip_var, 1L:2L], 
-                      c(1L, 0L)) * sign(m_sp[manip_var, 2L])
-  phi   <- find_angle(m_sp[manip_var, ], c(m_sp[manip_var, 1L:2L], 0L))
-  ## Axes circle
-  circ          <- make_curve()
-  theta_curve_r <- R3x_of(make_curve(0L, theta) / 5L, tilt)
-  phi_curve_r   <- R3x_of(make_curve(0L, phi)   / 3L, tilt) 
-  ##TODO: needs to be based and oriented from end of V4.
-  ## already have this point in the grey projection line, pare back to that?
-  phi_curve_r   <- R3z_of(phi_curve_r, theta) ##TODO: theta isn't suppose to be tilt?
+  ## Angles, rotation and circle
+  circ <- make_curve()
+  theta <- find_angle(m_sp[manip_var, 1L:2L]) # * sign(m_sp[manip_var, 2L])
+  theta_curve_r <- R3x_of(make_curve(0L, theta) / 2L, tilt)
+  phi_pp <- find_angle(m_sp[manip_var, ], c(m_sp[manip_var, 1L:2L], 0L))
+  phi_m_sp <- find_angle(m_sp[manip_var, ], c(m_sp[manip_var, 1L:2L], 0L))
+  phi_curve_r <- R3x_of(make_curve(phi_pp, phi_m_sp) / 3L, tilt)
+  
   ## Angle label placment
-  midpt_theta   <- round(nrow(theta_curve_r) / 2L)
-  midpt_phi     <- round(nrow(phi_curve_r)   / 2L)
+  midpt_theta <- round(nrow(theta_curve_r) / 2L)
+  midpt_phi   <- round(nrow(phi_curve_r)   / 2L)
+  
   ## Rotated objects
-  m_sp_pp <- cbind(m_sp[, 1L:2L], 0L) ## *_pp; on projection plane
+  m_sp_pp <- cbind(m_sp[, 1L:2L], 0L)
   circ_r  <- R3x_of(circ, tilt)
   m_sp_r  <- R3x_of(m_sp_pp, tilt)
   m_sp_z  <- data.frame(x    = m_sp_pp[manip_var, 1L],
                         y    = m_sp_pp[manip_var, 2L],
                         z    = m_sp_pp[manip_var, 3L],
-                        xend =  m_sp_r[manip_var, 1L],
-                        yend =  m_sp_r[manip_var, 3L],
+                        xend = m_sp_r[manip_var, 1L],
+                        yend = m_sp_r[manip_var, 3L],
                         lab  = lab[manip_var])
   #### End of initialization
   
@@ -220,8 +221,8 @@ view_manip_space <- function(basis,
   gg <- 
     ## ggplot options
     ggplot2::ggplot() + 
+    ggplot2::coord_fixed() +
     ggtheme +
-    #ggplot2::coord_fixed() +
     ## xy circle path 
     ggplot2::geom_path(data = circ_r, 
                        mapping = ggplot2::aes(x = x, y = z), 
@@ -255,7 +256,8 @@ view_manip_space <- function(basis,
     ## xz theta curve path
     ggplot2::geom_path(data = theta_curve_r,
                        mapping = ggplot2::aes(x = x, y = z),
-                       color = manip_col, size = .3, linetype = 3L, inherit.aes = F) +
+                       color = manip_col, size = .3, linetype = 3L, 
+                       inherit.aes = F) +
     ## xz theta text
     ggplot2::geom_text(data = theta_curve_r[midpt_theta, ] * 1.3,
                        mapping = ggplot2::aes(x = x, y = z, label = "theta"),
@@ -265,7 +267,8 @@ view_manip_space <- function(basis,
     ## TODO: needs to go to phi theta_curve_r
     ggplot2::geom_path(data = phi_curve_r,
                        mapping = ggplot2::aes(x = x, y = y),
-                       color = z_col, size = .3, linetype = 3L, inherit.aes = FALSE) +
+                       color = z_col, size = .3, linetype = 3L, 
+                       inherit.aes = FALSE) +
     ## z phi text
     ggplot2::geom_text(data = phi_curve_r[midpt_phi, ] * 1.2,
                        mapping = ggplot2::aes(x = x, y = y, label = "phi"),
@@ -393,6 +396,7 @@ set_axes_position <- function(x,
     yoff <- ycenter
   } else if (axes == "right") {
     xscale <- 2L / 3L * xdiff
+    yscale <- 2L / 3L * ydiff
     xoff <- 5L / 3L * xdiff + xcenter
     yoff <- ycenter
   }
@@ -417,7 +421,7 @@ set_axes_position <- function(x,
 #' @export
 #' @examples 
 #' ib <- tourr::basis_init(6, 2)
-#' pan_zoom(x = ib, x_pan = -1, y_pan = 0, x_zomm = 2/3, y_zoom = 1/2)
+#' pan_zoom(x = ib, x_pan = -1, y_pan = 0, x_zoom = 2/3, y_zoom = 1/2)
 pan_zoom <- function(x, 
                      x_pan = 0L, 
                      y_pan = 0L, 
@@ -428,7 +432,8 @@ pan_zoom <- function(x,
   if (length(x) == 1L) {x <- data.frame(x = x, y = x)}
   if (ncol(x) != 2L) stop("pan_zoom is only defined for 2 variables.")
   ## Apply scale and return
-  ret[, 1L] <- ret[, 1L] * x_zoom + x_offset 
-  ret[, 2L] <- ret[, 2L] * y_zoom + y_offset
+  ret <- x
+  ret[, 1L] <- ret[, 1L] * x_zoom + x_pan 
+  ret[, 2L] <- ret[, 2L] * y_zoom + y_pan
   return(ret)
 }

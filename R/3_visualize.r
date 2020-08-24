@@ -18,7 +18,7 @@
 #' @export
 #' @examples
 #' dat <- tourr::flea[, 1:6]
-#' bas_pca <- prcomp(dat)$rotation[, 1L:2L]
+#' bas_pca <- stats::prcomp(dat)$rotation[, 1L:2L]
 #' mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
 #' oblique_basis(bas_pca, mvar)
 #' 
@@ -43,7 +43,8 @@ oblique_basis <- function(basis = NULL,
 #' @param data A (n, p) dataset to project, consisting of numeric variables.
 #' @param basis A (p, d) dim orthonormal numeric matrix.
 #' Defaults to NULL, giving a random basis.
-#' @param manip_var Number of the variable to rotate.
+#' @param manip_var Optional, number of the variable to rotate. 
+#' If NULL, theta and phi must be 0 as is no manip space to rotate. 
 #' @param theta Angle in radians of "in-projection plane" rotation, 
 #' on the xy plane of the reference frame. Defaults to 0, no rotation.
 #' @param phi Angle in radians of the "out-of-projection plane" rotation, into 
@@ -53,6 +54,8 @@ oblique_basis <- function(basis = NULL,
 #' results in a 3 character abbreviation of the variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
+#' @param ggtheme Intended for passing  a ggplot2::theme().
+#' Alternatively accepts a list of gg functions.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #' projection point aesthetics; `geom_point(aes(...))`.
 #' @return A ggplot object of the rotated projection.
@@ -60,45 +63,50 @@ oblique_basis <- function(basis = NULL,
 #' @export
 #' @examples
 #' dat <- tourr::flea[, 1:6]
-#' bas_pca <- prcomp(dat)$rotation[, 1L:2L]
+#' bas_pca <- stats::prcomp(dat)$rotation[, 1L:2L]
 #' mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
-#' oblique_frame(bas_pca, dat, mvar)
+#' oblique_frame(bas_pca, manip_var = mvar)
 #' 
-#' rb        <- tourr::basis_random(n = ncol(flea_std))
-#' rtheta    <- runif(1, 0, 2L * pi)
-#' rphi      <- runif(1, 0, 2L * pi)
+#' rb     <- tourr::basis_random(n = ncol(dat))
+#' rtheta <- runif(1, 0, 2 * pi)
+#' rphi   <- runif(1, 0, 2 * pi)
 #' oblique_frame(basis = rb, data = dat, manip_var = 4,
 #'               theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
 #'               rescale_data = TRUE)
 oblique_frame <- function(basis        = NULL,
                           data         = NULL,
-                          manip_var,
+                          manip_var    = NULL,
                           theta        = 0L,
                           phi          = 0L,
                           lab          = NULL,
                           rescale_data = FALSE,
                           ggtheme = theme_spinifex(),
                           ...) {
-  if (is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
+  if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
+  if(is.null(manip_var) & (theta != 0L | phi != 0L))
+    stop("theta or phi non-zero with a null manip_var. Manip_var required for manual_tour()")
   ## Basis condition handling
   if (is.null(basis) & !is.null(data)) {
-    basis <- prcomp(data)$rotation[, 1L:2L]
+    basis <- stats::prcomp(data)$rotation[, 1L:2L]
     message("NULL basis passed. Set to PCA basis.")
   }
   
   ## Initalize
-  data   <- as.matrix(data)
-  p      <- nrow(basis)
-  m_sp   <- create_manip_space(basis, manip_var)
-  r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
-  
+  p <- nrow(basis)
+  if(is.null(data) == FALSE)
+    data <- as.matrix(data)
+  if(is.null(manip_var) == FALSE){
+    m_sp   <- create_manip_space(basis, manip_var)
+    r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
+    basis <- r_m_sp[, 1L:2L] ## Really rotated basis
+  }
   tour_array <- array(basis, dim = c(dim(basis), 1))
   attr(tour_array, "manip_var") <- manip_var
   
   ## Render
   df_frames <- array2df(array = tour_array, data = data, lab = lab)
-  gg <- render_(frames = df_frames, ggtheme = ggtheme, ...) #+
-    #ggplot2::coord_fixed()
+  gg <- render_(frames = df_frames, ggtheme = ggtheme, ...)
+  
   ## Return
   gg
 }
@@ -117,6 +125,8 @@ oblique_frame <- function(basis        = NULL,
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
 #' @param render_type Graphics to render to. Defaults to render_plotly, 
 #' alternative use render_gganimate.
+#' @param ggtheme Intended for passing  a ggplot2::theme().
+#' Alternatively accepts a list of gg functions.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #' projection point aesthetics; `geom_point(aes(...))`. 
 #' @import tourr
@@ -145,9 +155,9 @@ oblique_frame <- function(basis        = NULL,
 play_tour_path <- function(tour_path = NULL,
                            data  = NULL,
                            angle = .05,
-                           ggtheme = theme_spinifex(),
                            render_type = render_plotly,
                            rescale_data = FALSE,
+                           ggtheme = theme_spinifex(),
                            ...) {
   if (is.null(tour_path) & is.null(data)) stop("tour_path or data must be supplied.")
   ## Data condition handling
@@ -196,7 +206,7 @@ play_tour_path <- function(tour_path = NULL,
 #' the "out-of-plane" rotation, the z-axis of the reference frame. 
 #' Required, defaults to pi/2.
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
-#' @param ggtheme Intended for passing theme and legend settings to ggplot2.
+#' @param ggtheme Intended for passing  a ggplot2::theme().
 #' Alternatively accepts a list of gg functions.
 #' @param render_type Graphics to render to. Defaults to render_plotly, 
 #' alternative use render_gganimate.
@@ -245,12 +255,12 @@ play_manual_tour <- function(basis = NULL,
   if (is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
   ## Basis condition handling
   if (is.null(basis) & !is.null(data)) {
-    basis <- prcomp(data)$rotation[, 1L:2L]
+    basis <- stats::prcomp(data)$rotation[, 1L:2L]
     message("NULL basis passed. Set to PCA basis.")
   }
   ## manip_var condition handling
   if (is.null(manip_var) & !is.null(data)) {
-    manip_var <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
+    manip_var <- which(abs(basis[, 1]) == max(abs(basis[, 1])))
     message(paste0("NULL manip_var passed. Set to ", manip_var,
                    ", the number of the variable with largest contribution in the first column of the basis."))
   }

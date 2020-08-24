@@ -85,7 +85,7 @@ We started from a random basis, that explains the orthogonal projection from $p$
 We want to explore how the coefficients of `aede2`, the *manip var*, contributed to the structure in this projection. In order to change the contributions without breaking the orthogonality of the other variables, we need to add a dimension. We call this new space the manipulation space, which can be viewed with the function `view_manip_space()`. Note that the projection plane containing the reference frame is laid down on the surface, while the manipulation dimension is at a right angle out-of-plane, with a full contribution on the manip var.
 
 ```{r view-manip-space}
-view_manip_space(basis = flea_rb, manip_var = 3, lab = colnames(flea_std))
+view_manip_space(basis = flea_rb, manip_var = 3, lab = colnames(flea_std)) 
 ```
 
 Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
@@ -125,7 +125,7 @@ bas <- tourr::basis_init(ncol(nasa_std), 2)
 # Horizontal roation
 m_sp_x    <- create_manip_space(basis = bas, manip_var = 3)
 rot_mat_x <- rotate_manip_space(manip_space = m_sp_x, 
-                                theta = 0, phi = pi/6)
+                                theta = 0, phi = pi / 6)
 rot_x     <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_x))
 ```
 
@@ -134,12 +134,12 @@ Likewise, we'll perform a vertical rotation ($\theta$` = pi/2`) on surface tempe
 # Vertical roation
 m_sp_y    <- create_manip_space(basis = bas, manip_var = 4)
 rot_mat_y <- rotate_manip_space(manip_space = m_sp_y, 
-                                theta = pi/2, phi = pi/6)
+                                theta = pi / 2, phi = pi / 6)
 rot_y     <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_y))
 
 # Combine rotations
 rot_xy <- bind_cols(rot_x, rot_y) %>% 
-  select(x = proj_3...3, y = proj_3...6)
+  select(x = manip_sp...3, y = manip_sp...6)
 
 ggplot(rot_xy, aes(x = x, y = y)) + geom_point(size = 0.3) +
   theme_bw() + labs(x = "", y = "")

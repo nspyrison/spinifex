@@ -16,8 +16,6 @@ ret <- play_tour_path(tour_path = tpath, data = flea_std,
                       render_type = render_gganimate)
 
 test_that("gganimate type", {
-  expect_is(ret, "gif_image")
-  expect_equal(length(ret), 1)
   expect_type(ret, "character")
 })
 
