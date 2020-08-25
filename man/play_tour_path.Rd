@@ -10,7 +10,7 @@ play_tour_path(
   angle = 0.05,
   render_type = render_plotly,
   rescale_data = FALSE,
-  ggtheme = theme_spinifex(),
+  ggtheme = ggplot2::theme_void(),
   ...
 )
 }
@@ -40,21 +40,32 @@ over the path and renders into a selected \code{render_type}.
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
 tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 3)
-class <- tourr::flea$species
+flea_class <- tourr::flea$species
 
 \dontrun{
 play_tour_path(tour_path = tpath, data = flea_std)
 
+play_tour_path(tour_path = tpath, data = flea_std,
+               axes = "bottomleft", angle = .08,
+               color = flea_class, shape = flea_class, size = 1.5,
+               render_type = render_gganimate, fps = 10,
+               ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+
 if (F){ ## Saving output may require additional setup
   ## Export plotly html widget
-  play_tour_path(tour_path = tpath, data = flea_std, angle = .08, fps = 40,
-                 color = class, shape = class, axes = "bottomleft",
-                 render_type = render_gganimate, 
+  play_tour_path(tour_path = tpath, data = flea_std,
+                 axes = "left", angle = .04, fps = 6,
+                 color = flea_class, shape = flea_class, size = 2,
+                 render_type = render_gganimate,
+                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
                
   ## Export gganimate .gif
-  play_tour_path(tour_path = tpath, data = flea_std, axes = "right"
-                 color = "red", size = 2, html_filename = "myRadialTour.html")
+  play_tour_path(tour_path = tpath, data = flea_std,
+                 axes = "left", angle = .06, fps = 10,
+                 color = flea_class, shape = flea_class, size = 1.2,
+                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                 html_filename = "myRadialTour.html")
 }
 }
 }

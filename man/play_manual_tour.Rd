@@ -13,7 +13,7 @@ play_manual_tour(
   phi_min = 0L,
   phi_max = 0.5 * pi,
   angle = 0.05,
-  ggtheme = theme_spinifex(),
+  ggtheme = ggplot2::theme_void(),
   render_type = render_plotly,
   ...
 )
@@ -62,23 +62,30 @@ For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
 rb <- tourr::basis_random(n = ncol(flea_std))
-class <- tourr::flea$species
+flea_class <- tourr::flea$species
 
 \dontrun{
 play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
 
-play_manual_tour(basis = rb, data = flea_std, manip_var = 6, theta = .5 * pi,
-                 render_type = render_gganimate, col = class, pch = class, 
-                 axes = "bottomleft", fps = 15)
+play_manual_tour(basis = rb, data = flea_std, manip_var = 6,
+                 theta = .5 * pi, axes = "right", fps = 5,
+                 col = flea_class, pch = flea_class, size = 1.5,
+                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title"))
+                 render_type = render_gganimate)
 
 if(F){ ## Saving output may require additional setup
   ## Export plotly html widget
-  play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
-                   render_type = render_plotly,
+  play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
+                   theta = .5 * pi, axes = "left", fps = 5,
+                   col = flea_class, pch = flea_class, size = 1.5,
+                   ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                   render_type = render_gganimate,
                    html_filename = "myRadialTour.html")
   
   ## Export gganimate .gif
   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
+                   theta = 0, axes = "bottomright", fps = 5,
+                   ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_gganimate,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }

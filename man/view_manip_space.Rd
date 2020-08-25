@@ -11,7 +11,7 @@ view_manip_space(
   lab = paste0("V", 1:nrow(basis)),
   manip_col = "blue",
   z_col = "red",
-  ggtheme = theme_spinifex()
+  ggtheme = ggplot2::theme_void()
 )
 }
 \arguments{
@@ -44,7 +44,11 @@ the projection frame. Returns the corresponding table.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
-rb <- tourr::basis_random(ncol(flea_std), 2)
+rb <- tourr::basis_random(ncol(flea_std))
 
 view_manip_space(basis = rb, manip_var = 4)
+
+view_manip_space(basis = rb, manip_var = 4,
+                 manip_col = "purple", z_col = "orange",
+                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

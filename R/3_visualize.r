@@ -29,7 +29,7 @@
 oblique_basis <- function(basis = NULL,
                           manip_var,
                           theta = 0L,
-                          phi   = 0L){
+                          phi = 0L){
   m_sp <- create_manip_space(basis, manip_var)
   rotate_manip_space(manip_space = m_sp, theta, phi)
 }
@@ -72,15 +72,16 @@ oblique_basis <- function(basis = NULL,
 #' rphi   <- runif(1, 0, 2 * pi)
 #' oblique_frame(basis = rb, data = dat, manip_var = 4,
 #'               theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
-#'               rescale_data = TRUE)
-oblique_frame <- function(basis        = NULL,
-                          data         = NULL,
-                          manip_var    = NULL,
-                          theta        = 0L,
-                          phi          = 0L,
-                          lab          = NULL,
+#'               rescale_data = TRUE,
+#'               ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+oblique_frame <- function(basis = NULL,
+                          data = NULL,
+                          manip_var = NULL,
+                          theta = 0L,
+                          phi = 0L,
+                          lab = NULL,
                           rescale_data = FALSE,
-                          ggtheme = theme_spinifex(),
+                          ggtheme = ggplot2::theme_void(),
                           ...) {
   if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
   if(is.null(manip_var) & (theta != 0L | phi != 0L))
@@ -128,28 +129,38 @@ oblique_frame <- function(basis        = NULL,
 #' @param ggtheme Intended for passing  a ggplot2::theme().
 #' Alternatively accepts a list of gg functions.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
-#' projection point aesthetics; `geom_point(aes(...))`. 
+#' projection point aesthetics; `geom_point(aes(...))`.
 #' @import tourr
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 3)
-#' class <- tourr::flea$species
+#' flea_class <- tourr::flea$species
 #' 
 #' \dontrun{
 #' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
-
+#' play_tour_path(tour_path = tpath, data = flea_std,
+#'                axes = "bottomleft", angle = .08,
+#'                color = flea_class, shape = flea_class, size = 1.5,
+#'                render_type = render_gganimate, fps = 10,
+#'                ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+#' 
 #' if (F){ ## Saving output may require additional setup
 #'   ## Export plotly html widget
-#'   play_tour_path(tour_path = tpath, data = flea_std, angle = .08, fps = 40,
-#'                  color = class, shape = class, axes = "bottomleft",
-#'                  render_type = render_gganimate, 
+#'   play_tour_path(tour_path = tpath, data = flea_std,
+#'                  axes = "left", angle = .04, fps = 6,
+#'                  color = flea_class, shape = flea_class, size = 2,
+#'                  render_type = render_gganimate,
+#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 #'                
 #'   ## Export gganimate .gif
-#'   play_tour_path(tour_path = tpath, data = flea_std, axes = "right"
-#'                  color = "red", size = 2, html_filename = "myRadialTour.html")
+#'   play_tour_path(tour_path = tpath, data = flea_std,
+#'                  axes = "left", angle = .06, fps = 10,
+#'                  color = flea_class, shape = flea_class, size = 1.2,
+#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  html_filename = "myRadialTour.html")
 #' }
 #' }
 play_tour_path <- function(tour_path = NULL,
@@ -157,7 +168,7 @@ play_tour_path <- function(tour_path = NULL,
                            angle = .05,
                            render_type = render_plotly,
                            rescale_data = FALSE,
-                           ggtheme = theme_spinifex(),
+                           ggtheme = ggplot2::theme_void(),
                            ...) {
   if (is.null(tour_path) & is.null(data)) stop("tour_path or data must be supplied.")
   ## Data condition handling
@@ -220,23 +231,30 @@ play_tour_path <- function(tour_path = NULL,
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
-#' class <- tourr::flea$species
+#' flea_class <- tourr::flea$species
 #' 
 #' \dontrun{
 #' play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
 #' 
-#' play_manual_tour(basis = rb, data = flea_std, manip_var = 6, theta = .5 * pi,
-#'                  render_type = render_gganimate, col = class, pch = class, 
-#'                  axes = "bottomleft", fps = 15)
+#' play_manual_tour(basis = rb, data = flea_std, manip_var = 6,
+#'                  theta = .5 * pi, axes = "right", fps = 5,
+#'                  col = flea_class, pch = flea_class, size = 1.5,
+#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title"))
+#'                  render_type = render_gganimate)
 #' 
 #' if(F){ ## Saving output may require additional setup
 #'   ## Export plotly html widget
-#'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
-#'                    render_type = render_plotly,
+#'   play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
+#'                    theta = .5 * pi, axes = "left", fps = 5,
+#'                    col = flea_class, pch = flea_class, size = 1.5,
+#'                    ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                    render_type = render_gganimate,
 #'                    html_filename = "myRadialTour.html")
 #'   
 #'   ## Export gganimate .gif
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
+#'                    theta = 0, axes = "bottomright", fps = 5,
+#'                    ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    render_type = render_gganimate,
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
@@ -249,7 +267,7 @@ play_manual_tour <- function(basis = NULL,
                              phi_min = 0L,
                              phi_max = .5 * pi,
                              angle = .05,
-                             ggtheme = theme_spinifex(),
+                             ggtheme = ggplot2::theme_void(),
                              render_type = render_plotly,
                              ...) {
   if (is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
@@ -273,7 +291,7 @@ play_manual_tour <- function(basis = NULL,
   ## Render
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, ...)
   tour_df <- array2df(array = tour_hist, data = data)
-  anim <- render_type(frames = tour_df, ...)
+  anim <- render_type(frames = tour_df, ggtheme = ggtheme, ...)
   
   ## Return
   anim

@@ -5,18 +5,18 @@
 \title{Render the frames as a \emph{gganimate} animation.}
 \usage{
 render_gganimate(
-  fps = 30L,
-  ggtheme = theme_spinifex(),
+  fps = 8L,
+  ggtheme = ggplot2::theme_void(),
   rewind = FALSE,
-  start_pause = 1L,
-  end_pause = 2L,
+  start_pause = 0.5,
+  end_pause = 1L,
   gif_filename = NULL,
   gif_path = NULL,
   ...
 )
 }
 \arguments{
-\item{fps}{Frames animated per second. Defaults to 30.}
+\item{fps}{Frames animated per second. Defaults to 8.}
 
 \item{ggtheme}{Intended for passing  a ggplot2::theme().}
 
@@ -24,10 +24,10 @@ render_gganimate(
 the end? Default to FALSE.}
 
 \item{start_pause}{Number of seconds to pause on the first frame for.
-Defaults to 1.}
+Defaults to .5.}
 
 \item{end_pause}{Number of seconds to pause on the last frame for.
-Defaults to 2.}
+Defaults to 1.}
 
 \item{gif_filename}{Optional, saves the animation as a GIF to this string
 (without folderpath) . Defaults to NULL (no GIF saved). For more control call
@@ -49,16 +49,21 @@ flea_class <- tourr::flea$species
 rb <- tourr::basis_random(n = ncol(flea_std))
 array_frames <- manual_tour(basis = rb, manip_var = 4)
 df_frames <- array2df(array = array_frames, data = flea_std)
+
 \dontrun{
 render_gganimate(frames = df_frames)
 
-render_gganimate(frames = df_frames, axes = "bottomleft", fps = 15, rewind = TRUE,
-  col = flea_class, pch = flea_class, size = 2, alpha = .6)
+render_gganimate(frames = df_frames, axes = "bottomleft", 
+                 color = flea_class, shape = flea_class, size = 1.5, alpha = .6,
+                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                 fps = 10, rewind = TRUE)
   
 if(F){ ## Saving .gif may require additional setup
-  render_gganimate(frames = df_frames, axes = "right", fps = 40, rewind = TRUE,
-    col = flea_class, pch = flea_class, size = 2,
-    gif_filename = "myRadialTour.gif", gif_path = "./output")
+  render_gganimate(frames = df_frames, axes = "right",
+                   color = flea_class, shape = flea_class, size = 2,
+                   ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                   fps = 6, rewind = TRUE,
+                   gif_filename = "myRadialTour.gif", gif_path = "./output")
 }
 }
 }

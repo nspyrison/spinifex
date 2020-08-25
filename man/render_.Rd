@@ -8,7 +8,7 @@ render_(
   frames,
   axes = "center",
   manip_col = "blue",
-  ggtheme = theme_spinifex(),
+  ggtheme = ggplot2::theme_void(),
   ...
 )
 }
@@ -38,6 +38,9 @@ df_frames <- array2df(array = array_frames, data = flea_std)
 
 render_(frames = df_frames)
 
+flea_class <- tourr::flea$species
 render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
-        col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
+        color = flea_class, shape = flea_class,
+        size = 2, alpha = .5,
+        ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

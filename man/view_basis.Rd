@@ -9,7 +9,7 @@ view_basis(
   data = NULL,
   lab = NULL,
   axes = "center",
-  ggtheme = theme_spinifex(),
+  ggtheme = ggplot2::theme_void(),
   ...
 )
 }
@@ -39,14 +39,14 @@ ggplot object of the basis.
 ggplot2 object of axes contribution inscribed in a unit circle.
 }
 \examples{
-rb <- tourr::basis_random(4, 2)
+flea_std <- tourr::rescale(tourr::flea[, 1:4])
+rb <- tourr::basis_random(ncol(flea_std))
+flea_class <- tourr::flea$species
 view_basis(basis = rb)
 
-flea_std <- tourr::rescale(tourr::flea[, 1:4])
 view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 
-class <- tourr::flea$species
 view_basis(basis = rb, data = flea_std, axes = "right",
-           color = class, shape = class,
-           alpha = .7, size = 2)
+           color = flea_class, shape = flea_class, alpha = .7, size = 2,
+           ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

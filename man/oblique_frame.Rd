@@ -12,7 +12,7 @@ oblique_frame(
   phi = 0L,
   lab = NULL,
   rescale_data = FALSE,
-  ggtheme = theme_spinifex(),
+  ggtheme = ggplot2::theme_void(),
   ...
 )
 }
@@ -62,5 +62,6 @@ rtheta <- runif(1, 0, 2 * pi)
 rphi   <- runif(1, 0, 2 * pi)
 oblique_frame(basis = rb, data = dat, manip_var = 4,
               theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
-              rescale_data = TRUE)
+              rescale_data = TRUE,
+              ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

@@ -17,9 +17,9 @@
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
 #' rb <- tourr::basis_random(n = ncol(flea_std))
-#' dummy_array <- array(rb, dim = c(dim(rb), 1))
-#' attr(dummy_array, "manip_var") <- sample(1:ncol(flea_std), 1)
-#' array2df(array = dummy_array)
+#' single_frame <- array(rb, dim = c(dim(rb), 1))
+#' attr(single_frame, "manip_var") <- sample(1:ncol(flea_std), 1)
+#' array2df(array = single_frame)
 #' 
 #' tour_array <- manual_tour(basis = rb, manip_var = 4)
 #' array2df(array = tour_array, data = flea_std, lab = paste0("MyLabs", 1:nrow(rb)))
@@ -98,12 +98,15 @@ array2df <- function(array,
 #' 
 #' render_(frames = df_frames)
 #' 
+#' flea_class <- tourr::flea$species
 #' render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
-#'         col = tourr::flea$species, pch = tourr::flea$species, cex = 2, alpha = .5)
+#'         color = flea_class, shape = flea_class,
+#'         size = 2, alpha = .5,
+#'         ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
-                    ggtheme = theme_spinifex(),
+                    ggtheme = ggplot2::theme_void(),
                     ...) {
   if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
   
@@ -212,14 +215,14 @@ render_ <- function(frames,
 #' Takes the result of `array2df()` and renders them into a 
 #' *gganimate* animation.
 #'
-#' @param fps Frames animated per second. Defaults to 30.
+#' @param fps Frames animated per second. Defaults to 8.
 #' @param ggtheme Intended for passing  a ggplot2::theme().
 #' @param rewind Logical, should the animation play backwards after reaching 
 #' the end? Default to FALSE.
 #' @param start_pause Number of seconds to pause on the first frame for.
-#' Defaults to 1.
+#' Defaults to .5.
 #' @param end_pause Number of seconds to pause on the last frame for.
-#' Defaults to 2.
+#' Defaults to 1.
 #' @param gif_filename Optional, saves the animation as a GIF to this string 
 #' (without folderpath) . Defaults to NULL (no GIF saved). For more control call 
 #' `gganimate::anim_save()` on a return object of `render_gganimate()`.
@@ -234,23 +237,28 @@ render_ <- function(frames,
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' array_frames <- manual_tour(basis = rb, manip_var = 4)
 #' df_frames <- array2df(array = array_frames, data = flea_std)
+#' 
 #' \dontrun{
 #' render_gganimate(frames = df_frames)
 #' 
-#' render_gganimate(frames = df_frames, axes = "bottomleft", fps = 15, rewind = TRUE,
-#'   col = flea_class, pch = flea_class, size = 2, alpha = .6)
+#' render_gganimate(frames = df_frames, axes = "bottomleft", 
+#'                  color = flea_class, shape = flea_class, size = 1.5, alpha = .6,
+#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  fps = 10, rewind = TRUE)
 #'   
 #' if(F){ ## Saving .gif may require additional setup
-#'   render_gganimate(frames = df_frames, axes = "right", fps = 40, rewind = TRUE,
-#'     col = flea_class, pch = flea_class, size = 2,
-#'     gif_filename = "myRadialTour.gif", gif_path = "./output")
+#'   render_gganimate(frames = df_frames, axes = "right",
+#'                    color = flea_class, shape = flea_class, size = 2,
+#'                    ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                    fps = 6, rewind = TRUE,
+#'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
 #' }
-render_gganimate <- function(fps = 30L,
-                             ggtheme = theme_spinifex(),
+render_gganimate <- function(fps = 8L,
+                             ggtheme = ggplot2::theme_void(),
                              rewind = FALSE,
-                             start_pause = 1L,
-                             end_pause = 2L,
+                             start_pause = .5,
+                             end_pause = 1L,
                              gif_filename = NULL,
                              gif_path = NULL,
                              ...) {
@@ -296,20 +304,24 @@ render_gganimate <- function(fps = 30L,
 #' rb <- tourr::basis_random(n = ncol(flea_std))
 #' array_frames <- manual_tour(basis = rb, manip_var = 4)
 #' df_frames <- array2df(array = array_frames, data = flea_std)
+#' 
 #' \dontrun{
 #' render_plotly(frames = df_frames)
 #' 
-#' render_plotly(frames = df_frames, axes = "bottomleft", fps = 20, tooltip = "all",
-#'               col = flea_class, pch = flea_class, size = 2, alpha = .6)
+#' render_plotly(frames = df_frames, axes = "bottomleft", 
+#'               col = flea_class, pch = flea_class, size = 2, alpha = .6,
+#'               ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'               fps = 10, tooltip = "all")
 #' 
 #' if(F){ ## Saving .html may require additional setup
-#'   render_plotly(frames = df_frames, axes = "right", fps = 45,
+#'   render_plotly(frames = df_frames, axes = "right", fps = 6,
 #'                 col = flea_class, pch = flea_class, size = 1.5,
+#'                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                 html_filename = "myRadialTour.html")
 #' }
 #' }
-render_plotly <- function(fps = 30L,
-                          ggtheme = theme_spinifex(),
+render_plotly <- function(fps = 8L,
+                          ggtheme = ggplot2::theme_void(),
                           tooltip = "none",
                           html_filename = NULL,
                           ...) {
@@ -331,28 +343,5 @@ render_plotly <- function(fps = 30L,
     htmlwidgets::saveWidget(ggp, html_filename)
   ## Return
   ggp
-}
-
-
-#' Aesthetic settings that can be applied to a ggplot object.
-#'
-#' A `ggplot2` theme (group of aesthetic settings), that can be added to a ggplot. 
-#' @export
-#' @examples
-#' require(ggplot2)
-#' df <- data.frame(x = rnorm(10), y = rnorm(10))
-#' ggplot(df, aes(x, y)) + geom_point() + theme_spinifex()
-#' 
-#' rb    <- tourr::basis_random(n = 6)
-#' theta <- runif(1, 0, 2 * pi)
-#' phi   <- runif(1, 0, 2L *pi)
-#' 
-#' oblique_basis(basis = rb, manip_var = 4, theta, phi) + theme_spinifex()
-theme_spinifex <- function(){
-  ggplot2::theme_minimal() + 
-    ggplot2::theme(axis.title = ggplot2::element_blank(),
-                   axis.ticks = ggplot2::element_blank(),
-                   axis.text  = ggplot2::element_blank(),
-                   legend.position = "none") 
 }
 

@@ -20,21 +20,21 @@
 #' @import tourr
 #' @export
 #' @examples 
-#' rb <- tourr::basis_random(4, 2)
+#' flea_std <- tourr::rescale(tourr::flea[, 1:4])
+#' rb <- tourr::basis_random(ncol(flea_std))
+#' flea_class <- tourr::flea$species
 #' view_basis(basis = rb)
 #' 
-#' flea_std <- tourr::rescale(tourr::flea[, 1:4])
 #' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 #'
-#' class <- tourr::flea$species
 #' view_basis(basis = rb, data = flea_std, axes = "right",
-#'            color = class, shape = class,
-#'            alpha = .7, size = 2)
+#'            color = flea_class, shape = flea_class, alpha = .7, size = 2,
+#'            ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 view_basis <- function(basis,
                        data = NULL,
                        lab  = NULL,
                        axes = "center",
-                       ggtheme = theme_spinifex(),
+                       ggtheme = ggplot2::theme_void(),
                        ...) {
   .Deprecated("oblique_frame")
   ## Initialize
@@ -125,16 +125,20 @@ view_basis <- function(basis,
 #' @export
 #' @examples 
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' rb <- tourr::basis_random(ncol(flea_std), 2)
+#' rb <- tourr::basis_random(ncol(flea_std))
 #' 
 #' view_manip_space(basis = rb, manip_var = 4)
+#' 
+#' view_manip_space(basis = rb, manip_var = 4,
+#'                  manip_col = "purple", z_col = "orange",
+#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 view_manip_space <- function(basis,
                              manip_var,
                              tilt = 1/12 * pi,
                              lab = paste0("V", 1:nrow(basis)),
                              manip_col = "blue",
                              z_col = "red",
-                             ggtheme = theme_spinifex()) {
+                             ggtheme = ggplot2::theme_void()) {
   #### Initialize local functions
   ## Make a curved line segment, 1 row per degree.
   make_curve <- function(rad_st = 0L, rad_stop = 2L * pi) {
@@ -279,43 +283,43 @@ view_manip_space <- function(basis,
   gg
 }
 
-### FORMATING ------
-#' Return hex color code for a given discrete categorical variable.
-#' 
-#' @param class The discrete categorical variable to return the color of.
-#' @param pallet_name The name of the `RColorBrewer` pallet to get the colors
-#' from. Defaults to "Dark2".
-#' @return Vector of character hex color code of the passed categorical variable.
-#' @export
-#' @examples 
-#' col_of(tourr::flea$species)
-col_of <- function(class, pallet_name = "Dark2") {
-  class <- as.factor(class)
-  .l_lvls <- length(levels(class))
-  if (.l_lvls == 0L) stop("Length of 'class' cannot be zero.")
-  if (.l_lvls > 12L) stop("'class' has more than the expected max of 12 levels.")
-  pal <- suppressWarnings(RColorBrewer::brewer.pal(.l_lvls, pallet_name))
-  pal[as.integer(factor(class))]
-}
-#' Return shape integers for a given discrete categorical variable.
-#' 
-#' @param class The discrete categorical variable to return the shape of.
-#' @return Vector of integer shape values of the discrete categorical variable.
-#' @export
-#' @examples 
-#' pch_of(tourr::flea$species)
-pch_of <- function(class) {
-  class <- as.factor(as.vector(class))
-  .shape_ord <- c(21L:25L, 3L:4L, 7L:14L)
-  .l_shapes  <- length(unique(.shape_ord))
-  class <- as.factor(class)
-  .l_classes <- length(levels(class))
-  if (.l_classes == 0L) stop("Length of 'class' cannot be zero.")
-  if (.l_classes > 12L)
-    stop(paste0("'class' has more than the expected max of ", .l_shapes, " levels."))
-  .int_lvls <- as.integer(class)
-  .shape_ord[.int_lvls]
-}
+# ### FORMATING ------
+# #' Return hex color code for a given discrete categorical variable.
+# #' 
+# #' @param class The discrete categorical variable to return the color of.
+# #' @param pallet_name The name of the `RColorBrewer` pallet to get the colors
+# #' from. Defaults to "Dark2".
+# #' @return Vector of character hex color code of the passed categorical variable.
+# #' @export
+# #' @examples 
+# #' color_of(tourr::flea$species)
+# color_of <- function(class, pallet_name = "Dark2") {
+#   class <- as.factor(class)
+#   .l_lvls <- length(levels(class))
+#   if (.l_lvls == 0L) stop("Length of 'class' cannot be zero.")
+#   if (.l_lvls > 12L) stop("'class' has more than the expected max of 12 levels.")
+#   pal <- suppressWarnings(RColorBrewer::brewer.pal(.l_lvls, pallet_name))
+#   pal[as.integer(factor(class))]
+# }
+# #' Return shape integers for a given discrete categorical variable.
+# #' 
+# #' @param class The discrete categorical variable to return the shape of.
+# #' @return Vector of integer shape values of the discrete categorical variable.
+# #' @export
+# #' @examples 
+# #' shape_of(tourr::flea$species)
+# shape_of <- function(class) {
+#   class <- as.factor(as.vector(class))
+#   .shape_ord <- c(21L:25L, 3L:4L, 7L:14L)
+#   .l_shapes  <- length(unique(.shape_ord))
+#   class <- as.factor(class)
+#   .l_classes <- length(levels(class))
+#   if (.l_classes == 0L) stop("Length of 'class' cannot be zero.")
+#   if (.l_classes > 12L)
+#     stop(paste0("'class' has more than the expected max of ", .l_shapes, " levels."))
+#   .int_lvls <- as.integer(class)
+#   .shape_ord[.int_lvls]
+# }
 
 
 ### MATH AND TRANSFORMS -----
@@ -353,7 +357,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' @examples
 #' rb <- tourr::basis_random(4, 2)
 #' set_axes_position(x = rb, axes = "bottomleft")
-#' set_axes_position(x = rb, axes = "right", to = mtcars[, 1:2])
+#' set_axes_position(x = rb, axes = "right", to = wine[, 2:3])
 set_axes_position <- function(x, 
                               axes = c("center", "bottomleft", "topright", "off", "left", "right"), 
                               to = data.frame(x = c(0, 1), y = c(0, 1))

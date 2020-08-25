@@ -5,8 +5,8 @@
 \title{Render the frames as a \emph{plotly} animation.}
 \usage{
 render_plotly(
-  fps = 30L,
-  ggtheme = theme_spinifex(),
+  fps = 8L,
+  ggtheme = ggplot2::theme_void(),
   tooltip = "none",
   html_filename = NULL,
   ...
@@ -39,15 +39,19 @@ flea_class <- tourr::flea$species
 rb <- tourr::basis_random(n = ncol(flea_std))
 array_frames <- manual_tour(basis = rb, manip_var = 4)
 df_frames <- array2df(array = array_frames, data = flea_std)
+
 \dontrun{
 render_plotly(frames = df_frames)
 
-render_plotly(frames = df_frames, axes = "bottomleft", fps = 20, tooltip = "all",
-              col = flea_class, pch = flea_class, size = 2, alpha = .6)
+render_plotly(frames = df_frames, axes = "bottomleft", 
+              col = flea_class, pch = flea_class, size = 2, alpha = .6,
+              ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+              fps = 10, tooltip = "all")
 
 if(F){ ## Saving .html may require additional setup
-  render_plotly(frames = df_frames, axes = "right", fps = 45,
+  render_plotly(frames = df_frames, axes = "right", fps = 6,
                 col = flea_class, pch = flea_class, size = 1.5,
+                ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                 html_filename = "myRadialTour.html")
 }
 }

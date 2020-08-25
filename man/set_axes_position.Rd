@@ -28,7 +28,7 @@ Typically called, by other functions to scale axes.
 \examples{
 rb <- tourr::basis_random(4, 2)
 set_axes_position(x = rb, axes = "bottomleft")
-set_axes_position(x = rb, axes = "right", to = mtcars[, 1:2])
+set_axes_position(x = rb, axes = "right", to = wine[, 2:3])
 }
 \seealso{
 \code{\link{pan_zoom}} for more manual control.
