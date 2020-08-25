@@ -13,7 +13,7 @@ render_plotly(
 )
 }
 \arguments{
-\item{fps}{Frames animated per second. Defaults to 30.}
+\item{fps}{Frames animated per second. Defaults to 8.}
 
 \item{ggtheme}{Intended for passing  a ggplot2::theme().}
 

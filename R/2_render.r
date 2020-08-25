@@ -286,7 +286,7 @@ render_gganimate <- function(fps = 8L,
 #' Takes the result of `array2df()` and renders them into a 
 #' *plotly* animation.
 #'
-#' @param fps Frames animated per second. Defaults to 30.
+#' @param fps Frames animated per second. Defaults to 8.
 #' @param ggtheme Intended for passing  a ggplot2::theme().
 #' @param tooltip Character vector of aesthetic mappings to show in the `plotly`
 #' hover-over tooltip. Defaults to "none". "all" shows all the 
