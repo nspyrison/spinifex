@@ -44,11 +44,10 @@ array2df <- function(array,
     data <- as.matrix(data)
     data_frames <- NULL
     for (frame in 1L:n_frames) {
-      new_frame <- data %*% array[,, frame]
+      new_frame <- tourr::rescale(data %*% array[,, frame])
       new_frame <- cbind(new_frame, frame)
       data_frames <- rbind(data_frames, new_frame)
     }
-    data_frames[, 1L:2L] <- tourr::rescale(data_frames[, 1L:2L])
     data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c("x", "y", "frame")
   }
