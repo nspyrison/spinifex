@@ -1,7 +1,7 @@
-#' Return the basis of an oblique frame
+#' Return the manipulation space of the specificed rotation
 #'
-#' Rotates a basis returning (p, 2) basis describing `oblique_frame()`.
-#' Used to create an oblique tour by small changes to the rotation.
+#' Rotates a basis returning (p, 3) manipulation space that projects to 
+#' `view_frame()`. Allows for interactive use rather than producing a whole tour.
 #' 
 #' @param basis A (p, d) orthonormal numeric matrix.
 #' The linear combination the original variables contribute to projection space.
@@ -20,16 +20,16 @@
 #' dat <- tourr::flea[, 1:6]
 #' bas_pca <- stats::prcomp(dat)$rotation[, 1L:2L]
 #' mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
-#' oblique_basis(bas_pca, mvar)
+#' print_manip_space(bas_pca, mvar)
 #' 
 #' rb    <- tourr::basis_random(n = 6)
 #' rtheta <- runif(1, 0, 2 * pi)
 #' rphi   <- runif(1, 0, 2 *pi)
-#' oblique_basis(basis = rb, manip_var = 4, rtheta, rphi)
-oblique_basis <- function(basis = NULL,
-                          manip_var,
-                          theta = 0L,
-                          phi = 0L){
+#' print_manip_space(basis = rb, manip_var = 4, rtheta, rphi)
+print_manip_space <- function(basis = NULL,
+                              manip_var,
+                              theta = 0L,
+                              phi = 0L){
   m_sp <- create_manip_space(basis, manip_var)
   rotate_manip_space(manip_space = m_sp, theta, phi)
 }
@@ -65,24 +65,24 @@ oblique_basis <- function(basis = NULL,
 #' dat <- tourr::flea[, 1:6]
 #' bas_pca <- stats::prcomp(dat)$rotation[, 1L:2L]
 #' mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
-#' oblique_frame(bas_pca, manip_var = mvar)
+#' view_frame(bas_pca, manip_var = mvar)
 #' 
 #' rb     <- tourr::basis_random(n = ncol(dat))
 #' rtheta <- runif(1, 0, 2 * pi)
 #' rphi   <- runif(1, 0, 2 * pi)
-#' oblique_frame(basis = rb, data = dat, manip_var = 4,
-#'               theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
-#'               rescale_data = TRUE,
-#'               ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
-oblique_frame <- function(basis = NULL,
-                          data = NULL,
-                          manip_var = NULL,
-                          theta = 0L,
-                          phi = 0L,
-                          lab = NULL,
-                          rescale_data = FALSE,
-                          ggtheme = ggplot2::theme_void(),
-                          ...) {
+#' view_frame(basis = rb, data = dat, manip_var = 4,
+#'            theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
+#'            rescale_data = TRUE,
+#'            ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+view_frame <- function(basis = NULL,
+                       data = NULL,
+                       manip_var = NULL,
+                       theta = 0L,
+                       phi = 0L,
+                       lab = NULL,
+                       rescale_data = FALSE,
+                       ggtheme = ggplot2::theme_void(),
+                       ...) {
   if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
   if(is.null(manip_var) & (theta != 0L | phi != 0L))
     stop("theta or phi non-zero with a null manip_var. Manip_var required for manual_tour()")
@@ -141,26 +141,27 @@ oblique_frame <- function(basis = NULL,
 #' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
 #' play_tour_path(tour_path = tpath, data = flea_std,
-#'                axes = "bottomleft", angle = .08,
+#'                axes = "bottomleft", angle = .08, fps = 10,
 #'                color = flea_class, shape = flea_class, size = 1.5,
-#'                render_type = render_gganimate, fps = 10,
-#'                ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+#'                ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                render_type = render_gganimate)
 #' 
 #' if (F){ ## Saving output may require additional setup
-#'   ## Export plotly html widget
-#'   play_tour_path(tour_path = tpath, data = flea_std,
-#'                  axes = "left", angle = .04, fps = 6,
-#'                  color = flea_class, shape = flea_class, size = 2,
-#'                  render_type = render_gganimate,
-#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-#'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
-#'                
-#'   ## Export gganimate .gif
+#'   ## Export plotly .html widget
 #'   play_tour_path(tour_path = tpath, data = flea_std,
 #'                  axes = "left", angle = .06, fps = 10,
 #'                  color = flea_class, shape = flea_class, size = 1.2,
 #'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  render_type = render_plotly,
 #'                  html_filename = "myRadialTour.html")
+#'                
+#'   ## Export gganimate .gif
+#'   play_tour_path(tour_path = tpath, data = flea_std,
+#'                  axes = "left", angle = .04, fps = 6,
+#'                  color = flea_class, shape = flea_class, size = 2,
+#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  render_type = render_gganimate,
+#'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 #' }
 #' }
 play_tour_path <- function(tour_path = NULL,
@@ -239,16 +240,16 @@ play_tour_path <- function(tour_path = NULL,
 #' play_manual_tour(basis = rb, data = flea_std, manip_var = 6,
 #'                  theta = .5 * pi, axes = "right", fps = 5,
 #'                  col = flea_class, pch = flea_class, size = 1.5,
-#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title"))
+#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  render_type = render_gganimate)
 #' 
 #' if(F){ ## Saving output may require additional setup
-#'   ## Export plotly html widget
+#'   ## Export plotly .html widget
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
 #'                    theta = .5 * pi, axes = "left", fps = 5,
 #'                    col = flea_class, pch = flea_class, size = 1.5,
 #'                    ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-#'                    render_type = render_gganimate,
+#'                    render_type = render_plotly,
 #'                    html_filename = "myRadialTour.html")
 #'   
 #'   ## Export gganimate .gif

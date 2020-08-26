@@ -36,7 +36,7 @@ view_basis <- function(basis,
                        axes = "center",
                        ggtheme = ggplot2::theme_void(),
                        ...) {
-  .Deprecated("oblique_frame")
+  .Deprecated("view_frame")
   ## Initialize
   p     <- nrow(basis)
   basis <- as.data.frame(basis) ## for plotting

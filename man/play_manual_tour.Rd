@@ -70,16 +70,16 @@ play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
 play_manual_tour(basis = rb, data = flea_std, manip_var = 6,
                  theta = .5 * pi, axes = "right", fps = 5,
                  col = flea_class, pch = flea_class, size = 1.5,
-                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title"))
+                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  render_type = render_gganimate)
 
 if(F){ ## Saving output may require additional setup
-  ## Export plotly html widget
+  ## Export plotly .html widget
   play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
                    theta = .5 * pi, axes = "left", fps = 5,
                    col = flea_class, pch = flea_class, size = 1.5,
                    ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-                   render_type = render_gganimate,
+                   render_type = render_plotly,
                    html_filename = "myRadialTour.html")
   
   ## Export gganimate .gif

@@ -48,7 +48,7 @@ render_plotly(frames = df_frames, axes = "bottomleft",
               ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
               fps = 10, tooltip = "all")
 
-if(F){ ## Saving .html may require additional setup
+if(F){ ## Saving .html widget may require additional setup
   render_plotly(frames = df_frames, axes = "right", fps = 6,
                 col = flea_class, pch = flea_class, size = 1.5,
                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),

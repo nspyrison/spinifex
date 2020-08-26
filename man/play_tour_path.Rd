@@ -46,26 +46,27 @@ flea_class <- tourr::flea$species
 play_tour_path(tour_path = tpath, data = flea_std)
 
 play_tour_path(tour_path = tpath, data = flea_std,
-               axes = "bottomleft", angle = .08,
+               axes = "bottomleft", angle = .08, fps = 10,
                color = flea_class, shape = flea_class, size = 1.5,
-               render_type = render_gganimate, fps = 10,
-               ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+               ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+               render_type = render_gganimate)
 
 if (F){ ## Saving output may require additional setup
-  ## Export plotly html widget
-  play_tour_path(tour_path = tpath, data = flea_std,
-                 axes = "left", angle = .04, fps = 6,
-                 color = flea_class, shape = flea_class, size = 2,
-                 render_type = render_gganimate,
-                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-                 gif_path = "myOutput", gif_filename = "myRadialTour.gif")
-               
-  ## Export gganimate .gif
+  ## Export plotly .html widget
   play_tour_path(tour_path = tpath, data = flea_std,
                  axes = "left", angle = .06, fps = 10,
                  color = flea_class, shape = flea_class, size = 1.2,
                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                 render_type = render_plotly,
                  html_filename = "myRadialTour.html")
+               
+  ## Export gganimate .gif
+  play_tour_path(tour_path = tpath, data = flea_std,
+                 axes = "left", angle = .04, fps = 6,
+                 color = flea_class, shape = flea_class, size = 2,
+                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                 render_type = render_gganimate,
+                 gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 }
 }
 }

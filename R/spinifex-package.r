@@ -16,7 +16,7 @@
 #'   \item [run_app()], running `run_app("intro")` will open an introductory `shiny` app demonstrating radial tours.
 #'   \item [play_manual_tour()], performs a manual tour, returning a `plotly` animate by default.
 #'   \item [play_tour_path()], turns a tour path into an animation, returning a `plotly` object by default.
-#'   \item [oblique_frame()], plot a basis set on a reference axis.
+#'   \item [view_frame()], plot a basis set on a reference axis.
 #'   \item [view_manip_space()], plot a manipulation space highlighting the manip var.
 #' }
 #'
