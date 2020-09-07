@@ -6,7 +6,7 @@
 \usage{
 render_gganimate(
   fps = 8L,
-  ggtheme = ggplot2::theme_void(),
+  ggproto = ggplot2::theme_void(),
   rewind = FALSE,
   start_pause = 0.5,
   end_pause = 1L,
@@ -18,7 +18,9 @@ render_gganimate(
 \arguments{
 \item{fps}{Frames animated per second. Defaults to 8.}
 
-\item{ggtheme}{Intended for passing  a ggplot2::theme().}
+\item{ggproto}{Accepts a list of gg functions. Think of this as an
+alternative format to \code{ggplot() + ggproto[[1]]}.
+Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 
 \item{rewind}{Logical, should the animation play backwards after reaching
 the end? Default to FALSE.}
@@ -30,8 +32,8 @@ Defaults to .5.}
 Defaults to 1.}
 
 \item{gif_filename}{Optional, saves the animation as a GIF to this string
-(without folderpath) . Defaults to NULL (no GIF saved). For more control call
-\code{gganimate::anim_save()} on a return object of \code{render_gganimate()}.}
+(without the folder path). Defaults to NULL (no GIF saved). For more control
+call \code{gganimate::anim_save()} on a return object of \code{render_gganimate()}.}
 
 \item{gif_path}{Optional, A string of the directory path (without filename)
 to save a GIF to. Defaults to NULL (current work directory).}
@@ -55,13 +57,13 @@ render_gganimate(frames = df_frames)
 
 render_gganimate(frames = df_frames, axes = "bottomleft", 
                  color = flea_class, shape = flea_class, size = 1.5, alpha = .6,
-                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  fps = 10, rewind = TRUE)
   
 if(F){ ## Saving .gif may require additional setup
   render_gganimate(frames = df_frames, axes = "right",
                    color = flea_class, shape = flea_class, size = 2,
-                   ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                   ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    fps = 6, rewind = TRUE,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }

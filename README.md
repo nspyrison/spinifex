@@ -9,7 +9,7 @@
 
 ## About tours
 
-Data vizualization tours are a class of linear projections that are animate small rotations in the basis over time. This is akin to a shadow puppet, or a 3D object being slowly roated as the 2D shadow is being watched. In the same way a tour watches a 2D scatterplot at the `p`-dimensional data object is being rotated.
+Data visualization tours are a class of linear projections that are animate small rotations in the basis over time. This is akin to a shadow puppet, or a 3D object being slowly roated as the 2D shadow is being watched. In the same way a tour watches a 2D scatterplot at the `p`-dimensional data object is being rotated.
 
 This extends the number of dimensions that we can view in data-space! This is applicable to many visualizations across all disciplines. We know that going to numerical summarization alone is dangerous. We need look no further than Anscomb's quartet.
 
@@ -17,11 +17,11 @@ This extends the number of dimensions that we can view in data-space! This is ap
 
 ## Scope
 
-Such visualizations are applicable to numeric matrices scaling well into 10's of variables. If the variables are numerious PCA initalization may be usful to reduce the intrinsic dimensionality. Continuous quantitative variables are prefered, although ordinal discrete variables are also regularly used. Mapping color and/or shape to a (supervised) class tends to be helpful.
+Such visualizations are applicable to numeric matrices scaling well into 10's of variables. If the variables are numerous PCA initialization may be useful to reduce the intrinsic dimensionality. Continuous quantitative variables are preferred, although ordinal discrete variables are also regularly used. Mapping color and/or shape to a (supervised) class tends to be helpful.
 
 ## Description
 
-The `tourr` R package implements grand tours (constrained random walks in the basis), projection pursuit (basis anneals to some objective function), and several other variants and options of vizualization tours.
+The `tourr` R package implements grand tours (constrained random walks in the basis), projection pursuit (basis anneals to some objective function), and several other variants and options of visualization tours.
 
 The work and contribution of `spinifex` are primarily two-fold. The addition of manual tours which allow for user defined (and interactive!) control of the basis. Secondly, the extension to `gganimate` and `plotly` graphics packages, which allow for more control over display and explorting .gif and .html widgets of tours. The later can also consume tours produced in `tourr`!
 

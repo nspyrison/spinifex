@@ -2,13 +2,13 @@
 % Please edit documentation in R/2_render.r
 \name{render_}
 \alias{render_}
-\title{Prepate the ggplot object before passing to either animation package.}
+\title{Prepair the ggplot object before passing to either animation package.}
 \usage{
 render_(
   frames,
   axes = "center",
   manip_col = "blue",
-  ggtheme = ggplot2::theme_void(),
+  ggproto = ggplot2::theme_void(),
   ...
 )
 }
@@ -21,10 +21,9 @@ render_(
 \item{manip_col}{String of the color to highlight the \code{manip_var}, if used.
 Defaults to "blue".}
 
-\item{ggtheme}{Intended for passing  a ggplot2::theme().}
-
-\item{...}{Optionally passes arguments to the projection points inside the
-aesthetics; \code{geom_point(aes(...))}.}
+\item{ggproto}{Accepts a list of gg functions. Think of this as an
+alternative format to \code{ggplot() + ggproto[[1]]}.
+Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 }
 \description{
 Typically called by \code{render_plotly()} or \code{render_gganimate()}. Takes the
@@ -42,5 +41,5 @@ flea_class <- tourr::flea$species
 render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
         color = flea_class, shape = flea_class,
         size = 2, alpha = .5,
-        ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+        ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

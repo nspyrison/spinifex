@@ -6,7 +6,7 @@
 \usage{
 render_plotly(
   fps = 8L,
-  ggtheme = ggplot2::theme_void(),
+  ggproto = ggplot2::theme_void(),
   tooltip = "none",
   html_filename = NULL,
   ...
@@ -15,7 +15,9 @@ render_plotly(
 \arguments{
 \item{fps}{Frames animated per second. Defaults to 8.}
 
-\item{ggtheme}{Intended for passing  a ggplot2::theme().}
+\item{ggproto}{Accepts a list of gg functions. Think of this as an
+alternative format to \code{ggplot() + ggproto[[1]]}.
+Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 
 \item{tooltip}{Character vector of aesthetic mappings to show in the \code{plotly}
 hover-over tooltip. Defaults to "none". "all" shows all the
@@ -28,6 +30,9 @@ For example, tooltip = c("id", "frame", "x", "y", "category", "color").}
 
 \item{...}{Optionally passes arguments to the projection points inside the
 aesthetics; \code{geom_point(aes(...))}.}
+
+\item{rewind}{Logical, should the animation play backwards after reaching
+the end? Default to FALSE.}
 }
 \description{
 Takes the result of \code{array2df()} and renders them into a
@@ -45,13 +50,13 @@ render_plotly(frames = df_frames)
 
 render_plotly(frames = df_frames, axes = "bottomleft", 
               col = flea_class, pch = flea_class, size = 2, alpha = .6,
-              ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+              ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
               fps = 10, tooltip = "all")
 
 if(F){ ## Saving .html widget may require additional setup
   render_plotly(frames = df_frames, axes = "right", fps = 6,
                 col = flea_class, pch = flea_class, size = 1.5,
-                ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                 html_filename = "myRadialTour.html")
 }
 }

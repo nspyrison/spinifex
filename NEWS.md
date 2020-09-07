@@ -1,8 +1,14 @@
 # spinifex 0.2.6
 
-- minor code clean-up
-- minor example clean-up
-- minor export fixes
+- New argument `ggproto` acepts a list of `ggplot2` objects for more control over visual output
+- New datasets: PimaIndiansDiabetes_long & PimaIndiansDiabetes_wide
+- changed notation from slide(s) to frame(s) through-out
+-
+- Depricating `view_basis()` in favor of `view_frame/oblique_frame`
+- Fixed theta labeling on `view_manip_space()`
+- Minor code clean-up
+- Minor example clean-up
+- Minor export fixes
 
 
 # spinifex 0.2.5
@@ -13,11 +19,11 @@
 
 ## Other changes
 
-- Aesthetic arguments, which are now passed directly into `geom_point(aes(...))` instead of hardcoded arguments
-- Removed 'col' (color), 'pch' (point character), 'cex' (point size) and 'alpha' transparency from rendering functions
+- Aesthetic arguments, which are now passed directly into `geom_point(aes(...))` instead of hard-coded arguments
+- Removed 'col' (color), 'pch' (point character), 'cex' (point size) and 'alpha' (transparency) from rendering functions. These options are now passed directly into `ggplot2::geom_point(...)`
 - Added wrapper for `gganimate::anim_save()` in `render_gganimate()` 
 - Added wrapper for ``htmlwidgets::saveWidget()` in `render_plotly()`
-- clarified and more consistent documentation
+- Clarified and more consistent documentation
 
 
 # spinifex 0.2.0

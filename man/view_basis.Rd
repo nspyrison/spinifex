@@ -9,7 +9,7 @@ view_basis(
   data = NULL,
   lab = NULL,
   axes = "center",
-  ggtheme = ggplot2::theme_void(),
+  ggproto = ggplot2::theme_void(),
   ...
 )
 }
@@ -26,8 +26,9 @@ number of variables used. By default will abbreviate data if available.}
 \item{axes}{Position of the axes: "center", "bottomleft" or "off". Defaults
 to "center".}
 
-\item{ggtheme}{Intended for passing  a ggplot2::theme().
-Alternatively accepts a list of gg functions.}
+\item{ggproto}{Accepts a list of gg functions. Think of this as an
+alternative format to \code{ggplot() + ggproto[[1]]}.
+Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 
 \item{...}{Optionally passes arguments to the projection points inside the
 aesthetics; \code{geom_point(aes(...))}.}
@@ -48,5 +49,5 @@ view_basis(basis = rb, data = flea_std, axes = "bottomleft")
 
 view_basis(basis = rb, data = flea_std, axes = "right",
            color = flea_class, shape = flea_class, alpha = .7, size = 2,
-           ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+           ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

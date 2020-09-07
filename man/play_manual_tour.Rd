@@ -13,7 +13,7 @@ play_manual_tour(
   phi_min = 0L,
   phi_max = 0.5 * pi,
   angle = 0.05,
-  ggtheme = ggplot2::theme_void(),
+  ggproto = ggplot2::theme_void(),
   render_type = render_plotly,
   ...
 )
@@ -43,8 +43,9 @@ Required, defaults to pi/2.}
 
 \item{angle}{Target distance (in radians) between steps. Defaults to .05.}
 
-\item{ggtheme}{Intended for passing  a ggplot2::theme().
-Alternatively accepts a list of gg functions.}
+\item{ggproto}{Accepts a list of gg functions. Think of this as an
+alternative format to \code{ggplot() + ggproto[[1]]}.
+Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 
 \item{render_type}{Which graphics to render to. Defaults to render_plotly,}
 
@@ -70,7 +71,7 @@ play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
 play_manual_tour(basis = rb, data = flea_std, manip_var = 6,
                  theta = .5 * pi, axes = "right", fps = 5,
                  col = flea_class, pch = flea_class, size = 1.5,
-                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  render_type = render_gganimate)
 
 if(F){ ## Saving output may require additional setup
@@ -78,14 +79,14 @@ if(F){ ## Saving output may require additional setup
   play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
                    theta = .5 * pi, axes = "left", fps = 5,
                    col = flea_class, pch = flea_class, size = 1.5,
-                   ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                   ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_plotly,
                    html_filename = "myRadialTour.html")
   
   ## Export gganimate .gif
   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
                    theta = 0, axes = "bottomright", fps = 5,
-                   ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                   ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_gganimate,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }

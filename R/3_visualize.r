@@ -1,4 +1,4 @@
-#' Return the manipulation space of the specificed rotation
+#' Return the manipulation space of the specified rotation
 #'
 #' Rotates a basis returning (p, 3) manipulation space that projects to 
 #' `view_frame()`. Allows for interactive use rather than producing a whole tour.
@@ -26,12 +26,12 @@
 #' rtheta <- runif(1, 0, 2 * pi)
 #' rphi   <- runif(1, 0, 2 *pi)
 #' print_manip_space(basis = rb, manip_var = 4, rtheta, rphi)
-print_manip_space <- function(basis = NULL,
+oblique_basis <- print_basis <- function(basis = NULL,
                               manip_var,
                               theta = 0L,
                               phi = 0L){
   m_sp <- create_manip_space(basis, manip_var)
-  rotate_manip_space(manip_space = m_sp, theta, phi)
+  rotate_manip_space(manip_space = m_sp, theta, phi)[ , 1:2]
 }
 
 
@@ -54,8 +54,9 @@ print_manip_space <- function(basis = NULL,
 #' results in a 3 character abbreviation of the variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
-#' @param ggtheme Intended for passing  a ggplot2::theme().
-#' Alternatively accepts a list of gg functions.
+#' @param ggproto Accepts a list of gg functions. Think of this as an 
+#' alternative format to `ggplot() + ggproto[[1]]`.
+#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #' projection point aesthetics; `geom_point(aes(...))`.
 #' @return A ggplot object of the rotated projection.
@@ -73,15 +74,15 @@ print_manip_space <- function(basis = NULL,
 #' view_frame(basis = rb, data = dat, manip_var = 4,
 #'            theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
 #'            rescale_data = TRUE,
-#'            ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
-view_frame <- function(basis = NULL,
+#'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+oblique_frame <- view_frame <- function(basis = NULL,
                        data = NULL,
                        manip_var = NULL,
                        theta = 0L,
                        phi = 0L,
                        lab = NULL,
                        rescale_data = FALSE,
-                       ggtheme = ggplot2::theme_void(),
+                       ggproto = ggplot2::theme_void(),
                        ...) {
   if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
   if(is.null(manip_var) & (theta != 0L | phi != 0L))
@@ -106,7 +107,7 @@ view_frame <- function(basis = NULL,
   
   ## Render
   df_frames <- array2df(array = tour_array, data = data, lab = lab)
-  gg <- render_(frames = df_frames, ggtheme = ggtheme, ...)
+  gg <- render_(frames = df_frames, ggproto = ggproto, ...)
   
   ## Return
   gg
@@ -126,8 +127,9 @@ view_frame <- function(basis = NULL,
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
 #' @param render_type Graphics to render to. Defaults to render_plotly, 
 #' alternative use render_gganimate.
-#' @param ggtheme Intended for passing  a ggplot2::theme().
-#' Alternatively accepts a list of gg functions.
+#' @param ggproto Accepts a list of gg functions. Think of this as an 
+#' alternative format to `ggplot() + ggproto[[1]]`.
+#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #' projection point aesthetics; `geom_point(aes(...))`.
 #' @import tourr
@@ -143,7 +145,7 @@ view_frame <- function(basis = NULL,
 #' play_tour_path(tour_path = tpath, data = flea_std,
 #'                axes = "bottomleft", angle = .08, fps = 10,
 #'                color = flea_class, shape = flea_class, size = 1.5,
-#'                ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                render_type = render_gganimate)
 #' 
 #' if (F){ ## Saving output may require additional setup
@@ -151,7 +153,7 @@ view_frame <- function(basis = NULL,
 #'   play_tour_path(tour_path = tpath, data = flea_std,
 #'                  axes = "left", angle = .06, fps = 10,
 #'                  color = flea_class, shape = flea_class, size = 1.2,
-#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  render_type = render_plotly,
 #'                  html_filename = "myRadialTour.html")
 #'                
@@ -159,7 +161,7 @@ view_frame <- function(basis = NULL,
 #'   play_tour_path(tour_path = tpath, data = flea_std,
 #'                  axes = "left", angle = .04, fps = 6,
 #'                  color = flea_class, shape = flea_class, size = 2,
-#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  render_type = render_gganimate,
 #'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 #' }
@@ -169,7 +171,7 @@ play_tour_path <- function(tour_path = NULL,
                            angle = .05,
                            render_type = render_plotly,
                            rescale_data = FALSE,
-                           ggtheme = ggplot2::theme_void(),
+                           ggproto = ggplot2::theme_void(),
                            ...) {
   if (is.null(tour_path) & is.null(data)) stop("tour_path or data must be supplied.")
   ## Data condition handling
@@ -189,7 +191,7 @@ play_tour_path <- function(tour_path = NULL,
   tour_df <- array2df(array = tour_path, data = data)
   
   ## Render
-  anim <- render_type(frames = tour_df, ggtheme = ggtheme, ...)
+  anim <- render_type(frames = tour_df, ggproto = ggproto, ...)
   
   ## Return
   anim
@@ -218,8 +220,9 @@ play_tour_path <- function(tour_path = NULL,
 #' the "out-of-plane" rotation, the z-axis of the reference frame. 
 #' Required, defaults to pi/2.
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
-#' @param ggtheme Intended for passing  a ggplot2::theme().
-#' Alternatively accepts a list of gg functions.
+#' @param ggproto Accepts a list of gg functions. Think of this as an 
+#' alternative format to `ggplot() + ggproto[[1]]`.
+#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @param render_type Graphics to render to. Defaults to render_plotly, 
 #' alternative use render_gganimate.
 #' @param ... Optionally pass additional arguments to the `render_type` for 
@@ -240,7 +243,7 @@ play_tour_path <- function(tour_path = NULL,
 #' play_manual_tour(basis = rb, data = flea_std, manip_var = 6,
 #'                  theta = .5 * pi, axes = "right", fps = 5,
 #'                  col = flea_class, pch = flea_class, size = 1.5,
-#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  render_type = render_gganimate)
 #' 
 #' if(F){ ## Saving output may require additional setup
@@ -248,14 +251,14 @@ play_tour_path <- function(tour_path = NULL,
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
 #'                    theta = .5 * pi, axes = "left", fps = 5,
 #'                    col = flea_class, pch = flea_class, size = 1.5,
-#'                    ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    render_type = render_plotly,
 #'                    html_filename = "myRadialTour.html")
 #'   
 #'   ## Export gganimate .gif
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
 #'                    theta = 0, axes = "bottomright", fps = 5,
-#'                    ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    render_type = render_gganimate,
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
@@ -268,7 +271,7 @@ play_manual_tour <- function(basis = NULL,
                              phi_min = 0L,
                              phi_max = .5 * pi,
                              angle = .05,
-                             ggtheme = ggplot2::theme_void(),
+                             ggproto = ggplot2::theme_void(),
                              render_type = render_plotly,
                              ...) {
   if (is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
@@ -292,7 +295,7 @@ play_manual_tour <- function(basis = NULL,
   ## Render
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, ...)
   tour_df <- array2df(array = tour_hist, data = data)
-  anim <- render_type(frames = tour_df, ggtheme = ggtheme, ...)
+  anim <- render_type(frames = tour_df, ggproto = ggproto, ...)
   
   ## Return
   anim

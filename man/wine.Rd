@@ -24,7 +24,7 @@ three class target variable (Type) for classification.
 Data frame of 178 observations of 13 variables, target
 class \code{Type} and 12 numeric variables:
 \itemize{
-\item Type, The type of wine, taget factor, 1 (59 obs),
+\item Type, The type of wine, the target factor, 1 (59 obs),
 2(71 obs), and 3 (48 obs).
 \item Alcohol, Alcohol
 \item Malic, Malic acid

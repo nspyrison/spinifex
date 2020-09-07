@@ -10,7 +10,7 @@ play_tour_path(
   angle = 0.05,
   render_type = render_plotly,
   rescale_data = FALSE,
-  ggtheme = ggplot2::theme_void(),
+  ggproto = ggplot2::theme_void(),
   ...
 )
 }
@@ -27,8 +27,9 @@ alternative use render_gganimate.}
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
-\item{ggtheme}{Intended for passing  a ggplot2::theme().
-Alternatively accepts a list of gg functions.}
+\item{ggproto}{Accepts a list of gg functions. Think of this as an
+alternative format to \code{ggplot() + ggproto[[1]]}.
+Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
 projection point aesthetics; \code{geom_point(aes(...))}.}
@@ -48,7 +49,7 @@ play_tour_path(tour_path = tpath, data = flea_std)
 play_tour_path(tour_path = tpath, data = flea_std,
                axes = "bottomleft", angle = .08, fps = 10,
                color = flea_class, shape = flea_class, size = 1.5,
-               ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+               ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                render_type = render_gganimate)
 
 if (F){ ## Saving output may require additional setup
@@ -56,7 +57,7 @@ if (F){ ## Saving output may require additional setup
   play_tour_path(tour_path = tpath, data = flea_std,
                  axes = "left", angle = .06, fps = 10,
                  color = flea_class, shape = flea_class, size = 1.2,
-                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  render_type = render_plotly,
                  html_filename = "myRadialTour.html")
                
@@ -64,7 +65,7 @@ if (F){ ## Saving output may require additional setup
   play_tour_path(tour_path = tpath, data = flea_std,
                  axes = "left", angle = .04, fps = 6,
                  color = flea_class, shape = flea_class, size = 2,
-                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  render_type = render_gganimate,
                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 }

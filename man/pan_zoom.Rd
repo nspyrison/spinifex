@@ -2,12 +2,12 @@
 % Please edit documentation in R/0_util.r
 \name{pan_zoom}
 \alias{pan_zoom}
-\title{Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scaler number.}
+\title{Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scalar number.}
 \usage{
 pan_zoom(x, x_pan = 0L, y_pan = 0L, x_zoom = 1L, y_zoom = 1L)
 }
 \arguments{
-\item{x}{Numeric data object with 2 columns (or scaler) to scale and offset.}
+\item{x}{Numeric data object with 2 columns (or scalar) to scale and offset.}
 
 \item{x_pan}{Numeric value to offset/pan in the x-direction.}
 
@@ -21,7 +21,7 @@ pan_zoom(x, x_pan = 0L, y_pan = 0L, x_zoom = 1L, y_zoom = 1L)
 Scaled and offset \code{x}. A manual variant of \code{set_axes_position()}.
 }
 \description{
-Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scaler number.
+Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scalar number.
 }
 \examples{
 ib <- tourr::basis_init(6, 2)

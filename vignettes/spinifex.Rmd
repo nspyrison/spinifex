@@ -98,7 +98,7 @@ play_manual_tour(data = flea_std, basis = flea_rb, manip_var = 3)
 
 ## Example 2 - Rotating a glyph map
 
-Another of the *manual tour* is the creation a *glyph-maps*, where time series can be shown side-by-side, like faceting (offsetting) on their lat/long physical positions. We'll use the following `GGally` glyph-map as a  
+Another of the *manual tour* is the creation a *glyph-maps*, where time series can be shown side-by-side, like faceting (offsetting) on their lat/long physical positions. We'll use the following `GGally` glyph-map as an example
 
 ```{r, echo=F}
 nasa <- select(GGally::nasa, lat, long, day, surftemp)
@@ -114,7 +114,7 @@ glyph <-
 glyph
 ```
 
-Subset the data, rescaling the measures. We'll perform a horizontal rotation and followed by the vertical rotation before bringing them together. Perform a horizontal rotation ($\theta$` = 0`) on the `day` values (`manip_var = 3`). Pre-multiply the data with the rotation matrix to project the data.
+We'll perform a horizontal rotation and followed by the vertical rotation before bringing them together. we apply the horizontal rotation ($\theta$` = 0`) on the `day` values (`manip_var = 3`). Pre-multiply the data with the rotation matrix to project the data.
 
 ```{r Horizontal}
 # Initialize

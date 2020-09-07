@@ -10,8 +10,9 @@ view_manip_space(
   tilt = 1/12 * pi,
   lab = paste0("V", 1:nrow(basis)),
   manip_col = "blue",
-  z_col = "red",
-  ggtheme = ggplot2::theme_void()
+  manip_sp_col = "red",
+  ggproto = list(ggplot2::scale_color_brewer(palette = "Dark2"), ggplot2::theme_void(),
+    ggplot2::theme(legend.position = "none"))
 )
 }
 \arguments{
@@ -29,11 +30,12 @@ in the reference frame, typically the variable names.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}.}
 
-\item{z_col}{Color to illustrate the z direction or out of the projection
-plane.}
+\item{manip_sp_col}{Color to illustrate the z direction, orthogonal to the
+projection plane.}
 
-\item{ggtheme}{Intended for passing  a ggplot2::theme().
-Alternatively accepts a list of gg functions.}
+\item{ggproto}{Accepts a list of gg functions. Think of this as an
+alternative format to \code{ggplot() + ggproto[[1]]}.
+Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 }
 \value{
 ggplot object of the basis.
@@ -48,7 +50,8 @@ rb <- tourr::basis_random(ncol(flea_std))
 
 view_manip_space(basis = rb, manip_var = 4)
 
-view_manip_space(basis = rb, manip_var = 4,
-                 manip_col = "purple", z_col = "orange",
-                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+view_manip_space(basis = rb, manip_var = 1,
+                 tilt = 2/12 * pi, lab = paste0("MyLabs", 1:nrow(basis))
+                 manip_col = "purple", manip_sp_col = "orange", 
+                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

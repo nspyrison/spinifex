@@ -12,8 +12,9 @@
 #' number of variables used. By default will abbreviate data if available.
 #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults
 #' to "center".
-#' @param ggtheme Intended for passing  a ggplot2::theme().
-#' Alternatively accepts a list of gg functions.
+#' @param ggproto Accepts a list of gg functions. Think of this as an 
+#' alternative format to `ggplot() + ggproto[[1]]`.
+#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @param ... Optionally passes arguments to the projection points inside the
 #' aesthetics; `geom_point(aes(...))`.
 #' @return ggplot object of the basis.
@@ -29,12 +30,12 @@
 #'
 #' view_basis(basis = rb, data = flea_std, axes = "right",
 #'            color = flea_class, shape = flea_class, alpha = .7, size = 2,
-#'            ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+#'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 view_basis <- function(basis,
                        data = NULL,
                        lab  = NULL,
                        axes = "center",
-                       ggtheme = ggplot2::theme_void(),
+                       ggproto = ggplot2::theme_void(),
                        ...) {
   .Deprecated("view_frame")
   ## Initialize
@@ -58,8 +59,7 @@ view_basis <- function(basis,
   gg <- 
     ggplot2::ggplot() +
     ggplot2::coord_fixed() +
-    ggtheme
-  
+    ggproto
   ## Initalize data if present
   if (is.null(data) == FALSE) {
     proj <- as.data.frame(
@@ -72,7 +72,6 @@ view_basis <- function(basis,
                           mapping = ggplot2::aes(x = x, y = y, ...),
       )
   }
-  
   ## Add axes if needed
   if(axes != "off") {
     ## Initialize
@@ -117,10 +116,11 @@ view_basis <- function(basis,
 #' @param lab Optional, character vector of `p` length, add name to the axes 
 #' in the reference frame, typically the variable names.
 #' @param manip_col String of the color to highlight the `manip_var`.
-#' @param z_col Color to illustrate the z direction or out of the projection 
-#' plane.
-#' @param ggtheme Intended for passing  a ggplot2::theme().
-#' Alternatively accepts a list of gg functions.
+#' @param manip_sp_col Color to illustrate the z direction, orthogonal to the 
+#' projection plane.
+#' @param ggproto Accepts a list of gg functions. Think of this as an 
+#' alternative format to `ggplot() + ggproto[[1]]`.
+#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @return ggplot object of the basis.
 #' @export
 #' @examples 
@@ -129,158 +129,117 @@ view_basis <- function(basis,
 #' 
 #' view_manip_space(basis = rb, manip_var = 4)
 #' 
-#' view_manip_space(basis = rb, manip_var = 4,
-#'                  manip_col = "purple", z_col = "orange",
-#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+#' view_manip_space(basis = rb, manip_var = 1,
+#'                  tilt = 2/12 * pi, lab = paste0("MyLabs", 1:nrow(basis))
+#'                  manip_col = "purple", manip_sp_col = "orange", 
+#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 view_manip_space <- function(basis,
                              manip_var,
-                             tilt = 1/12 * pi,
+                             tilt = 1 / 12 * pi,
                              lab = paste0("V", 1:nrow(basis)),
                              manip_col = "blue",
-                             z_col = "red",
-                             ggtheme = ggplot2::theme_void()) {
-  #### Initialize local functions
-  ## Make a curved line segment, 1 row per degree.
-  make_curve <- function(rad_st = 0L, rad_stop = 2L * pi) {
-    angle <- seq(rad_st, rad_stop, 
-                 length = max(round(360L * abs(rad_st - rad_stop) / (2L * pi)), 3L) )
-    as.matrix(data.frame(x = cos(angle), y = sin(angle), z = 0L))
+                             manip_sp_col = "red",
+                             ggproto = list(
+                               ggplot2::scale_color_brewer(palette = "Dark2"),
+                               ggplot2::theme_void(),
+                               ggplot2::theme(legend.position = "none")
+                             )
+){
+  #### Finds the angle between two vectors
+  find_angle <- function(a, b)
+    acos(sum(a * b) / (sqrt(sum(a * a)) * sqrt(sum(b * b))) )
+  #### Makes a df semi-circle, with 1 row per degree
+  make_curve <- function(ang_st = 0L,
+                         ang_stop = 2L * pi) {
+    degrees <- round(360L / (2L * pi) * abs(ang_st - ang_stop))
+    angle <- seq(ang_st, ang_stop, length = degrees)
+    data.frame(x = cos(angle), y = sin(angle), z = sin(angle))
   }
-  ## Find the angle [in radians] between 2 vectors
-  find_angle <- function(a, b = c(1L, 0L)){
-    acos(sum(a*b) / (sqrt(sum(a * a)) * sqrt(sum(b * b))))
+  rot <- function(df, ang = tilt){
+    dplyr::mutate(df, x = x * cos(ang), y = y * sin(ang), z = z * cos(ang))
   }
-  ## Cast as df with colnames xyz
-  as_xyz_df <- function(mat) {
-    colnames(mat) <- c("x", "y", "z")
-    as.data.frame(mat)
-  }
-  ## R3 rotation for an angle in the x-dimension
-  R3x_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
-    angle <- -angle ## Orientation as I imagine it defined, double check.
-    mat <- as.matrix(mat)
-    c <- cos(angle)
-    s <- sin(angle)
-    rot <- matrix(c(1L, 0L, 0L,
-                    0L,  c, -s,
-                    0L,  s,  c), ncol = 3L, byrow = TRUE)
-    as_xyz_df(mat %*% rot)
-  }
-  # ## R3 rotation for an angle in the y-dimension
-  # R3y_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
-  #   angle <- -angle ## Orientation as I imagine it defined, double check.
-  #   mat <- as.matrix(mat)
-  #   c <- cos(angle)
-  #   s <- sin(angle)
-  #   rot <- matrix(c(  c, 0L, s,
-  #                    0L, 1L, 0L,
-  #                    -s, 0L, c), ncol = 3L, byrow = TRUE)
-  #   as_xyz_df(mat %*% rot)
-  # }
-  # ## R3 rotation for an angle in the z-dimension
-  # R3z_of <- function(mat, angle){ ## https://en.wikipedia.org/wiki/Rotation_matrix#In_three_dimensions
-  #   angle <- -angle ## Orientation as I imagine it defined, double check.
-  #   mat <- as.matrix(mat)
-  #   c <- cos(angle)
-  #   s <- sin(angle)
-  #   rot <- matrix(c(c,  -s, 0L,
-  #                   s,   c, 0L,
-  #                   0L, 0L, 1L), ncol = 3, byrow = T)
-  #   as_xyz_df(mat %*% rot)
-  # }
-  
-  #### Initialize
+  ## Initialize
   p <- nrow(basis)
-  m_sp <- as.matrix(create_manip_space(basis, manip_var))
-  ## Manip var asethetics
-  col_v            <- rep("grey80", p)
+  m_sp <- as.data.frame(create_manip_space(basis, manip_var))
+  colnames(m_sp) <- c("x", "y", "z")
+  m_sp_r <- rot(m_sp)
+  mvar   <- m_sp[manip_var, ]
+  mvar_r <- m_sp_r[manip_var, ]
+  ## Aesthetics
+  col_v <- rep("grey80", p)
   col_v[manip_var] <- manip_col
-  siz_v            <- rep(0.3, p)
+  siz_v <- rep(0.3, p)
   siz_v[manip_var] <- 1L
-  ## Angles, rotation and circle
-  circ <- make_curve()
-  theta <- find_angle(m_sp[manip_var, 1L:2L]) # * sign(m_sp[manip_var, 2L])
-  theta_curve_r <- R3x_of(make_curve(0L, theta) / 2L, tilt)
-  phi_pp <- find_angle(m_sp[manip_var, ], c(m_sp[manip_var, 1L:2L], 0L))
-  phi_m_sp <- find_angle(m_sp[manip_var, ], c(m_sp[manip_var, 1L:2L], 0L))
-  phi_curve_r <- R3x_of(make_curve(phi_pp, phi_m_sp) / 3L, tilt)
+  ## Axes circle and angles
+  circ_r <- rot(make_curve())
+  theta_ang <- find_angle(c(mvar$x, mvar$y),c(1L, 0L))
+  theta_curve_r <- .5 * make_curve(ang_st = 0L, ang_stop = theta_ang) %>% rot()
+  theta_curve_r$y <- theta_curve_r$y * sign(mvar$y)
+  phi_ang <- find_angle(c(m_sp_r$x, m_sp_r$y), c(m_sp_r$x, m_sp_r$z))
+  phi_curve <- .4 * make_curve(ang_st = theta_ang, ang_stop = phi_ang)
+  phi_curve$y <- phi_curve$y * sign(mvar$y)
+  ### Move to origin, rotate about blue manip by 90 degrees, move back
+  start_pt <- phi_curve[1, 1:2]
+  phi_curve <- phi_curve %>%
+    dplyr::mutate(x = x - start_pt$x,
+                  y = y - start_pt$y)
+  tmp_x <- phi_curve$y + start_pt$x
+  tmp_y <- phi_curve$x + start_pt$y
+  phi_curve_r <- data.frame(x = tmp_x, y = tmp_y, z = phi_curve$z) %>% rot()
   
-  ## Angle label placment
-  midpt_theta <- round(nrow(theta_curve_r) / 2L)
-  midpt_phi   <- round(nrow(phi_curve_r)   / 2L)
-  
-  ## Rotated objects
-  m_sp_pp <- cbind(m_sp[, 1L:2L], 0L)
-  circ_r  <- R3x_of(circ, tilt)
-  m_sp_r  <- R3x_of(m_sp_pp, tilt)
-  m_sp_z  <- data.frame(x    = m_sp_pp[manip_var, 1L],
-                        y    = m_sp_pp[manip_var, 2L],
-                        z    = m_sp_pp[manip_var, 3L],
-                        xend = m_sp_r[manip_var, 1L],
-                        yend = m_sp_r[manip_var, 3L],
-                        lab  = lab[manip_var])
-  #### End of initialization
-  
-  ## Render
-  gg <- 
-    ## ggplot options
-    ggplot2::ggplot() + 
+  ## Render (& implicit return)
+  ggplot2::ggplot() + 
     ggplot2::coord_fixed() +
-    ggtheme +
-    ## xy circle path 
-    ggplot2::geom_path(data = circ_r, 
-                       mapping = ggplot2::aes(x = x, y = z), 
-                       color = manip_col, size = .3, inherit.aes = FALSE) +
-    ## xy axes line segments
-    ggplot2::geom_segment(data = m_sp_r, 
-                          mapping = ggplot2::aes(x = x, y = z, xend = 0L, yend = 0L),
-                          size = siz_v, color = col_v) +
-    ## xy variable text labels
-    ggplot2::geom_text(data = m_sp_r, 
-                       mapping = ggplot2::aes(x = x, y = z, label = lab), 
-                       size = 4L, color = col_v, 
-                       vjust = "outward", hjust = "outward") +
-    ## z circle path
-    ggplot2::geom_path(data = circ_r,
-                       mapping = ggplot2::aes(x = x, y = y),
-                       color = z_col, size = .3, inherit.aes = FALSE) +
-    ## z red manip axis segment
-    ggplot2::geom_segment(data = m_sp_z,
-                          mapping = ggplot2::aes(x = x, y = y, xend = 0L, yend = 0L),
-                          size = 1L, color = z_col) +
-    ## z grey line segment dropping down to prjojection plane
-    ggplot2::geom_segment(data = m_sp_z,
-                          mapping = ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
-                          size = .3, color = "grey80", linetype = 3L) +
-    ## z red manip axis text label
-    ggplot2::geom_text(data = m_sp_z,
-                       mapping = ggplot2::aes(x = x, y = y, label = lab),
-                       size = 4L, color = z_col,
-                       vjust = "outward", hjust = "outward") +
-    ## xz theta curve path
-    ggplot2::geom_path(data = theta_curve_r,
-                       mapping = ggplot2::aes(x = x, y = z),
-                       color = manip_col, size = .3, linetype = 3L, 
-                       inherit.aes = F) +
-    ## xz theta text
-    ggplot2::geom_text(data = theta_curve_r[midpt_theta, ] * 1.3,
-                       mapping = ggplot2::aes(x = x, y = z, label = "theta"),
-                       size = 4L, color = manip_col, parse = T,
-                       vjust = "outward", hjust = "outward") +
-    ## z phi curve path
-    ## TODO: needs to go to phi theta_curve_r
-    ggplot2::geom_path(data = phi_curve_r,
-                       mapping = ggplot2::aes(x = x, y = y),
-                       color = z_col, size = .3, linetype = 3L, 
-                       inherit.aes = FALSE) +
-    ## z phi text
-    ggplot2::geom_text(data = phi_curve_r[midpt_phi, ] * 1.2,
-                       mapping = ggplot2::aes(x = x, y = y, label = "phi"),
-                       size = 4L, color = z_col, parse = TRUE,
-                       vjust = "outward", hjust = "outward")
-  
-  ## Return
-  gg
+    ggproto +
+    ## Axes circle
+    ggplot2::geom_path(
+      data = circ_r,
+      mapping = ggplot2::aes(x = x, y = y),
+      color = manip_col, size = 0.3, inherit.aes = FALSE) +
+    ## Variable contributions on projection plane:
+    ggplot2::geom_segment(
+      data = m_sp_r,
+      mapping = ggplot2::aes(x = x, y = y, xend = 0L, yend = 0L),
+      size = siz_v, colour = col_v) +
+    ggplot2::geom_text(
+      data = m_sp_r,
+      mapping = ggplot2::aes(x = x, y = y, label = lab),
+      size = 4, colour = col_v, vjust = "outward", hjust = "outward") +
+    ## Red manip space
+    ggplot2::geom_path(
+      data = circ_r,
+      mapping = ggplot2::aes(x = x, y = z),
+      color = manip_sp_col, size = 0.3, inherit.aes = FALSE) +
+    ggplot2::geom_segment(
+      data = mvar_r,
+      mapping = ggplot2::aes(x = x, y = z, xend = 0L, yend = 0L),
+      size = 1, colour = manip_sp_col) +
+    ggplot2::geom_segment(
+      data = mvar_r,
+      mapping = ggplot2::aes(x = x, y = z, xend = x, yend = y),
+      size = 0.3, colour = "grey80", linetype = 2) +
+    ggplot2::geom_text(
+      data = mvar_r,
+      mapping = ggplot2::aes(x = x, y = z, label = lab[manip_var]),
+      size = 4, colour = manip_sp_col, vjust = "outward", hjust = "outward") +
+    ## Label phi and theta
+    ggplot2::geom_text(
+      data = 1.2 * theta_curve_r[ceiling(nrow(theta_curve_r)/2), ],
+      mapping = ggplot2::aes(x = x, y = y - .02, label = "theta"),
+      color = manip_col, size = 4L, parse = TRUE) +
+    ggplot2::geom_path(
+      data = theta_curve_r,
+      mapping = ggplot2::aes(x = x , y),
+      color = manip_col, size = 0.2) #+
+    # ggplot2::geom_text(
+    #   data = 1.2 * phi_curve_r[ceiling(nrow(phi_curve_r) / 2L), ],
+    #   mapping = ggplot2::aes(x = x, y = y, label = "phi"),
+    #   color = manip_sp_col, size = 4L, parse = TRUE) +
+    # ggplot2::geom_path(
+    #   data = phi_curve_r,
+    #   mapping = ggplot2::aes(x = x, y = y),
+    #   color = manip_sp_col, size = 0.2)
+
 }
 
 # ### FORMATING ------
@@ -413,9 +372,9 @@ set_axes_position <- function(x,
 
 
 
-#' Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scaler number.
+#' Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scalar number.
 #' 
-#' @param x Numeric data object with 2 columns (or scaler) to scale and offset.
+#' @param x Numeric data object with 2 columns (or scalar) to scale and offset.
 #' @param x_pan Numeric value to offset/pan in the x-direction.
 #' @param y_pan Numeric value to offset/pan in the y-direction.
 #' @param x_zoom Numeric value to scale/zoom the size for the 1st column of `x`.

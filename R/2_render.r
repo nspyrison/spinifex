@@ -76,7 +76,7 @@ array2df <- function(array,
 
 
 
-#' Prepate the ggplot object before passing to either animation package.
+#' Prepair the ggplot object before passing to either animation package.
 #'
 #' Typically called by `render_plotly()` or `render_gganimate()`. Takes the 
 #' result of `array2df()`, and renders them into a ggplot2 object. 
@@ -86,9 +86,9 @@ array2df <- function(array,
 #' "right". Defaults to "center".
 #' @param manip_col String of the color to highlight the `manip_var`, if used.
 #' Defaults to "blue".
-#' @param ggtheme Intended for passing  a ggplot2::theme().
-#' @param ... Optionally passes arguments to the projection points inside the 
-#' aesthetics; `geom_point(aes(...))`.
+#' @param ggproto Accepts a list of gg functions. Think of this as an 
+#' alternative format to `ggplot() + ggproto[[1]]`.
+#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
@@ -102,11 +102,11 @@ array2df <- function(array,
 #' render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
 #'         color = flea_class, shape = flea_class,
 #'         size = 2, alpha = .5,
-#'         ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+#'         ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
-                    ggtheme = ggplot2::theme_void(),
+                    ggproto = ggplot2::theme_void(),
                     ...) {
   if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
   
@@ -173,7 +173,7 @@ render_ <- function(frames,
     ggplot2::xlim(x_min, x_max) +
     ggplot2::ylim(y_min, y_max) +
     ggplot2::coord_fixed() +
-    ggtheme 
+    ggproto 
     
   ## Project data points, if data exsists 
   if (!is.null(data_frames)) {
@@ -216,7 +216,9 @@ render_ <- function(frames,
 #' *gganimate* animation.
 #'
 #' @param fps Frames animated per second. Defaults to 8.
-#' @param ggtheme Intended for passing  a ggplot2::theme().
+#' @param ggproto Accepts a list of gg functions. Think of this as an 
+#' alternative format to `ggplot() + ggproto[[1]]`.
+#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @param rewind Logical, should the animation play backwards after reaching 
 #' the end? Default to FALSE.
 #' @param start_pause Number of seconds to pause on the first frame for.
@@ -224,8 +226,8 @@ render_ <- function(frames,
 #' @param end_pause Number of seconds to pause on the last frame for.
 #' Defaults to 1.
 #' @param gif_filename Optional, saves the animation as a GIF to this string 
-#' (without folderpath) . Defaults to NULL (no GIF saved). For more control call 
-#' `gganimate::anim_save()` on a return object of `render_gganimate()`.
+#' (without the folder path). Defaults to NULL (no GIF saved). For more control 
+#' call `gganimate::anim_save()` on a return object of `render_gganimate()`.
 #' @param gif_path Optional, A string of the directory path (without filename) 
 #' to save a GIF to. Defaults to NULL (current work directory).
 #' @param ... Optionally passes arguments to the projection points inside the 
@@ -243,19 +245,19 @@ render_ <- function(frames,
 #' 
 #' render_gganimate(frames = df_frames, axes = "bottomleft", 
 #'                  color = flea_class, shape = flea_class, size = 1.5, alpha = .6,
-#'                  ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  fps = 10, rewind = TRUE)
 #'   
 #' if(F){ ## Saving .gif may require additional setup
 #'   render_gganimate(frames = df_frames, axes = "right",
 #'                    color = flea_class, shape = flea_class, size = 2,
-#'                    ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    fps = 6, rewind = TRUE,
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
 #' }
 render_gganimate <- function(fps = 8L,
-                             ggtheme = ggplot2::theme_void(),
+                             ggproto = ggplot2::theme_void(),
                              rewind = FALSE,
                              start_pause = .5,
                              end_pause = 1L,
@@ -264,7 +266,7 @@ render_gganimate <- function(fps = 8L,
                              ...) {
   requireNamespace("gganimate")
   ## Render and animate
-  gg  <- render_(ggtheme = ggtheme, ...) + ggplot2::coord_fixed()
+  gg  <- render_(ggproto = ggproto, ...) + ggplot2::coord_fixed()
   gga <- gg + gganimate::transition_states(frame, transition_length = 0L)
   anim <- gganimate::animate(gga, 
                              fps = fps,
@@ -287,7 +289,11 @@ render_gganimate <- function(fps = 8L,
 #' *plotly* animation.
 #'
 #' @param fps Frames animated per second. Defaults to 8.
-#' @param ggtheme Intended for passing  a ggplot2::theme().
+#' @param ggproto Accepts a list of gg functions. Think of this as an 
+#' alternative format to `ggplot() + ggproto[[1]]`.
+#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
+#' @param rewind Logical, should the animation play backwards after reaching 
+#' the end? Default to FALSE.
 #' @param tooltip Character vector of aesthetic mappings to show in the `plotly`
 #' hover-over tooltip. Defaults to "none". "all" shows all the 
 #' aesthetic mappings. The order of variables controls the order they appear. 
@@ -310,24 +316,24 @@ render_gganimate <- function(fps = 8L,
 #' 
 #' render_plotly(frames = df_frames, axes = "bottomleft", 
 #'               col = flea_class, pch = flea_class, size = 2, alpha = .6,
-#'               ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'               ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'               fps = 10, tooltip = "all")
 #' 
 #' if(F){ ## Saving .html widget may require additional setup
 #'   render_plotly(frames = df_frames, axes = "right", fps = 6,
 #'                 col = flea_class, pch = flea_class, size = 1.5,
-#'                 ggtheme = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                 html_filename = "myRadialTour.html")
 #' }
 #' }
 render_plotly <- function(fps = 8L,
-                          ggtheme = ggplot2::theme_void(),
+                          ggproto = ggplot2::theme_void(),
                           tooltip = "none",
                           html_filename = NULL,
                           ...) {
   requireNamespace("plotly")
   ## Render
-  gg  <- render_(ggtheme = ggtheme, ...)
+  gg  <- render_(ggproto = ggproto, ...)
   ggp <- plotly::ggplotly(p = gg, tooltip = tooltip)
   ggp <- plotly::animation_opts(p = ggp, 
                                 frame = 1L / fps * 1000L, 
@@ -335,7 +341,7 @@ render_plotly <- function(fps = 8L,
                                 redraw = FALSE)
   ggp <- plotly::layout(ggp, showlegend = FALSE, 
                         yaxis = list(showgrid = FALSE, showline = FALSE),
-                        xaxis = list(scaleanchor = "y", scaleratio = 1L,
+                        xaxis = list(scaleanchor = "y", scalaratio = 1L,
                                      showgrid = FALSE, showline = FALSE)
   )
   ## Save condition handling
