@@ -40,6 +40,10 @@ render_(frames = df_frames)
 flea_class <- tourr::flea$species
 render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
         color = flea_class, shape = flea_class,
-        size = 2, alpha = .5,
-        ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+        size = 2, alpha = .5)
+        
+render_(frames = df_frames,
+        color = flea_class, shape = flea_class,
+        ggproto = list(ggplot2::theme_grey, 
+                       ggplot2::scale_color_brewer("Dark2")))
 }

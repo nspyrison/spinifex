@@ -101,8 +101,12 @@ array2df <- function(array,
 #' flea_class <- tourr::flea$species
 #' render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
 #'         color = flea_class, shape = flea_class,
-#'         size = 2, alpha = .5,
-#'         ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+#'         size = 2, alpha = .5)
+#'         
+#' render_(frames = df_frames,
+#'         color = flea_class, shape = flea_class,
+#'         ggproto = list(ggplot2::theme_grey, 
+#'                        ggplot2::scale_color_brewer("Dark2")))
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
@@ -110,39 +114,46 @@ render_ <- function(frames,
                     ...) {
   if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
   
-  ## Initialize
+  #### Initialize
   basis_frames <- data.frame(frames[["basis_frames"]])
   manip_var    <- attributes(frames$basis_frames)$manip_var
   n_frames     <- length(unique(basis_frames$frame))
   p            <- nrow(basis_frames) / n_frames
   d            <- 2L ## Hardcoded assumtion for 2D display
   
-  ## If data exists
+  ## If data exists; fix arg length and plot MUST COME BEFORE AXES
   data_frames <- NULL
-  axes_to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))
-  if (length(frames) == 2L) {
+  if (length(frames) == 2L){
     data_frames <- data.frame(frames[["data_frames"]])
-    axes_to <- data_frames
-    ##### Bare with me here,:
-    args    <- list(...) ## Empty list behaves well too.
-    tgt_len <- nrow(data_frames)
-    ## Replicate aesthetic args to correct length
-    tform_args  <- lapply(X = args, FUN = function(x) {rep_len(x, tgt_len)})
-    my_geom_pts <- function(...) {
-      suppressWarnings( ## Suppress for unused aes "frame", AND potential others from the ellipsis '...'
-        ggplot2::geom_point(data = data_frames,
-                            mapping = ggplot2::aes(x = x, 
-                                                   y = y, 
-                                                   frame = frame,
-                                                   ...)
-        )
-      )
-    }
-    proj_pts <- do.call(my_geom_pts, args = tform_args)
-  }
+    ## If ... args exist
+    if (length(list(...)) > 0L){
+      data_frames <- data.frame(frames[["data_frames"]])
+      tgt_len <- nrow(data_frames)
+      
+      ##### Try to replicate only the appropriate args to length of the df.
+      args_in <- args_out <- list(...)
+      ## Replicate aesthetic args to correct length
+      for(i in 1:length(args_in)){
+        if(is.vector(as.vector(args_in[[i]])) == TRUE & length(args_in[[i]]) != 1)
+          args_out[[i]] <- rep_len(args_in[[i]], tgt_len)
+      }
+      ## Custom func to call
+      my_geom_pts <- function(...) {
+        suppressWarnings( ## Suppress for unused aes "frame", AND potential others from the ellipsis '...'
+          ggplot2::geom_point(data = data_frames,
+                              mapping = ggplot2::aes(x = x, 
+                                                     y = y, 
+                                                     frame = frame,
+                                                     ...)))
+      } ## End of my_geom_pts
+      proj_pts <- do.call(my_geom_pts, args = args_out)
+    } ## End if ... args exist 
+  }## End if data exist 
+  
+  #### Continue initialization
   ## Axes unit circle
-  angle         <- seq(0L, 2L * pi, length = 360L)
-  circ          <- data.frame(x = cos(angle), y = sin(angle))
+  angle          <- seq(0L, 2L * pi, length = 360L)
+  circ           <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes/circle
   if (axes != "off"){
     center       <- set_axes_position(0L, axes, to = data_frames)
@@ -161,11 +172,12 @@ render_ <- function(frames,
     axes_siz[manip_var] <- 1L
     axes_siz            <- rep(axes_siz, n_frames)
   }
-  
+  ## Scaling
   x_min <- min(c(circ[, 1L], data_frames[, 1L])) - .1
   x_max <- max(c(circ[, 1L], data_frames[, 1L])) + .1
   y_min <- min(c(circ[, 2L], data_frames[, 2L])) - .1
   y_max <- max(c(circ[, 2L], data_frames[, 2L])) + .1
+  #### End initialize
   
   ## Ploting
   gg <- 
@@ -174,9 +186,9 @@ render_ <- function(frames,
     ggplot2::ylim(y_min, y_max) +
     ggplot2::coord_fixed() +
     ggproto 
-    
-  ## Project data points, if data exsists 
-  if (!is.null(data_frames)) {
+  
+  ## Project data points, if data exists 
+  if (!is.null(data_frames)){
     gg <- gg + proj_pts
   }
   

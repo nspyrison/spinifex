@@ -85,7 +85,7 @@ if(F){ ## Saving output may require additional setup
   
   ## Export gganimate .gif
   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
-                   theta = 0, axes = "bottomright", fps = 5,
+                   theta = 0, axes = "topright", fps = 5,
                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_gganimate,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")

@@ -1,10 +1,11 @@
 # spinifex 0.2.6
 
-- New argument `ggproto` acepts a list of `ggplot2` objects for more control over visual output
+- New argument, `ggproto`, accepts a list of `ggplot2` objects for more control over visual output
 - New datasets: PimaIndiansDiabetes_long & PimaIndiansDiabetes_wide
 - changed notation from slide(s) to frame(s) through-out
--
-- Depricating `view_basis()` in favor of `view_frame/oblique_frame`
+- Renamed `oblique_frame()` to `view_frame()`, `oblique_frame()` will be phased out
+- Renamed `oblique_basis()` to `print_basis()`, `oblique_basis()` will be phased out
+- Depricated `view_basis()` in favor of `view_frame/oblique_frame`
 - Fixed theta labeling on `view_manip_space()`
 - Minor code clean-up
 - Minor example clean-up
