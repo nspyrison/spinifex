@@ -42,7 +42,7 @@ view_basis <- function(basis,
   p     <- nrow(basis)
   basis <- as.data.frame(basis) ## for plotting
   colnames(basis) <- c("x", "y")
-  axes_to <- data.frame(x = c(0, 1), y = c(0, 1))
+  axes_to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))
   
   ## Basis text label conditional handling
   .lab <- NULL
@@ -77,9 +77,10 @@ view_basis <- function(basis,
     ## Initialize
     angle <- seq(0L, 2L * pi, length = 360L)
     circ <- data.frame(x = cos(angle), y = sin(angle))
-    center <- set_axes_position(0L, axes, to = axes_to)
-    circ <- set_axes_position(circ, axes, axes_to)
-    disp_basis <- set_axes_position(basis, axes, axes_to)
+    center <- scale_axes(data.frame(x = 0L, y = 0L),
+                         axes, to = axes_to)
+    circ <- scale_axes(circ, axes, axes_to)
+    disp_basis <- scale_axes(basis, axes, axes_to)
     ## Append
     gg <- gg +
       ## Axes unit cirle path
@@ -305,28 +306,29 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' 
 #' Typically called, by other functions to scale axes.
 #' 
-#' @param x Numeric data object to scale and offset.
-#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults 
-#' to "center".
-#' @param to output range (numeric vector of length two). Min and max that x is 
-#' scaled to.
+#' @param x Numeric table, first 2 coulmns and scaled and offset relative to 
+#' the `to` argument.
+#' @param position Text specifiyinh the postision the axes should go to.
+#' Defaults to "center" expects one of: "center", "left", "right", 
+#' "bottomleft", "topright", or "off".
+#' @param to Table to appropriately set the size and position of the axes to.
+#' Based on the min/max of the first 2 columns.
 #' @return Scaled and offset `x` typically controling axes placement.
 #' @seealso \code{\link{pan_zoom}} for more manual control.
 #' @export
 #' @examples
 #' rb <- tourr::basis_random(4, 2)
-#' set_axes_position(x = rb, axes = "bottomleft")
-#' set_axes_position(x = rb, axes = "right", to = wine[, 2:3])
-set_axes_position <- function(x, 
-                              axes = c("center", "bottomleft", "topright", "off", "left", "right"), 
-                              to = data.frame(x = c(0, 1), y = c(0, 1))
-) {
+#' scale_axes(x = rb, position = "bottomleft")
+#' scale_axes(x = rb, position = "right", to = wine[, 2:3])
+scale_axes <- function(x, 
+                       position = c("center", "left", "right", "bottomleft", "topright", "off"), 
+                       to = data.frame(x = c(0, 1), y = c(0, 1))
+){
   ## Assumptions
-  if (axes == "off")   return()
-  if (length(x) == 1L) x  <- data.frame(x = x, y = x)
-  if (is.null(to))     to <- data.frame(x = c(0, 1), y = c(0, 1))
+  if (position == "off")   return()
+  if (is.null(to))     to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))
   stopifnot(ncol(x) == 2L)
-  axes <- match.arg(tolower(axes), several.ok = FALSE,
+  position <- match.arg(tolower(position), several.ok = FALSE,
                     choices = c("center", "bottomleft", "topright", "off", "left", "right"))
   ## Initialize
   x_to <- c(min(to[, 1L]), max(to[, 1L]))
@@ -337,27 +339,27 @@ set_axes_position <- function(x,
   ycenter <- ydiff / 2L
   
   ## Condition handling of axes.
-  if (axes == "center") {
+  if (position == "center") {
     xscale <- 2L / 3L * xdiff
     yscale <- 2L / 3L * ydiff
     xoff  <- xcenter
     yoff  <- ycenter
-  } else if (axes == "bottomleft") {
+  } else if (position == "bottomleft") {
     xscale <- 1L / 4L * xdiff
     yscale <- 1L / 4L * ydiff
     xoff <- -2L / 3L * xdiff + xcenter
     yoff <- -2L / 3L * ydiff + ycenter
-  } else if (axes == "topright") {
+  } else if (position == "topright") {
     xscale <- 1L / 4L * xdiff
     yscale <- 1L / 4L * ydiff
     xoff <- 2L / 3L * xdiff + xcenter
     yoff <- 2L / 3L * ydiff + ycenter
-  } else if (axes == "left") {
+  } else if (position == "left") {
     xscale <- 2L / 3L * xdiff
     yscale <- 2L / 3L * ydiff
     xoff <- -5L / 3L * xdiff + xcenter
     yoff <- ycenter
-  } else if (axes == "right") {
+  } else if (position == "right") {
     xscale <- 2L / 3L * xdiff
     yscale <- 2L / 3L * ydiff
     xoff <- 5L / 3L * xdiff + xcenter
@@ -379,8 +381,8 @@ set_axes_position <- function(x,
 #' @param y_pan Numeric value to offset/pan in the y-direction.
 #' @param x_zoom Numeric value to scale/zoom the size for the 1st column of `x`.
 #' @param y_zoom Numeric value to scale/zoom the size for the 2nd column of `x`.
-#' @return Scaled and offset `x`. A manual variant of `set_axes_position()`.
-#' @seealso \code{\link{set_axes_position}} for preset choices.
+#' @return Scaled and offset `x`. A manual variant of `scale_axes()`.
+#' @seealso \code{\link{scale_axes}} for preset choices.
 #' @export
 #' @examples 
 #' ib <- tourr::basis_init(6, 2)
@@ -392,7 +394,6 @@ pan_zoom <- function(x,
                      y_zoom = 1L
 ) {
   ## Assumptions
-  if (length(x) == 1L) {x <- data.frame(x = x, y = x)}
   if (ncol(x) != 2L) stop("pan_zoom is only defined for 2 variables.")
   ## Apply scale and return
   ret <- x

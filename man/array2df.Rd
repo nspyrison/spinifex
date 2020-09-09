@@ -34,5 +34,6 @@ attr(single_frame, "manip_var") <- sample(1:ncol(flea_std), 1)
 array2df(array = single_frame)
 
 tour_array <- manual_tour(basis = rb, manip_var = 4)
-array2df(array = tour_array, data = flea_std, lab = paste0("MyLabs", 1:nrow(rb)))
+array2df(array = tour_array, data = flea_std, 
+         lab = paste0("MyLabs", 1:nrow(rb)))
 }

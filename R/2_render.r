@@ -22,7 +22,8 @@
 #' array2df(array = single_frame)
 #' 
 #' tour_array <- manual_tour(basis = rb, manip_var = 4)
-#' array2df(array = tour_array, data = flea_std, lab = paste0("MyLabs", 1:nrow(rb)))
+#' array2df(array = tour_array, data = flea_std, 
+#'          lab = paste0("MyLabs", 1:nrow(rb)))
 array2df <- function(array, 
                      data = NULL,
                      lab = NULL) {
@@ -44,7 +45,7 @@ array2df <- function(array,
     data <- as.matrix(data)
     data_frames <- NULL
     for (frame in 1L:n_frames) {
-      new_frame <- tourr::rescale(data %*% array[,, frame])
+      new_frame <- data %*% array[,, frame]
       new_frame <- cbind(new_frame, frame)
       data_frames <- rbind(data_frames, new_frame)
     }
@@ -98,57 +99,40 @@ array2df <- function(array,
 #' 
 #' render_(frames = df_frames)
 #' 
+#' ## Mapping color, shape, size, and alpha 
 #' flea_class <- tourr::flea$species
 #' render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
 #'         color = flea_class, shape = flea_class,
-#'         size = 2, alpha = .5)
-#'         
+#'         size = .1, alpha = .5)
+#' 
+#' ## Using ggproto; a list of ggplot2 calls to add to ggplot().
 #' render_(frames = df_frames,
 #'         color = flea_class, shape = flea_class,
-#'         ggproto = list(ggplot2::theme_grey, 
-#'                        ggplot2::scale_color_brewer("Dark2")))
+#'         ggproto = list(ggplot2::theme_bw(), 
+#'                        ggplot2::ggtitle("My radial tour"),
+#'                        ggplot2::scale_color_brewer(palette = "Dark2")))
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
-                    ggproto = ggplot2::theme_void(),
+                    aes_args = list(),
+                    identity_args = list(),
+                    ggproto = list(ggplot2::theme_void()),
                     ...) {
   if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
   
   #### Initialize
-  basis_frames <- data.frame(frames[["basis_frames"]])
-  manip_var    <- attributes(frames$basis_frames)$manip_var
-  n_frames     <- length(unique(basis_frames$frame))
-  p            <- nrow(basis_frames) / n_frames
-  d            <- 2L ## Hardcoded assumtion for 2D display
+  basis_frames  <- data.frame(frames[["basis_frames"]])
+  manip_var     <- attributes(frames$basis_frames)$manip_var
+  n_frames      <- length(unique(basis_frames$frame))
+  p             <- nrow(basis_frames) / n_frames
+  d             <- 2L ## Hardcoded assumtion for 2D display
+  aes_args      <- as.list(aes_args)
+  identity_args <- as.list(identity_args)
+  ggproto       <- as.list(ggproto)
   
   ## If data exists; fix arg length and plot MUST COME BEFORE AXES
-  data_frames <- NULL
-  if (length(frames) == 2L){
-    data_frames <- data.frame(frames[["data_frames"]])
-    ## If ... args exist
-    if (length(list(...)) > 0L){
-      data_frames <- data.frame(frames[["data_frames"]])
-      tgt_len <- nrow(data_frames)
-      
-      ##### Try to replicate only the appropriate args to length of the df.
-      args_in <- args_out <- list(...)
-      ## Replicate aesthetic args to correct length
-      for(i in 1:length(args_in)){
-        if(is.vector(as.vector(args_in[[i]])) == TRUE & length(args_in[[i]]) != 1)
-          args_out[[i]] <- rep_len(args_in[[i]], tgt_len)
-      }
-      ## Custom func to call
-      my_geom_pts <- function(...) {
-        suppressWarnings( ## Suppress for unused aes "frame", AND potential others from the ellipsis '...'
-          ggplot2::geom_point(data = data_frames,
-                              mapping = ggplot2::aes(x = x, 
-                                                     y = y, 
-                                                     frame = frame,
-                                                     ...)))
-      } ## End of my_geom_pts
-      proj_pts <- do.call(my_geom_pts, args = args_out)
-    } ## End if ... args exist 
-  }## End if data exist 
+  data_frames <- NULL ## if NULL, scale_axes defaults to df(x=c(0,1), y=c(0,1)) 
+  if (length(frames) == 2L) data_frames <- data.frame(frames[["data_frames"]])
   
   #### Continue initialization
   ## Axes unit circle
@@ -156,16 +140,17 @@ render_ <- function(frames,
   circ           <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes/circle
   if (axes != "off"){
-    center       <- set_axes_position(0L, axes, to = data_frames)
-    circ         <- set_axes_position(circ, axes, to = data_frames)
-    basis_frames <- data.frame(set_axes_position(basis_frames[, 1L:d], axes), 
+    center       <- scale_axes(data.frame(x = 0L, y = 0L),
+                               axes, to = data_frames)
+    circ         <- scale_axes(circ, axes, to = data_frames)
+    basis_frames <- data.frame(scale_axes(basis_frames[, 1L:d], axes),
                                basis_frames[, (d + 1L):ncol(basis_frames)])
   }
-  ## manip var axes asethetics
+  ## Manip var axes asethetics
   axes_col <- "grey50"
   axes_siz <- 0.3
-  if(is.null(manip_var) == FALSE) {
-    axes_col            <- rep("grey50", p) 
+  if(is.null(manip_var) == FALSE){
+    axes_col            <- rep("grey50", p)
     axes_col[manip_var] <- manip_col
     axes_col            <- rep(axes_col, n_frames)
     axes_siz            <- rep(0.3, p)
@@ -179,17 +164,54 @@ render_ <- function(frames,
   y_max <- max(c(circ[, 2L], data_frames[, 2L])) + .1
   #### End initialize
   
+  #### Recycle/replicate args if needed, then apply
+  if(length(frames) == 2L){ ## If data exists
+    tgt_len <- nrow(data_frames)
+    aes_args_out <- aes_args
+    identity_args_out <- identity_args
+    ## If AES_args exist, try to replicate
+    if(length(aes_args) > 0L){
+      for(i in 1:length(aes_args)){
+        if(length(aes_args[[i]]) > 1L & ## Length more than 1 and vector
+           is.vector(as.vector(aes_args[[i]])) == TRUE)
+          aes_args_out[[i]] <- as.factor(rep_len(aes_args[[i]], tgt_len))
+      }
+    } ## End if AES_args exist
+    ## If IDENTITY_args args exist, try to replicate
+    if (length(identity_args) > 0L){
+      for(i in 1:length(identity_args)){
+        if(length(identity_args[[i]]) > 1L & ## Length more than 1 and vector
+           is.vector(as.vector(identity_args[[i]])) == TRUE)
+          identity_args_out[[i]] <-
+            as.factor(rep_len(identity_args[[i]], tgt_len))
+      }
+    } ## End if IDENTITY_args exist
+    ## aes() call
+    aes_func <- function(...)
+      with(data_frames, ggplot2::aes(x = x, y = y, frame = frame, ...))
+    aes_call <- do.call(aes_func, args = aes_args_out)
+    ## geom_point() call
+    geom_point_func <- function(aes_call, ...)
+      suppressWarnings(geom_point(aes_call, data = data_frames, ...))
+    geom_point_call <-
+      do.call(geom_point_func, c(list(aes_call), identity_args_out))
+  }else{ ## Else, no data exists
+    geom_point_call <- suppressWarnings(
+      ggplot2::geom_point(ggplot2::aes(x = x, y = y, frame = frame), 
+                          data_frames))
+  } ## End if data exist
+  
   ## Ploting
-  gg <- 
+  gg <-
     ggplot2::ggplot() +
     ggplot2::xlim(x_min, x_max) +
     ggplot2::ylim(y_min, y_max) +
     ggplot2::coord_fixed() +
-    ggproto 
+    ggproto
   
-  ## Project data points, if data exists 
-  if (!is.null(data_frames)){
-    gg <- gg + proj_pts
+  ## Project data points, if data exists
+  if (is.null(data_frames) == FALSE){
+    gg <- gg + geom_point_call
   }
   
   ## Add axes directions if needed:
@@ -202,7 +224,7 @@ render_ <- function(frames,
       ) +
       ## Basis axes segments
       suppressWarnings( ## Suppress for unused aes "frame".
-        ggplot2::geom_segment( 
+        ggplot2::geom_segment(
           data = basis_frames, size = axes_siz, colour = axes_col,
           mapping = ggplot2::aes(x = x, y = y, frame = frame,
                                  xend = center[, 1L], yend = center[, 2L])
@@ -210,14 +232,15 @@ render_ <- function(frames,
       ) +
       ## Basis axes text labels
       suppressWarnings( ## Suppress for unused aes "frame".
-        ggplot2::geom_text(data = basis_frames, 
-                           mapping = ggplot2::aes(x = x, y = y, 
+        ggplot2::geom_text(data = basis_frames,
+                           mapping = ggplot2::aes(x = x, y = y,
                                                   frame = frame, label = lab),
                            vjust = "outward", hjust = "outward",
                            colour = axes_col, size = 4L)
       )
   }
   
+  ## Return
   gg
 }
 
@@ -228,9 +251,6 @@ render_ <- function(frames,
 #' *gganimate* animation.
 #'
 #' @param fps Frames animated per second. Defaults to 8.
-#' @param ggproto Accepts a list of gg functions. Think of this as an 
-#' alternative format to `ggplot() + ggproto[[1]]`.
-#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @param rewind Logical, should the animation play backwards after reaching 
 #' the end? Default to FALSE.
 #' @param start_pause Number of seconds to pause on the first frame for.
@@ -244,6 +264,7 @@ render_ <- function(frames,
 #' to save a GIF to. Defaults to NULL (current work directory).
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
+#' @seealso \code{\link{render_}} for more manual control.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
@@ -256,7 +277,7 @@ render_ <- function(frames,
 #' render_gganimate(frames = df_frames)
 #' 
 #' render_gganimate(frames = df_frames, axes = "bottomleft", 
-#'                  color = flea_class, shape = flea_class, size = 1.5, alpha = .6,
+#'                  color = flea_class, shape = flea_class, size = 20, alpha = .6,
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  fps = 10, rewind = TRUE)
 #'   
@@ -269,7 +290,6 @@ render_ <- function(frames,
 #' }
 #' }
 render_gganimate <- function(fps = 8L,
-                             ggproto = ggplot2::theme_void(),
                              rewind = FALSE,
                              start_pause = .5,
                              end_pause = 1L,
@@ -278,7 +298,7 @@ render_gganimate <- function(fps = 8L,
                              ...) {
   requireNamespace("gganimate")
   ## Render and animate
-  gg  <- render_(ggproto = ggproto, ...) + ggplot2::coord_fixed()
+  gg  <- render_(...)
   gga <- gg + gganimate::transition_states(frame, transition_length = 0L)
   anim <- gganimate::animate(gga, 
                              fps = fps,
@@ -301,9 +321,6 @@ render_gganimate <- function(fps = 8L,
 #' *plotly* animation.
 #'
 #' @param fps Frames animated per second. Defaults to 8.
-#' @param ggproto Accepts a list of gg functions. Think of this as an 
-#' alternative format to `ggplot() + ggproto[[1]]`.
-#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @param rewind Logical, should the animation play backwards after reaching 
 #' the end? Default to FALSE.
 #' @param tooltip Character vector of aesthetic mappings to show in the `plotly`
@@ -313,8 +330,8 @@ render_gganimate <- function(fps = 8L,
 #' @param html_filename Optional, saves the plotly object as an HTML widget to this string 
 #' (without folderpath). Defaults to NULL (not saved). For more control call 
 #' `htmlwidgets::saveWidget()` on a return object of `render_plotly()`.
-#' @param ... Optionally passes arguments to the projection points inside the 
-#' aesthetics; `geom_point(aes(...))`.
+#' @param ... Passes arguments to `render_(aes(...))`.
+#' @seealso \code{\link{render_}} for more manual control.
 #' @export
 #' @examples
 #' flea_std   <- tourr::rescale(tourr::flea[, 1:6])
@@ -339,13 +356,12 @@ render_gganimate <- function(fps = 8L,
 #' }
 #' }
 render_plotly <- function(fps = 8L,
-                          ggproto = ggplot2::theme_void(),
                           tooltip = "none",
                           html_filename = NULL,
                           ...) {
   requireNamespace("plotly")
   ## Render
-  gg  <- render_(ggproto = ggproto, ...)
+  gg  <- render_(...)
   ggp <- plotly::ggplotly(p = gg, tooltip = tooltip)
   ggp <- plotly::animation_opts(p = ggp, 
                                 frame = 1L / fps * 1000L, 

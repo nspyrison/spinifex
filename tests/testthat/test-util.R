@@ -4,14 +4,14 @@ library("spinifex")
 flea_std <- tourr::rescale(tourr::flea[1:2, 1:6])
 rb <- tourr::basis_random(ncol(flea_std), 2)
 
-ret <- set_axes_position(x = rb, axes = "bottomleft")
+ret <- scale_axes(x = rb, position = "bottomleft")
 
-test_that("set_axes_position: class and dim", {
+test_that("scale_axes: class and dim", {
   expect_is(ret, "matrix")
   expect_equal(dim(ret), c(6, 2))
 })
 
-ret <- view_basis(basis = rb, data = flea_std, axes = "bottomleft")
+ret <- view_basis(basis = rb, data = flea_std, position = "bottomleft")
 
 test_that("view_basis: gganimate class and length", {
   expect_is(ret, "gg")

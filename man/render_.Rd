@@ -8,7 +8,9 @@ render_(
   frames,
   axes = "center",
   manip_col = "blue",
-  ggproto = ggplot2::theme_void(),
+  aes_args = list(),
+  identity_args = list(),
+  ggproto = list(ggplot2::theme_void()),
   ...
 )
 }
@@ -37,13 +39,16 @@ df_frames <- array2df(array = array_frames, data = flea_std)
 
 render_(frames = df_frames)
 
+## Mapping color, shape, size, and alpha 
 flea_class <- tourr::flea$species
 render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
         color = flea_class, shape = flea_class,
-        size = 2, alpha = .5)
-        
+        size = .1, alpha = .5)
+
+## Using ggproto; a list of ggplot2 calls to add to ggplot().
 render_(frames = df_frames,
         color = flea_class, shape = flea_class,
-        ggproto = list(ggplot2::theme_grey, 
-                       ggplot2::scale_color_brewer("Dark2")))
+        ggproto = list(ggplot2::theme_bw(), 
+                       ggplot2::ggtitle("My radial tour"),
+                       ggplot2::scale_color_brewer(palette = "Dark2")))
 }

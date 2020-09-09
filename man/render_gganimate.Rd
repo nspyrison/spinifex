@@ -6,7 +6,6 @@
 \usage{
 render_gganimate(
   fps = 8L,
-  ggproto = ggplot2::theme_void(),
   rewind = FALSE,
   start_pause = 0.5,
   end_pause = 1L,
@@ -17,10 +16,6 @@ render_gganimate(
 }
 \arguments{
 \item{fps}{Frames animated per second. Defaults to 8.}
-
-\item{ggproto}{Accepts a list of gg functions. Think of this as an
-alternative format to \code{ggplot() + ggproto[[1]]}.
-Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 
 \item{rewind}{Logical, should the animation play backwards after reaching
 the end? Default to FALSE.}
@@ -56,7 +51,7 @@ df_frames <- array2df(array = array_frames, data = flea_std)
 render_gganimate(frames = df_frames)
 
 render_gganimate(frames = df_frames, axes = "bottomleft", 
-                 color = flea_class, shape = flea_class, size = 1.5, alpha = .6,
+                 color = flea_class, shape = flea_class, size = 20, alpha = .6,
                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  fps = 10, rewind = TRUE)
   
@@ -68,4 +63,7 @@ if(F){ ## Saving .gif may require additional setup
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }
 }
+}
+\seealso{
+\code{\link{render_}} for more manual control.
 }

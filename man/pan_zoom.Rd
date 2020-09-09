@@ -18,7 +18,7 @@ pan_zoom(x, x_pan = 0L, y_pan = 0L, x_zoom = 1L, y_zoom = 1L)
 \item{y_zoom}{Numeric value to scale/zoom the size for the 2nd column of \code{x}.}
 }
 \value{
-Scaled and offset \code{x}. A manual variant of \code{set_axes_position()}.
+Scaled and offset \code{x}. A manual variant of \code{scale_axes()}.
 }
 \description{
 Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scalar number.
@@ -28,5 +28,5 @@ ib <- tourr::basis_init(6, 2)
 pan_zoom(x = ib, x_pan = -1, y_pan = 0, x_zoom = 2/3, y_zoom = 1/2)
 }
 \seealso{
-\code{\link{set_axes_position}} for preset choices.
+\code{\link{scale_axes}} for preset choices.
 }

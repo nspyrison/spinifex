@@ -1,15 +1,18 @@
 # spinifex 0.2.6
 
 - New argument, `ggproto`, accepts a list of `ggplot2` objects for more control over visual output
+- New argument, `aes_args`, accepts a list of arguments to pass into the aes() call within geom_point(). This is used for variable mappings, such as color, but needs to be qualified as this is standard evaluation
+- New argument, `identity_args`, accepts a list of arguments to pass call within geom_point(), but outside of aes(). This is used for scalar options or manually mapped vector such as point size or alpha
 - New datasets: PimaIndiansDiabetes_long & PimaIndiansDiabetes_wide
-- changed notation from slide(s) to frame(s) through-out
-- Renamed `oblique_frame()` to `view_frame()`, `oblique_frame()` will be phased out
-- Renamed `oblique_basis()` to `print_basis()`, `oblique_basis()` will be phased out
-- Depricated `view_basis()` in favor of `view_frame/oblique_frame`
+- Fixed the centering of axes across frames
+- Fixed `scale_axes()` to automatically scale to data rather than assume the data is scaled to [0, 1]
+- Changed notation from "slide(s)" to "frame(s)" through-out
+- Renamed `oblique_frame()` to `view_frame()`, `oblique_frame()` will be phased out later
+- Renamed `oblique_basis()` to `print_basis()`, `oblique_basis()` will be phased out later
+- Depricating `view_basis()` in favor of `view_frame/oblique_frame`
 - Fixed theta labeling on `view_manip_space()`
-- Minor code clean-up
-- Minor example clean-up
-- Minor export fixes
+- Examples improved (simple case, adding more and more complexity) through-out 
+- Minor code, code comments, spelling, and grammar clean up through-out
 
 
 # spinifex 0.2.5

@@ -4,20 +4,10 @@
 \alias{render_plotly}
 \title{Render the frames as a \emph{plotly} animation.}
 \usage{
-render_plotly(
-  fps = 8L,
-  ggproto = ggplot2::theme_void(),
-  tooltip = "none",
-  html_filename = NULL,
-  ...
-)
+render_plotly(fps = 8L, tooltip = "none", html_filename = NULL, ...)
 }
 \arguments{
 \item{fps}{Frames animated per second. Defaults to 8.}
-
-\item{ggproto}{Accepts a list of gg functions. Think of this as an
-alternative format to \code{ggplot() + ggproto[[1]]}.
-Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 
 \item{tooltip}{Character vector of aesthetic mappings to show in the \code{plotly}
 hover-over tooltip. Defaults to "none". "all" shows all the
@@ -28,8 +18,7 @@ For example, tooltip = c("id", "frame", "x", "y", "category", "color").}
 (without folderpath). Defaults to NULL (not saved). For more control call
 \code{htmlwidgets::saveWidget()} on a return object of \code{render_plotly()}.}
 
-\item{...}{Optionally passes arguments to the projection points inside the
-aesthetics; \code{geom_point(aes(...))}.}
+\item{...}{Passes arguments to \code{render_(aes(...))}.}
 
 \item{rewind}{Logical, should the animation play backwards after reaching
 the end? Default to FALSE.}
@@ -60,4 +49,7 @@ if(F){ ## Saving .html widget may require additional setup
                 html_filename = "myRadialTour.html")
 }
 }
+}
+\seealso{
+\code{\link{render_}} for more manual control.
 }
