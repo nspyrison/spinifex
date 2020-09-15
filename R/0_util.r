@@ -322,14 +322,15 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' scale_axes(x = rb, position = "right", to = wine[, 2:3])
 scale_axes <- function(x, 
                        position = c("center", "left", "right", "bottomleft", "topright", "off"), 
-                       to = data.frame(x = c(0, 1), y = c(0, 1))
+                       to = data.frame(x = c(-1, 1), y = c(-1, 1))
 ){
   ## Assumptions
-  if (position == "off")   return()
-  if (is.null(to))     to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))
+  if (position == "off")return()
+  if (is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
   stopifnot(ncol(x) == 2L)
-  position <- match.arg(tolower(position), several.ok = FALSE,
-                    choices = c("center", "bottomleft", "topright", "off", "left", "right"))
+  position <- 
+    match.arg(tolower(position), several.ok = FALSE, choices = 
+                c("center", "bottomleft", "topright", "off", "left", "right"))
   ## Initialize
   x_to <- c(min(to[, 1L]), max(to[, 1L]))
   y_to <- c(min(to[, 2L]), max(to[, 2L]))
@@ -339,27 +340,27 @@ scale_axes <- function(x,
   ycenter <- ydiff / 2L
   
   ## Condition handling of axes.
-  if (position == "center") {
+  if (position == "center"){
     xscale <- 2L / 3L * xdiff
     yscale <- 2L / 3L * ydiff
     xoff  <- xcenter
     yoff  <- ycenter
-  } else if (position == "bottomleft") {
+  } else if (position == "bottomleft"){
     xscale <- 1L / 4L * xdiff
     yscale <- 1L / 4L * ydiff
     xoff <- -2L / 3L * xdiff + xcenter
     yoff <- -2L / 3L * ydiff + ycenter
-  } else if (position == "topright") {
+  } else if (position == "topright"){
     xscale <- 1L / 4L * xdiff
     yscale <- 1L / 4L * ydiff
     xoff <- 2L / 3L * xdiff + xcenter
     yoff <- 2L / 3L * ydiff + ycenter
-  } else if (position == "left") {
+  } else if (position == "left"){
     xscale <- 2L / 3L * xdiff
     yscale <- 2L / 3L * ydiff
     xoff <- -5L / 3L * xdiff + xcenter
     yoff <- ycenter
-  } else if (position == "right") {
+  } else if (position == "right"){
     xscale <- 2L / 3L * xdiff
     yscale <- 2L / 3L * ydiff
     xoff <- 5L / 3L * xdiff + xcenter

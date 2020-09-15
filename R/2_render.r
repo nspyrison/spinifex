@@ -22,7 +22,7 @@
 #' array2df(array = single_frame)
 #' 
 #' tour_array <- manual_tour(basis = rb, manip_var = 4)
-#' array2df(array = tour_array, data = flea_std, 
+#' array2df(array = tour_array, data = flea_std,
 #'          lab = paste0("MyLabs", 1:nrow(rb)))
 array2df <- function(array, 
                      data = NULL,
@@ -44,8 +44,11 @@ array2df <- function(array,
   if(is.null(data) == FALSE){
     data <- as.matrix(data)
     data_frames <- NULL
-    for (frame in 1L:n_frames) {
+    for (frame in 1L:n_frames){
       new_frame <- data %*% array[,, frame]
+      ## Center the new frame
+      new_frame[, 1] <- new_frame[, 1] - mean(new_frame[, 1])
+      new_frame[, 2] <- new_frame[, 2] - mean(new_frame[, 2])
       new_frame <- cbind(new_frame, frame)
       data_frames <- rbind(data_frames, new_frame)
     }
@@ -131,7 +134,7 @@ render_ <- function(frames,
   ggproto       <- as.list(ggproto)
   
   ## If data exists; fix arg length and plot MUST COME BEFORE AXES
-  data_frames <- NULL ## if NULL, scale_axes defaults to df(x=c(0,1), y=c(0,1)) 
+  data_frames <- NULL ## If NULL, scale_axes defaults to df(x=c(0,1), y=c(0,1))
   if (length(frames) == 2L) data_frames <- data.frame(frames[["data_frames"]])
   
   #### Continue initialization
@@ -192,7 +195,8 @@ render_ <- function(frames,
     aes_call <- do.call(aes_func, args = aes_args_out)
     ## geom_point() call
     geom_point_func <- function(aes_call, ...)
-      suppressWarnings(geom_point(aes_call, data = data_frames, ...))
+      suppressWarnings(
+        ggplot2::geom_point(aes_call, data = data_frames, ...))
     geom_point_call <-
       do.call(geom_point_func, c(list(aes_call), identity_args_out))
   }else{ ## Else, no data exists
