@@ -146,8 +146,9 @@ render_ <- function(frames,
     center       <- scale_axes(data.frame(x = 0L, y = 0L),
                                axes, to = data_frames)
     circ         <- scale_axes(circ, axes, to = data_frames)
-    basis_frames <- data.frame(scale_axes(basis_frames[, 1L:d], axes),
-                               basis_frames[, (d + 1L):ncol(basis_frames)])
+    basis_frames <-
+      data.frame(scale_axes(basis_frames[, 1L:d], axes, to = data_frames), ## scaled Proj XY
+                 basis_frames[, (d + 1L):ncol(basis_frames)]) ## fram number
   }
   ## Manip var axes asethetics
   axes_col <- "grey50"
@@ -210,7 +211,6 @@ render_ <- function(frames,
     ggplot2::ggplot() +
     ggplot2::xlim(x_min, x_max) +
     ggplot2::ylim(y_min, y_max) +
-    ggplot2::coord_fixed() +
     ggproto
   
   ## Project data points, if data exists

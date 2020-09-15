@@ -82,7 +82,7 @@ oblique_frame <- view_frame <- function(basis = NULL,
                        phi = 0L,
                        lab = NULL,
                        rescale_data = FALSE,
-                       ggproto = ggplot2::theme_void(),
+                       ggproto = theme_spinifex(),
                        ...) {
   if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
   if(is.null(manip_var) & (theta != 0L | phi != 0L))
@@ -143,7 +143,7 @@ oblique_frame <- view_frame <- function(basis = NULL,
 #' play_tour_path(tour_path = tpath, data = flea_std)
 #' 
 #' play_tour_path(tour_path = tpath, data = flea_std,
-#'                axes = "bottomleft", angle = .08, fps = 10,
+#'                axes = "bottomleft", angle = .08, fps = 8,
 #'                color = flea_class, shape = flea_class, size = 1.5,
 #'                ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                render_type = render_gganimate)
@@ -171,7 +171,7 @@ play_tour_path <- function(tour_path = NULL,
                            angle = .05,
                            render_type = render_plotly,
                            rescale_data = FALSE,
-                           ggproto = ggplot2::theme_void(),
+                           ggproto = theme_spinifex(),
                            ...) {
   if (is.null(tour_path) & is.null(data)) stop("tour_path or data must be supplied.")
   ## Data condition handling
@@ -249,7 +249,7 @@ play_tour_path <- function(tour_path = NULL,
 #' if(F){ ## Saving output may require additional setup
 #'   ## Export plotly .html widget
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
-#'                    theta = .5 * pi, axes = "left", fps = 5,
+#'                    theta = .5 * pi, axes = "left", fps = 10,
 #'                    col = flea_class, pch = flea_class, size = 1.5,
 #'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    render_type = render_plotly,
@@ -257,7 +257,7 @@ play_tour_path <- function(tour_path = NULL,
 #'   
 #'   ## Export gganimate .gif
 #'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
-#'                    theta = 0, axes = "topright", fps = 5,
+#'                    theta = 0, axes = "topright", fps = 8,
 #'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    render_type = render_gganimate,
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
@@ -271,7 +271,7 @@ play_manual_tour <- function(basis = NULL,
                              phi_min = 0L,
                              phi_max = .5 * pi,
                              angle = .05,
-                             ggproto = ggplot2::theme_void(),
+                             ggproto = theme_spinifex(),
                              render_type = render_plotly,
                              ...) {
   if (is.null(basis) & is.null(data)) stop("basis or data must be supplied.")

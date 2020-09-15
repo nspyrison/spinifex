@@ -35,7 +35,7 @@ view_basis <- function(basis,
                        data = NULL,
                        lab  = NULL,
                        axes = "center",
-                       ggproto = ggplot2::theme_void(),
+                       ggproto = theme_spinifex(),
                        ...) {
   .Deprecated("view_frame")
   ## Initialize
@@ -58,7 +58,6 @@ view_basis <- function(basis,
   ## Settings and asethetics 
   gg <- 
     ggplot2::ggplot() +
-    ggplot2::coord_fixed() +
     ggproto
   ## Initalize data if present
   if (is.null(data) == FALSE) {
@@ -190,7 +189,6 @@ view_manip_space <- function(basis,
   
   ## Render (& implicit return)
   ggplot2::ggplot() + 
-    ggplot2::coord_fixed() +
     ggproto +
     ## Axes circle
     ggplot2::geom_path(
@@ -335,9 +333,9 @@ scale_axes <- function(x,
   x_to <- c(min(to[, 1L]), max(to[, 1L]))
   y_to <- c(min(to[, 2L]), max(to[, 2L]))
   xdiff   <- diff(x_to)
-  xcenter <- xdiff / 2L
   ydiff   <- diff(y_to)
-  ycenter <- ydiff / 2L
+  xcenter <- mean(to[, 1L])
+  ycenter <- mean(to[, 2L])
   
   ## Condition handling of axes.
   if (position == "center"){
@@ -401,4 +399,16 @@ pan_zoom <- function(x,
   ret[, 1L] <- ret[, 1L] * x_zoom + x_pan 
   ret[, 2L] <- ret[, 2L] * y_zoom + y_pan
   return(ret)
+}
+
+#' A ggplot2 theme containing theme_void and coord_fixed.
+#' The default value for ggproto arguments in spinifex functions.
+#' 
+#' @export
+#' @examples 
+#' theme_spinifex()
+theme_spinifex <- function(){
+  list(ggplot2::theme_void(),
+       ggplot2::coord_fixed()
+  )
 }
