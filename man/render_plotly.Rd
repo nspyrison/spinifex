@@ -2,54 +2,71 @@
 % Please edit documentation in R/2_render.r
 \name{render_plotly}
 \alias{render_plotly}
-\title{Render the frames as a \emph{plotly} animation.}
+\title{Animation the frames as a HTML widget.}
 \usage{
 render_plotly(fps = 8L, tooltip = "none", html_filename = NULL, ...)
 }
 \arguments{
 \item{fps}{Frames animated per second. Defaults to 8.}
 
-\item{tooltip}{Character vector of aesthetic mappings to show in the \code{plotly}
-hover-over tooltip. Defaults to "none". "all" shows all the
-aesthetic mappings. The order of variables controls the order they appear.
+\item{tooltip}{Character vector of aesthetic mappings to show in the
+hover-over tooltip (passed to \code{plotly::ggplot()}).
+Defaults to "none". "all" shows all the aesthetic mappings.
+The order of text controls the order they appear.
 For example, tooltip = c("id", "frame", "x", "y", "category", "color").}
 
-\item{html_filename}{Optional, saves the plotly object as an HTML widget to this string
-(without folderpath). Defaults to NULL (not saved). For more control call
+\item{html_filename}{Optional, saves the plotly object as an HTML widget to
+this string (without folderpath).
+Defaults to NULL (not saved). For more output control call
 \code{htmlwidgets::saveWidget()} on a return object of \code{render_plotly()}.}
 
 \item{...}{Passes arguments to \code{render_(aes(...))}.}
 
-\item{rewind}{Logical, should the animation play backwards after reaching
-the end? Default to FALSE.}
+\item{rewind}{Logical, wether of not the animation play in reverse after
+reaching the end. Default to FALSE (loops from start).}
 }
 \description{
-Takes the result of \code{array2df()} and renders them into a
-\emph{plotly} animation.
+Takes the result of \code{array2df()} and animations them via \code{{plotly}}
+into a  self-contained HTML widget.
 }
 \examples{
-flea_std   <- tourr::rescale(tourr::flea[, 1:6])
-flea_class <- tourr::flea$species
-rb <- tourr::basis_random(n = ncol(flea_std))
-array_frames <- manual_tour(basis = rb, manip_var = 4)
-df_frames <- array2df(array = array_frames, data = flea_std)
+## Setup
+dat_std <- tourr::rescale(wine[, 2:14])
+clas <- wine$Type
+bas <- basis_lda(dat_std, clas)
+mv <- manip_var_lda(dat_std, clas)
+tour_array <- manual_tour(basis = bas, manip_var = mv)
+tour_df <- array2df(array = tour_array, data = dat_std)
 
 \dontrun{
+## Required arguments
 render_plotly(frames = df_frames)
 
-render_plotly(frames = df_frames, axes = "bottomleft", 
-              col = flea_class, pch = flea_class, size = 2, alpha = .6,
-              ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-              fps = 10, tooltip = "all")
+## Full arguments (without save)
+render_plotly(frames = df_frames, axes = "bottomleft", fps = 10,
+              tooltip = c("lab", "frame", "x", "y"),
+              aes_args = list(color = clas, shape = clas),
+              identity_args = list(size = .8, alpha = .7),
+              ggproto = list(theme_spinifex(),
+                             ggtitle("My title"),
+                             scale_color_brewer(palette = "Set2")))
 
-if(F){ ## Saving .html widget may require additional setup
-  render_plotly(frames = df_frames, axes = "right", fps = 6,
-                col = flea_class, pch = flea_class, size = 1.5,
-                ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+if(F){ ## Saving .html widget (may require additional setup)
+  render_plotly(frames = df_frames, , axes = "bottomleft", fps = 10, 
+                tooltip = c("id", "frame", "x", "y", "category", "color"),
+                aes_args = list(color = clas, shape = clas),
+                identity_args = list(size = .8, alpha = .7),
+                ggproto = list(theme_spinifex(),
+                               ggtitle("My title"),
+                               scale_color_brewer(palette = "Set2")),
                 html_filename = "myRadialTour.html")
 }
 }
 }
 \seealso{
-\code{\link{render_}} for more manual control.
+\code{\link{render_}} for \code{...} arguments.
+
+\code{\link{plotly::ggplotly}} for source documentation of \code{tooltip}.
+
+\code{\link{htmlwidgets::saveWidget}} for more control of .gif output.
 }

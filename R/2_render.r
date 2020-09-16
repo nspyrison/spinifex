@@ -1,128 +1,61 @@
-#' Turns a tour path array into a long data frame.
-#'
-#' Typically called by a wrapper function, `play_manual_tour` or 
-#' `play_tour_path`. Takes the result of `tourr::save_history()` or 
-#' `manual_tour()` and restructures the data from an array to a long data frame 
-#' for use in ggplots.
-#'
-#' @param array A (p, d, n_frames) array of a tour, the output of 
-#' `manual_tour()`.
-#' @param data Optional, (n, p) dataset to project, consisting of numeric 
-#' variables.
-#' @param lab Optional, labels for the reference frame of length 1 or the 
-#' number of variables used. Defaults to an abbreviation of the variables.
-#' @return A list containing an array of basis frames (p, d, n_frames) and
-#' an array of data frames (n, d, n_frames) if data is present.
-#' @export
-#' @examples
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' rb <- tourr::basis_random(n = ncol(flea_std))
-#' single_frame <- array(rb, dim = c(dim(rb), 1))
-#' attr(single_frame, "manip_var") <- sample(1:ncol(flea_std), 1)
-#' array2df(array = single_frame)
-#' 
-#' tour_array <- manual_tour(basis = rb, manip_var = 4)
-#' array2df(array = tour_array, data = flea_std,
-#'          lab = paste0("MyLabs", 1:nrow(rb)))
-array2df <- function(array, 
-                     data = NULL,
-                     lab = NULL) {
-  ## Initialize
-  manip_var <- attributes(array)$manip_var
-  p <- dim(array)[1L]
-  n_frames <- dim(array)[3L]
-  
-  ## Basis condition handling
-  basis_frames <- NULL
-  for (frame in 1:n_frames) {
-    basis_rows <- data.frame(cbind(array[,, frame], frame))
-    basis_frames <- rbind(basis_frames, basis_rows)
-  }
-  colnames(basis_frames) <- c("x", "y", "frame")
-  
-  ## Data; if exists, array to long df
-  if(is.null(data) == FALSE){
-    data <- as.matrix(data)
-    data_frames <- NULL
-    for (frame in 1L:n_frames){
-      new_frame <- data %*% array[,, frame]
-      ## Center the new frame
-      new_frame[, 1] <- new_frame[, 1] - mean(new_frame[, 1])
-      new_frame[, 2] <- new_frame[, 2] - mean(new_frame[, 2])
-      new_frame <- cbind(new_frame, frame)
-      data_frames <- rbind(data_frames, new_frame)
-    }
-    data_frames <- as.data.frame(data_frames)
-    colnames(data_frames) <- c("x", "y", "frame")
-  }
-  
-  ## Labels and attribute condition handling
-  basis_frames$lab <- NULL
-  if(is.null(lab) == FALSE){
-    basis_frames$lab <- rep(lab, nrow(basis_frames) / length(lab))
-  } else {
-    if(!is.null(data)) {basis_frames$lab <- abbreviate(colnames(data), 3L)
-    } else {
-      basis_frames$lab <- paste0("V", 1L:p)
-    }
-  }
-  attr(basis_frames, "manip_var") <- manip_var
-  
-  ## Frame condition handling
-  df_frames <- list(basis_frames = basis_frames)
-  if(is.null(data) == FALSE) {
-    df_frames <- list(basis_frames = basis_frames, data_frames = data_frames)
-  }
-  
-  ## Return
-  df_frames
-}
-
-
+##
+## RENDERING -----
+## ggplot2, gganimate, and plotly respectively
+##
 
 #' Prepair the ggplot object before passing to either animation package.
 #'
-#' Typically called by `render_plotly()` or `render_gganimate()`. Takes the 
-#' result of `array2df()`, and renders them into a ggplot2 object. 
+#' Typically called by `render_plotly()` or `render_gganimate()`. Takes the
+#' result of `array2df()`, and renders them into a ggplot2 object.
 #'
 #' @param frames The result of `array2df()`, a long df of the projected frames.
-#' @param axes Position of the axes: "center", "bottomleft", "off", "left", 
-#' "right". Defaults to "center".
+#' @param axes Position of the axes: "center", "bottomleft", "off", "left",
+#' "right". Defaults to "center". 
+#' For more control pass a pan_zoom call with NULL x.
 #' @param manip_col String of the color to highlight the `manip_var`, if used.
 #' Defaults to "blue".
-#' @param ggproto Accepts a list of gg functions. Think of this as an 
-#' alternative format to `ggplot() + ggproto[[1]]`.
-#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
+#' @param aes_args A list of aesthetic arguments assigned to a vector passed to
+#' an aes() call. Anything that would be put inside of the `geom_point(aes(X))`.
+#' Typically a class vector mapped to color and shape.
+#' For example, `geom_point(aes(color = myClass, shape = myClass))` becomes
+#' `aes_args = list(color = myClass, shape = myClass)`.
+#' @param identity_args A list of arguments assigned to a vector passe outside
+#' of an aes() call. Anything that would be put in `geom_point(aes(), X)`.
+#' Typically a single numeric for point size, alpha, or similar
+#' For example, `geom_point(aes(), size = 2, alpha = .7)` becomes
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' @param ggproto A list of ggplot2 function calls.
+#' Anything that would be "added" to ggplot(); in the case of applying a theme,
+#' `ggplot() + theme_bw()` becomes `ggproto = list(theme_bw())`.
+#' Intended for aesthetic ggplot2 functions (not geom_* family).
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' rb <- tourr::basis_random(n = ncol(flea_std))
-#' array_frames <- manual_tour(basis = rb, manip_var = 4)
-#' df_frames <- array2df(array = array_frames, data = flea_std)
+#' ## Setup
+#' dat_std <- tourr::rescale(wine[, 2:14])
+#' clas <- wine$Type
+#' bas <- basis_lda(dat_std, clas)
+#' mv <- manip_var_lda(dat_std, clas)
+#' tour_array <- manual_tour(basis = bas, manip_var = mv)
+#' tour_df <- array2df(array = tour_array, data = dat_std)
 #' 
-#' render_(frames = df_frames)
+#' ## Required arguments
+#' render_(frames = tour_df)
 #' 
-#' ## Mapping color, shape, size, and alpha 
-#' flea_class <- tourr::flea$species
-#' render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
-#'         color = flea_class, shape = flea_class,
-#'         size = .1, alpha = .5)
-#' 
-#' ## Using ggproto; a list of ggplot2 calls to add to ggplot().
-#' render_(frames = df_frames,
-#'         color = flea_class, shape = flea_class,
-#'         ggproto = list(ggplot2::theme_bw(), 
-#'                        ggplot2::ggtitle("My radial tour"),
-#'                        ggplot2::scale_color_brewer(palette = "Dark2")))
+#' ## Full arguments
+#' render_(frames = tour_df, axes = "left", manip_col = "purple"
+#'         aes_args = list(color = clas, shape = clas),
+#'         identity_args = list(size = .8, alpha = .7)),
+#'         ggproto = list(theme_spinifex(),
+#'                        ggtitle("My title"),
+#'                        scale_color_brewer(palette = "Set2")))
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
                     aes_args = list(),
                     identity_args = list(),
-                    ggproto = list(ggplot2::theme_void()),
-                    ...) {
+                    ggproto = theme_spinifex()
+){
   if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
-  
   #### Initialize
   basis_frames  <- data.frame(frames[["basis_frames"]])
   manip_var     <- attributes(frames$basis_frames)$manip_var
@@ -137,18 +70,17 @@ render_ <- function(frames,
   data_frames <- NULL ## If NULL, scale_axes defaults to df(x=c(0,1), y=c(0,1))
   if (length(frames) == 2L) data_frames <- data.frame(frames[["data_frames"]])
   
-  #### Continue initialization
-  ## Axes unit circle
-  angle          <- seq(0L, 2L * pi, length = 360L)
-  circ           <- data.frame(x = cos(angle), y = sin(angle))
+  ## Axes setup
+  angle <- seq(0L, 2L * pi, length = 360L)
+  circ  <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes/circle
   if (axes != "off"){
-    center       <- scale_axes(data.frame(x = 0L, y = 0L),
-                               axes, to = data_frames)
-    circ         <- scale_axes(circ, axes, to = data_frames)
+    center <- scale_axes(data.frame(x = 0L, y = 0L), axes, to = data_frames)
+    circ <- scale_axes(circ, axes, to = data_frames)
+    ## Rejoin frmae number to the scaled bases frames
     basis_frames <-
-      data.frame(scale_axes(basis_frames[, 1L:d], axes, to = data_frames), ## scaled Proj XY
-                 basis_frames[, (d + 1L):ncol(basis_frames)]) ## fram number
+      data.frame(scale_axes(basis_frames[, 1L:d], axes, to = data_frames),
+                 basis_frames[, (d + 1L):ncol(basis_frames)])
   }
   ## Manip var axes asethetics
   axes_col <- "grey50"
@@ -161,14 +93,8 @@ render_ <- function(frames,
     axes_siz[manip_var] <- 1L
     axes_siz            <- rep(axes_siz, n_frames)
   }
-  ## Scaling
-  x_min <- min(c(circ[, 1L], data_frames[, 1L])) - .1
-  x_max <- max(c(circ[, 1L], data_frames[, 1L])) + .1
-  y_min <- min(c(circ[, 2L], data_frames[, 2L])) - .1
-  y_max <- max(c(circ[, 2L], data_frames[, 2L])) + .1
-  #### End initialize
   
-  #### Recycle/replicate args if needed, then apply
+  ## Recycle/replicate args if needed
   if(length(frames) == 2L){ ## If data exists
     tgt_len <- nrow(data_frames)
     aes_args_out <- aes_args
@@ -192,33 +118,29 @@ render_ <- function(frames,
     } ## End if IDENTITY_args exist
     ## aes() call
     aes_func <- function(...)
-      with(data_frames, ggplot2::aes(x = x, y = y, frame = frame, ...))
+      ggplot2::aes(x = x, y = y, frame = frame, ...)
     aes_call <- do.call(aes_func, args = aes_args_out)
     ## geom_point() call
     geom_point_func <- function(aes_call, ...)
-      suppressWarnings(
+      suppressWarnings( ## Suppressed unknown args: frame
         ggplot2::geom_point(aes_call, data = data_frames, ...))
     geom_point_call <-
       do.call(geom_point_func, c(list(aes_call), identity_args_out))
   }else{ ## Else, no data exists
-    geom_point_call <- suppressWarnings(
-      ggplot2::geom_point(ggplot2::aes(x = x, y = y, frame = frame), 
+    geom_point_call <- suppressWarnings( ## Suppressed unknown args: frame
+      ggplot2::geom_point(ggplot2::aes(x = x, y = y, frame = frame),
                           data_frames))
   } ## End if data exist
   
   ## Ploting
   gg <-
     ggplot2::ggplot() +
-    ggplot2::xlim(x_min, x_max) +
-    ggplot2::ylim(y_min, y_max) +
     ggproto
-  
   ## Project data points, if data exists
   if (is.null(data_frames) == FALSE){
     gg <- gg + geom_point_call
   }
-  
-  ## Add axes directions if needed:
+  ## Add axes directions if needed
   if (axes != "off"){
     gg <- gg +
       ## Circle path
@@ -262,34 +184,46 @@ render_ <- function(frames,
 #' @param end_pause Number of seconds to pause on the last frame for.
 #' Defaults to 1.
 #' @param gif_filename Optional, saves the animation as a GIF to this string 
-#' (without the folder path). Defaults to NULL (no GIF saved). For more control 
-#' call `gganimate::anim_save()` on a return object of `render_gganimate()`.
+#' (without the folder path). Defaults to NULL (no GIF saved). 
+#' For more output control, call `gganimate::anim_save()` on a return object of
+#' `render_gganimate()`.
 #' @param gif_path Optional, A string of the directory path (without filename) 
 #' to save a GIF to. Defaults to NULL (current work directory).
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
-#' @seealso \code{\link{render_}} for more manual control.
+#' @seealso \code{\link{render_}} for `...` arguments.
+#' @seealso \code{\link{gganimate::anim_save}} for more control of .gif output.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' flea_class <- tourr::flea$species
-#' rb <- tourr::basis_random(n = ncol(flea_std))
-#' array_frames <- manual_tour(basis = rb, manip_var = 4)
-#' df_frames <- array2df(array = array_frames, data = flea_std)
+#' ## Setup
+#' dat_std <- tourr::rescale(wine[, 2:14])
+#' clas <- wine$Type
+#' bas <- basis_lda(dat_std, clas)
+#' mv <- manip_var_lda(dat_std, clas)
+#' tour_array <- manual_tour(basis = bas, manip_var = mv)
+#' tour_df <- array2df(array = tour_array, data = dat_std)
 #' 
 #' \dontrun{
-#' render_gganimate(frames = df_frames)
+#' ## Required arguments
+#' render_gganimate(frames = tour_df)
 #' 
-#' render_gganimate(frames = df_frames, axes = "bottomleft", 
-#'                  color = flea_class, shape = flea_class, size = 20, alpha = .6,
-#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-#'                  fps = 10, rewind = TRUE)
+#' ## Full arguments (without save)
+#' render_gganimate(frames = df_frames, axes = "bottomleft",
+#'                  fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
+#'                  aes_args = list(color = clas, shape = clas),
+#'                  identity_args = list(size = .8, alpha = .7)),
+#'                  ggproto = list(theme_spinifex(),
+#'                                 ggtitle("My title"),
+#'                                 scale_color_brewer(palette = "Set2")))
 #'   
-#' if(F){ ## Saving .gif may require additional setup
-#'   render_gganimate(frames = df_frames, axes = "right",
-#'                    color = flea_class, shape = flea_class, size = 2,
-#'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-#'                    fps = 6, rewind = TRUE,
+#' if(F){ ## Save as a .gif (may require additional setup)
+#'   render_gganimate(frames = df_frames, axes = "bottomleft",
+#'                    fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
+#'                    aes_args = list(color = clas, shape = clas),
+#'                    identity_args = list(size = .8, alpha = .7)),
+#'                    ggproto = list(theme_spinifex(),
+#'                                   ggtitle("My title"),
+#'                                   scale_color_brewer(palette = "Set2")),
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
 #' }
@@ -319,59 +253,75 @@ render_gganimate <- function(fps = 8L,
 
 
 
-#' Render the frames as a *plotly* animation.
+#' Animation the frames as a HTML widget.
 #'
-#' Takes the result of `array2df()` and renders them into a 
-#' *plotly* animation.
+#' Takes the result of `array2df()` and animations them via `{plotly}`
+#' into a  self-contained HTML widget.
 #'
 #' @param fps Frames animated per second. Defaults to 8.
-#' @param rewind Logical, should the animation play backwards after reaching 
-#' the end? Default to FALSE.
-#' @param tooltip Character vector of aesthetic mappings to show in the `plotly`
-#' hover-over tooltip. Defaults to "none". "all" shows all the 
-#' aesthetic mappings. The order of variables controls the order they appear. 
+#' @param rewind Logical, wether of not the animation play in reverse after
+#' reaching the end. Default to FALSE (loops from start).
+#' @param tooltip Character vector of aesthetic mappings to show in the
+#' hover-over tooltip (passed to `plotly::ggplot()`).
+#' Defaults to "none". "all" shows all the aesthetic mappings.
+#' The order of text controls the order they appear.
 #' For example, tooltip = c("id", "frame", "x", "y", "category", "color").
-#' @param html_filename Optional, saves the plotly object as an HTML widget to this string 
-#' (without folderpath). Defaults to NULL (not saved). For more control call 
+#' @param html_filename Optional, saves the plotly object as an HTML widget to
+#' this string (without folderpath).
+#' Defaults to NULL (not saved). For more output control call
 #' `htmlwidgets::saveWidget()` on a return object of `render_plotly()`.
 #' @param ... Passes arguments to `render_(aes(...))`.
-#' @seealso \code{\link{render_}} for more manual control.
+#' @seealso \code{\link{render_}} for `...` arguments.
+#' @seealso \code{\link{plotly::ggplotly}} for source documentation of `tooltip`.
+#' @seealso \code{\link{htmlwidgets::saveWidget}} for more control of .gif output.
+
 #' @export
 #' @examples
-#' flea_std   <- tourr::rescale(tourr::flea[, 1:6])
-#' flea_class <- tourr::flea$species
-#' rb <- tourr::basis_random(n = ncol(flea_std))
-#' array_frames <- manual_tour(basis = rb, manip_var = 4)
-#' df_frames <- array2df(array = array_frames, data = flea_std)
+#' ## Setup
+#' dat_std <- tourr::rescale(wine[, 2:14])
+#' clas <- wine$Type
+#' bas <- basis_lda(dat_std, clas)
+#' mv <- manip_var_lda(dat_std, clas)
+#' tour_array <- manual_tour(basis = bas, manip_var = mv)
+#' tour_df <- array2df(array = tour_array, data = dat_std)
 #' 
 #' \dontrun{
+#' ## Required arguments
 #' render_plotly(frames = df_frames)
 #' 
-#' render_plotly(frames = df_frames, axes = "bottomleft", 
-#'               col = flea_class, pch = flea_class, size = 2, alpha = .6,
-#'               ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-#'               fps = 10, tooltip = "all")
+#' ## Full arguments (without save)
+#' render_plotly(frames = df_frames, axes = "bottomleft", fps = 10,
+#'               tooltip = c("lab", "frame", "x", "y"),
+#'               aes_args = list(color = clas, shape = clas),
+#'               identity_args = list(size = .8, alpha = .7),
+#'               ggproto = list(theme_spinifex(),
+#'                              ggtitle("My title"),
+#'                              scale_color_brewer(palette = "Set2")))
 #' 
-#' if(F){ ## Saving .html widget may require additional setup
-#'   render_plotly(frames = df_frames, axes = "right", fps = 6,
-#'                 col = flea_class, pch = flea_class, size = 1.5,
-#'                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#' if(F){ ## Saving .html widget (may require additional setup)
+#'   render_plotly(frames = df_frames, , axes = "bottomleft", fps = 10, 
+#'                 tooltip = c("id", "frame", "x", "y", "category", "color"),
+#'                 aes_args = list(color = clas, shape = clas),
+#'                 identity_args = list(size = .8, alpha = .7),
+#'                 ggproto = list(theme_spinifex(),
+#'                                ggtitle("My title"),
+#'                                scale_color_brewer(palette = "Set2")),
 #'                 html_filename = "myRadialTour.html")
 #' }
 #' }
 render_plotly <- function(fps = 8L,
                           tooltip = "none",
                           html_filename = NULL,
-                          ...) {
+                          ...){
   requireNamespace("plotly")
   ## Render
   gg  <- render_(...)
   ggp <- plotly::ggplotly(p = gg, tooltip = tooltip)
-  ggp <- plotly::animation_opts(p = ggp, 
-                                frame = 1L / fps * 1000L, 
-                                transition = 0L, 
+  ggp <- plotly::animation_opts(p = ggp,
+                                frame = 1L / fps * 1000L,
+                                transition = 0L,
                                 redraw = FALSE)
-  ggp <- plotly::layout(ggp, showlegend = FALSE, 
+  ggp <- plotly::layout(ggp, showlegend = FALSE,
                         yaxis = list(showgrid = FALSE, showline = FALSE),
                         xaxis = list(scaleanchor = "y", scalaratio = 1L,
                                      showgrid = FALSE, showline = FALSE)

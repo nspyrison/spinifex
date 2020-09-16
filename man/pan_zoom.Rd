@@ -2,30 +2,28 @@
 % Please edit documentation in R/0_util.r
 \name{pan_zoom}
 \alias{pan_zoom}
-\title{Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scalar number.}
+\title{Pan (offset) and zoom (scale) a 2 column matrix or dataframe.}
 \usage{
-pan_zoom(x, x_pan = 0L, y_pan = 0L, x_zoom = 1L, y_zoom = 1L)
+pan_zoom(pan = c(0L, 0L), zoom = c(1L, 1L), x = NULL)
 }
 \arguments{
-\item{x}{Numeric data object with 2 columns (or scalar) to scale and offset.}
+\item{pan}{2 Numeric value to offset/pan the first 2 dimensions of \code{x}.}
 
-\item{x_pan}{Numeric value to offset/pan in the x-direction.}
+\item{zoom}{2 Numeric value to scale/zoom the first 2 dimensions of \code{x}.}
 
-\item{y_pan}{Numeric value to offset/pan in the y-direction.}
-
-\item{x_zoom}{Numeric value to scale/zoom the size for the 1st column of \code{x}.}
-
-\item{y_zoom}{Numeric value to scale/zoom the size for the 2nd column of \code{x}.}
+\item{x}{Numeric data object with 2 columns to scale and offset.
+Defaults to NULL, passing arguments to scale_axes for use internaly.}
 }
 \value{
-Scaled and offset \code{x}. A manual variant of \code{scale_axes()}.
+Scaled and offset \code{x}.
 }
 \description{
-Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scalar number.
+A manual variant of \code{scale_axes()}. Can be used as the \code{axes} argument
+to manualy set the size and locations of the axes.
 }
 \examples{
-ib <- tourr::basis_init(6, 2)
-pan_zoom(x = ib, x_pan = -1, y_pan = 0, x_zoom = 2/3, y_zoom = 1/2)
+rb <- tourr::basis_random(6, 2)
+pan_zoom(pan = c(-1, 0), zoom = c(2/3, 2/3), x = rb)
 }
 \seealso{
 \code{\link{scale_axes}} for preset choices.

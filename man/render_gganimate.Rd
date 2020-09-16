@@ -27,8 +27,9 @@ Defaults to .5.}
 Defaults to 1.}
 
 \item{gif_filename}{Optional, saves the animation as a GIF to this string
-(without the folder path). Defaults to NULL (no GIF saved). For more control
-call \code{gganimate::anim_save()} on a return object of \code{render_gganimate()}.}
+(without the folder path). Defaults to NULL (no GIF saved).
+For more output control, call \code{gganimate::anim_save()} on a return object of
+\code{render_gganimate()}.}
 
 \item{gif_path}{Optional, A string of the directory path (without filename)
 to save a GIF to. Defaults to NULL (current work directory).}
@@ -41,29 +42,41 @@ Takes the result of \code{array2df()} and renders them into a
 \emph{gganimate} animation.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[, 1:6])
-flea_class <- tourr::flea$species
-rb <- tourr::basis_random(n = ncol(flea_std))
-array_frames <- manual_tour(basis = rb, manip_var = 4)
-df_frames <- array2df(array = array_frames, data = flea_std)
+## Setup
+dat_std <- tourr::rescale(wine[, 2:14])
+clas <- wine$Type
+bas <- basis_lda(dat_std, clas)
+mv <- manip_var_lda(dat_std, clas)
+tour_array <- manual_tour(basis = bas, manip_var = mv)
+tour_df <- array2df(array = tour_array, data = dat_std)
 
 \dontrun{
-render_gganimate(frames = df_frames)
+## Required arguments
+render_gganimate(frames = tour_df)
 
-render_gganimate(frames = df_frames, axes = "bottomleft", 
-                 color = flea_class, shape = flea_class, size = 20, alpha = .6,
-                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-                 fps = 10, rewind = TRUE)
+## Full arguments (without save)
+render_gganimate(frames = df_frames, axes = "bottomleft",
+                 fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
+                 aes_args = list(color = clas, shape = clas),
+                 identity_args = list(size = .8, alpha = .7)),
+                 ggproto = list(theme_spinifex(),
+                                ggtitle("My title"),
+                                scale_color_brewer(palette = "Set2")))
   
-if(F){ ## Saving .gif may require additional setup
-  render_gganimate(frames = df_frames, axes = "right",
-                   color = flea_class, shape = flea_class, size = 2,
-                   ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-                   fps = 6, rewind = TRUE,
+if(F){ ## Save as a .gif (may require additional setup)
+  render_gganimate(frames = df_frames, axes = "bottomleft",
+                   fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
+                   aes_args = list(color = clas, shape = clas),
+                   identity_args = list(size = .8, alpha = .7)),
+                   ggproto = list(theme_spinifex(),
+                                  ggtitle("My title"),
+                                  scale_color_brewer(palette = "Set2")),
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }
 }
 }
 \seealso{
-\code{\link{render_}} for more manual control.
+\code{\link{render_}} for \code{...} arguments.
+
+\code{\link{gganimate::anim_save}} for more control of .gif output.
 }

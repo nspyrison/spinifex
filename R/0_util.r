@@ -1,247 +1,251 @@
-### DISPLAYS -----
+##
+## MATH AND TRANSFORMS -----
+##
 
-#' Plot the axes directions of the basis table without data points.
-#' 
-#' ggplot2 object of axes contribution inscribed in a unit circle.
-#' 
-#' @param basis A (p, d) orthonormal numeric matrix.
-#' The linear combination the original variables contribute to projection space.
-#' Required, no default.
-#' @param data Optional (n, p) data to plot on through the projection basis.
-#' @param lab Optional, labels for the reference frame of length 1 or the
-#' number of variables used. By default will abbreviate data if available.
-#' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults
-#' to "center".
-#' @param ggproto Accepts a list of gg functions. Think of this as an 
-#' alternative format to `ggplot() + ggproto[[1]]`.
-#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
-#' @param ... Optionally passes arguments to the projection points inside the
-#' aesthetics; `geom_point(aes(...))`.
-#' @return ggplot object of the basis.
-#' @import tourr
+#' Test if a numeric matrix is orthonormal.
+#'
+#' Handles more cases than tourr::is_orthonormal().
+#'
+#' @param x Numeric matrix to test the orthonormality of.
+#' @param tol Tolerance of (the sum of element-wise) floating point differences.
+#' @return Single logical of the orthonormal matrix of the matrix.
 #' @export
 #' @examples 
-#' flea_std <- tourr::rescale(tourr::flea[, 1:4])
-#' rb <- tourr::basis_random(ncol(flea_std))
-#' flea_class <- tourr::flea$species
-#' view_basis(basis = rb)
-#' 
-#' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
+#' is_orthonormal(tourr::basis_random(n = 6))
+#' is_orthonormal(matrix(1:12, ncol=2), tol = 0.01)
+is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wise error.
+  x <- as.matrix(x)
+  actual <- t(x) %*% x ## Collapses to identity matrix IFF x is orthonormal
+  expected <- diag(ncol(x))
+  if (max(actual - expected) < tol) {TRUE} else {FALSE}
+}
+
+#' Turns a tour path array into a long data frame.
 #'
-#' view_basis(basis = rb, data = flea_std, axes = "right",
-#'            color = flea_class, shape = flea_class, alpha = .7, size = 2,
-#'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
-view_basis <- function(basis,
-                       data = NULL,
-                       lab  = NULL,
-                       axes = "center",
-                       ggproto = theme_spinifex(),
-                       ...) {
-  .Deprecated("view_frame")
+#' Typically called by a wrapper function, `play_manual_tour` or 
+#' `play_tour_path`. Takes the result of `tourr::save_history()` or 
+#' `manual_tour()` and restructures the data from an array to a long data frame 
+#' for use in ggplots.
+#'
+#' @param array A (p, d, n_frames) array of a tour, the output of 
+#' `manual_tour()`.
+#' @param data Optional, (n, p) dataset to project, consisting of numeric 
+#' variables.
+#' @param lab Optional, labels for the reference frame of length 1 or the 
+#' number of variables used. Defaults to an abbreviation of the variables.
+#' @return A list containing an array of basis frames (p, d, n_frames) and
+#' an array of data frames (n, d, n_frames) if data is present.
+#' @export
+#' @examples
+#' ## Setup
+#' dat_std <- tourr::rescale(wine[, 2:14])
+#' clas <- wine$Type
+#' bas <- basis_lda(dat_std, clas)
+#' mv <- manip_var_lda(dat_std)
+#' 
+#' ## Array with a single frame, as used in view_frame()
+#' single_frame <- array(bas, dim = c(dim(bas), 1))
+#' attr(single_frame, "manip_var") <- mv
+#' array2df(array = single_frame)
+#' 
+#' ## Radial tour array to long df, as used in play_manual_tour()
+#' tour_array <- manual_tour(basis = bas, manip_var = mv)
+#' array2df(array = tour_array, data = dat_std,
+#'          lab = paste0("MyLabs", 1:nrow(bas)))
+#' 
+#' ## tourr::save_history tour array to long df, as used in play_tour_path()
+#' hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
+#' array2df(array = hist_array, data = dat_std,
+#'          lab = paste0("MyLabs", 1:nrow(bas)))
+array2df <- function(array,
+                     data = NULL,
+                     lab = NULL){
   ## Initialize
-  p     <- nrow(basis)
-  basis <- as.data.frame(basis) ## for plotting
-  colnames(basis) <- c("x", "y")
-  axes_to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))
+  manip_var <- attributes(array)$manip_var
+  p <- dim(array)[1L]
+  n_frames <- dim(array)[3L]
   
-  ## Basis text label conditional handling
-  .lab <- NULL
+  ## Basis condition handling
+  basis_frames <- NULL
+  for (frame in 1:n_frames){
+    basis_rows <- data.frame(cbind(array[,, frame], frame))
+    basis_frames <- rbind(basis_frames, basis_rows)
+  }
+  colnames(basis_frames) <- c("x", "y", "frame")
+  
+  ## Data; if exists, array to long df
+  if(is.null(data) == FALSE){
+    data <- as.matrix(data)
+    data_frames <- NULL
+    for (frame in 1L:n_frames){
+      new_frame <- data %*% array[,, frame]
+      ## Center the new frame
+      new_frame[, 1] <- new_frame[, 1] - mean(new_frame[, 1])
+      new_frame[, 2] <- new_frame[, 2] - mean(new_frame[, 2])
+      new_frame <- cbind(new_frame, frame)
+      data_frames <- rbind(data_frames, new_frame)
+    }
+    data_frames <- as.data.frame(data_frames)
+    colnames(data_frames) <- c("x", "y", "frame")
+  }
+  
+  ## Labels and attribute condition handling
+  basis_frames$lab <- NULL
   if(is.null(lab) == FALSE){
-    .lab <- rep(lab, p / length(lab))
-  } else { ## lab is NULL
-    if(is.null(data) == FALSE) {.lab <- abbreviate(colnames(data), 3L)
-    } else { ## lab and data NULL
-      .lab <- paste0("V", 1L:p)
+    basis_frames$lab <- rep(lab, nrow(basis_frames) / length(lab))
+  }else{
+    if(!is.null(data)){basis_frames$lab <- abbreviate(colnames(data), 3L)
+    }else{
+      basis_frames$lab <- paste0("V", 1L:p)
     }
   }
+  attr(basis_frames, "manip_var") <- manip_var
   
-  ## Settings and asethetics 
-  gg <- 
-    ggplot2::ggplot() +
-    ggproto
-  ## Initalize data if present
-  if (is.null(data) == FALSE) {
-    proj <- as.data.frame(
-      tourr::rescale(as.matrix(data) %*% as.matrix(basis)) - .5)
-    colnames(proj) <- c("x", "y")
-    axes_to <- proj
-    ## Rendering
-    gg <- gg + 
-      ggplot2::geom_point(data = proj,
-                          mapping = ggplot2::aes(x = x, y = y, ...),
-      )
-  }
-  ## Add axes if needed
-  if(axes != "off") {
-    ## Initialize
-    angle <- seq(0L, 2L * pi, length = 360L)
-    circ <- data.frame(x = cos(angle), y = sin(angle))
-    center <- scale_axes(data.frame(x = 0L, y = 0L),
-                         axes, to = axes_to)
-    circ <- scale_axes(circ, axes, axes_to)
-    disp_basis <- scale_axes(basis, axes, axes_to)
-    ## Append
-    gg <- gg +
-      ## Axes unit cirle path
-      ggplot2::geom_path(
-        data = circ, 
-        mapping = ggplot2::aes(x = x, y = y),
-        color = "grey80", size = .3, inherit.aes = FALSE) +
-      ## Basis axes line segments
-      ggplot2::geom_segment(
-        data = disp_basis, 
-        mapping = ggplot2::aes(x = x, y = y, xend = center[, 1L], yend = center[, 2L])) +
-      ## Basis variable text labels
-      ggplot2::geom_text(
-        data = disp_basis, 
-        mapping = ggplot2::aes(x = x, y = y), label = .lab,
-        size = 4L, hjust = 0L, vjust = 0L, color = "black")
+  ## Frame condition handling
+  df_frames <- list(basis_frames = basis_frames)
+  if(is.null(data) == FALSE){
+    df_frames <- list(basis_frames = basis_frames, data_frames = data_frames)
   }
   
   ## Return
-  gg
+  df_frames
 }
 
-#' Plot projection frame and return the axes table.
+
+#' Returns the axis scale and position.
 #' 
-#' Uses base graphics to plot the circle with axes representing
-#' the projection frame. Returns the corresponding table.
+#' Typically called, by other functions to scale axes.
 #' 
-#' @param basis A (p, d) orthonormal numeric matrix.
-#' The linear combination the original variables contribute to projection space.
-#' Required, no default.
-#' @param manip_var Number of the column/dimension to rotate.
-#' @param tilt angle in radians to rotate the projection plane. 
-#' Defaults to pi * 5/12.
-#' @param lab Optional, character vector of `p` length, add name to the axes 
-#' in the reference frame, typically the variable names.
-#' @param manip_col String of the color to highlight the `manip_var`.
-#' @param manip_sp_col Color to illustrate the z direction, orthogonal to the 
-#' projection plane.
-#' @param ggproto Accepts a list of gg functions. Think of this as an 
-#' alternative format to `ggplot() + ggproto[[1]]`.
-#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
-#' @return ggplot object of the basis.
+#' @param x Numeric table, first 2 coulmns and scaled and offset relative to 
+#' the `to` argument.
+#' @param position Text specifiyinh the postision the axes should go to.
+#' Defaults to "center" expects one of: "center", "left", "right", 
+#' "bottomleft", "topright", or "off".
+#' @param to Table to appropriately set the size and position of the axes to.
+#' Based on the min/max of the first 2 columns.
+#' @return Scaled and offset `x` typically controling axes placement.
+#' @seealso \code{\link{pan_zoom}} for more manual control.
+#' @export
+#' @examples
+#' rb <- tourr::basis_random(4, 2)
+#' scale_axes(x = rb, position = "bottomleft")
+#' scale_axes(x = rb, position = "right", to = wine[, 2:3])
+scale_axes <- function(x,
+                       position = c("center", "left", "right", "bottomleft",
+                                    "topright", "off", "pan_zoom() call;",
+                                    pan_zoom(c(-1L, 0L), c(.7, .7))),
+                       to = data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+){
+  ## If position is pan_zoom call with x = NULL;
+  if(is.list(position) & length(position) == 2L){ 
+    return(pan_zoom(pan = position$pan, zoom = position$zoom, x = x))
+  }
+  ## Assumptions
+  if (position == "off") return()
+  if (ncol(x) != 2L) warning("pan_zoom is only defined for 2 variables. x has more than 2 columns")
+  if (is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+  
+  ## Initialize
+  position <-
+    match.arg(tolower(position), several.ok = FALSE, choices = 
+                c("center", "bottomleft", "topright", "off", "left", "right"))
+  x_to <- c(min(to[, 1L]), max(to[, 1L]))
+  y_to <- c(min(to[, 2L]), max(to[, 2L]))
+  xdiff   <- diff(x_to)
+  ydiff   <- diff(y_to)
+  xcenter <- mean(to[, 1L])
+  ycenter <- mean(to[, 2L])
+  
+  ## Condition handling of position
+  if (position == "center"){
+    xscale <- 2L / 3L * xdiff
+    yscale <- 2L / 3L * ydiff
+    xoff  <- xcenter
+    yoff  <- ycenter
+  } else if (position == "bottomleft"){
+    xscale <- 1L / 4L * xdiff
+    yscale <- 1L / 4L * ydiff
+    xoff <- -2L / 3L * xdiff + xcenter
+    yoff <- -2L / 3L * ydiff + ycenter
+  } else if (position == "topright"){
+    xscale <- 1L / 4L * xdiff
+    yscale <- 1L / 4L * ydiff
+    xoff <- 2L / 3L * xdiff + xcenter
+    yoff <- 2L / 3L * ydiff + ycenter
+  } else if (position == "left"){
+    xscale <- 2L / 3L * xdiff
+    yscale <- 2L / 3L * ydiff
+    xoff <- -4L / 3L * xdiff + xcenter
+    yoff <- ycenter
+  } else if (position == "right"){
+    xscale <- 2L / 3L * xdiff
+    yscale <- 2L / 3L * ydiff
+    xoff <- 4L / 3L * xdiff + xcenter
+    yoff <- ycenter
+  }
+  
+  ## Apply scale and return
+  x[, 1L] <- xscale * x[, 1L] + xoff
+  x[, 2L] <- yscale * x[, 2L] + yoff
+  return(x)
+}
+
+
+
+#' Pan (offset) and zoom (scale) a 2 column matrix or dataframe.
+#' 
+#' A manual variant of `scale_axes()`. Can be used as the `axes` argument 
+#' to manualy set the size and locations of the axes.
+#' 
+#' @param pan 2 Numeric value to offset/pan the first 2 dimensions of `x`.
+#' @param zoom 2 Numeric value to scale/zoom the first 2 dimensions of `x`.
+#' @param x Numeric data object with 2 columns to scale and offset.
+#' Defaults to NULL, passing arguments to scale_axes for use internaly.
+#' @return Scaled and offset `x`.
+#' @seealso \code{\link{scale_axes}} for preset choices.
 #' @export
 #' @examples 
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' rb <- tourr::basis_random(ncol(flea_std))
-#' 
-#' view_manip_space(basis = rb, manip_var = 4)
-#' 
-#' view_manip_space(basis = rb, manip_var = 1,
-#'                  tilt = 2/12 * pi, lab = paste0("MyLabs", 1:nrow(basis))
-#'                  manip_col = "purple", manip_sp_col = "orange", 
-#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
-view_manip_space <- function(basis,
-                             manip_var,
-                             tilt = 1 / 12 * pi,
-                             lab = paste0("V", 1:nrow(basis)),
-                             manip_col = "blue",
-                             manip_sp_col = "red",
-                             ggproto = list(
-                               ggplot2::scale_color_brewer(palette = "Dark2"),
-                               ggplot2::theme_void(),
-                               ggplot2::theme(legend.position = "none")
-                             )
+#' rb <- tourr::basis_random(6, 2)
+#' pan_zoom(pan = c(-1, 0), zoom = c(2/3, 2/3), x = rb)
+pan_zoom <- function(pan = c(0L, 0L),
+                     zoom = c(1L, 1L),
+                     x = NULL
 ){
-  #### Finds the angle between two vectors
-  find_angle <- function(a, b)
-    acos(sum(a * b) / (sqrt(sum(a * a)) * sqrt(sum(b * b))) )
-  #### Makes a df semi-circle, with 1 row per degree
-  make_curve <- function(ang_st = 0L,
-                         ang_stop = 2L * pi) {
-    degrees <- round(360L / (2L * pi) * abs(ang_st - ang_stop))
-    angle <- seq(ang_st, ang_stop, length = degrees)
-    data.frame(x = cos(angle), y = sin(angle), z = sin(angle))
-  }
-  rot <- function(df, ang = tilt){
-    dplyr::mutate(df, x = x * cos(ang), y = y * sin(ang), z = z * cos(ang))
-  }
-  ## Initialize
-  p <- nrow(basis)
-  m_sp <- as.data.frame(create_manip_space(basis, manip_var))
-  colnames(m_sp) <- c("x", "y", "z")
-  m_sp_r <- rot(m_sp)
-  mvar   <- m_sp[manip_var, ]
-  mvar_r <- m_sp_r[manip_var, ]
-  ## Aesthetics
-  col_v <- rep("grey80", p)
-  col_v[manip_var] <- manip_col
-  siz_v <- rep(0.3, p)
-  siz_v[manip_var] <- 1L
-  ## Axes circle and angles
-  circ_r <- rot(make_curve())
-  theta_ang <- find_angle(c(mvar$x, mvar$y),c(1L, 0L))
-  theta_curve_r <- .5 * make_curve(ang_st = 0L, ang_stop = theta_ang) %>% rot()
-  theta_curve_r$y <- theta_curve_r$y * sign(mvar$y)
-  phi_ang <- find_angle(c(m_sp_r$x, m_sp_r$y), c(m_sp_r$x, m_sp_r$z))
-  phi_curve <- .4 * make_curve(ang_st = theta_ang, ang_stop = phi_ang)
-  phi_curve$y <- phi_curve$y * sign(mvar$y)
-  ### Move to origin, rotate about blue manip by 90 degrees, move back
-  start_pt <- phi_curve[1, 1:2]
-  phi_curve <- phi_curve %>%
-    dplyr::mutate(x = x - start_pt$x,
-                  y = y - start_pt$y)
-  tmp_x <- phi_curve$y + start_pt$x
-  tmp_y <- phi_curve$x + start_pt$y
-  phi_curve_r <- data.frame(x = tmp_x, y = tmp_y, z = phi_curve$z) %>% rot()
-  
-  ## Render (& implicit return)
-  ggplot2::ggplot() + 
-    ggproto +
-    ## Axes circle
-    ggplot2::geom_path(
-      data = circ_r,
-      mapping = ggplot2::aes(x = x, y = y),
-      color = manip_col, size = 0.3, inherit.aes = FALSE) +
-    ## Variable contributions on projection plane:
-    ggplot2::geom_segment(
-      data = m_sp_r,
-      mapping = ggplot2::aes(x = x, y = y, xend = 0L, yend = 0L),
-      size = siz_v, colour = col_v) +
-    ggplot2::geom_text(
-      data = m_sp_r,
-      mapping = ggplot2::aes(x = x, y = y, label = lab),
-      size = 4, colour = col_v, vjust = "outward", hjust = "outward") +
-    ## Red manip space
-    ggplot2::geom_path(
-      data = circ_r,
-      mapping = ggplot2::aes(x = x, y = z),
-      color = manip_sp_col, size = 0.3, inherit.aes = FALSE) +
-    ggplot2::geom_segment(
-      data = mvar_r,
-      mapping = ggplot2::aes(x = x, y = z, xend = 0L, yend = 0L),
-      size = 1, colour = manip_sp_col) +
-    ggplot2::geom_segment(
-      data = mvar_r,
-      mapping = ggplot2::aes(x = x, y = z, xend = x, yend = y),
-      size = 0.3, colour = "grey80", linetype = 2) +
-    ggplot2::geom_text(
-      data = mvar_r,
-      mapping = ggplot2::aes(x = x, y = z, label = lab[manip_var]),
-      size = 4, colour = manip_sp_col, vjust = "outward", hjust = "outward") +
-    ## Label phi and theta
-    ggplot2::geom_text(
-      data = 1.2 * theta_curve_r[ceiling(nrow(theta_curve_r)/2), ],
-      mapping = ggplot2::aes(x = x, y = y - .02, label = "theta"),
-      color = manip_col, size = 4L, parse = TRUE) +
-    ggplot2::geom_path(
-      data = theta_curve_r,
-      mapping = ggplot2::aes(x = x , y),
-      color = manip_col, size = 0.2) #+
-    # ggplot2::geom_text(
-    #   data = 1.2 * phi_curve_r[ceiling(nrow(phi_curve_r) / 2L), ],
-    #   mapping = ggplot2::aes(x = x, y = y, label = "phi"),
-    #   color = manip_sp_col, size = 4L, parse = TRUE) +
-    # ggplot2::geom_path(
-    #   data = phi_curve_r,
-    #   mapping = ggplot2::aes(x = x, y = y),
-    #   color = manip_sp_col, size = 0.2)
-
+  if(is.null(x)) return(list(pan = pan, zoom = zoom))
+  ## Assumptions
+  if(ncol(x) != 2L) warning("pan_zoom is only defined for 2 variables. x has more than 2 columns")
+  ## Apply scale and return
+  ret <- x
+  ret[, 1L] <- ret[, 1L] * zoom[1L] + pan[1L]
+  ret[, 2L] <- ret[, 2L] * zoom[2L] + pan[2L]
+  return(ret)
 }
 
-# ### FORMATING ------
+##
+## GGPLOT2 AESTHETICS ------
+##
+
+#' A ggplot2 theme containing theme_void and coord_fixed.
+#' The default value for ggproto arguments in spinifex functions.
+#' 
+#' @export
+#' @examples 
+#' theme_spinifex()
+#' 
+#' require("ggplot2")
+#' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
+#'   geom_point() + theme_spinifex()
+theme_spinifex <- function(){
+  list(ggplot2::theme_void(),
+       ggplot2::coord_fixed(),
+       ggplot2::scale_color_brewer(palette = "Dark2")
+  )
+}
+
+##
+## color_of() AND shape_of() DEPRICATED with use of aes_args and identity_args
+##
+
 # #' Return hex color code for a given discrete categorical variable.
 # #' 
 # #' @param class The discrete categorical variable to return the color of.
@@ -280,135 +284,163 @@ view_manip_space <- function(basis,
 # }
 
 
-### MATH AND TRANSFORMS -----
-#' Test if a numeric matrix is orthonormal.
-#'
-#' Handles more cases than tourr::is_orthonormal().
-#'
-#' @param x Numeric matrix to test the orthonormality of.
-#' @param tol Tolerance of (the sum of element-wise) floating point differences.
-#' @return Single logical of the orthonormal matrix of the matrix.
+
+## SHAPE_OF AND COLOR_OF Depricated with aes_args, identity_args
+# #' Return hex color code for a given discrete categorical variable.
+# #' 
+# #' @param class The discrete categorical variable to return the color of.
+# #' @param pallet_name The name of the `RColorBrewer` pallet to get the colors
+# #' from. Defaults to "Dark2".
+# #' @return Vector of character hex color code of the passed categorical variable.
+# #' @export
+# #' @examples 
+# #' color_of(tourr::flea$species)
+# color_of <- function(class, pallet_name = "Dark2"){
+#   class <- as.factor(class)
+#   .l_lvls <- length(levels(class))
+#   if (.l_lvls == 0L) stop("Length of 'class' cannot be zero.")
+#   if (.l_lvls > 12L) stop("'class' has more than the expected max of 12 levels.")
+#   pal <- suppressWarnings(RColorBrewer::brewer.pal(.l_lvls, pallet_name))
+#   pal[as.integer(factor(class))]
+# }
+# #' Return shape integers for a given discrete categorical variable.
+# #' 
+# #' @param class The discrete categorical variable to return the shape of.
+# #' @return Vector of integer shape values of the discrete categorical variable.
+# #' @export
+# #' @examples 
+# #' shape_of(tourr::flea$species)
+# shape_of <- function(class) {
+#   class <- as.factor(as.vector(class))
+#   .shape_ord <- c(21L:25L, 3L:4L, 7L:14L)
+#   .l_shapes  <- length(unique(.shape_ord))
+#   class <- as.factor(class)
+#   .l_classes <- length(levels(class))
+#   if (.l_classes == 0L) stop("Length of 'class' cannot be zero.")
+#   if (.l_classes > 12L)
+#     stop(paste0("'class' has more than the expected max of ", .l_shapes, " levels."))
+#   .int_lvls <- as.integer(class)
+#   .shape_ord[.int_lvls]
+# }
+
+
+##
+## BASIS AND MANIP VAR HELPERS -----
+##
+
+#' The basis of Principal Component Analysis (PCA)
+#' 
+#' @param data Numeric matrix or data.frame of the observations.
+#' @param class The class for each observation, coereced to a factor.
+#' @param p Number of dimensions in the projected space.
 #' @export
 #' @examples 
-#' is_orthonormal(tourr::basis_random(n = 6))
-#' is_orthonormal(matrix(1:12, ncol=2), tol = 0.01)
-is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wise error.
-  x <- as.matrix(x)
-  actual <- t(x) %*% x ## Collapses to identity matrix IFF x is orthonormal
-  expected <- diag(ncol(x))
-  if (max(actual - expected) < tol) {TRUE} else {FALSE}
+#' basis_pca(data = wine[, 2:14])
+basis_pca <- function(data, p = 2L){
+  prcomp(data)$rotation[, 1L:p]
 }
 
 
-#' Returns the axis scale and position.
+#' The basis of Linear Discriminant Analysis (LDA)
 #' 
-#' Typically called, by other functions to scale axes.
+#' Returns a numeric matrix of the first `p` columns of the MASS::lda for the
+#' given class. MASS::lda()$scaling is not orthonromal (!?); coerrced
+#' with tourr::orthonormalise().
 #' 
-#' @param x Numeric table, first 2 coulmns and scaled and offset relative to 
-#' the `to` argument.
-#' @param position Text specifiyinh the postision the axes should go to.
-#' Defaults to "center" expects one of: "center", "left", "right", 
-#' "bottomleft", "topright", or "off".
-#' @param to Table to appropriately set the size and position of the axes to.
-#' Based on the min/max of the first 2 columns.
-#' @return Scaled and offset `x` typically controling axes placement.
-#' @seealso \code{\link{pan_zoom}} for more manual control.
+#' @param data Numeric matrix or data.frame of the observations, coereced to matrix.
+#' @param class The class for each observation, coereced to a factor.
+#' @param p Number of dimensions in the projected space.
+#' @return Numeric matrix of the last basis of a guided tour.
+#' @seealso \code{\link{MASS::lda}}
+#' @export
+#' @examples 
+#' basis_lda(data = wine[, 2:14], class = wine$Type)
+basis_lda <- function(data, class, p = 2L){
+  lda <- MASS::lda(x = as.matrix(data), grouping = as.factor(class))
+  ## MASS::lda is not giving orthonormal (!?)
+  tourr::orthonormalise(lda$scaling[, 1L:p])
+}
+
+
+#' The last basis of a guided tour
+#' 
+#' @param data Numeric matrix or data.frame of the observations.
+#' @param index_f The index function to optimise.
+#' {tourr} exports holes(), cmass(), and lda_pp(class).
+#' @param p Number of dimensions in the projected space.
+#' @param ... Optional, other arguments to pass to `tourr::guided_tour`.
+#' @return Numeric matrix of the last basis of a guided tour.
+#' @seealso \code{\link{tourr::guided_tour}} for annealing arguments.
+#' @export
+#' @examples 
+#' basis_guided(data = wine[, 2:14], index_f = tourr::holes())
+#' 
+#' basis_guided(data = wine[, 2:14], index_f = tourr::cmass(), quiet = FALSE,
+#'              alpha = .4, cooling = .9, max.tries = 30)
+basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
+  invisible(capture.output(
+    hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
+  ))
+  hist[, , length(hist)]
+}
+
+#' The number of the variable that has the max/min absolute value in the first
+#' Principal Component (of PCA). Useful for setting the manip_var argument.
+#' 
+#' @param data Numeric matrix or data.frame of the observations.
+#' @param p Number of dimensions in the projected space.
+#' @param func The function to be applied, expects `max` or `min`.
+#' @export
+#' @examples 
+#' manip_var_pca(data = wine[, 2:14])
+manip_var_pca <- function(data, func = max){
+  abs_pc1 <- abs(prcomp(data)$rotation[, 1L])
+  which(abs_pc1 == func(abs_pc1))
+}
+
+#' The number of the variable that has the max/min absolute value in the first
+#' Linear Discriminant (of LDA). Useful for setting the manip_var argument.
+#' 
+#' @param data Numeric matrix or data.frame of the observations, coerced to matrix
+#' @param class The class for each observation, coereced to a factor.
+#' @param func The function to be applied, expects max or min.
+#' @return Numeric matrix of the last basis of a guided tour.
+#' @seealso \code{\link{MASS::lda}}
+#' @export
+#' @examples 
+#' manip_var_lda(data = wine[, 2:14], class = wine$Type)
+manip_var_lda <- function(data, class, func = max){
+  lda <- MASS::lda(x = as.matrix(data), grouping = as.factor(class))
+  ## MASS::lda is not giving orthonormal (!?)
+  abs_ld1 <- abs(tourr::orthonormalise(lda$scaling[, 1L]))
+  which(abs_ld1 == func(abs_ld1))
+}
+
+
+#' The number of the variable that has the max/min absolute norm in final basis.
+#' Useful for setting the manip_var argument.
+#' 
+#' @param data Numeric matrix or data.frame of the observations.
+#' @param index_f The index function to optimise.
+#' {tourr} exports holes(), cmass(), and lda_pp(class).
+#' @param p Number of dimensions in the projected space.
+#' @param func The function to be applied, expects `max` or `min`.
+#' @param ... Optional, other arguments to pass to `tourr::guided_tour`.
+#' @return Numeric matrix of the last basis of a guided tour.
+#' @seealso \code{\link{tourr::guided_tour}} for annealing arguments.
 #' @export
 #' @examples
-#' rb <- tourr::basis_random(4, 2)
-#' scale_axes(x = rb, position = "bottomleft")
-#' scale_axes(x = rb, position = "right", to = wine[, 2:3])
-scale_axes <- function(x, 
-                       position = c("center", "left", "right", "bottomleft", "topright", "off"), 
-                       to = data.frame(x = c(-1, 1), y = c(-1, 1))
-){
-  ## Assumptions
-  if (position == "off")return()
-  if (is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
-  stopifnot(ncol(x) == 2L)
-  position <- 
-    match.arg(tolower(position), several.ok = FALSE, choices = 
-                c("center", "bottomleft", "topright", "off", "left", "right"))
-  ## Initialize
-  x_to <- c(min(to[, 1L]), max(to[, 1L]))
-  y_to <- c(min(to[, 2L]), max(to[, 2L]))
-  xdiff   <- diff(x_to)
-  ydiff   <- diff(y_to)
-  xcenter <- mean(to[, 1L])
-  ycenter <- mean(to[, 2L])
-  
-  ## Condition handling of axes.
-  if (position == "center"){
-    xscale <- 2L / 3L * xdiff
-    yscale <- 2L / 3L * ydiff
-    xoff  <- xcenter
-    yoff  <- ycenter
-  } else if (position == "bottomleft"){
-    xscale <- 1L / 4L * xdiff
-    yscale <- 1L / 4L * ydiff
-    xoff <- -2L / 3L * xdiff + xcenter
-    yoff <- -2L / 3L * ydiff + ycenter
-  } else if (position == "topright"){
-    xscale <- 1L / 4L * xdiff
-    yscale <- 1L / 4L * ydiff
-    xoff <- 2L / 3L * xdiff + xcenter
-    yoff <- 2L / 3L * ydiff + ycenter
-  } else if (position == "left"){
-    xscale <- 2L / 3L * xdiff
-    yscale <- 2L / 3L * ydiff
-    xoff <- -5L / 3L * xdiff + xcenter
-    yoff <- ycenter
-  } else if (position == "right"){
-    xscale <- 2L / 3L * xdiff
-    yscale <- 2L / 3L * ydiff
-    xoff <- 5L / 3L * xdiff + xcenter
-    yoff <- ycenter
-  }
-  
-  ## Apply scale and return
-  x[, 1L] <- xscale * x[, 1L] + xoff
-  x[, 2L] <- yscale * x[, 2L] + yoff
-  return(x)
-}
-
-
-
-#' Pan (offset) and zoom (scale) a 2 column matrix, dataframe or scalar number.
+#' manip_var_guided(data = wine[, 2:14], index_f = tourr::holes())
 #' 
-#' @param x Numeric data object with 2 columns (or scalar) to scale and offset.
-#' @param x_pan Numeric value to offset/pan in the x-direction.
-#' @param y_pan Numeric value to offset/pan in the y-direction.
-#' @param x_zoom Numeric value to scale/zoom the size for the 1st column of `x`.
-#' @param y_zoom Numeric value to scale/zoom the size for the 2nd column of `x`.
-#' @return Scaled and offset `x`. A manual variant of `scale_axes()`.
-#' @seealso \code{\link{scale_axes}} for preset choices.
-#' @export
-#' @examples 
-#' ib <- tourr::basis_init(6, 2)
-#' pan_zoom(x = ib, x_pan = -1, y_pan = 0, x_zoom = 2/3, y_zoom = 1/2)
-pan_zoom <- function(x, 
-                     x_pan = 0L, 
-                     y_pan = 0L, 
-                     x_zoom = 1L,
-                     y_zoom = 1L
-) {
-  ## Assumptions
-  if (ncol(x) != 2L) stop("pan_zoom is only defined for 2 variables.")
-  ## Apply scale and return
-  ret <- x
-  ret[, 1L] <- ret[, 1L] * x_zoom + x_pan 
-  ret[, 2L] <- ret[, 2L] * y_zoom + y_pan
-  return(ret)
-}
-
-#' A ggplot2 theme containing theme_void and coord_fixed.
-#' The default value for ggproto arguments in spinifex functions.
-#' 
-#' @export
-#' @examples 
-#' theme_spinifex()
-theme_spinifex <- function(){
-  list(ggplot2::theme_void(),
-       ggplot2::coord_fixed()
-  )
+#' manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), func = min,
+#'                  alpha = .4, cooling = .9, max.tries = 30)
+manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
+                             func = max, ...){
+  invisible(capture.output( ## Mute the noisy function
+    hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
+  ))
+  bas <- hist[, , length(hist)]
+  ## Row-wise norms
+  norm <- apply(bas, 1L, FUN = function(row) sqrt(sum(row)))
+  which(norm == func(norm))
 }

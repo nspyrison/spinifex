@@ -13,7 +13,7 @@ play_manual_tour(
   phi_min = 0L,
   phi_max = 0.5 * pi,
   angle = 0.05,
-  ggproto = ggplot2::theme_void(),
+  ggproto = theme_spinifex(),
   render_type = render_plotly,
   ...
 )
@@ -77,7 +77,7 @@ play_manual_tour(basis = rb, data = flea_std, manip_var = 6,
 if(F){ ## Saving output may require additional setup
   ## Export plotly .html widget
   play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
-                   theta = .5 * pi, axes = "left", fps = 5,
+                   theta = .5 * pi, axes = "left", fps = 10,
                    col = flea_class, pch = flea_class, size = 1.5,
                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_plotly,
@@ -85,7 +85,7 @@ if(F){ ## Saving output may require additional setup
   
   ## Export gganimate .gif
   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
-                   theta = 0, axes = "topright", fps = 5,
+                   theta = 0, axes = "topright", fps = 8,
                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_gganimate,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")

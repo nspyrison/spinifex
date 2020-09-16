@@ -12,7 +12,7 @@ oblique_frame(
   phi = 0L,
   lab = NULL,
   rescale_data = FALSE,
-  ggproto = ggplot2::theme_void(),
+  ggproto = theme_spinifex(),
   ...
 )
 }

@@ -6,8 +6,9 @@
 \usage{
 scale_axes(
   x,
-  position = c("center", "left", "right", "bottomleft", "topright", "off"),
-  to = data.frame(x = c(0, 1), y = c(0, 1))
+  position = c("center", "left", "right", "bottomleft", "topright", "off",
+    "pan_zoom() call;", pan_zoom(c(-1L, 0L), c(0.7, 0.7))),
+  to = data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
 )
 }
 \arguments{

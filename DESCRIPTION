@@ -26,11 +26,12 @@ Imports:
     gganimate,
     plotly,
     shiny,
+    RColorBrewer,
+    MASS,
     dplyr,
-    magrittr
+    magrittr,
 Suggests: 
     rmarkdown,
-    RColorBrewer,
     htmlwidgets,
     knitr,
     testthat,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/3_visualize.r
 \name{play_tour_path}
 \alias{play_tour_path}
-\title{Render display of a provided tour path}
+\title{Animates the provided tour path.}
 \usage{
 play_tour_path(
   tour_path = NULL,
@@ -10,7 +10,6 @@ play_tour_path(
   angle = 0.05,
   render_type = render_plotly,
   rescale_data = FALSE,
-  ggproto = ggplot2::theme_void(),
   ...
 )
 }
@@ -21,22 +20,16 @@ play_tour_path(
 
 \item{angle}{Target distance (in radians) between steps. Defaults to .05.}
 
-\item{render_type}{Graphics to render to. Defaults to render_plotly,
-alternative use render_gganimate.}
+\item{render_type}{Graphics to render to. Defaults to \verb{render_plotly``, alternative use }render_gganimate`.}
 
-\item{rescale_data}{When TRUE scales the data to between 0 and 1.
+\item{rescale_data}{When TRUE scales the data columns to between 0 and 1.
 Defaults to FALSE.}
 
-\item{ggproto}{Accepts a list of gg functions. Think of this as an
-alternative format to \code{ggplot() + ggproto[[1]]}.
-Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
-
-\item{...}{Optionally pass additional arguments to the \code{render_type} for
-projection point aesthetics; \code{geom_point(aes(...))}.}
+\item{...}{Optionally pass additional arguments to the \code{render_type}.}
 }
 \description{
 Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interpolates
-over the path and renders into a selected \code{render_type}.
+over the path and renders into a specified \code{render_type}.
 }
 \examples{
 flea_std <- tourr::rescale(tourr::flea[, 1:6])
@@ -47,7 +40,7 @@ flea_class <- tourr::flea$species
 play_tour_path(tour_path = tpath, data = flea_std)
 
 play_tour_path(tour_path = tpath, data = flea_std,
-               axes = "bottomleft", angle = .08, fps = 10,
+               axes = "bottomleft", angle = .08, fps = 8,
                color = flea_class, shape = flea_class, size = 1.5,
                ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                render_type = render_gganimate)

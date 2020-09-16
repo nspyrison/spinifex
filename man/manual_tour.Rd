@@ -49,11 +49,16 @@ the radial tour of the \code{manip_var}, which is rotated from phi's starting
 position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[, 1:6])
-rb <- tourr::basis_random(n = ncol(flea_std))
+## Setup
+dat_std <- tourr::rescale(wine[, 2:14])
+clas <- wine$Type
+bas <- basis_lda(dat_std, clas)
+mv <- manip_var_lda(dat_std)
 
-manual_tour(basis = rb, manip_var = 4)
+## Required arguments
+manual_tour(basis = bas, manip_var = mv)
 
-manual_tour(basis = rb, manip_var = 6, 
-            theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .1)
+## Full arguments
+manual_tour(basis = bas, manip_var = mv,
+            theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .8)
 }

@@ -10,45 +10,57 @@ render_(
   manip_col = "blue",
   aes_args = list(),
   identity_args = list(),
-  ggproto = list(ggplot2::theme_void()),
-  ...
+  ggproto = theme_spinifex()
 )
 }
 \arguments{
 \item{frames}{The result of \code{array2df()}, a long df of the projected frames.}
 
 \item{axes}{Position of the axes: "center", "bottomleft", "off", "left",
-"right". Defaults to "center".}
+"right". Defaults to "center".
+For more control pass a pan_zoom call with NULL x.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}, if used.
 Defaults to "blue".}
 
-\item{ggproto}{Accepts a list of gg functions. Think of this as an
-alternative format to \code{ggplot() + ggproto[[1]]}.
-Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
+\item{aes_args}{A list of aesthetic arguments assigned to a vector passed to
+an aes() call. Anything that would be put inside of the \code{geom_point(aes(X))}.
+Typically a class vector mapped to color and shape.
+For example, \code{geom_point(aes(color = myClass, shape = myClass))} becomes
+\code{aes_args = list(color = myClass, shape = myClass)}.}
+
+\item{identity_args}{A list of arguments assigned to a vector passe outside
+of an aes() call. Anything that would be put in \code{geom_point(aes(), X)}.
+Typically a single numeric for point size, alpha, or similar
+For example, \code{geom_point(aes(), size = 2, alpha = .7)} becomes
+\code{identity_args = list(size = 2, alpha = .7)}.}
+
+\item{ggproto}{A list of ggplot2 function calls.
+Anything that would be "added" to ggplot(); in the case of applying a theme,
+\code{ggplot() + theme_bw()} becomes \code{ggproto = list(theme_bw())}.
+Intended for aesthetic ggplot2 functions (not geom_* family).}
 }
 \description{
 Typically called by \code{render_plotly()} or \code{render_gganimate()}. Takes the
 result of \code{array2df()}, and renders them into a ggplot2 object.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[, 1:6])
-rb <- tourr::basis_random(n = ncol(flea_std))
-array_frames <- manual_tour(basis = rb, manip_var = 4)
-df_frames <- array2df(array = array_frames, data = flea_std)
+## Setup
+dat_std <- tourr::rescale(wine[, 2:14])
+clas <- wine$Type
+bas <- basis_lda(dat_std, clas)
+mv <- manip_var_lda(dat_std, clas)
+tour_array <- manual_tour(basis = bas, manip_var = mv)
+tour_df <- array2df(array = tour_array, data = dat_std)
 
-render_(frames = df_frames)
+## Required arguments
+render_(frames = tour_df)
 
-## Mapping color, shape, size, and alpha 
-flea_class <- tourr::flea$species
-render_(frames = df_frames, axes = "bottomleft", manip_col = "purple",
-        color = flea_class, shape = flea_class,
-        size = .1, alpha = .5)
-
-## Using ggproto; a list of ggplot2 calls to add to ggplot().
-render_(frames = df_frames,
-        color = flea_class, shape = flea_class,
-        ggproto = list(ggplot2::theme_bw(), 
-                       ggplot2::ggtitle("My radial tour"),
-                       ggplot2::scale_color_brewer(palette = "Dark2")))
+## Full arguments
+render_(frames = tour_df, axes = "left", manip_col = "purple"
+        aes_args = list(color = clas, shape = clas),
+        identity_args = list(size = .8, alpha = .7)),
+        ggproto = list(theme_spinifex(),
+                       ggtitle("My title"),
+                       scale_color_brewer(palette = "Set2")))
 }
