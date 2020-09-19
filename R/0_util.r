@@ -237,9 +237,7 @@ pan_zoom <- function(pan = c(0L, 0L),
 #'   geom_point() + theme_spinifex()
 theme_spinifex <- function(){
   list(ggplot2::theme_void(),
-       ggplot2::coord_fixed(),
-       ggplot2::scale_color_brewer(palette = "Dark2")
-  )
+       ggplot2::scale_color_brewer(palette = "Dark2"))
 }
 
 ##
