@@ -12,10 +12,10 @@ scale_axes(
 )
 }
 \arguments{
-\item{x}{Numeric table, first 2 coulmns and scaled and offset relative to
+\item{x}{Numeric table, first 2 columns and scaled and offset relative to
 the \code{to} argument.}
 
-\item{position}{Text specifiyinh the postision the axes should go to.
+\item{position}{Text specifiyinh the position the axes should go to.
 Defaults to "center" expects one of: "center", "left", "right",
 "bottomleft", "topright", or "off".}
 
@@ -23,7 +23,7 @@ Defaults to "center" expects one of: "center", "left", "right",
 Based on the min/max of the first 2 columns.}
 }
 \value{
-Scaled and offset \code{x} typically controling axes placement.
+Scaled and offset \code{x} typically controlling axes placement.
 }
 \description{
 Typically called, by other functions to scale axes.

@@ -30,8 +30,8 @@ for use in ggplots.
 ## Setup
 dat_std <- tourr::rescale(wine[, 2:14])
 clas <- wine$Type
-bas <- basis_lda(dat_std, clas)
-mv <- manip_var_lda(dat_std)
+bas <- basis_pca(dat_std)
+mv <- manip_var_pca(dat_std)
 
 ## Array with a single frame, as used in view_frame()
 single_frame <- array(bas, dim = c(dim(bas), 1))

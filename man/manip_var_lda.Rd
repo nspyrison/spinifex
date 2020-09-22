@@ -10,7 +10,7 @@ manip_var_lda(data, class, func = max)
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations, coerced to matrix}
 
-\item{class}{The class for each observation, coereced to a factor.}
+\item{class}{The class for each observation, coerced to a factor.}
 
 \item{func}{The function to be applied, expects max or min.}
 }

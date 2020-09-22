@@ -57,7 +57,7 @@ tour_df <- array2df(array = tour_array, data = dat_std)
 render_(frames = tour_df)
 
 ## Full arguments
-render_(frames = tour_df, axes = "left", manip_col = "purple"
+render_(frames = tour_df, axes = "left", manip_col = "purple",
         aes_args = list(color = clas, shape = clas),
         identity_args = list(size = .8, alpha = .7)),
         ggproto = list(theme_spinifex(),

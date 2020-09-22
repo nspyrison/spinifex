@@ -10,8 +10,6 @@ basis_pca(data, p = 2L)
 \item{data}{Numeric matrix or data.frame of the observations.}
 
 \item{p}{Number of dimensions in the projected space.}
-
-\item{class}{The class for each observation, coereced to a factor.}
 }
 \description{
 The basis of Principal Component Analysis (PCA)

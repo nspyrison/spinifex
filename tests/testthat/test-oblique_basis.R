@@ -1,10 +1,10 @@
-context("print_manip_space")
+context("rotate_basis")
 
 library("spinifex")
 rb <- tourr::basis_random(n = 6)
 theta <- runif(1, 0, 2 * pi)
 phi   <- runif(1, 0, 2 * pi)
-ret <- print_manip_space(basis = rb, manip_var = 4, theta, phi)
+ret <- rotate_basis(basis = rb, manip_var = 4, theta, phi)
 
 test_that("class and dim", {
   expect_is(ret, "matrix")

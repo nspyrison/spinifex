@@ -40,8 +40,8 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' ## Setup
 #' dat_std <- tourr::rescale(wine[, 2:14])
 #' clas <- wine$Type
-#' bas <- basis_lda(dat_std, clas)
-#' mv <- manip_var_lda(dat_std)
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_pca(dat_std)
 #' 
 #' ## Array with a single frame, as used in view_frame()
 #' single_frame <- array(bas, dim = c(dim(bas), 1))
@@ -116,14 +116,14 @@ array2df <- function(array,
 #' 
 #' Typically called, by other functions to scale axes.
 #' 
-#' @param x Numeric table, first 2 coulmns and scaled and offset relative to 
+#' @param x Numeric table, first 2 columns and scaled and offset relative to 
 #' the `to` argument.
-#' @param position Text specifiyinh the postision the axes should go to.
+#' @param position Text specifiyinh the position the axes should go to.
 #' Defaults to "center" expects one of: "center", "left", "right", 
 #' "bottomleft", "topright", or "off".
 #' @param to Table to appropriately set the size and position of the axes to.
 #' Based on the min/max of the first 2 columns.
-#' @return Scaled and offset `x` typically controling axes placement.
+#' @return Scaled and offset `x` typically controlling axes placement.
 #' @seealso \code{\link{pan_zoom}} for more manual control.
 #' @export
 #' @examples
@@ -195,12 +195,12 @@ scale_axes <- function(x,
 #' Pan (offset) and zoom (scale) a 2 column matrix or dataframe.
 #' 
 #' A manual variant of `scale_axes()`. Can be used as the `axes` argument 
-#' to manualy set the size and locations of the axes.
+#' to manually set the size and locations of the axes.
 #' 
 #' @param pan 2 Numeric value to offset/pan the first 2 dimensions of `x`.
 #' @param zoom 2 Numeric value to scale/zoom the first 2 dimensions of `x`.
 #' @param x Numeric data object with 2 columns to scale and offset.
-#' Defaults to NULL, passing arguments to scale_axes for use internaly.
+#' Defaults to NULL, passing arguments to scale_axes for use internally.
 #' @return Scaled and offset `x`.
 #' @seealso \code{\link{scale_axes}} for preset choices.
 #' @export
@@ -329,7 +329,6 @@ theme_spinifex <- function(){
 #' The basis of Principal Component Analysis (PCA)
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
-#' @param class The class for each observation, coereced to a factor.
 #' @param p Number of dimensions in the projected space.
 #' @export
 #' @examples 
@@ -342,11 +341,11 @@ basis_pca <- function(data, p = 2L){
 #' The basis of Linear Discriminant Analysis (LDA)
 #' 
 #' Returns a numeric matrix of the first `p` columns of the MASS::lda for the
-#' given class. MASS::lda()$scaling is not orthonromal (!?); coerrced
+#' given class. MASS::lda()$scaling is not orthonromal (!?); coerced
 #' with tourr::orthonormalise().
 #' 
-#' @param data Numeric matrix or data.frame of the observations, coereced to matrix.
-#' @param class The class for each observation, coereced to a factor.
+#' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
+#' @param class The class for each observation, coerced to a factor.
 #' @param p Number of dimensions in the projected space.
 #' @return Numeric matrix of the last basis of a guided tour.
 #' @seealso \code{\link{MASS::lda}}
@@ -379,14 +378,13 @@ basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
   invisible(capture.output(
     hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
   ))
-  hist[, , length(hist)]
+  matrix(hist[, , length(hist)], ncol = p)
 }
 
 #' The number of the variable that has the max/min absolute value in the first
 #' Principal Component (of PCA). Useful for setting the manip_var argument.
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
-#' @param p Number of dimensions in the projected space.
 #' @param func The function to be applied, expects `max` or `min`.
 #' @export
 #' @examples 
@@ -400,7 +398,7 @@ manip_var_pca <- function(data, func = max){
 #' Linear Discriminant (of LDA). Useful for setting the manip_var argument.
 #' 
 #' @param data Numeric matrix or data.frame of the observations, coerced to matrix
-#' @param class The class for each observation, coereced to a factor.
+#' @param class The class for each observation, coerced to a factor.
 #' @param func The function to be applied, expects max or min.
 #' @return Numeric matrix of the last basis of a guided tour.
 #' @seealso \code{\link{MASS::lda}}

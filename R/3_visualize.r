@@ -367,16 +367,15 @@ view_manip_space <- function(basis,
 #'            theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
 #'            rescale_data = TRUE,
 #'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
-oblique_frame <- view_basis <- view_frame <-
-  function(basis = NULL,
-           data = NULL,
-           manip_var = NULL,
-           theta = 0L,
-           phi = 0L,
-           lab = NULL,
-           rescale_data = FALSE,
-           ggproto = theme_spinifex(),
-           ...){
+view_frame <- function(basis = NULL,
+                       data = NULL,
+                       manip_var = NULL,
+                       theta = 0L,
+                       phi = 0L,
+                       lab = NULL,
+                       rescale_data = FALSE,
+                       ggproto = theme_spinifex(),
+                       ...){
     if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
     if(is.null(manip_var) & (theta != 0L | phi != 0L))
       stop("theta or phi non-zero with a null manip_var. Manip_var required for manual_tour()")
@@ -406,8 +405,23 @@ oblique_frame <- view_basis <- view_frame <-
     gg
   }
 
+#' @rdname view_basis
+#' @export
+view_basis <- function(...){
+  .Deprecated("view_frame")
+  view_frame(...)
+}
+  
+#' @rdname oblique_basis
+#' @export
+oblique_basis <- function(...){
+  .Deprecated("view_frame")
+  view_frame(...)
+}
+
+
 # ##
-# ## OLD VIEW_BASIS; DEPRICATING TO VIEW_FRAME
+# ## OLD CODE: VIEW_BASIS -----
 # ##
 
 # #' Plot the axes directions of the basis table without data points.

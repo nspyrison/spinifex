@@ -12,14 +12,14 @@ pan_zoom(pan = c(0L, 0L), zoom = c(1L, 1L), x = NULL)
 \item{zoom}{2 Numeric value to scale/zoom the first 2 dimensions of \code{x}.}
 
 \item{x}{Numeric data object with 2 columns to scale and offset.
-Defaults to NULL, passing arguments to scale_axes for use internaly.}
+Defaults to NULL, passing arguments to scale_axes for use internally.}
 }
 \value{
 Scaled and offset \code{x}.
 }
 \description{
 A manual variant of \code{scale_axes()}. Can be used as the \code{axes} argument
-to manualy set the size and locations of the axes.
+to manually set the size and locations of the axes.
 }
 \examples{
 rb <- tourr::basis_random(6, 2)

@@ -159,6 +159,8 @@ manual_tour <- function(basis,
                         ...) {
   ## Assumptions
   basis <- as.matrix(basis)
+  if(length(manip_var) != 1 | manip_var < 1 | manip_var > nrow(basis))
+    stop("manip_var expected as a single integer between 1 and nrow(basis).")
   if(spinifex::is_orthonormal(basis) == FALSE){
     warning("Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
     basis <- tourr::orthonormalise(basis)
@@ -226,29 +228,33 @@ manual_tour <- function(basis,
 #' Defaults to NULL, generating a random basis.
 #' @param manip_var Number of the column/dimension to rotate.
 #' @param theta Angle in radians of "in-plane" rotation, on the xy plane of the 
-#'   reference frame. Required, no default.
-#'   If left NULL, will initialize the radial angle of the `manip_var`.`
-#' @param phi Phi is angle in radians of 
-#'   the "out-of-plane" rotation, the z-axis of the reference frame. 
-#'   Required, no default.
+#' reference frame. Required, no default.
+#' If left NULL, will initialize the radial angle of the `manip_var`.
+#' @param phi Phi is angle in radians of the "out-of-plane" rotation, 
+#' the z-axis of the reference frame. Required, no default.
 #' @return (p, 2) matrix of the rotated basis.
 #' @import tourr
 #' @export
 #' @examples
-#' dat <- tourr::flea[, 1:6]
-#' bas_pca <- stats::prcomp(dat)$rotation[, 1L:2L]
-#' mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
-#' print_manip_space(bas_pca, mvar)
+#' ## PCA basis with no rotation
+#' dat <- wine[, 2:14]
+#' bas <- basis_pca(dat)
+#' mv  <- manip_var_pca(dat)
+#' rotate_basis(bas, mv)
 #' 
-#' rb    <- tourr::basis_random(n = 6)
+#' ## Rotate random 
+#' p      <- ncol(bas)
+#' rb     <- tourr::basis_random(p)
+#' rmv    <- sample(1:p, 1)
 #' rtheta <- runif(1, 0, 2 * pi)
-#' rphi   <- runif(1, 0, 2 *pi)
-#' print_manip_space(basis = rb, manip_var = 4, rtheta, rphi)
-oblique_basis <- rotate_basis <- function(basis = NULL,
-                                          manip_var,
-                                          theta = 0L,
-                                          phi = 0L){
+#' rphi   <- runif(1, 0, 2 * pi)
+#' rotate_basis(basis = rb, manip_var = rmv, rtheta, rphi)
+rotate_basis <- function(basis = NULL,
+                         manip_var,
+                         theta = 0L,
+                         phi = 0L){
   m_sp <- create_manip_space(basis, manip_var)
-  rotate_manip_space(manip_space = m_sp, theta, phi)[ , 1:2L]
+  rotate_manip_space(manip_space = m_sp, theta, phi)[, 1L:ncol(basis)]
 }
+
 

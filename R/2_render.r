@@ -42,7 +42,7 @@
 #' render_(frames = tour_df)
 #' 
 #' ## Full arguments
-#' render_(frames = tour_df, axes = "left", manip_col = "purple"
+#' render_(frames = tour_df, axes = "left", manip_col = "purple",
 #'         aes_args = list(color = clas, shape = clas),
 #'         identity_args = list(size = .8, alpha = .7)),
 #'         ggproto = list(theme_spinifex(),
@@ -259,8 +259,6 @@ render_gganimate <- function(fps = 8L,
 #' into a  self-contained HTML widget.
 #'
 #' @param fps Frames animated per second. Defaults to 8.
-#' @param rewind Logical, wether of not the animation play in reverse after
-#' reaching the end. Default to FALSE (loops from start).
 #' @param tooltip Character vector of aesthetic mappings to show in the
 #' hover-over tooltip (passed to `plotly::ggplot()`).
 #' Defaults to "none". "all" shows all the aesthetic mappings.

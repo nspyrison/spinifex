@@ -7,9 +7,9 @@
 basis_lda(data, class, p = 2L)
 }
 \arguments{
-\item{data}{Numeric matrix or data.frame of the observations, coereced to matrix.}
+\item{data}{Numeric matrix or data.frame of the observations, coerced to matrix.}
 
-\item{class}{The class for each observation, coereced to a factor.}
+\item{class}{The class for each observation, coerced to a factor.}
 
 \item{p}{Number of dimensions in the projected space.}
 }
@@ -18,7 +18,7 @@ Numeric matrix of the last basis of a guided tour.
 }
 \description{
 Returns a numeric matrix of the first \code{p} columns of the MASS::lda for the
-given class. MASS::lda()$scaling is not orthonromal (!?); coerrced
+given class. MASS::lda()$scaling is not orthonromal (!?); coerced
 with tourr::orthonormalise().
 }
 \examples{

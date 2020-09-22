@@ -21,9 +21,6 @@ Defaults to NULL (not saved). For more output control call
 \code{htmlwidgets::saveWidget()} on a return object of \code{render_plotly()}.}
 
 \item{...}{Passes arguments to \code{render_(aes(...))}.}
-
-\item{rewind}{Logical, wether of not the animation play in reverse after
-reaching the end. Default to FALSE (loops from start).}
 }
 \description{
 Takes the result of \code{array2df()} and animations them via \code{{plotly}}

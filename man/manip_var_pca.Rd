@@ -11,8 +11,6 @@ manip_var_pca(data, func = max)
 \item{data}{Numeric matrix or data.frame of the observations.}
 
 \item{func}{The function to be applied, expects \code{max} or \code{min}.}
-
-\item{p}{Number of dimensions in the projected space.}
 }
 \description{
 The number of the variable that has the max/min absolute value in the first
