@@ -8,6 +8,8 @@ render_(
   frames,
   axes = "center",
   manip_col = "blue",
+  line_size = 1,
+  text_size = 5,
   aes_args = list(),
   identity_args = list(),
   ggproto = theme_spinifex()
@@ -22,6 +24,12 @@ For more control pass a pan_zoom call with NULL x.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}, if used.
 Defaults to "blue".}
+
+\item{line_size}{The size of the lines of the unit circle and variable
+contributions of the basis. Defaults to 1.}
+
+\item{text_size}{The size of the text labels of the variable
+contributions of the basis. Defaults to 5.}
 
 \item{aes_args}{A list of aesthetic arguments assigned to a vector passed to
 an aes() call. Anything that would be put inside of the \code{geom_point(aes(X))}.

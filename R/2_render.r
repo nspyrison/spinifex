@@ -14,6 +14,10 @@
 #' For more control pass a pan_zoom call with NULL x.
 #' @param manip_col String of the color to highlight the `manip_var`, if used.
 #' Defaults to "blue".
+#' @param line_size The size of the lines of the unit circle and variable 
+#' contributions of the basis. Defaults to 1.
+#' @param text_size The size of the text labels of the variable 
+#' contributions of the basis. Defaults to 5.
 #' @param aes_args A list of aesthetic arguments assigned to a vector passed to
 #' an aes() call. Anything that would be put inside of the `geom_point(aes(X))`.
 #' Typically a class vector mapped to color and shape.
@@ -51,6 +55,8 @@
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
+                    line_size = 1,
+                    text_size = 5,
                     aes_args = list(),
                     identity_args = list(),
                     ggproto = theme_spinifex()
@@ -84,13 +90,13 @@ render_ <- function(frames,
   }
   ## Manip var axes asethetics
   axes_col <- "grey50"
-  axes_siz <- 0.3
+  axes_siz <- line_size
   if(is.null(manip_var) == FALSE){
     axes_col            <- rep("grey50", p)
     axes_col[manip_var] <- manip_col
     axes_col            <- rep(axes_col, n_frames)
-    axes_siz            <- rep(0.3, p)
-    axes_siz[manip_var] <- 1L
+    axes_siz            <- rep(line_size, p)
+    axes_siz[manip_var] <- 2.5 * line_size
     axes_siz            <- rep(axes_siz, n_frames)
   }
   
@@ -145,7 +151,7 @@ render_ <- function(frames,
     gg <- gg +
       ## Circle path
       ggplot2::geom_path(
-        data = circ, color = "grey80", size = .3, inherit.aes = FALSE,
+        data = circ, color = "grey80", size = line_size, inherit.aes = FALSE,
         mapping = ggplot2::aes(x = x, y = y)
       ) +
       ## Basis axes segments
@@ -162,7 +168,7 @@ render_ <- function(frames,
                            mapping = ggplot2::aes(x = x, y = y,
                                                   frame = frame, label = lab),
                            vjust = "outward", hjust = "outward",
-                           colour = axes_col, size = 4L)
+                           colour = axes_col, size = text_size)
       )
   }
   

@@ -153,40 +153,35 @@ scale_axes <- function(x,
   y_to <- c(min(to[, 2L]), max(to[, 2L]))
   xdiff   <- diff(x_to)
   ydiff   <- diff(y_to)
-  xcenter <- mean(to[, 1L])
-  ycenter <- mean(to[, 2L])
+  xcenter <- mean(x_to)
+  ycenter <- mean(y_to)
   
   ## Condition handling of position
   if (position == "center"){
-    xscale <- 2L / 3L * xdiff
-    yscale <- 2L / 3L * ydiff
+    scale <- .3 * ydiff
     xoff  <- xcenter
     yoff  <- ycenter
   } else if (position == "bottomleft"){
-    xscale <- 1L / 4L * xdiff
-    yscale <- 1L / 4L * ydiff
-    xoff <- -2L / 3L * xdiff + xcenter
-    yoff <- -2L / 3L * ydiff + ycenter
+    scale <- .25 * ydiff
+    xoff <- -.25 * xdiff + xcenter
+    yoff <- -.5 * ydiff + ycenter
   } else if (position == "topright"){
-    xscale <- 1L / 4L * xdiff
-    yscale <- 1L / 4L * ydiff
-    xoff <- 2L / 3L * xdiff + xcenter
-    yoff <- 2L / 3L * ydiff + ycenter
+    scale <- .25 * ydiff
+    xoff <- .25 * xdiff + xcenter
+    yoff <- .5 * ydiff + ycenter
   } else if (position == "left"){
-    xscale <- 2L / 3L * xdiff
-    yscale <- 2L / 3L * ydiff
-    xoff <- -4L / 3L * xdiff + xcenter
+    scale <- .3 * ydiff
+    xoff <- -.7 * xdiff + xcenter
     yoff <- ycenter
   } else if (position == "right"){
-    xscale <- 2L / 3L * xdiff
-    yscale <- 2L / 3L * ydiff
-    xoff <- 4L / 3L * xdiff + xcenter
+    scale <- .3 * ydiff
+    xoff <- .7 * xdiff + xcenter
     yoff <- ycenter
   }
   
   ## Apply scale and return
-  x[, 1L] <- xscale * x[, 1L] + xoff
-  x[, 2L] <- yscale * x[, 2L] + yoff
+  x[, 1L] <- scale * x[, 1L] + xoff
+  x[, 2L] <- scale * x[, 2L] + yoff
   return(x)
 }
 
@@ -235,9 +230,24 @@ pan_zoom <- function(pan = c(0L, 0L),
 #' require("ggplot2")
 #' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
 #'   geom_point() + theme_spinifex()
+#'   
+#' dat  <- wine[, 2:14]
+#' bas  <- basis_pca(dat)
+#' clas <- wine[, 1]
+#' mv   <- M
+#' 
+#' play_manual_tour(basis = bas, data = dat, manip_var = 6,
+#'                  theta = .5 * pi, axes = "right", fps = 5,
+#'                  col = flea_class, pch = flea_class, size = 1.5,
+#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  render_type = render_gganimate)
+
 theme_spinifex <- function(){
   list(ggplot2::theme_void(),
-       ggplot2::scale_color_brewer(palette = "Dark2"))
+       ggplot2::scale_color_brewer(palette = "Dark2"),
+       ggplot2::coord_fixed()
+  )
+       
 }
 
 ##
@@ -439,4 +449,24 @@ manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
   ## Row-wise norms
   norm <- apply(bas, 1L, FUN = function(row) sqrt(sum(row)))
   which(norm == func(norm))
+}
+
+#' Centers by mean and scales by the standard deviation of each column of data.
+#' 
+#' @param data Numeric matrix or data.frame of the observations.
+#' @export
+#' @examples 
+#' scale_sd(data = wine[, 2:14])
+scale_sd <- function(data){
+  (data - mean(data)) / sd(data)
+}
+
+#' Standarize each column of data to have a range of [0, 1].
+#' 
+#' @param data Numeric matrix or data.frame of the observations.
+#' @export
+#' @examples 
+#' scale_10(data = wine[, 2:14])
+scale_10 <- function(data){
+  tourr::rescale(data)
 }

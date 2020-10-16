@@ -17,4 +17,15 @@ theme_spinifex()
 require("ggplot2")
 ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
   geom_point() + theme_spinifex()
+  
+dat  <- wine[, 2:14]
+bas  <- basis_pca(dat)
+clas <- wine[, 1]
+mv   <- M
+
+play_manual_tour(basis = bas, data = dat, manip_var = 6,
+                 theta = .5 * pi, axes = "right", fps = 5,
+                 col = flea_class, pch = flea_class, size = 1.5,
+                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+                 render_type = render_gganimate)
 }

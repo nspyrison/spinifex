@@ -25,7 +25,8 @@ play_tour_path(
 \item{rescale_data}{When TRUE scales the data columns to between 0 and 1.
 Defaults to FALSE.}
 
-\item{...}{Optionally pass additional arguments to the \code{render_type}.}
+\item{...}{Optionally pass additional arguments to \code{render_} and the
+function used in \code{render_type}.}
 }
 \description{
 Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interpolates
@@ -63,4 +64,7 @@ if (F){ ## Saving output may require additional setup
                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 }
 }
+}
+\seealso{
+\code{\link{render_}} For arguments to pass into \code{...}.
 }

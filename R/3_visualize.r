@@ -14,8 +14,10 @@
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
 #' @param render_type Graphics to render to. Defaults to `render_plotly``,
 #' alternative use `render_gganimate`.
-#' @param ... Optionally pass additional arguments to the `render_type`.
+#' @param ... Optionally pass additional arguments to `render_` and the 
+#' function used in `render_type`.
 #' @import tourr
+#' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
@@ -107,12 +109,12 @@ play_tour_path <- function(tour_path = NULL,
 #' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @param render_type Graphics to render to. Defaults to render_plotly, 
 #' alternative use render_gganimate.
-#' @param ... Optionally pass additional arguments to the `render_type` for 
-#' projection point aesthetics; `geom_point(aes(...))` or passes optional
-#' arguments to `manual_tour`.
+#' @param ... Optionally pass additional arguments to `render_` and the 
+#' function used in `render_type`.
 #' @param render_type Which graphics to render to. Defaults to render_plotly, 
 #' @return An animation of a radial tour.
 #' @import tourr
+#' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
 #' flea_std <- tourr::rescale(tourr::flea[, 1:6])
@@ -203,6 +205,10 @@ play_manual_tour <- function(basis = NULL,
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param manip_sp_col Color to illustrate the z direction, orthogonal to the
 #' projection plane.
+#' @param line_size The size of the lines of the unit circle and variable 
+#' contributions of the basis. Defaults to 1.
+#' @param text_size The size of the text labels of the variable 
+#' contributions of the basis. Defaults to 5.
 #' @param ggproto Accepts a list of gg functions. Think of this as an
 #' alternative format to `ggplot() + ggproto[[1]]`.
 #' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
@@ -224,10 +230,10 @@ view_manip_space <- function(basis,
                              lab = paste0("V", 1:nrow(basis)),
                              manip_col = "blue",
                              manip_sp_col = "red",
+                             line_size = 1,
+                             text_size = 5,
                              ggproto = list(
-                               ggplot2::scale_color_brewer(palette = "Dark2"),
-                               ggplot2::theme_void(),
-                               ggplot2::theme(legend.position = "none")
+                               theme_spinifex()
                              )
 ){
   #### Finds the angle between two vectors
@@ -253,7 +259,7 @@ view_manip_space <- function(basis,
   ## Aesthetics
   col_v <- rep("grey80", p)
   col_v[manip_var] <- manip_col
-  siz_v <- rep(0.3, p)
+  siz_v <- rep(line_size, p)
   siz_v[manip_var] <- 1L
   ## Axes circle and angles
   circ_r <- rot(make_curve())
@@ -279,7 +285,7 @@ view_manip_space <- function(basis,
     ggplot2::geom_path(
       data = circ_r,
       mapping = ggplot2::aes(x = x, y = y),
-      color = manip_col, size = 0.3, inherit.aes = FALSE) +
+      color = manip_col, size = line_size, inherit.aes = FALSE) +
     ## Variable contributions on projection plane:
     ggplot2::geom_segment(
       data = m_sp_r,
@@ -288,12 +294,12 @@ view_manip_space <- function(basis,
     ggplot2::geom_text(
       data = m_sp_r,
       mapping = ggplot2::aes(x = x, y = y, label = lab),
-      size = 4, colour = col_v, vjust = "outward", hjust = "outward") +
+      size = text_size, colour = col_v, vjust = "outward", hjust = "outward") +
     ## Red manip space
     ggplot2::geom_path(
       data = circ_r,
       mapping = ggplot2::aes(x = x, y = z),
-      color = manip_sp_col, size = 0.3, inherit.aes = FALSE) +
+      color = manip_sp_col, size = line_size, inherit.aes = FALSE) +
     ggplot2::geom_segment(
       data = mvar_r,
       mapping = ggplot2::aes(x = x, y = z, xend = 0L, yend = 0L),
@@ -301,16 +307,16 @@ view_manip_space <- function(basis,
     ggplot2::geom_segment(
       data = mvar_r,
       mapping = ggplot2::aes(x = x, y = z, xend = x, yend = y),
-      size = 0.3, colour = "grey80", linetype = 2) +
+      size = line_size, colour = "grey80", linetype = 2) +
     ggplot2::geom_text(
       data = mvar_r,
       mapping = ggplot2::aes(x = x, y = z, label = lab[manip_var]),
-      size = 4, colour = manip_sp_col, vjust = "outward", hjust = "outward") +
+      size = text_size, colour = manip_sp_col, vjust = "outward", hjust = "outward") +
     ## Label phi and theta
     ggplot2::geom_text(
       data = 1.2 * theta_curve_r[ceiling(nrow(theta_curve_r)/2), ],
       mapping = ggplot2::aes(x = x, y = y - .02, label = "theta"),
-      color = manip_col, size = 4L, parse = TRUE) +
+      color = manip_col, size = text_size, parse = TRUE) +
     ggplot2::geom_path(
       data = theta_curve_r,
       mapping = ggplot2::aes(x = x , y),
@@ -318,7 +324,7 @@ view_manip_space <- function(basis,
   # ggplot2::geom_text(
   #   data = 1.2 * phi_curve_r[ceiling(nrow(phi_curve_r) / 2L), ],
   #   mapping = ggplot2::aes(x = x, y = y, label = "phi"),
-  #   color = manip_sp_col, size = 4L, parse = TRUE) +
+  #   color = manip_sp_col, size = text_size, parse = TRUE) +
   # ggplot2::geom_path(
   #   data = phi_curve_r,
   #   mapping = ggplot2::aes(x = x, y = y),
@@ -418,112 +424,4 @@ oblique_basis <- function(...){
   .Deprecated("view_frame")
   view_frame(...)
 }
-
-
-# ##
-# ## OLD CODE: VIEW_BASIS -----
-# ##
-
-# #' Plot the axes directions of the basis table without data points.
-# #' 
-# #' ggplot2 object of axes contribution inscribed in a unit circle.
-# #' 
-# #' @param basis A (p, d) orthonormal numeric matrix.
-# #' The linear combination the original variables contribute to projection space.
-# #' Required, no default.
-# #' @param data Optional (n, p) data to plot on through the projection basis.
-# #' @param lab Optional, labels for the reference frame of length 1 or the
-# #' number of variables used. By default will abbreviate data if available.
-# #' @param axes Position of the axes: "center", "bottomleft" or "off". Defaults
-# #' to "center".
-# #' @param ggproto Accepts a list of gg functions. Think of this as an 
-# #' alternative format to `ggplot() + ggproto[[1]]`.
-# #' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
-# #' @param ... Optionally passes arguments to the projection points inside the
-# #' aesthetics; `geom_point(aes(...))`.
-# #' @return ggplot object of the basis.
-# #' @import tourr
-# #' @export
-# #' @examples 
-# #' flea_std <- tourr::rescale(tourr::flea[, 1:4])
-# #' rb <- tourr::basis_random(ncol(flea_std))
-# #' flea_class <- tourr::flea$species
-# #' view_basis(basis = rb)
-# #' 
-# #' view_basis(basis = rb, data = flea_std, axes = "bottomleft")
-# #'
-# #' view_basis(basis = rb, data = flea_std, axes = "right",
-# #'            color = flea_class, shape = flea_class, alpha = .7, size = 2,
-# #'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
-# view_basis <- function(basis,
-#                        data = NULL,
-#                        lab  = NULL,
-#                        axes = "center",
-#                        ggproto = theme_spinifex(),
-#                        ...) {
-#   .Deprecated("view_frame")
-#   ## Initialize
-#   p     <- nrow(basis)
-#   basis <- as.data.frame(basis) ## for plotting
-#   colnames(basis) <- c("x", "y")
-#   axes_to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))
-#   
-#   ## Basis text label conditional handling
-#   .lab <- NULL
-#   if(is.null(lab) == FALSE){
-#     .lab <- rep(lab, p / length(lab))
-#   } else { ## lab is NULL
-#     if(is.null(data) == FALSE) {.lab <- abbreviate(colnames(data), 3L)
-#     } else { ## lab and data NULL
-#       .lab <- paste0("V", 1L:p)
-#     }
-#   }
-#   
-#   ## Settings and asethetics 
-#   gg <- 
-#     ggplot2::ggplot() +
-#     ggproto
-#   ## Initalize data if present
-#   if (is.null(data) == FALSE) {
-#     proj <- as.data.frame(
-#       tourr::rescale(as.matrix(data) %*% as.matrix(basis)) - .5)
-#     colnames(proj) <- c("x", "y")
-#     axes_to <- proj
-#     ## Rendering
-#     gg <- gg + 
-#       ggplot2::geom_point(data = proj,
-#                           mapping = ggplot2::aes(x = x, y = y, ...),
-#       )
-#   }
-#   ## Add axes if needed
-#   if(axes != "off") {
-#     ## Initialize
-#     angle <- seq(0L, 2L * pi, length = 360L)
-#     circ <- data.frame(x = cos(angle), y = sin(angle))
-#     center <- scale_axes(data.frame(x = 0L, y = 0L),
-#                          axes, to = axes_to)
-#     circ <- scale_axes(circ, axes, axes_to)
-#     disp_basis <- scale_axes(basis, axes, axes_to)
-#     ## Append
-#     gg <- gg +
-#       ## Axes unit cirle path
-#       ggplot2::geom_path(
-#         data = circ, 
-#         mapping = ggplot2::aes(x = x, y = y),
-#         color = "grey80", size = .3, inherit.aes = FALSE) +
-#       ## Basis axes line segments
-#       ggplot2::geom_segment(
-#         data = disp_basis, 
-#         mapping = ggplot2::aes(x = x, y = y, xend = center[, 1L], yend = center[, 2L])) +
-#       ## Basis variable text labels
-#       ggplot2::geom_text(
-#         data = disp_basis, 
-#         mapping = ggplot2::aes(x = x, y = y), label = .lab,
-#         size = 4L, hjust = 0L, vjust = 0L, color = "black")
-#   }
-#   
-#   ## Return
-#   gg
-# }
-
 

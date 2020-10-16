@@ -49,9 +49,8 @@ Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions
 
 \item{render_type}{Which graphics to render to. Defaults to render_plotly,}
 
-\item{...}{Optionally pass additional arguments to the \code{render_type} for
-projection point aesthetics; \code{geom_point(aes(...))} or passes optional
-arguments to \code{manual_tour}.}
+\item{...}{Optionally pass additional arguments to \code{render_} and the
+function used in \code{render_type}.}
 }
 \value{
 An animation of a radial tour.
@@ -91,4 +90,7 @@ if(F){ ## Saving output may require additional setup
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }
 }
+}
+\seealso{
+\code{\link{render_}} For arguments to pass into \code{...}.
 }

@@ -11,8 +11,9 @@ view_manip_space(
   lab = paste0("V", 1:nrow(basis)),
   manip_col = "blue",
   manip_sp_col = "red",
-  ggproto = list(ggplot2::scale_color_brewer(palette = "Dark2"), ggplot2::theme_void(),
-    ggplot2::theme(legend.position = "none"))
+  line_size = 1,
+  text_size = 5,
+  ggproto = list(theme_spinifex())
 )
 }
 \arguments{
@@ -32,6 +33,12 @@ in the reference frame, typically the variable names.}
 
 \item{manip_sp_col}{Color to illustrate the z direction, orthogonal to the
 projection plane.}
+
+\item{line_size}{The size of the lines of the unit circle and variable
+contributions of the basis. Defaults to 1.}
+
+\item{text_size}{The size of the text labels of the variable
+contributions of the basis. Defaults to 5.}
 
 \item{ggproto}{Accepts a list of gg functions. Think of this as an
 alternative format to \code{ggplot() + ggproto[[1]]}.
