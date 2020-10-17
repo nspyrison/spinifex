@@ -96,7 +96,7 @@ render_ <- function(frames,
     axes_col[manip_var] <- manip_col
     axes_col            <- rep(axes_col, n_frames)
     axes_siz            <- rep(line_size, p)
-    axes_siz[manip_var] <- 2.5 * line_size
+    axes_siz[manip_var] <- 1.5 * line_size
     axes_siz            <- rep(axes_siz, n_frames)
   }
   
