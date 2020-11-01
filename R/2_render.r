@@ -18,14 +18,13 @@
 #' contributions of the basis. Defaults to 1.
 #' @param text_size The size of the text labels of the variable 
 #' contributions of the basis. Defaults to 5.
-#' @param aes_args A list of aesthetic arguments assigned to a vector passed to
-#' an aes() call. Anything that would be put inside of the `geom_point(aes(X))`.
-#' Typically a class vector mapped to color and shape.
-#' For example, `geom_point(aes(color = myClass, shape = myClass))` becomes
-#' `aes_args = list(color = myClass, shape = myClass)`.
-#' @param identity_args A list of arguments assigned to a vector passe outside
-#' of an aes() call. Anything that would be put in `geom_point(aes(), X)`.
-#' Typically a single numeric for point size, alpha, or similar
+#' @param aes_args A list of aesthetic arguments to passed to 
+#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
+#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
+#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
+#' Typically a single numeric for point size, alpha, or similar.
 #' For example, `geom_point(aes(), size = 2, alpha = .7)` becomes
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' @param ggproto A list of ggplot2 function calls.
@@ -166,7 +165,7 @@ render_ <- function(frames,
       suppressWarnings( ## Suppress for unused aes "frame".
         ggplot2::geom_text(data = basis_frames,
                            mapping = ggplot2::aes(x = x, y = y,
-                                                  frame = frame, label = lab),
+                                                  frame = frame, label = label),
                            vjust = "outward", hjust = "outward",
                            colour = axes_col, size = text_size)
       )
@@ -193,8 +192,13 @@ render_ <- function(frames,
 #' (without the folder path). Defaults to NULL (no GIF saved). 
 #' For more output control, call `gganimate::anim_save()` on a return object of
 #' `render_gganimate()`.
-#' @param gif_path Optional, A string of the directory path (without filename) 
+#' @param gif_dirpath Optional, A string of the directory path (without filename) 
 #' to save a GIF to. Defaults to NULL (current work directory).
+#' @param gganimate_args A list of arguments assigned to a vector passe outside
+#' of an aes() call. Anything that would be put in `geom_point(aes(), X)`.
+#' Typically a single numeric for point size, alpha, or similar
+#' For example, `geom_point(aes(), size = 2, alpha = .7)` becomes
+#' `identity_args = list(size = 2, alpha = .7)`.
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
 #' @seealso \code{\link{render_}} for `...` arguments.
@@ -238,7 +242,8 @@ render_gganimate <- function(fps = 8L,
                              start_pause = .5,
                              end_pause = 1L,
                              gif_filename = NULL,
-                             gif_path = NULL,
+                             gif_dirpath = NULL,
+                             gganimate_args = list(),
                              ...) {
   requireNamespace("gganimate")
   ## Render and animate
@@ -248,7 +253,8 @@ render_gganimate <- function(fps = 8L,
                              fps = fps,
                              rewind = rewind,
                              start_pause = fps * start_pause,
-                             end_pause = fps * end_pause)
+                             end_pause = fps * end_pause, 
+                             gganimate_args)
   ## Save condition handling
   if(is.null(gif_filename) == FALSE)
     gganimate::anim_save(gif_filename, anim, gif_path)
@@ -274,6 +280,9 @@ render_gganimate <- function(fps = 8L,
 #' this string (without folderpath).
 #' Defaults to NULL (not saved). For more output control call
 #' `htmlwidgets::saveWidget()` on a return object of `render_plotly()`.
+#' @param save_widget_args A list of arguments to be called in 
+#' `htmlwidgets::saveWidget()` when used with a `html_filename`.
+#' @param save_widget_args 
 #' @param ... Passes arguments to `render_(aes(...))`.
 #' @seealso \code{\link{render_}} for `...` arguments.
 #' @seealso \code{\link{plotly::ggplotly}} for source documentation of `tooltip`.
@@ -295,7 +304,7 @@ render_gganimate <- function(fps = 8L,
 #' 
 #' ## Full arguments (without save)
 #' render_plotly(frames = df_frames, axes = "bottomleft", fps = 10,
-#'               tooltip = c("lab", "frame", "x", "y"),
+#'               tooltip = c("label", "frame", "x", "y"),
 #'               aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = .8, alpha = .7),
 #'               ggproto = list(theme_spinifex(),
@@ -316,6 +325,7 @@ render_gganimate <- function(fps = 8L,
 render_plotly <- function(fps = 8L,
                           tooltip = "none",
                           html_filename = NULL,
+                          save_widget_args = list(),
                           ...){
   requireNamespace("plotly")
   ## Render
@@ -332,8 +342,10 @@ render_plotly <- function(fps = 8L,
   )
   ## Save condition handling
   if (is.null(html_filename) == FALSE)
-    htmlwidgets::saveWidget(ggp, html_filename)
+    htmlwidgets::saveWidget(widget = ggp, file = html_filename,
+                            save_widget_args)
   ## Return
   ggp
 }
+
 

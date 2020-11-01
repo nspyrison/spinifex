@@ -200,7 +200,7 @@ play_manual_tour <- function(basis = NULL,
 #' @param manip_var Number of the column/dimension to rotate.
 #' @param tilt angle in radians to rotate the projection plane.
 #' Defaults to .1 * pi.
-#' @param lab Optional, character vector of `p` length, add name to the axes
+#' @param label Optional, character vector of `p` length, add name to the axes
 #' in the reference frame, typically the variable names.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param manip_sp_col Color to illustrate the z direction, orthogonal to the
@@ -221,13 +221,13 @@ play_manual_tour <- function(basis = NULL,
 #' view_manip_space(basis = rb, manip_var = 4)
 #' 
 #' view_manip_space(basis = rb, manip_var = 1,
-#'                  tilt = 2/12 * pi, lab = paste0("MyLabs", 1:nrow(basis))
+#'                  tilt = 2/12 * pi, label = paste0("MyLabs", 1:nrow(basis))
 #'                  manip_col = "purple", manip_sp_col = "orange", 
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 view_manip_space <- function(basis,
                              manip_var,
                              tilt = .1 * pi,
-                             lab = paste0("V", 1:nrow(basis)),
+                             label = paste0("V", 1:nrow(basis)),
                              manip_col = "blue",
                              manip_sp_col = "red",
                              line_size = 1,
@@ -293,7 +293,7 @@ view_manip_space <- function(basis,
       size = siz_v, colour = col_v) +
     ggplot2::geom_text(
       data = m_sp_r,
-      mapping = ggplot2::aes(x = x, y = y, label = lab),
+      mapping = ggplot2::aes(x = x, y = y, label = label),
       size = text_size, colour = col_v, vjust = "outward", hjust = "outward") +
     ## Red manip space
     ggplot2::geom_path(
@@ -310,7 +310,7 @@ view_manip_space <- function(basis,
       size = line_size, colour = "grey80", linetype = 2) +
     ggplot2::geom_text(
       data = mvar_r,
-      mapping = ggplot2::aes(x = x, y = z, label = lab[manip_var]),
+      mapping = ggplot2::aes(x = x, y = z, label = label[manip_var]),
       size = text_size, colour = manip_sp_col, vjust = "outward", hjust = "outward") +
     ## Label phi and theta
     ggplot2::geom_text(
@@ -347,16 +347,26 @@ view_manip_space <- function(basis,
 #' on the xy plane of the reference frame. Defaults to 0, no rotation.
 #' @param phi Angle in radians of the "out-of-projection plane" rotation, into 
 #' the z-direction of the axes. Defaults to 0, no rotation.
-#' @param lab Optionally, provide a character vector of length p (or 1) 
+#' @param label Optionally, provide a character vector of length p (or 1) 
 #' to label the variable contributions to the axes, Default NULL, 
 #' results in a 3 character abbreviation of the variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
-#' @param ggproto Accepts a list of gg functions. Think of this as an 
-#' alternative format to `ggplot() + ggproto[[1]]`.
-#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
+#' @param aes_args A list of aesthetic arguments to passed to 
+#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
+#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
+#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
+#' Typically a single numeric for point size, alpha, or similar.
+#' For example, `geom_point(aes(), size = 2, alpha = .7)` becomes
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' @param ggproto A list of ggplot2 function calls.
+#' Anything that would be "added" to ggplot(); in the case of applying a theme,
+#' `ggplot() + theme_bw()` becomes `ggproto = list(theme_bw())`.
+#' Intended for aesthetic ggplot2 functions (not geom_* family).
 #' @param ... Optionally pass additional arguments to the `render_type` for 
-#' projection point aesthetics; `geom_point(aes(...))`.
+#' projection point aesthetics; 
 #' @return A ggplot object of the rotated projection.
 #' @import tourr
 #' @export
@@ -370,7 +380,7 @@ view_manip_space <- function(basis,
 #' rtheta <- runif(1, 0, 2 * pi)
 #' rphi   <- runif(1, 0, 2 * pi)
 #' view_frame(basis = rb, data = dat, manip_var = 4,
-#'            theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
+#'            theta = rtheta, phi = rphi, label = paste0("MyNm", 3:8), 
 #'            rescale_data = TRUE,
 #'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 view_frame <- function(basis = NULL,
@@ -378,8 +388,10 @@ view_frame <- function(basis = NULL,
                        manip_var = NULL,
                        theta = 0L,
                        phi = 0L,
-                       lab = NULL,
+                       label = NULL,
                        rescale_data = FALSE,
+                       aes_args = list(),
+                       identity_args = list(),
                        ggproto = theme_spinifex(),
                        ...){
     if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
@@ -391,7 +403,7 @@ view_frame <- function(basis = NULL,
       message("NULL basis passed. Set to PCA basis.")
     }
     
-    ## Initalize
+    ## Initialize
     p <- nrow(basis)
     if(is.null(data) == FALSE)
       data <- as.matrix(data)
@@ -404,24 +416,18 @@ view_frame <- function(basis = NULL,
     attr(tour_array, "manip_var") <- manip_var
     
     ## Render
-    df_frames <- array2df(array = tour_array, data = data, lab = lab)
+    df_frames <- array2df(array = tour_array, data = data, label = label)
     gg <- render_(frames = df_frames, ggproto = ggproto, ...)
     
     ## Return
     gg
   }
 
-#' @rdname view_basis
-#' @export
-view_basis <- function(...){
-  .Deprecated("view_frame")
-  view_frame(...)
-}
-  
-#' @rdname oblique_basis
-#' @export
-oblique_basis <- function(...){
-  .Deprecated("view_frame")
-  view_frame(...)
-}
+#### Treat past alternative versions as view_frame, will work with fully qualified code.
+#' @rdname view_frame
+view_basis <- view_frame
+
+#' @rdname view_frame
+oblique_basis <- view_frame
+
 

@@ -8,7 +8,7 @@ view_manip_space(
   basis,
   manip_var,
   tilt = 0.1 * pi,
-  lab = paste0("V", 1:nrow(basis)),
+  label = paste0("V", 1:nrow(basis)),
   manip_col = "blue",
   manip_sp_col = "red",
   line_size = 1,
@@ -26,7 +26,7 @@ Required, no default.}
 \item{tilt}{angle in radians to rotate the projection plane.
 Defaults to .1 * pi.}
 
-\item{lab}{Optional, character vector of \code{p} length, add name to the axes
+\item{label}{Optional, character vector of \code{p} length, add name to the axes
 in the reference frame, typically the variable names.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}.}
@@ -58,7 +58,7 @@ rb <- tourr::basis_random(ncol(flea_std))
 view_manip_space(basis = rb, manip_var = 4)
 
 view_manip_space(basis = rb, manip_var = 1,
-                 tilt = 2/12 * pi, lab = paste0("MyLabs", 1:nrow(basis))
+                 tilt = 2/12 * pi, label = paste0("MyLabs", 1:nrow(basis))
                  manip_col = "purple", manip_sp_col = "orange", 
                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

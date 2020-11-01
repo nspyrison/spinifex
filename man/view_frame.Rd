@@ -2,6 +2,8 @@
 % Please edit documentation in R/3_visualize.r
 \name{view_frame}
 \alias{view_frame}
+\alias{view_basis}
+\alias{oblique_basis}
 \title{Plot a single frame of a manual tour}
 \usage{
 view_frame(
@@ -10,8 +12,38 @@ view_frame(
   manip_var = NULL,
   theta = 0L,
   phi = 0L,
-  lab = NULL,
+  label = NULL,
   rescale_data = FALSE,
+  aes_args = list(),
+  identity_args = list(),
+  ggproto = theme_spinifex(),
+  ...
+)
+
+view_basis(
+  basis = NULL,
+  data = NULL,
+  manip_var = NULL,
+  theta = 0L,
+  phi = 0L,
+  label = NULL,
+  rescale_data = FALSE,
+  aes_args = list(),
+  identity_args = list(),
+  ggproto = theme_spinifex(),
+  ...
+)
+
+oblique_basis(
+  basis = NULL,
+  data = NULL,
+  manip_var = NULL,
+  theta = 0L,
+  phi = 0L,
+  label = NULL,
+  rescale_data = FALSE,
+  aes_args = list(),
+  identity_args = list(),
   ggproto = theme_spinifex(),
   ...
 )
@@ -31,19 +63,31 @@ on the xy plane of the reference frame. Defaults to 0, no rotation.}
 \item{phi}{Angle in radians of the "out-of-projection plane" rotation, into
 the z-direction of the axes. Defaults to 0, no rotation.}
 
-\item{lab}{Optionally, provide a character vector of length p (or 1)
+\item{label}{Optionally, provide a character vector of length p (or 1)
 to label the variable contributions to the axes, Default NULL,
 results in a 3 character abbreviation of the variable names.}
 
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
-\item{ggproto}{Accepts a list of gg functions. Think of this as an
-alternative format to \code{ggplot() + ggproto[[1]]}.
-Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
+\item{aes_args}{A list of aesthetic arguments to passed to
+\verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
+for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
+\code{aes_args = list(color = myCol, shape = myCol)}.}
+
+\item{identity_args}{A list of static, identity arguments passed into
+\code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
+Typically a single numeric for point size, alpha, or similar.
+For example, \code{geom_point(aes(), size = 2, alpha = .7)} becomes
+\code{identity_args = list(size = 2, alpha = .7)}.}
+
+\item{ggproto}{A list of ggplot2 function calls.
+Anything that would be "added" to ggplot(); in the case of applying a theme,
+\code{ggplot() + theme_bw()} becomes \code{ggproto = list(theme_bw())}.
+Intended for aesthetic ggplot2 functions (not geom_* family).}
 
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
-projection point aesthetics; \code{geom_point(aes(...))}.}
+projection point aesthetics;}
 }
 \value{
 A ggplot object of the rotated projection.
@@ -62,7 +106,7 @@ rb     <- tourr::basis_random(n = ncol(dat))
 rtheta <- runif(1, 0, 2 * pi)
 rphi   <- runif(1, 0, 2 * pi)
 view_frame(basis = rb, data = dat, manip_var = 4,
-           theta = rtheta, phi = rphi, lab = paste0("MyNm", 3:8), 
+           theta = rtheta, phi = rphi, label = paste0("MyNm", 3:8), 
            rescale_data = TRUE,
            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

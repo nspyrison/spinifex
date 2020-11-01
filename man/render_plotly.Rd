@@ -4,7 +4,13 @@
 \alias{render_plotly}
 \title{Animation the frames as a HTML widget.}
 \usage{
-render_plotly(fps = 8L, tooltip = "none", html_filename = NULL, ...)
+render_plotly(
+  fps = 8L,
+  tooltip = "none",
+  html_filename = NULL,
+  save_widget_args = list(),
+  ...
+)
 }
 \arguments{
 \item{fps}{Frames animated per second. Defaults to 8.}
@@ -19,6 +25,8 @@ For example, tooltip = c("id", "frame", "x", "y", "category", "color").}
 this string (without folderpath).
 Defaults to NULL (not saved). For more output control call
 \code{htmlwidgets::saveWidget()} on a return object of \code{render_plotly()}.}
+
+\item{save_widget_args}{}
 
 \item{...}{Passes arguments to \code{render_(aes(...))}.}
 }
@@ -41,7 +49,7 @@ render_plotly(frames = df_frames)
 
 ## Full arguments (without save)
 render_plotly(frames = df_frames, axes = "bottomleft", fps = 10,
-              tooltip = c("lab", "frame", "x", "y"),
+              tooltip = c("label", "frame", "x", "y"),
               aes_args = list(color = clas, shape = clas),
               identity_args = list(size = .8, alpha = .7),
               ggproto = list(theme_spinifex(),

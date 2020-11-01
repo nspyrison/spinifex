@@ -10,7 +10,8 @@ render_gganimate(
   start_pause = 0.5,
   end_pause = 1L,
   gif_filename = NULL,
-  gif_path = NULL,
+  gif_dirpath = NULL,
+  gganimate_args = list(),
   ...
 )
 }
@@ -31,8 +32,14 @@ Defaults to 1.}
 For more output control, call \code{gganimate::anim_save()} on a return object of
 \code{render_gganimate()}.}
 
-\item{gif_path}{Optional, A string of the directory path (without filename)
+\item{gif_dirpath}{Optional, A string of the directory path (without filename)
 to save a GIF to. Defaults to NULL (current work directory).}
+
+\item{gganimate_args}{A list of arguments assigned to a vector passe outside
+of an aes() call. Anything that would be put in \code{geom_point(aes(), X)}.
+Typically a single numeric for point size, alpha, or similar
+For example, \code{geom_point(aes(), size = 2, alpha = .7)} becomes
+\code{identity_args = list(size = 2, alpha = .7)}.}
 
 \item{...}{Optionally passes arguments to the projection points inside the
 aesthetics; \code{geom_point(aes(...))}.}

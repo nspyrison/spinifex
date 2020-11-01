@@ -31,15 +31,14 @@ contributions of the basis. Defaults to 1.}
 \item{text_size}{The size of the text labels of the variable
 contributions of the basis. Defaults to 5.}
 
-\item{aes_args}{A list of aesthetic arguments assigned to a vector passed to
-an aes() call. Anything that would be put inside of the \code{geom_point(aes(X))}.
-Typically a class vector mapped to color and shape.
-For example, \code{geom_point(aes(color = myClass, shape = myClass))} becomes
-\code{aes_args = list(color = myClass, shape = myClass)}.}
+\item{aes_args}{A list of aesthetic arguments to passed to
+\verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
+for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
+\code{aes_args = list(color = myCol, shape = myCol)}.}
 
-\item{identity_args}{A list of arguments assigned to a vector passe outside
-of an aes() call. Anything that would be put in \code{geom_point(aes(), X)}.
-Typically a single numeric for point size, alpha, or similar
+\item{identity_args}{A list of static, identity arguments passed into
+\code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
+Typically a single numeric for point size, alpha, or similar.
 For example, \code{geom_point(aes(), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
 

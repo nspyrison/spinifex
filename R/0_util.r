@@ -31,7 +31,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' `manual_tour()`.
 #' @param data Optional, (n, p) dataset to project, consisting of numeric 
 #' variables.
-#' @param lab Optional, labels for the reference frame of length 1 or the 
+#' @param label Optional, labels for the reference frame of length 1 or the 
 #' number of variables used. Defaults to an abbreviation of the variables.
 #' @return A list containing an array of basis frames (p, d, n_frames) and
 #' an array of data frames (n, d, n_frames) if data is present.
@@ -51,15 +51,15 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' ## Radial tour array to long df, as used in play_manual_tour()
 #' tour_array <- manual_tour(basis = bas, manip_var = mv)
 #' array2df(array = tour_array, data = dat_std,
-#'          lab = paste0("MyLabs", 1:nrow(bas)))
+#'          label = paste0("MyLabs", 1:nrow(bas)))
 #' 
 #' ## tourr::save_history tour array to long df, as used in play_tour_path()
 #' hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
 #' array2df(array = hist_array, data = dat_std,
-#'          lab = paste0("MyLabs", 1:nrow(bas)))
+#'          label = paste0("MyLabs", 1:nrow(bas)))
 array2df <- function(array,
                      data = NULL,
-                     lab = NULL){
+                     label = NULL){
   ## Initialize
   manip_var <- attributes(array)$manip_var
   p <- dim(array)[1L]
@@ -90,13 +90,13 @@ array2df <- function(array,
   }
   
   ## Labels and attribute condition handling
-  basis_frames$lab <- NULL
-  if(is.null(lab) == FALSE){
-    basis_frames$lab <- rep(lab, nrow(basis_frames) / length(lab))
+  basis_frames$label <- NULL
+  if(is.null(label) == FALSE){
+    basis_frames$label <- rep(label, nrow(basis_frames) / length(label))
   }else{
-    if(!is.null(data)){basis_frames$lab <- abbreviate(colnames(data), 3L)
+    if(!is.null(data)){basis_frames$label <- abbreviate(colnames(data), 3L)
     }else{
-      basis_frames$lab <- paste0("V", 1L:p)
+      basis_frames$label <- paste0("V", 1L:p)
     }
   }
   attr(basis_frames, "manip_var") <- manip_var
