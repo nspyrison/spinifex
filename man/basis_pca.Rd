@@ -9,7 +9,7 @@ basis_pca(data, p = 2L)
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}
 
-\item{p}{Number of dimensions in the projected space.}
+\item{p}{Number of dimensions in the projection space.}
 }
 \description{
 The basis of Principal Component Analysis (PCA)

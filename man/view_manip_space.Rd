@@ -58,7 +58,7 @@ rb <- tourr::basis_random(ncol(flea_std))
 view_manip_space(basis = rb, manip_var = 4)
 
 view_manip_space(basis = rb, manip_var = 1,
-                 tilt = 2/12 * pi, label = paste0("MyLabs", 1:nrow(basis))
+                 tilt = 2/12 * pi, label = paste0("MyLabs", 1:nrow(basis)),
                  manip_col = "purple", manip_sp_col = "orange", 
                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

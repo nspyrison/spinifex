@@ -9,10 +9,10 @@ basis_guided(data, index_f = tourr::holes(), p = 2L, ...)
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}
 
-\item{index_f}{The index function to optimise.
-{tourr} exports holes(), cmass(), and lda_pp(class).}
+\item{index_f}{The index function to optimize.
+\code{{tourr}} exports \code{holes()}, \code{cmass()}, and \code{lda_pp(class)}.}
 
-\item{p}{Number of dimensions in the projected space.}
+\item{p}{Number of dimensions in the projection space.}
 
 \item{...}{Optional, other arguments to pass to \code{tourr::guided_tour}.}
 }

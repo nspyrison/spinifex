@@ -2,19 +2,20 @@
 % Please edit documentation in R/0_util.r
 \name{manip_var_pca}
 \alias{manip_var_pca}
-\title{The number of the variable that has the max/min absolute value in the first
-Principal Component (of PCA). Useful for setting the manip_var argument.}
+\title{The number of the variable that has the \verb{max/min absolute value in the first Principal Component (of PCA)}rank`-th largest contribution to projection
+space. Useful for setting the manip_var argument.}
 \usage{
-manip_var_pca(data, func = max)
+manip_var_pca(data, rank = 1L)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}
 
-\item{func}{The function to be applied, expects \code{max} or \code{min}.}
+\item{rank}{The number, specifying the variable with the \code{rank}-th largest
+contribution. Defaults to 1}
 }
 \description{
-The number of the variable that has the max/min absolute value in the first
-Principal Component (of PCA). Useful for setting the manip_var argument.
+The number of the variable that has the \verb{max/min absolute value in the first Principal Component (of PCA)}rank`-th largest contribution to projection
+space. Useful for setting the manip_var argument.
 }
 \examples{
 manip_var_pca(data = wine[, 2:14])

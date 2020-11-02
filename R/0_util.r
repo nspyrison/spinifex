@@ -60,11 +60,11 @@ array2df <- function(array,
   p <- dim(array)[1L]
   n_frames <- dim(array)[3L]
   
-  ## Basis condition handling
+  ## Page through array appending to df.
   basis_frames <- NULL
-  for (frame in 1:n_frames){
-    basis_rows <- data.frame(cbind(array[,, frame], frame))
-    basis_frames <- rbind(basis_frames, basis_rows)
+  for(frame in 1:n_frames){
+    new_rows <- data.frame(cbind(as.data.frame(array[,, frame]), frame))
+    basis_frames <- rbind(basis_frames, new_rows)
   }
   colnames(basis_frames) <- c("x", "y", "frame")
   
@@ -417,7 +417,7 @@ manip_var_pca <- function(data, rank = 1L){
 #' Useful for setting the manip_var argument.
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
-#' @param index_f The index function to optimise.
+#' @param index_f The index function to optimize.
 #' {tourr} exports holes(), cmass(), and lda_pp(class).
 #' @param p Number of dimensions in the projection space.
 #' @param func The function to be applied, expects `max` or `min`.
@@ -451,7 +451,7 @@ scale_sd <- function(data){
   apply(data, 2, function(c) (c - mean(c)) / sd(c))
 }
 
-#' Standarize each column of data to have a range of [0, 1].
+#' Standardize each column of data to have a range of [0, 1].
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @export

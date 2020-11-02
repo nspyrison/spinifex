@@ -33,11 +33,6 @@ clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_pca(dat_std)
 
-## Array with a single frame, as used in view_frame()
-single_frame <- array(bas, dim = c(dim(bas), 1))
-attr(single_frame, "manip_var") <- mv
-array2df(array = single_frame)
-
 ## Radial tour array to long df, as used in play_manual_tour()
 tour_array <- manual_tour(basis = bas, manip_var = mv)
 array2df(array = tour_array, data = dat_std,

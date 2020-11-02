@@ -15,7 +15,7 @@ scale_axes(
 \item{x}{Numeric table, first 2 columns and scaled and offset relative to
 the \code{to} argument.}
 
-\item{position}{Text specifiyinh the position the axes should go to.
+\item{position}{Text specifiying the position the axes should go to.
 Defaults to "center" expects one of: "center", "left", "right",
 "bottomleft", "topright", or "off".}
 
@@ -30,6 +30,7 @@ Typically called, by other functions to scale axes.
 }
 \examples{
 rb <- tourr::basis_random(4, 2)
+
 scale_axes(x = rb, position = "bottomleft")
 scale_axes(x = rb, position = "right", to = wine[, 2:3])
 }

@@ -2,12 +2,10 @@
 
 export(array2df)
 export(basis_guided)
-export(basis_lda)
 export(basis_pca)
 export(create_manip_space)
 export(is_orthonormal)
 export(manip_var_guided)
-export(manip_var_lda)
 export(manip_var_pca)
 export(manual_tour)
 export(pan_zoom)

@@ -10,10 +10,10 @@ manip_var_guided(data, index_f = tourr::holes(), p = 2L, func = max, ...)
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}
 
-\item{index_f}{The index function to optimise.
+\item{index_f}{The index function to optimize.
 {tourr} exports holes(), cmass(), and lda_pp(class).}
 
-\item{p}{Number of dimensions in the projected space.}
+\item{p}{Number of dimensions in the projection space.}
 
 \item{func}{The function to be applied, expects \code{max} or \code{min}.}
 
