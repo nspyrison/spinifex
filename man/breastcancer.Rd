@@ -56,7 +56,7 @@ BreastCancer <-
 \examples{
 str(BreastCancer)
 \dontrun{
-dat <- tourr::rescale(BreastCancer[, 2:10])
+dat <- scale_sd(BreastCancer[, 2:10])
 clas <- BreastCancer$Class
 bas <- prcomp(dat)$rotation[, 1:2]
 mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))

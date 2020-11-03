@@ -28,12 +28,12 @@ Defaults to .5.}
 Defaults to 1.}
 
 \item{gif_filename}{Optional, saves the animation as a GIF to this string
-(without the folder path). Defaults to NULL (no GIF saved).
+(without the directory path). Defaults to NULL (no GIF saved).
 For more output control, call \code{gganimate::anim_save()} on a return object of
 \code{render_gganimate()}.}
 
-\item{gif_dirpath}{Optional, A string of the directory path (without filename)
-to save a GIF to. Defaults to NULL (current work directory).}
+\item{gif_dirpath}{Optional, A string of the directory path (without the
+filename) to save a GIF to. Defaults to NULL (current work directory).}
 
 \item{gganimate_args}{A list of arguments assigned to a vector passe outside
 of an aes() call. Anything that would be put in \code{geom_point(aes(), X)}.
@@ -50,32 +50,32 @@ Takes the result of \code{array2df()} and renders them into a
 }
 \examples{
 ## Setup
-dat_std <- tourr::rescale(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
-bas <- basis_lda(dat_std, clas)
-mv <- manip_var_lda(dat_std, clas)
-tour_array <- manual_tour(basis = bas, manip_var = mv)
-tour_df <- array2df(array = tour_array, data = dat_std)
+bas <- basis_pca(dat_std)
+mv <- manip_var_pca(dat_std)
+manual_array <- manual_tour(basis = bas, manip_var = mv)
+manual_df <- array2df(array = manual_array, data = dat_std)
 
 \dontrun{
 ## Required arguments
-render_gganimate(frames = tour_df)
+render_gganimate(frames = manual_df)
 
 ## Full arguments (without save)
-render_gganimate(frames = df_frames, axes = "bottomleft",
+render_gganimate(frames = manual_df, axes = "bottomleft",
                  fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
                  aes_args = list(color = clas, shape = clas),
-                 identity_args = list(size = .8, alpha = .7)),
-                 ggproto = list(theme_spinifex(),
+                 identity_args = list(size = .8, alpha = .7),
+                 ggproto = list(theme_classic(),
                                 ggtitle("My title"),
                                 scale_color_brewer(palette = "Set2")))
   
 if(F){ ## Save as a .gif (may require additional setup)
-  render_gganimate(frames = df_frames, axes = "bottomleft",
+  render_gganimate(frames = manual_df, axes = "bottomleft",
                    fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
                    aes_args = list(color = clas, shape = clas),
-                   identity_args = list(size = .8, alpha = .7)),
-                   ggproto = list(theme_spinifex(),
+                   identity_args = list(size = .8, alpha = .7),
+                   ggproto = list(theme_classic(),
                                   ggtitle("My title"),
                                   scale_color_brewer(palette = "Set2")),
                    gif_filename = "myRadialTour.gif", gif_path = "./output")

@@ -49,7 +49,7 @@
 #' @examples
 #' str(BreastCancer)
 #' \dontrun{
-#' dat <- tourr::rescale(BreastCancer[, 2:10])
+#' dat <- scale_sd(BreastCancer[, 2:10])
 #' clas <- BreastCancer$Class
 #' bas <- prcomp(dat)$rotation[, 1:2]
 #' mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
@@ -103,7 +103,7 @@
 #' @examples
 #' str(PimaIndiansDiabetes_wide)
 #' \dontrun{
-#' dat <- tourr::rescale(PimaIndiansDiabetes_wide[, 1:8])
+#' dat <- scale_sd(PimaIndiansDiabetes_wide[, 1:8])
 #' clas <- PimaIndiansDiabetes_wide$diabetes
 #' bas <- prcomp(dat)$rotation[, 1:2]
 #' mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
@@ -156,7 +156,7 @@
 #' @examples
 #' str(PimaIndiansDiabetes_long)
 #' \dontrun{
-#' dat <- tourr::rescale(PimaIndiansDiabetes_long[, 1:6])
+#' dat <- scale_sd(PimaIndiansDiabetes_long[, 1:6])
 #' clas <- PimaIndiansDiabetes_long$diabetes
 #' bas <- prcomp(dat)$rotation[, 1:2]
 #' mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
@@ -231,7 +231,7 @@
 #' @examples
 #' str(weather)
 #' \dontrun{
-#' dat <- tourr::rescale(weather[, 2:18])
+#' dat <- scale_sd(weather[, 2:18])
 #' clas_x <- weather$RainToday
 #' clas_y <- weather$RainTomorrow
 #' bas <- prcomp(dat)$rotation[, 1:2]
@@ -285,7 +285,7 @@
 #' @examples
 #' str(wine)
 #' \dontrun{
-#' dat <- tourr::rescale(wine[, 2:14])
+#' dat <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- prcomp(dat)$rotation[, 1:2]
 #' mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))

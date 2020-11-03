@@ -48,7 +48,7 @@ wine
 \examples{
 str(wine)
 \dontrun{
-dat <- tourr::rescale(wine[, 2:14])
+dat <- scale_sd(wine[, 2:14])
 clas <- wine$Type
 bas <- prcomp(dat)$rotation[, 1:2]
 mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))

@@ -48,7 +48,7 @@ PimaIndiansDiabetes_long <- d
 \examples{
 str(PimaIndiansDiabetes_long)
 \dontrun{
-dat <- tourr::rescale(PimaIndiansDiabetes_long[, 1:6])
+dat <- scale_sd(PimaIndiansDiabetes_long[, 1:6])
 clas <- PimaIndiansDiabetes_long$diabetes
 bas <- prcomp(dat)$rotation[, 1:2]
 mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))

@@ -1,15 +1,20 @@
 library("spinifex")
 library("testthat")
-flea_std <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
+dat_std <- scale_sd(wine[, 2:14])
+clas <- wine$Type
+bas <- basis_pca(dat_std)
+mv <- manip_var_pca(dat_std)
 
-rb <- tourr::basis_random(ncol(flea_std), 2)
+##
+## MATH AND TRANSFORMS -----
+##
+
+rb <- tourr::basis_random(ncol(dat_std), 2)
 ib <- tourr::basis_init(n = 4, 2)
-b_pca <- basis_pca(flea_std)
-b_guide <- basis_guided(data = flea_std, index_f = tourr::holes())
+b_pca <- basis_pca(dat_std)
+b_guide <- basis_guided(data = dat_std, index_f = tourr::holes())
 diag4 <- diag(4)
 not_orth <- matrix(sample(1:16, 16), ncol=4)
-### MATH AND TRANSFORMS -----
 
 ### is_orthonormal -----
 test_that("is_orthonormal: bases functions & diag() are orthonormal, rand matrix isn't", {
@@ -29,27 +34,23 @@ test_that("is_orthonormal: returns are logical.", {
 })
 
 ### array2df -----
-dat_std <- scale_10(wine[, 2:14])
-clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_pca(dat_std)
 
 ## Array with a single frame, as used in view_frame()
-single_frame <- array(bas, dim = c(dim(bas), 1))
-attr(single_frame, "manip_var") <- mv
-ret_single <- array2df(array = single_frame)
+array_single <- array(bas, dim = c(dim(bas), 1))
+attr(array_single, "manip_var") <- mv
+ret_single <- array2df(array = array_single)
 
 ## Radial tour array to long df, as used in play_manual_tour()
-tour_array <- manual_tour(basis = bas, manip_var = mv)
-ret_spinifex <- array2df(array = tour_array, data = dat_std,
-         label = paste0("MyLabs", 1:nrow(bas)))
+array_manual <- manual_tour(basis = bas, manip_var = mv)
+ret_manual <- array2df(array = array_manual, data = dat_std,
+                       label = paste0("MyLabs", 1:nrow(bas)))
 
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
-hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
-class(hist_array) <- "array"
-ret_tourr <- array2df(array = hist_array, data = dat_std,
-                      label = paste0("MyLabs", 1:nrow(bas)))
+array_save_hist <- tourr::save_history(data = dat_std, max_bases = 10)
+class(array_save_hist) <- "array"
+ret_save_hist <- array2df(array = array_save_hist, data = dat_std,
+                          label = paste0("MyLabs", 1:nrow(bas)))
 
 test_that("array2df: class and dim for single frame, spinifex and tourr case.", {
   expect_is(ret_single, "list")
@@ -71,7 +72,7 @@ test_that("array2df: class and dim for single frame, spinifex and tourr case.", 
 ret <- scale_axes(x = rb, position = "bottomleft")
 ret_to <- scale_axes(x = rb, position = "topright", to = wine[, 2:3])
 
-test_that("scale_axes: class and dim, with and without 'to' arg", {
+test_that("scale_axes: class and dim", {
   expect_is(ret, "matrix")
   expect_is(ret_to, "matrix")
   expect_equal(dim(ret), c(6, 2))
@@ -81,11 +82,80 @@ test_that("scale_axes: class and dim, with and without 'to' arg", {
 
 ### pan_zoom -----
 
-ret <- pan_ zoom(pan = c(-1, 0), zoom = c(2/3, 2/3), x = rb)
+ret_mat   <- pan_zoom(x = rb, pan = c(-1, 0), zoom = c(2/3, 2/3))
+ret_df    <- pan_zoom(x = mtcars[,1:2], pan = c(0, 100), zoom = c(.1, .1))
+ret_warn  <- pan_zoom(x = mtcars[,], pan = c(0, 100), zoom = c(.1, .1))
+
+test_that("pan_zoom: class and dim", {
+  expect_is(ret_mat, "matrix")
+  expect_is(ret_df, "data.frame")
+  expect_equal(dim(ret_mat), c(6, 2))
+  expect_equal(dim(ret_df), c(32, 2))
+  expect_warning(pan_zoom(x = mtcars))
+})
+
+##
+## GGPLOT2 AESTHETICS ------
+##
+
+## no roi for a unit test of theme_spinifex()
+
+
+##
+## BASIS AND MANIP VAR HELPERS -----
+##
+
+
+## no roi for a unit test of basis_pca()
+
+
+### basis_guided -----
+
+ret_holes <- basis_guided(data = wine[, 2:14], index_f = tourr::holes())
+ret_cmass <- basis_guided(data = wine[, 2:14], index_f = tourr::cmass(), quiet = FALSE,
+                          alpha = .4, cooling = .9, max.tries = 30)
+
+test_that("basis_guided: class and dim", {
+  expect_is(ret_holes, "matrix")
+  expect_is(ret_cmass, "matrix")
+  expect_equal(dim(ret_holes), c(13, 2))
+  expect_equal(dim(ret_cmass), c(13, 2))
+})
 
 
 
-### DEPRICATED: color_of, shape_of -----
+### manip_var_pca ------
+
+ret <- manip_var_pca(data = wine[, 2:14])
+
+test_that("manip_var_pca: class and dim", {
+  expect_is(ret, "integer")
+  expect_equal(length(ret), 1)
+})
+
+
+### manip_var_guided ------
+
+ret_holes <- manip_var_guided(data = wine[, 2:14], index_f = tourr::holes())
+ret_cmass <- manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), func = min,
+                              alpha = .4, cooling = .9, max.tries = 30)
+
+test_that("manip_var_guided: class and dim", {
+  expect_is(ret_holes, "integer")
+  expect_is(ret_cmass, "integer")
+  expect_equal(length(ret_holes), 1)
+  expect_equal(length(ret_cmass), 1)
+})
+
+## no roi for a unit test of basis_pca()
+
+## no roi for a unit test of scale_10()
+
+
+##
+## DEPRICATED: color_of, shape_of -----
+##
+
 # ret <- color_of(tourr::flea$species)
 # 
 # test_that("col_of: class and length", {

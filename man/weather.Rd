@@ -71,7 +71,7 @@ weather <- weather[, c(1, 3:7, 9, 12:21, 23, 22, 24)]
 \examples{
 str(weather)
 \dontrun{
-dat <- tourr::rescale(weather[, 2:18])
+dat <- scale_sd(weather[, 2:18])
 clas_x <- weather$RainToday
 clas_y <- weather$RainTomorrow
 bas <- prcomp(dat)$rotation[, 1:2]

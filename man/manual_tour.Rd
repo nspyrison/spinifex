@@ -50,7 +50,7 @@ position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 }
 \examples{
 ## Setup
-dat_std <- tourr::rescale(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
 bas <- basis_lda(dat_std, clas)
 mv <- manip_var_lda(dat_std)

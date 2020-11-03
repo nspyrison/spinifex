@@ -3,15 +3,15 @@
 ## ggplot2, gganimate, and plotly respectively
 ##
 
-#' Prepair the ggplot object before passing to either animation package.
+#' Prepare the ggplot object before passing to either animation package.
 #'
 #' Typically called by `render_plotly()` or `render_gganimate()`. Takes the
 #' result of `array2df()`, and renders them into a ggplot2 object.
 #'
 #' @param frames The result of `array2df()`, a long df of the projected frames.
-#' @param axes Position of the axes: "center", "bottomleft", "off", "left",
-#' "right". Defaults to "center". 
-#' For more control pass a pan_zoom call with NULL x.
+#' @param axes Position of the axes, expects one of: 
+#' "center", "left", "right", "bottomleft", "topright", "off", or a 
+#' pan_zoom() call. Defaults to "center".
 #' @param manip_col String of the color to highlight the `manip_var`, if used.
 #' Defaults to "blue".
 #' @param line_size The size of the lines of the unit circle and variable 
@@ -34,21 +34,23 @@
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- tourr::rescale(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
-#' bas <- basis_lda(dat_std, clas)
-#' mv <- manip_var_lda(dat_std, clas)
-#' tour_array <- manual_tour(basis = bas, manip_var = mv)
-#' tour_df <- array2df(array = tour_array, data = dat_std)
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_pca(dat_std)
+#' 
+#' manual_array <- manual_tour(basis = bas, manip_var = mv)
+#' manual_df <- array2df(array = manual_array, data = dat_std)
 #' 
 #' ## Required arguments
-#' render_(frames = tour_df)
+#' render_(frames = manual_df)
 #' 
 #' ## Full arguments
-#' render_(frames = tour_df, axes = "left", manip_col = "purple",
+#' require("ggplot2")
+#' render_(frames = manual_df, axes = "left", manip_col = "purple",
 #'         aes_args = list(color = clas, shape = clas),
-#'         identity_args = list(size = .8, alpha = .7)),
-#'         ggproto = list(theme_spinifex(),
+#'         identity_args = list(size = .8, alpha = .7),
+#'         ggproto = list(theme_classic(),
 #'                        ggtitle("My title"),
 #'                        scale_color_brewer(palette = "Set2")))
 render_ <- function(frames,
@@ -58,7 +60,7 @@ render_ <- function(frames,
                     text_size = 5,
                     aes_args = list(),
                     identity_args = list(),
-                    ggproto = theme_spinifex()
+                    ggproto = list(theme_spinifex())
 ){
   if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
   #### Initialize
@@ -66,7 +68,7 @@ render_ <- function(frames,
   manip_var     <- attributes(frames$basis_frames)$manip_var
   n_frames      <- length(unique(basis_frames$frame))
   p             <- nrow(basis_frames) / n_frames
-  d             <- 2L ## Hardcoded assumtion for 2D display
+  d             <- 2L ## Hard-coded assumption for 2D display
   aes_args      <- as.list(aes_args)
   identity_args <- as.list(identity_args)
   ggproto       <- as.list(ggproto)
@@ -82,12 +84,12 @@ render_ <- function(frames,
   if (axes != "off"){
     center <- scale_axes(data.frame(x = 0L, y = 0L), axes, to = data_frames)
     circ <- scale_axes(circ, axes, to = data_frames)
-    ## Rejoin frmae number to the scaled bases frames
+    ## Rejoin frame number to the scaled bases frames
     basis_frames <-
       data.frame(scale_axes(basis_frames[, 1L:d], axes, to = data_frames),
                  basis_frames[, (d + 1L):ncol(basis_frames)])
   }
-  ## Manip var axes asethetics
+  ## Manip var axes aesthetics
   axes_col <- "grey50"
   axes_siz <- line_size
   if(is.null(manip_var) == FALSE){
@@ -189,11 +191,11 @@ render_ <- function(frames,
 #' @param end_pause Number of seconds to pause on the last frame for.
 #' Defaults to 1.
 #' @param gif_filename Optional, saves the animation as a GIF to this string 
-#' (without the folder path). Defaults to NULL (no GIF saved). 
+#' (without the directory path). Defaults to NULL (no GIF saved). 
 #' For more output control, call `gganimate::anim_save()` on a return object of
 #' `render_gganimate()`.
-#' @param gif_dirpath Optional, A string of the directory path (without filename) 
-#' to save a GIF to. Defaults to NULL (current work directory).
+#' @param gif_dirpath Optional, A string of the directory path (without the
+#' filename) to save a GIF to. Defaults to NULL (current work directory).
 #' @param gganimate_args A list of arguments assigned to a vector passe outside
 #' of an aes() call. Anything that would be put in `geom_point(aes(), X)`.
 #' Typically a single numeric for point size, alpha, or similar
@@ -206,32 +208,32 @@ render_ <- function(frames,
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- tourr::rescale(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
-#' bas <- basis_lda(dat_std, clas)
-#' mv <- manip_var_lda(dat_std, clas)
-#' tour_array <- manual_tour(basis = bas, manip_var = mv)
-#' tour_df <- array2df(array = tour_array, data = dat_std)
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_pca(dat_std)
+#' manual_array <- manual_tour(basis = bas, manip_var = mv)
+#' manual_df <- array2df(array = manual_array, data = dat_std)
 #' 
 #' \dontrun{
 #' ## Required arguments
-#' render_gganimate(frames = tour_df)
+#' render_gganimate(frames = manual_df)
 #' 
 #' ## Full arguments (without save)
-#' render_gganimate(frames = df_frames, axes = "bottomleft",
+#' render_gganimate(frames = manual_df, axes = "bottomleft",
 #'                  fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
 #'                  aes_args = list(color = clas, shape = clas),
-#'                  identity_args = list(size = .8, alpha = .7)),
-#'                  ggproto = list(theme_spinifex(),
+#'                  identity_args = list(size = .8, alpha = .7),
+#'                  ggproto = list(theme_classic(),
 #'                                 ggtitle("My title"),
 #'                                 scale_color_brewer(palette = "Set2")))
 #'   
 #' if(F){ ## Save as a .gif (may require additional setup)
-#'   render_gganimate(frames = df_frames, axes = "bottomleft",
+#'   render_gganimate(frames = manual_df, axes = "bottomleft",
 #'                    fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
 #'                    aes_args = list(color = clas, shape = clas),
-#'                    identity_args = list(size = .8, alpha = .7)),
-#'                    ggproto = list(theme_spinifex(),
+#'                    identity_args = list(size = .8, alpha = .7),
+#'                    ggproto = list(theme_classic(),
 #'                                   ggtitle("My title"),
 #'                                   scale_color_brewer(palette = "Set2")),
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
@@ -249,17 +251,21 @@ render_gganimate <- function(fps = 8L,
   ## Render and animate
   gg  <- render_(...)
   gga <- gg + gganimate::transition_states(frame, transition_length = 0L)
-  anim <- gganimate::animate(gga, 
-                             fps = fps,
-                             rewind = rewind,
-                             start_pause = fps * start_pause,
-                             end_pause = fps * end_pause, 
-                             gganimate_args)
+  
+  anim_func <- function(...) 
+    gganimate::animate(gga, 
+                       fps = fps,
+                       rewind = rewind,
+                       start_pause = fps * start_pause,
+                       end_pause = fps * end_pause, 
+                       ...)
+  anim <- do.call(anim_func, args = gganimate_args)
+
   ## Save condition handling
   if(is.null(gif_filename) == FALSE)
-    gganimate::anim_save(gif_filename, anim, gif_path)
-  if(is.null(gif_path) == FALSE & is.null(gif_filename) == TRUE) 
-    warning("gif_path supplied with no gif_filename. Add a gif_filename to save a .gif.")
+    gganimate::anim_save(gif_filename, anim, gif_dirpath)
+  if(is.null(gif_dirpath) == FALSE & is.null(gif_filename) == TRUE) 
+    warning("gif_dirpath supplied with no gif_filename. Add a gif_filename to save a .gif.")
   anim
 }
 
@@ -277,7 +283,7 @@ render_gganimate <- function(fps = 8L,
 #' The order of text controls the order they appear.
 #' For example, tooltip = c("id", "frame", "x", "y", "category", "color").
 #' @param html_filename Optional, saves the plotly object as an HTML widget to
-#' this string (without folderpath).
+#' this string (without the directory path).
 #' Defaults to NULL (not saved). For more output control call
 #' `htmlwidgets::saveWidget()` on a return object of `render_plotly()`.
 #' @param save_widget_args A list of arguments to be called in 
@@ -287,36 +293,37 @@ render_gganimate <- function(fps = 8L,
 #' @seealso \code{\link{render_}} for `...` arguments.
 #' @seealso \code{\link{plotly::ggplotly}} for source documentation of `tooltip`.
 #' @seealso \code{\link{htmlwidgets::saveWidget}} for more control of .gif output.
-
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- tourr::rescale(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
-#' bas <- basis_lda(dat_std, clas)
-#' mv <- manip_var_lda(dat_std, clas)
-#' tour_array <- manual_tour(basis = bas, manip_var = mv)
-#' tour_df <- array2df(array = tour_array, data = dat_std)
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_pca(dat_std)
+#' manual_array <- manual_tour(basis = bas, manip_var = mv)
+#' manual_df <- array2df(array = manual_array, data = dat_std)
 #' 
-#' \dontrun{
+#' 
 #' ## Required arguments
-#' render_plotly(frames = df_frames)
+#' render_plotly(frames = manual_df)
 #' 
 #' ## Full arguments (without save)
-#' render_plotly(frames = df_frames, axes = "bottomleft", fps = 10,
+#' render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
 #'               tooltip = c("label", "frame", "x", "y"),
 #'               aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = .8, alpha = .7),
-#'               ggproto = list(theme_spinifex(),
+#'               ggproto = list(theme_classic(),
 #'                              ggtitle("My title"),
 #'                              scale_color_brewer(palette = "Set2")))
 #' 
+#' 
+#' \dontrun{
 #' if(F){ ## Saving .html widget (may require additional setup)
-#'   render_plotly(frames = df_frames, , axes = "bottomleft", fps = 10, 
+#'   render_plotly(frames = manual_df, , axes = "bottomleft", fps = 10, 
 #'                 tooltip = c("id", "frame", "x", "y", "category", "color"),
 #'                 aes_args = list(color = clas, shape = clas),
 #'                 identity_args = list(size = .8, alpha = .7),
-#'                 ggproto = list(theme_spinifex(),
+#'                 ggproto = list(theme_classic(),
 #'                                ggtitle("My title"),
 #'                                scale_color_brewer(palette = "Set2")),
 #'                 html_filename = "myRadialTour.html")
@@ -341,9 +348,13 @@ render_plotly <- function(fps = 8L,
                                      showgrid = FALSE, showline = FALSE)
   )
   ## Save condition handling
-  if (is.null(html_filename) == FALSE)
-    htmlwidgets::saveWidget(widget = ggp, file = html_filename,
-                            save_widget_args)
+  if (is.null(html_filename) == FALSE){
+    saveWidget_func <- function(...) 
+      htmlwidgets::saveWidget(widget = ggp, file = html_filename,
+                              ...)
+    do.call(saveWidget_func, args = save_widget_args)
+  }
+  
   ## Return
   ggp
 }

@@ -18,7 +18,7 @@
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- tourr::rescale(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:14])
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_pca(bas)
 #' 
@@ -70,7 +70,7 @@ create_manip_space <- function(basis, manip_var){
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- tourr::rescale(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:14])
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_pca(bas)
 #' msp <- create_manip_space(basis = rb, manip_var = mv)
@@ -139,7 +139,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- tourr::rescale(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_lda(dat_std, clas)
 #' mv <- manip_var_lda(dat_std)
@@ -227,10 +227,10 @@ manual_tour <- function(basis,
 #' The linear combination the original variables contribute to projection space.
 #' Defaults to NULL, generating a random basis.
 #' @param manip_var Number of the column/dimension to rotate.
-#' @param theta Angle in radians of "in-plane" rotation, on the xy plane of the 
+#' @param theta Angle, in radians, of "in-plane" rotation, on the xy plane of the 
 #' reference frame. Required, no default.
 #' If left NULL, will initialize the radial angle of the `manip_var`.
-#' @param phi Phi is angle in radians of the "out-of-plane" rotation, 
+#' @param phi Angle, in radians, of the "out-of-plane" rotation, 
 #' the z-axis of the reference frame. Required, no default.
 #' @return (p, 2) matrix of the rotated basis.
 #' @import tourr
@@ -243,12 +243,9 @@ manual_tour <- function(basis,
 #' rotate_basis(bas, mv)
 #' 
 #' ## Rotate random 
-#' p      <- ncol(bas)
-#' rb     <- tourr::basis_random(p)
-#' rmv    <- sample(1:p, 1)
 #' rtheta <- runif(1, 0, 2 * pi)
 #' rphi   <- runif(1, 0, 2 * pi)
-#' rotate_basis(basis = rb, manip_var = rmv, rtheta, rphi)
+#' rotate_basis(basis = bas, manip_var = mv, rtheta, rphi)
 rotate_basis <- function(basis = NULL,
                          manip_var,
                          theta = 0L,
@@ -256,5 +253,4 @@ rotate_basis <- function(basis = NULL,
   m_sp <- create_manip_space(basis, manip_var)
   rotate_manip_space(manip_space = m_sp, theta, phi)[, 1L:ncol(basis)]
 }
-
 

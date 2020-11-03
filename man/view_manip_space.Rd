@@ -52,7 +52,7 @@ Uses base graphics to plot the circle with axes representing
 the projection frame. Returns the corresponding table.
 }
 \examples{
-flea_std <- tourr::rescale(tourr::flea[, 1:6])
+flea_std <- scale_sd(tourr::flea[, 1:6])
 rb <- tourr::basis_random(ncol(flea_std))
 
 view_manip_space(basis = rb, manip_var = 4)

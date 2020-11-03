@@ -20,7 +20,7 @@
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
+#' flea_std <- scale_sd(tourr::flea[, 1:6])
 #' tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 3)
 #' flea_class <- tourr::flea$species
 #' 
@@ -67,7 +67,7 @@ play_tour_path <- function(tour_path = NULL,
   
   ## Initialization
   data <- as.matrix(data)
-  if(rescale_data) data <- tourr::rescale(data)
+  if(rescale_data) data <- scale_sd(data)
   
   ## Tour array to tour df
   tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
@@ -94,7 +94,6 @@ play_tour_path <- function(tour_path = NULL,
 #' @param data (n, p) dataset to project, consisting of numeric variables.
 #' @param manip_var Integer column number or string exact column name of the.
 #' variable to manipulate. Required, no default.
-#' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' @param theta Angle in radians of "in-plane" rotation, on the xy plane of the 
 #' reference frame. Defaults to theta of the basis for a radial tour.
 #' @param phi_min Minimum value phi should move to. Phi is angle in radians of 
@@ -117,8 +116,8 @@ play_tour_path <- function(tour_path = NULL,
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
-#' rb <- tourr::basis_random(n = ncol(flea_std))
+#' flea_std <- scale_sd(tourr::flea[, 1:6])
+#' rb <- 
 #' flea_class <- tourr::flea$species
 #' 
 #' \dontrun{
@@ -150,12 +149,10 @@ play_tour_path <- function(tour_path = NULL,
 play_manual_tour <- function(basis = NULL,
                              data = NULL,
                              manip_var = NULL,
-                             rescale_data = FALSE,
                              theta = NULL,
                              phi_min = 0L,
                              phi_max = .5 * pi,
                              angle = .05,
-                             ggproto = theme_spinifex(),
                              render_type = render_plotly,
                              ...){
   if (is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
@@ -172,11 +169,7 @@ play_manual_tour <- function(basis = NULL,
   }
   if (is.null(manip_var)) stop("manip_var must be supplied.")
   
-  ## Initialization
   data <- as.matrix(data)
-  if (rescale_data) data <- tourr::rescale(data)
-  
-  ## Render
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, ...)
   tour_df <- array2df(array = tour_hist, data = data)
   anim <- render_type(frames = tour_df, ggproto = ggproto, ...)
@@ -215,7 +208,7 @@ play_manual_tour <- function(basis = NULL,
 #' @return ggplot object of the basis.
 #' @export
 #' @examples
-#' flea_std <- tourr::rescale(tourr::flea[, 1:6])
+#' flea_std <- scale_sd(tourr::flea[, 1:6])
 #' rb <- tourr::basis_random(ncol(flea_std))
 #' 
 #' view_manip_space(basis = rb, manip_var = 4)

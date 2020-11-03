@@ -38,7 +38,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- tourr::rescale(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_pca(dat_std)
@@ -197,10 +197,10 @@ scale_axes <- function(x,
 #' @export
 #' @examples 
 #' rb <- tourr::basis_random(6, 2)
-#' pan_zoom(pan = c(-1, 0), zoom = c(2/3, 2/3), x = rb)
-pan_zoom <- function(pan = c(0L, 0L),
-                     zoom = c(1L, 1L),
-                     x = NULL
+#' pan_zoom(x = rb, pan = c(-1, 0), zoom = c(2/3, 2/3))
+pan_zoom <- function(x = NULL,
+                     pan = c(0L, 0L),
+                     zoom = c(1L, 1L)
 ){
   if(is.null(x)) return(list(pan = pan, zoom = zoom))
   ## Assumptions
@@ -387,10 +387,8 @@ basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
 #' @examples 
 #' manip_var_pca(data = wine[, 2:14])
 manip_var_pca <- function(data, rank = 1L){
-  if(is.null(colnames(data)) == TRUE) colnames(data) <- paste0("V", 1:ncol(data))
   abs_pc1 <- abs(prcomp(data)$rotation[, 1L])
-  nm <- names(sort(abs_pc1, decreasing = TRUE))[rank]
-  which(colnames(data) == nm)
+  which(order(abs_pc1, decreasing = TRUE) == rank)
 }
 
 # #' The number of the variable that has the max/min absolute value in the first
@@ -431,14 +429,16 @@ manip_var_pca <- function(data, rank = 1L){
 #' manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), func = min,
 #'                  alpha = .4, cooling = .9, max.tries = 30)
 manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
-                             func = max, ...){
+                             rank = 1L, ...){
   invisible(capture.output( ## Mute the noisy function
-    hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
+    hist <- tourr::save_history(data, 
+                                tourr::guided_tour(index_f = index_f, d = p, ...)
+    )
   ))
   bas <- hist[, , length(hist)]
-  ## Row-wise norms
-  norm <- apply(bas, 1L, FUN = function(row) sqrt(sum(row)))
-  which(norm == func(norm))
+  ## Row-wise norms, numeric vector
+  norm <- apply(bas, 1L, FUN = function(row) sqrt(sum(row^2)))
+  which(order(norm, decreasing = TRUE) == rank)
 }
 
 #' Centers by mean and scales by the standard deviation of each column of data.
@@ -448,7 +448,7 @@ manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
 #' @examples 
 #' scale_sd(data = wine[, 2:14])
 scale_sd <- function(data){
-  apply(data, 2, function(c) (c - mean(c)) / sd(c))
+  apply(data, 2, function(col) (col - mean(col)) / sd(col))
 }
 
 #' Standardize each column of data to have a range of [0, 1].

@@ -22,7 +22,7 @@ The order of text controls the order they appear.
 For example, tooltip = c("id", "frame", "x", "y", "category", "color").}
 
 \item{html_filename}{Optional, saves the plotly object as an HTML widget to
-this string (without folderpath).
+this string (without the directory path).
 Defaults to NULL (not saved). For more output control call
 \code{htmlwidgets::saveWidget()} on a return object of \code{render_plotly()}.}
 
@@ -36,32 +36,34 @@ into a  self-contained HTML widget.
 }
 \examples{
 ## Setup
-dat_std <- tourr::rescale(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
-bas <- basis_lda(dat_std, clas)
-mv <- manip_var_lda(dat_std, clas)
-tour_array <- manual_tour(basis = bas, manip_var = mv)
-tour_df <- array2df(array = tour_array, data = dat_std)
+bas <- basis_pca(dat_std)
+mv <- manip_var_pca(dat_std)
+manual_array <- manual_tour(basis = bas, manip_var = mv)
+manual_df <- array2df(array = manual_array, data = dat_std)
 
-\dontrun{
+
 ## Required arguments
-render_plotly(frames = df_frames)
+render_plotly(frames = manual_df)
 
 ## Full arguments (without save)
-render_plotly(frames = df_frames, axes = "bottomleft", fps = 10,
+render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
               tooltip = c("label", "frame", "x", "y"),
               aes_args = list(color = clas, shape = clas),
               identity_args = list(size = .8, alpha = .7),
-              ggproto = list(theme_spinifex(),
+              ggproto = list(theme_classic(),
                              ggtitle("My title"),
                              scale_color_brewer(palette = "Set2")))
 
+
+\dontrun{
 if(F){ ## Saving .html widget (may require additional setup)
-  render_plotly(frames = df_frames, , axes = "bottomleft", fps = 10, 
+  render_plotly(frames = manual_df, , axes = "bottomleft", fps = 10, 
                 tooltip = c("id", "frame", "x", "y", "category", "color"),
                 aes_args = list(color = clas, shape = clas),
                 identity_args = list(size = .8, alpha = .7),
-                ggproto = list(theme_spinifex(),
+                ggproto = list(theme_classic(),
                                ggtitle("My title"),
                                scale_color_brewer(palette = "Set2")),
                 html_filename = "myRadialTour.html")

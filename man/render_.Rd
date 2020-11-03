@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_render.r
 \name{render_}
 \alias{render_}
-\title{Prepair the ggplot object before passing to either animation package.}
+\title{Prepare the ggplot object before passing to either animation package.}
 \usage{
 render_(
   frames,
@@ -12,15 +12,15 @@ render_(
   text_size = 5,
   aes_args = list(),
   identity_args = list(),
-  ggproto = theme_spinifex()
+  ggproto = list(theme_spinifex())
 )
 }
 \arguments{
 \item{frames}{The result of \code{array2df()}, a long df of the projected frames.}
 
-\item{axes}{Position of the axes: "center", "bottomleft", "off", "left",
-"right". Defaults to "center".
-For more control pass a pan_zoom call with NULL x.}
+\item{axes}{Position of the axes, expects one of:
+"center", "left", "right", "bottomleft", "topright", "off", or a
+pan_zoom() call. Defaults to "center".}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}, if used.
 Defaults to "blue".}
@@ -53,21 +53,23 @@ result of \code{array2df()}, and renders them into a ggplot2 object.
 }
 \examples{
 ## Setup
-dat_std <- tourr::rescale(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
-bas <- basis_lda(dat_std, clas)
-mv <- manip_var_lda(dat_std, clas)
-tour_array <- manual_tour(basis = bas, manip_var = mv)
-tour_df <- array2df(array = tour_array, data = dat_std)
+bas <- basis_pca(dat_std)
+mv <- manip_var_pca(dat_std)
+
+manual_array <- manual_tour(basis = bas, manip_var = mv)
+manual_df <- array2df(array = manual_array, data = dat_std)
 
 ## Required arguments
-render_(frames = tour_df)
+render_(frames = manual_df)
 
 ## Full arguments
-render_(frames = tour_df, axes = "left", manip_col = "purple",
+require("ggplot2")
+render_(frames = manual_df, axes = "left", manip_col = "purple",
         aes_args = list(color = clas, shape = clas),
-        identity_args = list(size = .8, alpha = .7)),
-        ggproto = list(theme_spinifex(),
+        identity_args = list(size = .8, alpha = .7),
+        ggproto = list(theme_classic(),
                        ggtitle("My title"),
                        scale_color_brewer(palette = "Set2")))
 }

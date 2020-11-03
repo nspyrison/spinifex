@@ -5,7 +5,7 @@
 \title{The number of the variable that has the max/min absolute norm in final basis.
 Useful for setting the manip_var argument.}
 \usage{
-manip_var_guided(data, index_f = tourr::holes(), p = 2L, func = max, ...)
+manip_var_guided(data, index_f = tourr::holes(), p = 2L, rank = 1L, ...)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}
@@ -15,9 +15,9 @@ manip_var_guided(data, index_f = tourr::holes(), p = 2L, func = max, ...)
 
 \item{p}{Number of dimensions in the projection space.}
 
-\item{func}{The function to be applied, expects \code{max} or \code{min}.}
-
 \item{...}{Optional, other arguments to pass to \code{tourr::guided_tour}.}
+
+\item{func}{The function to be applied, expects \code{max} or \code{min}.}
 }
 \value{
 Numeric matrix of the last basis of a guided tour.

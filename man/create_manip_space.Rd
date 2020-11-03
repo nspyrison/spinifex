@@ -24,7 +24,7 @@ vector, with manip_var set to 1.
 }
 \examples{
 ## Setup
-dat_std <- tourr::rescale(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:14])
 bas <- basis_pca(dat_std)
 mv <- manip_var_pca(bas)
 

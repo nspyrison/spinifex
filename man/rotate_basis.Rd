@@ -13,11 +13,11 @@ Defaults to NULL, generating a random basis.}
 
 \item{manip_var}{Number of the column/dimension to rotate.}
 
-\item{theta}{Angle in radians of "in-plane" rotation, on the xy plane of the
+\item{theta}{Angle, in radians, of "in-plane" rotation, on the xy plane of the
 reference frame. Required, no default.
 If left NULL, will initialize the radial angle of the \code{manip_var}.}
 
-\item{phi}{Phi is angle in radians of the "out-of-plane" rotation,
+\item{phi}{Angle, in radians, of the "out-of-plane" rotation,
 the z-axis of the reference frame. Required, no default.}
 }
 \value{
@@ -35,10 +35,7 @@ mv  <- manip_var_pca(dat)
 rotate_basis(bas, mv)
 
 ## Rotate random 
-p      <- ncol(bas)
-rb     <- tourr::basis_random(p)
-rmv    <- sample(1:p, 1)
 rtheta <- runif(1, 0, 2 * pi)
 rphi   <- runif(1, 0, 2 * pi)
-rotate_basis(basis = rb, manip_var = rmv, rtheta, rphi)
+rotate_basis(basis = bas, manip_var = mv, rtheta, rphi)
 }
