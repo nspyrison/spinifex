@@ -52,7 +52,7 @@ render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
               tooltip = c("label", "frame", "x", "y"),
               aes_args = list(color = clas, shape = clas),
               identity_args = list(size = .8, alpha = .7),
-              ggproto = list(theme_classic(),
+              ggproto = list(theme_void(),
                              ggtitle("My title"),
                              scale_color_brewer(palette = "Set2")))
 
@@ -63,7 +63,7 @@ if(F){ ## Saving .html widget (may require additional setup)
                 tooltip = c("id", "frame", "x", "y", "category", "color"),
                 aes_args = list(color = clas, shape = clas),
                 identity_args = list(size = .8, alpha = .7),
-                ggproto = list(theme_classic(),
+                ggproto = list(theme_void(),
                                ggtitle("My title"),
                                scale_color_brewer(palette = "Set2")),
                 html_filename = "myRadialTour.html")

@@ -62,11 +62,12 @@ manual_df <- array2df(array = manual_array, data = dat_std)
 render_gganimate(frames = manual_df)
 
 ## Full arguments (without save)
+require("ggplot2")
 render_gganimate(frames = manual_df, axes = "bottomleft",
                  fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
                  aes_args = list(color = clas, shape = clas),
-                 identity_args = list(size = .8, alpha = .7),
-                 ggproto = list(theme_classic(),
+                 identity_args = list(size = 2, alpha = .7),
+                 ggproto = list(theme_void(),
                                 ggtitle("My title"),
                                 scale_color_brewer(palette = "Set2")))
   
@@ -75,7 +76,7 @@ if(F){ ## Save as a .gif (may require additional setup)
                    fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
                    aes_args = list(color = clas, shape = clas),
                    identity_args = list(size = .8, alpha = .7),
-                   ggproto = list(theme_classic(),
+                   ggproto = list(theme_void(),
                                   ggtitle("My title"),
                                   scale_color_brewer(palette = "Set2")),
                    gif_filename = "myRadialTour.gif", gif_path = "./output")

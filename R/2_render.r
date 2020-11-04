@@ -50,13 +50,13 @@
 #' render_(frames = manual_df, axes = "left", manip_col = "purple",
 #'         aes_args = list(color = clas, shape = clas),
 #'         identity_args = list(size = .8, alpha = .7),
-#'         ggproto = list(theme_classic(),
+#'         ggproto = list(theme_void(),
 #'                        ggtitle("My title"),
 #'                        scale_color_brewer(palette = "Set2")))
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
-                    line_size = 1,
+                    line_size = .667,
                     text_size = 5,
                     aes_args = list(),
                     identity_args = list(),
@@ -220,11 +220,12 @@ render_ <- function(frames,
 #' render_gganimate(frames = manual_df)
 #' 
 #' ## Full arguments (without save)
+#' require("ggplot2")
 #' render_gganimate(frames = manual_df, axes = "bottomleft",
 #'                  fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
 #'                  aes_args = list(color = clas, shape = clas),
-#'                  identity_args = list(size = .8, alpha = .7),
-#'                  ggproto = list(theme_classic(),
+#'                  identity_args = list(size = 2, alpha = .7),
+#'                  ggproto = list(theme_void(),
 #'                                 ggtitle("My title"),
 #'                                 scale_color_brewer(palette = "Set2")))
 #'   
@@ -233,7 +234,7 @@ render_ <- function(frames,
 #'                    fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
 #'                    aes_args = list(color = clas, shape = clas),
 #'                    identity_args = list(size = .8, alpha = .7),
-#'                    ggproto = list(theme_classic(),
+#'                    ggproto = list(theme_void(),
 #'                                   ggtitle("My title"),
 #'                                   scale_color_brewer(palette = "Set2")),
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
@@ -312,7 +313,7 @@ render_gganimate <- function(fps = 8L,
 #'               tooltip = c("label", "frame", "x", "y"),
 #'               aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = .8, alpha = .7),
-#'               ggproto = list(theme_classic(),
+#'               ggproto = list(theme_void(),
 #'                              ggtitle("My title"),
 #'                              scale_color_brewer(palette = "Set2")))
 #' 
@@ -323,7 +324,7 @@ render_gganimate <- function(fps = 8L,
 #'                 tooltip = c("id", "frame", "x", "y", "category", "color"),
 #'                 aes_args = list(color = clas, shape = clas),
 #'                 identity_args = list(size = .8, alpha = .7),
-#'                 ggproto = list(theme_classic(),
+#'                 ggproto = list(theme_void(),
 #'                                ggtitle("My title"),
 #'                                scale_color_brewer(palette = "Set2")),
 #'                 html_filename = "myRadialTour.html")

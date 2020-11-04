@@ -97,16 +97,21 @@ Projects the specified rotation as a 2D ggplot object. One static frame of
 manual tour. Useful for providing user-guided interaction.
 }
 \examples{
-dat <- tourr::flea[, 1:6]
-bas_pca <- stats::prcomp(dat)$rotation[, 1L:2L]
-mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
-view_frame(bas_pca, manip_var = mvar)
+dat_std <- scale_sd(wine[, 2:14])
+clas <- wine$Type
+bas <- basis_pca(dat_std)
+mv <- manip_var_pca(dat_std)
 
-rb     <- tourr::basis_random(n = ncol(dat))
 rtheta <- runif(1, 0, 2 * pi)
 rphi   <- runif(1, 0, 2 * pi)
-view_frame(basis = rb, data = dat, manip_var = 4,
+
+view_frame(basis = bas)
+
+view_frame(basis = bas, data = dat_std, manip_var = mv)
+
+view_frame(basis = bas, data = dat_std, manip_var = mv,
            theta = rtheta, phi = rphi, label = paste0("MyNm", 3:8), 
-           rescale_data = TRUE,
+           aes_args = list(color = clas, shape = clas),
+           identity_args = list(size = .8, alpha = .7),
            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

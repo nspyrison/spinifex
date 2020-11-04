@@ -56,7 +56,7 @@ test_that("manual_tour, class and dim", {
 ### rotate_basis -----
 rtheta <- runif(1, 0, 2 * pi)
 rphi   <- runif(1, 0, 2 * pi)
-rmv    <- sample(1:p, 1)
+rmv    <- 1 ## don't use rand for unit test maybe.
 ret <- rotate_basis(basis = bas, manip_var = mv, rtheta, rphi)
 ret_crazy <-  rotate_basis(basis = bas, manip_var = rmv, -999, 999)
 

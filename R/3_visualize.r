@@ -20,34 +20,37 @@
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
-#' flea_std <- scale_sd(tourr::flea[, 1:6])
-#' tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 3)
-#' flea_class <- tourr::flea$species
+#' dat_std <- scale_sd(wine[, 2:14])
+#' clas <- wine$Type
+#' bas <- basis_pca(dat_std)
+#' tpath <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 #' 
 #' \dontrun{
-#' play_tour_path(tour_path = tpath, data = flea_std)
+#' play_tour_path(tour_path = tpath, data = dat_std)
 #' 
-#' play_tour_path(tour_path = tpath, data = flea_std,
+#' play_tour_path(tour_path = tpath, data = dat_std,
 #'                axes = "bottomleft", angle = .08, fps = 8,
-#'                color = flea_class, shape = flea_class, size = 1.5,
+#'                aes_args = list(color = clas, shape = clas),
+#'                identity_args = list(size = .8, alpha = .7),
 #'                ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                render_type = render_gganimate)
 #' 
 #' if (F){ ## Saving output may require additional setup
 #'   ## Export plotly .html widget
-#'   play_tour_path(tour_path = tpath, data = flea_std,
+#'   play_tour_path(tour_path = tpath, data = dat_std,
 #'                  axes = "left", angle = .06, fps = 10,
-#'                  color = flea_class, shape = flea_class, size = 1.2,
+#'                  aes_args = list(color = clas, shape = clas),
+#'                  identity_args = list(size = .8, alpha = .7),
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  render_type = render_plotly,
 #'                  html_filename = "myRadialTour.html")
 #'                
 #'   ## Export gganimate .gif
-#'   play_tour_path(tour_path = tpath, data = flea_std,
+#'   play_tour_path(tour_path = tpath, data = dat_std,
 #'                  axes = "left", angle = .04, fps = 6,
-#'                  color = flea_class, shape = flea_class, size = 2,
-#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-#'                  render_type = render_gganimate,
+#'                  aes_args = list(color = clas, shape = clas),
+#'                  identity_args = list(size = .8, alpha = .7),
+#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),#'                  render_type = render_gganimate,
 #'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 #' }
 #' }
@@ -116,31 +119,36 @@ play_tour_path <- function(tour_path = NULL,
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
-#' flea_std <- scale_sd(tourr::flea[, 1:6])
-#' rb <- 
-#' flea_class <- tourr::flea$species
+#' dat_std <- scale_sd(wine[, 2:14])
+#' clas <- wine$Type
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_pca(dat_std)
 #' 
 #' \dontrun{
-#' play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
+#' play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
 #' 
-#' play_manual_tour(basis = rb, data = flea_std, manip_var = 6,
+#' play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
 #'                  theta = .5 * pi, axes = "right", fps = 5,
-#'                  col = flea_class, pch = flea_class, size = 1.5,
+#'                  aes_args = list(color = clas, shape = clas),
+#'                  identity_args = list(size = .8, alpha = .7),
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  render_type = render_gganimate)
 #' 
 #' if(F){ ## Saving output may require additional setup
 #'   ## Export plotly .html widget
-#'   play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
+#'   play_manual_tour(basis = bas, data = dat_std, manip_var = 6, 
 #'                    theta = .5 * pi, axes = "left", fps = 10,
-#'                    col = flea_class, pch = flea_class, size = 1.5,
+#'                    aes_args = list(color = clas, shape = clas),
+#'                    identity_args = list(size = .8, alpha = .7),
 #'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    render_type = render_plotly,
 #'                    html_filename = "myRadialTour.html")
 #'   
 #'   ## Export gganimate .gif
-#'   play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
+#'   play_manual_tour(basis = bas, data = dat_std, manip_var = 1,
 #'                    theta = 0, axes = "topright", fps = 8,
+#'                    aes_args = list(color = clas, shape = clas),
+#'                    identity_args = list(size = .8, alpha = .7),
 #'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    render_type = render_gganimate,
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
@@ -182,6 +190,112 @@ play_manual_tour <- function(basis = NULL,
 ## HELPER & INTERMEDIATE VISUALIZATIONS -----
 ##
 
+
+
+#' Plot a single frame of a manual tour
+#'
+#' Projects the specified rotation as a 2D ggplot object. One static frame of 
+#' manual tour. Useful for providing user-guided interaction.
+#' 
+#' @param data A (n, p) dataset to project, consisting of numeric variables.
+#' @param basis A (p, d) dim orthonormal numeric matrix.
+#' Defaults to NULL, giving a random basis.
+#' @param manip_var Optional, number of the variable to rotate. 
+#' If NULL, theta and phi must be 0 as is no manip space to rotate. 
+#' @param theta Angle in radians of "in-projection plane" rotation, 
+#' on the xy plane of the reference frame. Defaults to 0, no rotation.
+#' @param phi Angle in radians of the "out-of-projection plane" rotation, into 
+#' the z-direction of the axes. Defaults to 0, no rotation.
+#' @param label Optionally, provide a character vector of length p (or 1) 
+#' to label the variable contributions to the axes, Default NULL, 
+#' results in a 3 character abbreviation of the variable names.
+#' @param rescale_data When TRUE scales the data to between 0 and 1.
+#' Defaults to FALSE.
+#' @param aes_args A list of aesthetic arguments to passed to 
+#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
+#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
+#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
+#' Typically a single numeric for point size, alpha, or similar.
+#' For example, `geom_point(aes(), size = 2, alpha = .7)` becomes
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' @param ggproto A list of ggplot2 function calls.
+#' Anything that would be "added" to ggplot(); in the case of applying a theme,
+#' `ggplot() + theme_bw()` becomes `ggproto = list(theme_bw())`.
+#' Intended for aesthetic ggplot2 functions (not geom_* family).
+#' @param ... Optionally pass additional arguments to the `render_type` for 
+#' projection point aesthetics; 
+#' @return A ggplot object of the rotated projection.
+#' @import tourr
+#' @export
+#' @examples
+#' dat_std <- scale_sd(wine[, 2:14])
+#' clas <- wine$Type
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_pca(dat_std)
+#' 
+#' rtheta <- runif(1, 0, 2 * pi)
+#' rphi   <- runif(1, 0, 2 * pi)
+#' 
+#' view_frame(basis = bas)
+#' 
+#' view_frame(basis = bas, data = dat_std, manip_var = mv)
+#' 
+#' view_frame(basis = bas, data = dat_std, manip_var = mv,
+#'            theta = rtheta, phi = rphi, label = paste0("MyNm", 3:8), 
+#'            aes_args = list(color = clas, shape = clas),
+#'            identity_args = list(size = .8, alpha = .7),
+#'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+view_frame <- function(basis = NULL,
+                       data = NULL,
+                       manip_var = NULL,
+                       theta = 0L,
+                       phi = 0L,
+                       label = NULL,
+                       rescale_data = FALSE,
+                       aes_args = list(),
+                       identity_args = list(),
+                       ggproto = theme_spinifex(),
+                       ...){
+  if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
+  if(is.null(manip_var) & (theta != 0L | phi != 0L))
+    stop("theta or phi non-zero with a null manip_var. Manip_var required for manual_tour()")
+  ## Basis condition handling
+  if (is.null(basis) & !is.null(data)) {
+    basis <- stats::prcomp(data)$rotation[, 1L:2L]
+    message("NULL basis passed. Set to PCA basis.")
+  }
+  
+  ## Initialize
+  p <- nrow(basis)
+  if(is.null(data) == FALSE)
+    data <- as.matrix(data)
+  if(is.null(manip_var) == FALSE){
+    m_sp   <- create_manip_space(basis, manip_var)
+    r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
+    basis <- r_m_sp[, 1L:2L] ## Really rotated basis
+  }
+  tour_array <- array(basis, dim = c(dim(basis), 1))
+  attr(tour_array, "manip_var") <- manip_var
+  
+  ## Render
+  df_frames <- array2df(array = tour_array, data = data, label = label)
+  gg <- render_(frames = df_frames, ggproto = ggproto, ...)
+  
+  ## Return
+  gg
+}
+
+#### Treat past alternative versions as view_frame, will work with fully qualified code.
+#' @rdname view_frame
+view_basis <- view_frame
+
+#' @rdname view_frame
+oblique_basis <- view_frame
+
+
+
 #' Plot projection frame and return the axes table.
 #' 
 #' Uses base graphics to plot the circle with axes representing
@@ -208,12 +322,13 @@ play_manual_tour <- function(basis = NULL,
 #' @return ggplot object of the basis.
 #' @export
 #' @examples
-#' flea_std <- scale_sd(tourr::flea[, 1:6])
-#' rb <- tourr::basis_random(ncol(flea_std))
+#' dat_std <- scale_sd(wine[, 2:14])
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_pca(dat_std)
 #' 
-#' view_manip_space(basis = rb, manip_var = 4)
+#' view_manip_space(basis = bas, manip_var = mv)
 #' 
-#' view_manip_space(basis = rb, manip_var = 1,
+#' view_manip_space(basis = bas, manip_var = mv,
 #'                  tilt = 2/12 * pi, label = paste0("MyLabs", 1:nrow(basis)),
 #'                  manip_col = "purple", manip_sp_col = "orange", 
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
@@ -326,101 +441,5 @@ view_manip_space <- function(basis,
 }
 
 
-#' Plot a single frame of a manual tour
-#'
-#' Projects the specified rotation as a 2D ggplot object. One static frame of 
-#' manual tour. Useful for providing user-guided interaction.
-#' 
-#' @param data A (n, p) dataset to project, consisting of numeric variables.
-#' @param basis A (p, d) dim orthonormal numeric matrix.
-#' Defaults to NULL, giving a random basis.
-#' @param manip_var Optional, number of the variable to rotate. 
-#' If NULL, theta and phi must be 0 as is no manip space to rotate. 
-#' @param theta Angle in radians of "in-projection plane" rotation, 
-#' on the xy plane of the reference frame. Defaults to 0, no rotation.
-#' @param phi Angle in radians of the "out-of-projection plane" rotation, into 
-#' the z-direction of the axes. Defaults to 0, no rotation.
-#' @param label Optionally, provide a character vector of length p (or 1) 
-#' to label the variable contributions to the axes, Default NULL, 
-#' results in a 3 character abbreviation of the variable names.
-#' @param rescale_data When TRUE scales the data to between 0 and 1.
-#' Defaults to FALSE.
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
-#' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
-#' Typically a single numeric for point size, alpha, or similar.
-#' For example, `geom_point(aes(), size = 2, alpha = .7)` becomes
-#' `identity_args = list(size = 2, alpha = .7)`.
-#' @param ggproto A list of ggplot2 function calls.
-#' Anything that would be "added" to ggplot(); in the case of applying a theme,
-#' `ggplot() + theme_bw()` becomes `ggproto = list(theme_bw())`.
-#' Intended for aesthetic ggplot2 functions (not geom_* family).
-#' @param ... Optionally pass additional arguments to the `render_type` for 
-#' projection point aesthetics; 
-#' @return A ggplot object of the rotated projection.
-#' @import tourr
-#' @export
-#' @examples
-#' dat <- tourr::flea[, 1:6]
-#' bas_pca <- stats::prcomp(dat)$rotation[, 1L:2L]
-#' mvar <- which(abs(bas_pca[, 1]) == max(abs(bas_pca[, 1]))) ## Larget var in PC1
-#' view_frame(bas_pca, manip_var = mvar)
-#' 
-#' rb     <- tourr::basis_random(n = ncol(dat))
-#' rtheta <- runif(1, 0, 2 * pi)
-#' rphi   <- runif(1, 0, 2 * pi)
-#' view_frame(basis = rb, data = dat, manip_var = 4,
-#'            theta = rtheta, phi = rphi, label = paste0("MyNm", 3:8), 
-#'            rescale_data = TRUE,
-#'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
-view_frame <- function(basis = NULL,
-                       data = NULL,
-                       manip_var = NULL,
-                       theta = 0L,
-                       phi = 0L,
-                       label = NULL,
-                       rescale_data = FALSE,
-                       aes_args = list(),
-                       identity_args = list(),
-                       ggproto = theme_spinifex(),
-                       ...){
-    if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
-    if(is.null(manip_var) & (theta != 0L | phi != 0L))
-      stop("theta or phi non-zero with a null manip_var. Manip_var required for manual_tour()")
-    ## Basis condition handling
-    if (is.null(basis) & !is.null(data)) {
-      basis <- stats::prcomp(data)$rotation[, 1L:2L]
-      message("NULL basis passed. Set to PCA basis.")
-    }
-    
-    ## Initialize
-    p <- nrow(basis)
-    if(is.null(data) == FALSE)
-      data <- as.matrix(data)
-    if(is.null(manip_var) == FALSE){
-      m_sp   <- create_manip_space(basis, manip_var)
-      r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
-      basis <- r_m_sp[, 1L:2L] ## Really rotated basis
-    }
-    tour_array <- array(basis, dim = c(dim(basis), 1))
-    attr(tour_array, "manip_var") <- manip_var
-    
-    ## Render
-    df_frames <- array2df(array = tour_array, data = data, label = label)
-    gg <- render_(frames = df_frames, ggproto = ggproto, ...)
-    
-    ## Return
-    gg
-  }
-
-#### Treat past alternative versions as view_frame, will work with fully qualified code.
-#' @rdname view_frame
-view_basis <- view_frame
-
-#' @rdname view_frame
-oblique_basis <- view_frame
 
 

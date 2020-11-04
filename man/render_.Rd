@@ -8,7 +8,7 @@ render_(
   frames,
   axes = "center",
   manip_col = "blue",
-  line_size = 1,
+  line_size = 0.667,
   text_size = 5,
   aes_args = list(),
   identity_args = list(),
@@ -69,7 +69,7 @@ require("ggplot2")
 render_(frames = manual_df, axes = "left", manip_col = "purple",
         aes_args = list(color = clas, shape = clas),
         identity_args = list(size = .8, alpha = .7),
-        ggproto = list(theme_classic(),
+        ggproto = list(theme_void(),
                        ggtitle("My title"),
                        scale_color_brewer(palette = "Set2")))
 }

@@ -56,31 +56,36 @@ Performs the a manual tour and returns an animation of \code{render_type}.
 For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}.
 }
 \examples{
-flea_std <- scale_sd(tourr::flea[, 1:6])
-rb <- 
-flea_class <- tourr::flea$species
+dat_std <- scale_sd(wine[, 2:14])
+clas <- wine$Type
+bas <- basis_pca(dat_std)
+mv <- manip_var_pca(dat_std)
 
 \dontrun{
-play_manual_tour(basis = rb, data = flea_std, manip_var = 4)
+play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
 
-play_manual_tour(basis = rb, data = flea_std, manip_var = 6,
+play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
                  theta = .5 * pi, axes = "right", fps = 5,
-                 col = flea_class, pch = flea_class, size = 1.5,
+                 aes_args = list(color = clas, shape = clas),
+                 identity_args = list(size = .8, alpha = .7),
                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  render_type = render_gganimate)
 
 if(F){ ## Saving output may require additional setup
   ## Export plotly .html widget
-  play_manual_tour(basis = rb, data = flea_std, manip_var = 6, 
+  play_manual_tour(basis = bas, data = dat_std, manip_var = 6, 
                    theta = .5 * pi, axes = "left", fps = 10,
-                   col = flea_class, pch = flea_class, size = 1.5,
+                   aes_args = list(color = clas, shape = clas),
+                   identity_args = list(size = .8, alpha = .7),
                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_plotly,
                    html_filename = "myRadialTour.html")
   
   ## Export gganimate .gif
-  play_manual_tour(basis = rb, data = flea_std, manip_var = 1,
+  play_manual_tour(basis = bas, data = dat_std, manip_var = 1,
                    theta = 0, axes = "topright", fps = 8,
+                   aes_args = list(color = clas, shape = clas),
+                   identity_args = list(size = .8, alpha = .7),
                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_gganimate,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")

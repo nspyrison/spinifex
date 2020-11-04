@@ -52,12 +52,13 @@ Uses base graphics to plot the circle with axes representing
 the projection frame. Returns the corresponding table.
 }
 \examples{
-flea_std <- scale_sd(tourr::flea[, 1:6])
-rb <- tourr::basis_random(ncol(flea_std))
+dat_std <- scale_sd(wine[, 2:14])
+bas <- basis_pca(dat_std)
+mv <- manip_var_pca(dat_std)
 
-view_manip_space(basis = rb, manip_var = 4)
+view_manip_space(basis = bas, manip_var = mv)
 
-view_manip_space(basis = rb, manip_var = 1,
+view_manip_space(basis = bas, manip_var = mv,
                  tilt = 2/12 * pi, label = paste0("MyLabs", 1:nrow(basis)),
                  manip_col = "purple", manip_sp_col = "orange", 
                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
