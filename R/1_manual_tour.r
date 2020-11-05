@@ -218,39 +218,40 @@ manual_tour <- function(basis,
 ##
 
 
-#' Return the manipulation space of the specified rotation
-#'
-#' Rotates a basis returning (p, 3) manipulation space that projects to 
-#' `view_frame()`. Allows for interactive use rather than producing a whole tour.
-#' 
-#' @param basis A (p, d) orthonormal numeric matrix.
-#' The linear combination the original variables contribute to projection space.
-#' Defaults to NULL, generating a random basis.
-#' @param manip_var Number of the column/dimension to rotate.
-#' @param theta Angle, in radians, of "in-plane" rotation, on the xy plane of the 
-#' reference frame. Required, no default.
-#' If left NULL, will initialize the radial angle of the `manip_var`.
-#' @param phi Angle, in radians, of the "out-of-plane" rotation, 
-#' the z-axis of the reference frame. Required, no default.
-#' @return (p, 2) matrix of the rotated basis.
-#' @import tourr
-#' @export
-#' @examples
-#' ## PCA basis with no rotation
-#' dat <- wine[, 2:14]
-#' bas <- basis_pca(dat)
-#' mv  <- manip_var_pca(dat)
-#' rotate_basis(bas, mv)
-#' 
-#' ## Rotate random 
-#' rtheta <- runif(1, 0, 2 * pi)
-#' rphi   <- runif(1, 0, 2 * pi)
-#' rotate_basis(basis = bas, manip_var = mv, rtheta, rphi)
-rotate_basis <- function(basis = NULL,
-                         manip_var,
-                         theta = 0L,
-                         phi = 0L){
-  m_sp <- create_manip_space(basis, manip_var)
-  rotate_manip_space(manip_space = m_sp, theta, phi)[, 1L:ncol(basis)]
-}
+### Depricate, i think this creates more confusion than it helps.
+# #' Return the manipulation space of the specified rotation
+# #'
+# #' Rotates a basis returning (p, 3) manipulation space that projects to 
+# #' `view_frame()`. Allows for interactive use rather than producing a whole tour.
+# #' 
+# #' @param basis A (p, d) orthonormal numeric matrix.
+# #' The linear combination the original variables contribute to projection space.
+# #' Defaults to NULL, generating a random basis.
+# #' @param manip_var Number of the column/dimension to rotate.
+# #' @param theta Angle, in radians, of "in-plane" rotation, on the xy plane of the 
+# #' reference frame. Required, no default.
+# #' If left NULL, will initialize the radial angle of the `manip_var`.
+# #' @param phi Angle, in radians, of the "out-of-plane" rotation, 
+# #' the z-axis of the reference frame. Required, no default.
+# #' @return (p, 2) matrix of the rotated basis.
+# #' @import tourr
+# #' @export
+# #' @examples
+# #' ## PCA basis with no rotation
+# #' dat <- wine[, 2:14]
+# #' bas <- basis_pca(dat)
+# #' mv  <- manip_var_pca(dat)
+# #' rotate_basis(bas, mv)
+# #' 
+# #' ## Rotate random 
+# #' rtheta <- runif(1, 0, 2 * pi)
+# #' rphi   <- runif(1, 0, 2 * pi)
+# #' rotate_basis(basis = bas, manip_var = mv, rtheta, rphi)
+# rotate_basis <- function(basis = NULL,
+#                          manip_var,
+#                          theta = 0L,
+#                          phi = 0L){
+#   m_sp <- create_manip_space(basis, manip_var)
+#   rotate_manip_space(manip_space = m_sp, theta, phi)[, 1L:ncol(basis)]
+# }
 

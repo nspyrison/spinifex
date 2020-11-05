@@ -11,7 +11,7 @@ manip_var_pca(data, rank = 1L)
 \item{data}{Numeric matrix or data.frame of the observations.}
 
 \item{rank}{The number, specifying the variable with the \code{rank}-th largest
-contribution. Defaults to 1}
+contribution. Defaults to 1.}
 }
 \description{
 The number of the variable that has the \verb{max/min absolute value in the first Principal Component (of PCA)}rank`-th largest contribution to projection

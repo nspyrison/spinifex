@@ -1,6 +1,6 @@
 library("spinifex")
 library("testthat")
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[1:10, 2:5]) ## small chunk for speed.
 bas <- basis_pca(dat_std)
 clas <- wine$Type
 mv <- manip_var_pca(bas)
@@ -43,13 +43,13 @@ ret <- render_gganimate(frames = df_manual, axes = "left", manip_col = "purple",
 
 test_that("render_gganimate, class and dim", {
   expect_is(ret, "gif_image")
-  expect_equal(length(ret), 9L)
+  expect_equal(length(ret), 1L)
 })
 
 
 ### render_plotly -----
 
-ret <- render_plotly(frames = df_frames, axes = "bottomleft", fps = 10,
+ret <- render_plotly(frames = df_manual, axes = "bottomleft", fps = 10,
               tooltip = c("label", "frame", "x", "y"),
               aes_args = list(color = clas, shape = clas),
               identity_args = list(size = .8, alpha = .7),
@@ -57,4 +57,7 @@ ret <- render_plotly(frames = df_frames, axes = "bottomleft", fps = 10,
                              ggtitle("My title"),
                              scale_color_brewer(palette = "Set2")))
 
-
+test_that("render_gganimate, class and dim", {
+  expect_is(ret, c("plotly", "htmlwidget"))
+  expect_equal(length(ret), 9L)
+})

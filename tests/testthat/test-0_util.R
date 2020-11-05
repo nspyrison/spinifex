@@ -54,13 +54,13 @@ ret_save_hist <- array2df(array = array_save_hist, data = dat_std,
 
 test_that("array2df: class and dim for single frame, spinifex and tourr case.", {
   expect_is(ret_single,    "list")
-  expect_is(array_manual,  "list")
+  expect_is(ret_manual,    "list")
   expect_is(ret_save_hist, "list")
   expect_equal(length(ret_single),    1)
-  expect_equal(length(array_manual),  2)
+  expect_equal(length(ret_manual),    2)
   expect_equal(length(ret_save_hist), 2)
   expect_equal(dim(ret_single[[1]]),    c(13,  4))
-  expect_equal(dim(array_manual[[1]]),  c(884, 4))
+  expect_equal(dim(ret_manual[[1]]),    c(884, 4))
   expect_equal(dim(ret_save_hist[[1]]), c(130, 4))
 })
 
@@ -75,8 +75,8 @@ ret_to <- scale_axes(x = bas, position = "topright", to = wine[, 2:3])
 test_that("scale_axes: class and dim", {
   expect_is(ret, "matrix")
   expect_is(ret_to, "matrix")
-  expect_equal(dim(ret), c(6, 2))
-  expect_equal(dim(ret_to), c(6, 2))
+  expect_equal(dim(ret), c(13, 2))
+  expect_equal(dim(ret_to), c(13, 2))
 })
 
 
@@ -84,13 +84,12 @@ test_that("scale_axes: class and dim", {
 
 ret_mat   <- pan_zoom(x = bas, pan = c(-1, 0), zoom = c(2/3, 2/3))
 ret_df    <- pan_zoom(x = mtcars[,1:2], pan = c(0, 100), zoom = c(.1, .1))
-ret_warn  <- pan_zoom(x = mtcars[,], pan = c(0, 100), zoom = c(.1, .1))
 
 test_that("pan_zoom: class and dim", {
   expect_is(ret_mat, "matrix")
-  expect_is(ret_df, "data.frame")
+  expect_is(ret_df,  "data.frame")
   expect_equal(dim(ret_mat), c(13, 2))
-  expect_equal(dim(ret_df), c(32, 2))
+  expect_equal(dim(ret_df),  c(32, 2))
   expect_warning(pan_zoom(x = mtcars))
 })
 
@@ -137,7 +136,7 @@ test_that("manip_var_pca: class and dim", {
 ### manip_var_guided ------
 
 ret_holes <- manip_var_guided(data = dat_std, index_f = tourr::holes())
-ret_cmass <- manip_var_guided(data = dat_std, index_f = tourr::cmass(), func = min,
+ret_cmass <- manip_var_guided(data = dat_std, index_f = tourr::cmass(),
                               alpha = .4, cooling = .9, max.tries = 30)
 
 test_that("manip_var_guided: class and dim", {

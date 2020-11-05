@@ -382,7 +382,7 @@ basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @param rank The number, specifying the variable with the `rank`-th largest 
-#' contribution. Defaults to 1
+#' contribution. Defaults to 1.
 #' @export
 #' @examples 
 #' manip_var_pca(data = wine[, 2:14])
@@ -396,18 +396,19 @@ manip_var_pca <- function(data, rank = 1L){
 # #' 
 # #' @param data Numeric matrix or data.frame of the observations, coerced to matrix
 # #' @param class The class for each observation, coerced to a factor.
-# #' @param func The function to be applied, expects max or min.
+# #' @param rank The number, specifying the variable with the `rank`-th largest 
+# #' contribution. Defaults to 1.
 # #' @return Numeric matrix of the last basis of a guided tour.
 # #' @seealso \code{\link{MASS::lda}}
 # #' @export
 # #' @examples 
-# #' manip_var_lda(data = wine[, 2:14], class = wine$Type)
-# manip_var_lda <- function(data, class, func = max){
+# #' manip_var_lda(data = wine[, 2:14], class = wine$Type, rank = 1L)
+# manip_var_lda <- function(data, class, rank = 1){
 #   lda <- MASS::lda(x = as.matrix(data), grouping = as.factor(class))
 #   is_orthonormal(lda$scaling)
 #   ## MASS::lda is not giving orthonormal (!?)
 #   abs_ld1 <- abs(tourr::orthonormalise(lda$scaling[, 1L]))
-#   which(abs_ld1 == func(abs_ld1))
+#   which(order(abs_ld1, decreasing = TRUE) == rank)
 # }
 
 
@@ -418,7 +419,7 @@ manip_var_pca <- function(data, rank = 1L){
 #' @param index_f The index function to optimize.
 #' {tourr} exports holes(), cmass(), and lda_pp(class).
 #' @param p Number of dimensions in the projection space.
-#' @param func The function to be applied, expects `max` or `min`.
+#' @param rank The function to be applied, expects `max` or `min`.
 #' @param ... Optional, other arguments to pass to `tourr::guided_tour`.
 #' @return Numeric matrix of the last basis of a guided tour.
 #' @seealso \code{\link{tourr::guided_tour}} for annealing arguments.
@@ -426,7 +427,7 @@ manip_var_pca <- function(data, rank = 1L){
 #' @examples
 #' manip_var_guided(data = wine[, 2:14], index_f = tourr::holes())
 #' 
-#' manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), func = min,
+#' manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), rank = 3,
 #'                  alpha = .4, cooling = .9, max.tries = 30)
 manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
                              rank = 1L, ...){

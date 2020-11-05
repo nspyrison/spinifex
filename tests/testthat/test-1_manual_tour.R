@@ -53,18 +53,18 @@ test_that("manual_tour, class and dim", {
 ## INTERMEDIATE AND FORMATING -----
 ##
 
-### rotate_basis -----
-rtheta <- runif(1, 0, 2 * pi)
-rphi   <- runif(1, 0, 2 * pi)
-rmv    <- 1 ## don't use rand for unit test maybe.
-ret <- rotate_basis(basis = bas, manip_var = mv, rtheta, rphi)
-ret_crazy <-  rotate_basis(basis = bas, manip_var = rmv, -999, 999)
-
-test_that("manual_tour, class and dim", {
-  expect_is(ret, "matrix")
-  expect_is(ret_crazy, "matrix")
-  expect_equal(dim(ret_light), c(13, 3))
-  expect_equal(dim(ret_heavy), c(13, 3))
-  expect_error(rotate_basis(basis = bas, manip_var = 999, 0, 0))
-})
-
+### DEPRICATED: rotate_basis -----
+# rtheta <- runif(1, 0, 2 * pi)
+# rphi   <- runif(1, 0, 2 * pi)
+# rmv    <- 1 ## don't use rand for unit test maybe.
+# ret <- rotate_basis(basis = bas, manip_var = mv, rtheta, rphi)
+# ret_crazy <- rotate_basis(basis = bas, manip_var = rmv, -999, 999)
+# 
+# test_that("manual_tour, class and dim", {
+#   expect_is(ret, "matrix")
+#   expect_is(ret_crazy, "matrix")
+#   expect_equal(dim(ret_light), c(13, 3))
+#   expect_equal(dim(ret_heavy), c(13, 3))
+#   expect_error(rotate_basis(basis = bas, manip_var = 999, 0, 0))
+# })
+# 

@@ -180,7 +180,7 @@ play_manual_tour <- function(basis = NULL,
   data <- as.matrix(data)
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, ...)
   tour_df <- array2df(array = tour_hist, data = data)
-  anim <- render_type(frames = tour_df, ggproto = ggproto, ...)
+  anim <- render_type(frames = tour_df, ...)
   
   ## Return
   anim
@@ -329,7 +329,7 @@ oblique_basis <- view_frame
 #' view_manip_space(basis = bas, manip_var = mv)
 #' 
 #' view_manip_space(basis = bas, manip_var = mv,
-#'                  tilt = 2/12 * pi, label = paste0("MyLabs", 1:nrow(basis)),
+#'                  tilt = 2/12 * pi, label = paste0("MyNm", 1:ncol(dat_std)),
 #'                  manip_col = "purple", manip_sp_col = "orange", 
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 view_manip_space <- function(basis,

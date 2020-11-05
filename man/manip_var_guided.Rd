@@ -15,9 +15,9 @@ manip_var_guided(data, index_f = tourr::holes(), p = 2L, rank = 1L, ...)
 
 \item{p}{Number of dimensions in the projection space.}
 
-\item{...}{Optional, other arguments to pass to \code{tourr::guided_tour}.}
+\item{rank}{The function to be applied, expects \code{max} or \code{min}.}
 
-\item{func}{The function to be applied, expects \code{max} or \code{min}.}
+\item{...}{Optional, other arguments to pass to \code{tourr::guided_tour}.}
 }
 \value{
 Numeric matrix of the last basis of a guided tour.
@@ -29,7 +29,7 @@ Useful for setting the manip_var argument.
 \examples{
 manip_var_guided(data = wine[, 2:14], index_f = tourr::holes())
 
-manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), func = min,
+manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), rank = 3,
                  alpha = .4, cooling = .9, max.tries = 30)
 }
 \seealso{

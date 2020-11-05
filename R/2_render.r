@@ -247,7 +247,7 @@ render_gganimate <- function(fps = 8L,
                              gif_filename = NULL,
                              gif_dirpath = NULL,
                              gganimate_args = list(),
-                             ...) {
+                             ...){
   requireNamespace("gganimate")
   ## Render and animate
   gg  <- render_(...)
@@ -258,7 +258,7 @@ render_gganimate <- function(fps = 8L,
                        fps = fps,
                        rewind = rewind,
                        start_pause = fps * start_pause,
-                       end_pause = fps * end_pause, 
+                       end_pause = fps * end_pause,
                        ...)
   anim <- do.call(anim_func, args = gganimate_args)
 
