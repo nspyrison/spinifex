@@ -23,10 +23,11 @@ For example, tooltip = c("id", "frame", "x", "y", "category", "color").}
 
 \item{html_filename}{Optional, saves the plotly object as an HTML widget to
 this string (without the directory path).
-Defaults to NULL (not saved). For more output control call
-\code{htmlwidgets::saveWidget()} on a return object of \code{render_plotly()}.}
+Defaults to NULL (not saved). For more output controluse \code{save_widget_args}
+or call \code{htmlwidgets::saveWidget()} on a return object of \code{render_plotly()}.}
 
-\item{save_widget_args}{}
+\item{save_widget_args}{A list of arguments to be called in
+\code{htmlwidgets::saveWidget()} when used with a \code{html_filename}.}
 
 \item{...}{Passes arguments to \code{render_(aes(...))}.}
 }
@@ -35,7 +36,6 @@ Takes the result of \code{array2df()} and animations them via \code{{plotly}}
 into a  self-contained HTML widget.
 }
 \examples{
-## Setup
 dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
@@ -43,11 +43,8 @@ mv <- manip_var_pca(dat_std)
 manual_array <- manual_tour(basis = bas, manip_var = mv)
 manual_df <- array2df(array = manual_array, data = dat_std)
 
-
-## Required arguments
 render_plotly(frames = manual_df)
 
-## Full arguments (without save)
 render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
               tooltip = c("label", "frame", "x", "y"),
               aes_args = list(color = clas, shape = clas),
@@ -73,7 +70,7 @@ if(F){ ## Saving .html widget (may require additional setup)
 \seealso{
 \code{\link{render_}} for \code{...} arguments.
 
-\code{\link{plotly::ggplotly}} for source documentation of \code{tooltip}.
+\code{\link[plotly]{ggplotly}} for source documentation of \code{tooltip}.
 
-\code{\link{htmlwidgets::saveWidget}} for more control of .gif output.
+\code{\link[htmlwidgets]{saveWidget}} for more control of .gif output.
 }

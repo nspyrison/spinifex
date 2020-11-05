@@ -45,16 +45,21 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' 
 #' ## Radial tour array to long df, as used in play_manual_tour()
 #' tour_array <- manual_tour(basis = bas, manip_var = mv)
-#' array2df(array = tour_array, data = dat_std,
-#'          label = paste0("MyLabs", 1:nrow(bas)))
+#' str(
+#'   array2df(array = tour_array, data = dat_std,
+#'            label = paste0("MyLabs", 1:nrow(bas)))
+#' )
 #' 
 #' ## tourr::save_history tour array to long df, as used in play_tour_path()
-#' hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
-#' array2df(array = hist_array, data = dat_std,
-#'          label = paste0("MyLabs", 1:nrow(bas)))
+#' save_hist <- tourr::save_history(data = dat_std, max_bases = 10)
+#' str(
+#'   array2df(array = hist_array, data = dat_std,
+#'               label = paste0("MyLabs", 1:nrow(bas)))
+#' )
 array2df <- function(array,
                      data = NULL,
                      label = NULL){
+  if(class(array) == "history_array") class(array) <- "array"
   ## Initialize
   manip_var <- attributes(array)$manip_var
   p <- dim(array)[1L]
@@ -329,7 +334,7 @@ theme_spinifex <- function(){
 #' @examples 
 #' basis_pca(data = wine[, 2:14])
 basis_pca <- function(data, p = 2L){
-  prcomp(data)$rotation[, 1L:p]
+  stats::prcomp(data)$rotation[, 1L:p]
 }
 
 
@@ -362,7 +367,7 @@ basis_pca <- function(data, p = 2L){
 #' @param p Number of dimensions in the projection space.
 #' @param ... Optional, other arguments to pass to `tourr::guided_tour`.
 #' @return Numeric matrix of the last basis of a guided tour.
-#' @seealso \code{\link{tourr::guided_tour}} for annealing arguments.
+#' @seealso \code{\link[tourr]{guided_tour}} for annealing arguments.
 #' @export
 #' @examples 
 #' basis_guided(data = wine[, 2:14], index_f = tourr::holes())
@@ -370,7 +375,7 @@ basis_pca <- function(data, p = 2L){
 #' basis_guided(data = wine[, 2:14], index_f = tourr::cmass(), quiet = FALSE,
 #'              alpha = .4, cooling = .9, max.tries = 30)
 basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
-  invisible(capture.output(
+  invisible(utils::capture.output(
     hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
   ))
   matrix(hist[, , length(hist)], ncol = p)
@@ -387,7 +392,7 @@ basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
 #' @examples 
 #' manip_var_pca(data = wine[, 2:14])
 manip_var_pca <- function(data, rank = 1L){
-  abs_pc1 <- abs(prcomp(data)$rotation[, 1L])
+  abs_pc1 <- abs(stats::prcomp(data)$rotation[, 1L])
   which(order(abs_pc1, decreasing = TRUE) == rank)
 }
 
@@ -422,7 +427,7 @@ manip_var_pca <- function(data, rank = 1L){
 #' @param rank The function to be applied, expects `max` or `min`.
 #' @param ... Optional, other arguments to pass to `tourr::guided_tour`.
 #' @return Numeric matrix of the last basis of a guided tour.
-#' @seealso \code{\link{tourr::guided_tour}} for annealing arguments.
+#' @seealso \code{\link[tourr]{guided_tour}} for annealing arguments.
 #' @export
 #' @examples
 #' manip_var_guided(data = wine[, 2:14], index_f = tourr::holes())
@@ -431,7 +436,7 @@ manip_var_pca <- function(data, rank = 1L){
 #'                  alpha = .4, cooling = .9, max.tries = 30)
 manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
                              rank = 1L, ...){
-  invisible(capture.output( ## Mute the noisy function
+  invisible(utils::capture.output( ## Mute the noisy function
     hist <- tourr::save_history(data, 
                                 tourr::guided_tour(index_f = index_f, d = p, ...)
     )
@@ -449,10 +454,10 @@ manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
 #' @examples 
 #' scale_sd(data = wine[, 2:14])
 scale_sd <- function(data){
-  apply(data, 2, function(col) (col - mean(col)) / sd(col))
+  apply(data, 2, function(col) (col - mean(col)) / stats::sd(col))
 }
 
-#' Standardize each column of data to have a range of [0, 1].
+#' Standardize each column of data to have a range of (0, 1).
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @export

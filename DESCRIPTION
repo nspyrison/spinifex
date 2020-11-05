@@ -16,7 +16,7 @@ Description: Generates the path for manual tours
   The result is an animation where the variable is toured into and out of the projection 
   completely, which can be rendered using the 'gganimate' and 'plotly' packages.
 Depends: 
-    R (>= 3.4.0)
+    R (>= 3.5.0)
 License: CC BY-NC-SA 4.0
 URL: https://github.com/nspyrison/spinifex/
 BugReports: https://github.com/nspyrison/spinifex/issues

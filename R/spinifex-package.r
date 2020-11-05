@@ -27,12 +27,9 @@
 "_PACKAGE"
 
 # Manual tour globals:
-globalVariables(c("col",
-                  "pch",
-                  "phi_min",
+globalVariables(c("phi_min",
                   "phi_max",
                   "manip_col",
-                  "manip_type",
                   "n_frames",
                   "theta",
                   "angle")
@@ -44,6 +41,6 @@ globalVariables(c("x",
                   "z",
                   "xend",
                   "yend",
-                  "lab",
+                  "label",
                   "frame")
 )

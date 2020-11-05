@@ -43,10 +43,6 @@ Required, defaults to pi/2.}
 
 \item{...}{Optionally pass additional arguments to \code{render_} and the
 function used in \code{render_type}.}
-
-\item{ggproto}{Accepts a list of gg functions. Think of this as an
-alternative format to \code{ggplot() + ggproto[[1]]}.
-Intended for passing a \verb{ggplot2::theme_*()} and related aesthetic functions.}
 }
 \value{
 An animation of a radial tour.
@@ -74,19 +70,11 @@ play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
 if(F){ ## Saving output may require additional setup
   ## Export plotly .html widget
   play_manual_tour(basis = bas, data = dat_std, manip_var = 6, 
-                   theta = .5 * pi, axes = "left", fps = 10,
-                   aes_args = list(color = clas, shape = clas),
-                   identity_args = list(size = .8, alpha = .7),
-                   ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_plotly,
                    html_filename = "myRadialTour.html")
   
   ## Export gganimate .gif
   play_manual_tour(basis = bas, data = dat_std, manip_var = 1,
-                   theta = 0, axes = "topright", fps = 8,
-                   aes_args = list(color = clas, shape = clas),
-                   identity_args = list(size = .8, alpha = .7),
-                   ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                    render_type = render_gganimate,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }

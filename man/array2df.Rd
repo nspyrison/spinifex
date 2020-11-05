@@ -35,11 +35,15 @@ mv <- manip_var_pca(dat_std)
 
 ## Radial tour array to long df, as used in play_manual_tour()
 tour_array <- manual_tour(basis = bas, manip_var = mv)
-array2df(array = tour_array, data = dat_std,
-         label = paste0("MyLabs", 1:nrow(bas)))
+str(
+  array2df(array = tour_array, data = dat_std,
+           label = paste0("MyLabs", 1:nrow(bas)))
+)
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
-hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
-array2df(array = hist_array, data = dat_std,
-         label = paste0("MyLabs", 1:nrow(bas)))
+save_hist <- tourr::save_history(data = dat_std, max_bases = 10)
+str(
+  array2df(array = hist_array, data = dat_std,
+              label = paste0("MyLabs", 1:nrow(bas)))
+)
 }

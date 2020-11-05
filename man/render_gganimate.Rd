@@ -49,7 +49,6 @@ Takes the result of \code{array2df()} and renders them into a
 \emph{gganimate} animation.
 }
 \examples{
-## Setup
 dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
@@ -58,10 +57,8 @@ manual_array <- manual_tour(basis = bas, manip_var = mv)
 manual_df <- array2df(array = manual_array, data = dat_std)
 
 \dontrun{
-## Required arguments
 render_gganimate(frames = manual_df)
 
-## Full arguments (without save)
 require("ggplot2")
 render_gganimate(frames = manual_df, axes = "bottomleft",
                  fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
@@ -86,5 +83,5 @@ if(F){ ## Save as a .gif (may require additional setup)
 \seealso{
 \code{\link{render_}} for \code{...} arguments.
 
-\code{\link{gganimate::anim_save}} for more control of .gif output.
+\code{\link[gganimate]{anim_save}} for more control of .gif output.
 }

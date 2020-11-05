@@ -204,10 +204,9 @@ render_ <- function(frames,
 #' @param ... Optionally passes arguments to the projection points inside the 
 #' aesthetics; `geom_point(aes(...))`.
 #' @seealso \code{\link{render_}} for `...` arguments.
-#' @seealso \code{\link{gganimate::anim_save}} for more control of .gif output.
+#' @seealso \code{\link[gganimate]{anim_save}} for more control of .gif output.
 #' @export
 #' @examples
-#' ## Setup
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
@@ -216,10 +215,8 @@ render_ <- function(frames,
 #' manual_df <- array2df(array = manual_array, data = dat_std)
 #' 
 #' \dontrun{
-#' ## Required arguments
 #' render_gganimate(frames = manual_df)
 #' 
-#' ## Full arguments (without save)
 #' require("ggplot2")
 #' render_gganimate(frames = manual_df, axes = "bottomleft",
 #'                  fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
@@ -285,18 +282,16 @@ render_gganimate <- function(fps = 8L,
 #' For example, tooltip = c("id", "frame", "x", "y", "category", "color").
 #' @param html_filename Optional, saves the plotly object as an HTML widget to
 #' this string (without the directory path).
-#' Defaults to NULL (not saved). For more output control call
-#' `htmlwidgets::saveWidget()` on a return object of `render_plotly()`.
+#' Defaults to NULL (not saved). For more output controluse `save_widget_args` 
+#' or call `htmlwidgets::saveWidget()` on a return object of `render_plotly()`.
 #' @param save_widget_args A list of arguments to be called in 
 #' `htmlwidgets::saveWidget()` when used with a `html_filename`.
-#' @param save_widget_args 
 #' @param ... Passes arguments to `render_(aes(...))`.
 #' @seealso \code{\link{render_}} for `...` arguments.
-#' @seealso \code{\link{plotly::ggplotly}} for source documentation of `tooltip`.
-#' @seealso \code{\link{htmlwidgets::saveWidget}} for more control of .gif output.
+#' @seealso \code{\link[plotly]{ggplotly}} for source documentation of `tooltip`.
+#' @seealso \code{\link[htmlwidgets]{saveWidget}} for more control of .gif output.
 #' @export
 #' @examples
-#' ## Setup
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
@@ -304,11 +299,8 @@ render_gganimate <- function(fps = 8L,
 #' manual_array <- manual_tour(basis = bas, manip_var = mv)
 #' manual_df <- array2df(array = manual_array, data = dat_std)
 #' 
-#' 
-#' ## Required arguments
 #' render_plotly(frames = manual_df)
 #' 
-#' ## Full arguments (without save)
 #' render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
 #'               tooltip = c("label", "frame", "x", "y"),
 #'               aes_args = list(color = clas, shape = clas),

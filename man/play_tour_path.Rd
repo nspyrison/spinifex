@@ -45,25 +45,19 @@ play_tour_path(tour_path = tpath, data = dat_std,
                axes = "bottomleft", angle = .08, fps = 8,
                aes_args = list(color = clas, shape = clas),
                identity_args = list(size = .8, alpha = .7),
-               ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+               ggproto = 
+                 list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                render_type = render_gganimate)
 
 if (F){ ## Saving output may require additional setup
   ## Export plotly .html widget
   play_tour_path(tour_path = tpath, data = dat_std,
-                 axes = "left", angle = .06, fps = 10,
-                 aes_args = list(color = clas, shape = clas),
-                 identity_args = list(size = .8, alpha = .7),
-                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  render_type = render_plotly,
                  html_filename = "myRadialTour.html")
                
   ## Export gganimate .gif
   play_tour_path(tour_path = tpath, data = dat_std,
-                 axes = "left", angle = .04, fps = 6,
-                 aes_args = list(color = clas, shape = clas),
-                 identity_args = list(size = .8, alpha = .7),
-                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),#'                  render_type = render_gganimate,
+                 render_type = render_gganimate,
                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 }
 }

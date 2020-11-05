@@ -32,25 +32,19 @@
 #'                axes = "bottomleft", angle = .08, fps = 8,
 #'                aes_args = list(color = clas, shape = clas),
 #'                identity_args = list(size = .8, alpha = .7),
-#'                ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                ggproto = 
+#'                  list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                render_type = render_gganimate)
 #' 
 #' if (F){ ## Saving output may require additional setup
 #'   ## Export plotly .html widget
 #'   play_tour_path(tour_path = tpath, data = dat_std,
-#'                  axes = "left", angle = .06, fps = 10,
-#'                  aes_args = list(color = clas, shape = clas),
-#'                  identity_args = list(size = .8, alpha = .7),
-#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  render_type = render_plotly,
 #'                  html_filename = "myRadialTour.html")
 #'                
 #'   ## Export gganimate .gif
 #'   play_tour_path(tour_path = tpath, data = dat_std,
-#'                  axes = "left", angle = .04, fps = 6,
-#'                  aes_args = list(color = clas, shape = clas),
-#'                  identity_args = list(size = .8, alpha = .7),
-#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),#'                  render_type = render_gganimate,
+#'                  render_type = render_gganimate,
 #'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 #' }
 #' }
@@ -106,9 +100,6 @@ play_tour_path <- function(tour_path = NULL,
 #' the "out-of-plane" rotation, the z-axis of the reference frame. 
 #' Required, defaults to pi/2.
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
-#' @param ggproto Accepts a list of gg functions. Think of this as an 
-#' alternative format to `ggplot() + ggproto[[1]]`.
-#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
 #' @param render_type Graphics to render to. Defaults to render_plotly, 
 #' alternative use render_gganimate.
 #' @param ... Optionally pass additional arguments to `render_` and the 
@@ -137,19 +128,11 @@ play_tour_path <- function(tour_path = NULL,
 #' if(F){ ## Saving output may require additional setup
 #'   ## Export plotly .html widget
 #'   play_manual_tour(basis = bas, data = dat_std, manip_var = 6, 
-#'                    theta = .5 * pi, axes = "left", fps = 10,
-#'                    aes_args = list(color = clas, shape = clas),
-#'                    identity_args = list(size = .8, alpha = .7),
-#'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    render_type = render_plotly,
 #'                    html_filename = "myRadialTour.html")
 #'   
 #'   ## Export gganimate .gif
 #'   play_manual_tour(basis = bas, data = dat_std, manip_var = 1,
-#'                    theta = 0, axes = "topright", fps = 8,
-#'                    aes_args = list(color = clas, shape = clas),
-#'                    identity_args = list(size = .8, alpha = .7),
-#'                    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                    render_type = render_gganimate,
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
@@ -372,19 +355,18 @@ view_manip_space <- function(basis,
   ## Axes circle and angles
   circ_r <- rot(make_curve())
   theta_ang <- find_angle(c(mvar$x, mvar$y),c(1L, 0L))
-  theta_curve_r <- .5 * make_curve(ang_st = 0L, ang_stop = theta_ang) %>% rot()
+  theta_curve_r <- rot(.5 * make_curve(ang_st = 0L, ang_stop = theta_ang)) 
   theta_curve_r$y <- theta_curve_r$y * sign(mvar$y)
   phi_ang <- find_angle(c(m_sp_r$x, m_sp_r$y), c(m_sp_r$x, m_sp_r$z))
   phi_curve <- .4 * make_curve(ang_st = theta_ang, ang_stop = phi_ang)
   phi_curve$y <- phi_curve$y * sign(mvar$y)
   ### Move to origin, rotate about blue manip by 90 degrees, move back
   start_pt <- phi_curve[1, 1:2]
-  phi_curve <- phi_curve %>%
-    dplyr::mutate(x = x - start_pt$x,
-                  y = y - start_pt$y)
+  phi_curve <- dplyr::mutate(phi_curve, x = x - start_pt$x,
+                             y = y - start_pt$y)
   tmp_x <- phi_curve$y + start_pt$x
   tmp_y <- phi_curve$x + start_pt$y
-  phi_curve_r <- data.frame(x = tmp_x, y = tmp_y, z = phi_curve$z) %>% rot()
+  phi_curve_r <- rot(data.frame(x = tmp_x, y = tmp_y, z = phi_curve$z))
   
   ## Render (& implicit return)
   ggplot2::ggplot() + 
@@ -437,9 +419,5 @@ view_manip_space <- function(basis,
   #   data = phi_curve_r,
   #   mapping = ggplot2::aes(x = x, y = y),
   #   color = manip_sp_col, size = 0.2)
-  
 }
-
-
-
 

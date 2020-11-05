@@ -33,5 +33,5 @@ manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), rank = 3,
                  alpha = .4, cooling = .9, max.tries = 30)
 }
 \seealso{
-\code{\link{tourr::guided_tour}} for annealing arguments.
+\code{\link[tourr]{guided_tour}} for annealing arguments.
 }

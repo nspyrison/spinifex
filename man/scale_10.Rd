@@ -2,7 +2,7 @@
 % Please edit documentation in R/0_util.r
 \name{scale_10}
 \alias{scale_10}
-\title{Standardize each column of data to have a range of \link{0, 1}.}
+\title{Standardize each column of data to have a range of (0, 1).}
 \usage{
 scale_10(data)
 }
@@ -10,7 +10,7 @@ scale_10(data)
 \item{data}{Numeric matrix or data.frame of the observations.}
 }
 \description{
-Standardize each column of data to have a range of \link{0, 1}.
+Standardize each column of data to have a range of (0, 1).
 }
 \examples{
 scale_10(data = wine[, 2:14])
