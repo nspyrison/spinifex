@@ -15,7 +15,7 @@ scale_axes(
 \item{x}{Numeric table, first 2 columns and scaled and offset relative to
 the \code{to} argument.}
 
-\item{position}{Text specifiying the position the axes should go to.
+\item{position}{Text specifying the position the axes should go to.
 Defaults to "center" expects one of: "center", "left", "right",
 "bottomleft", "topright", or "off".}
 

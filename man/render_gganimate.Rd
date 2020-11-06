@@ -10,7 +10,7 @@ render_gganimate(
   start_pause = 0.5,
   end_pause = 1L,
   gif_filename = NULL,
-  gif_dirpath = NULL,
+  gif_path = NULL,
   gganimate_args = list(),
   ...
 )
@@ -32,7 +32,7 @@ Defaults to 1.}
 For more output control, call \code{gganimate::anim_save()} on a return object of
 \code{render_gganimate()}.}
 
-\item{gif_dirpath}{Optional, A string of the directory path (without the
+\item{gif_path}{Optional, A string of the directory path (without the
 filename) to save a GIF to. Defaults to NULL (current work directory).}
 
 \item{gganimate_args}{A list of arguments assigned to a vector passe outside
@@ -70,12 +70,6 @@ render_gganimate(frames = manual_df, axes = "bottomleft",
   
 if(F){ ## Save as a .gif (may require additional setup)
   render_gganimate(frames = manual_df, axes = "bottomleft",
-                   fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
-                   aes_args = list(color = clas, shape = clas),
-                   identity_args = list(size = .8, alpha = .7),
-                   ggproto = list(theme_void(),
-                                  ggtitle("My title"),
-                                  scale_color_brewer(palette = "Set2")),
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }
 }

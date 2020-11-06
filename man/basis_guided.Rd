@@ -25,7 +25,7 @@ The last basis of a guided tour
 \examples{
 basis_guided(data = wine[, 2:14], index_f = tourr::holes())
 
-basis_guided(data = wine[, 2:14], index_f = tourr::cmass(), quiet = FALSE,
+basis_guided(data = wine[, 2:14], index_f = tourr::cmass(),
              alpha = .4, cooling = .9, max.tries = 30)
 }
 \seealso{

@@ -31,7 +31,7 @@
 #' play_tour_path(tour_path = tpath, data = dat_std,
 #'                axes = "bottomleft", angle = .08, fps = 8,
 #'                aes_args = list(color = clas, shape = clas),
-#'                identity_args = list(size = .8, alpha = .7),
+#'                identity_args = list(size = 1.5, alpha = .7),
 #'                ggproto = 
 #'                  list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                render_type = render_gganimate)
@@ -121,7 +121,7 @@ play_tour_path <- function(tour_path = NULL,
 #' play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
 #'                  theta = .5 * pi, axes = "right", fps = 5,
 #'                  aes_args = list(color = clas, shape = clas),
-#'                  identity_args = list(size = .8, alpha = .7),
+#'                  identity_args = list(size = 1.5, alpha = .7),
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  render_type = render_gganimate)
 #' 
@@ -194,19 +194,6 @@ play_manual_tour <- function(basis = NULL,
 #' results in a 3 character abbreviation of the variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
-#' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
-#' Typically a single numeric for point size, alpha, or similar.
-#' For example, `geom_point(aes(), size = 2, alpha = .7)` becomes
-#' `identity_args = list(size = 2, alpha = .7)`.
-#' @param ggproto A list of ggplot2 function calls.
-#' Anything that would be "added" to ggplot(); in the case of applying a theme,
-#' `ggplot() + theme_bw()` becomes `ggproto = list(theme_bw())`.
-#' Intended for aesthetic ggplot2 functions (not geom_* family).
 #' @param ... Optionally pass additional arguments to the `render_type` for 
 #' projection point aesthetics; 
 #' @return A ggplot object of the rotated projection.
@@ -226,9 +213,9 @@ play_manual_tour <- function(basis = NULL,
 #' view_frame(basis = bas, data = dat_std, manip_var = mv)
 #' 
 #' view_frame(basis = bas, data = dat_std, manip_var = mv,
-#'            theta = rtheta, phi = rphi, label = paste0("MyNm", 3:8), 
+#'            theta = rtheta, phi = rphi, label = paste0("MyNm", 1:ncol(dat_std)), 
 #'            aes_args = list(color = clas, shape = clas),
-#'            identity_args = list(size = .8, alpha = .7),
+#'            identity_args = list(size = 1.5, alpha = .7),
 #'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 view_frame <- function(basis = NULL,
                        data = NULL,
@@ -237,9 +224,6 @@ view_frame <- function(basis = NULL,
                        phi = 0L,
                        label = NULL,
                        rescale_data = FALSE,
-                       aes_args = list(),
-                       identity_args = list(),
-                       ggproto = theme_spinifex(),
                        ...){
   if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
   if(is.null(manip_var) & (theta != 0L | phi != 0L))
@@ -255,7 +239,7 @@ view_frame <- function(basis = NULL,
   if(is.null(data) == FALSE)
     data <- as.matrix(data)
   if(is.null(manip_var) == FALSE){
-    m_sp   <- create_manip_space(basis, manip_var)
+    m_sp <- create_manip_space(basis, manip_var)
     r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
     basis <- r_m_sp[, 1L:2L] ## Really rotated basis
   }
@@ -264,7 +248,7 @@ view_frame <- function(basis = NULL,
   
   ## Render
   df_frames <- array2df(array = tour_array, data = data, label = label)
-  gg <- render_(frames = df_frames, ggproto = ggproto, ...)
+  gg <- render_(frames = df_frames, ...)
   
   ## Return
   gg

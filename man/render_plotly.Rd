@@ -45,10 +45,11 @@ manual_df <- array2df(array = manual_array, data = dat_std)
 
 render_plotly(frames = manual_df)
 
+require(ggplot2)
 render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
               tooltip = c("label", "frame", "x", "y"),
               aes_args = list(color = clas, shape = clas),
-              identity_args = list(size = .8, alpha = .7),
+              identity_args = list(size = 1.5, alpha = .7),
               ggproto = list(theme_void(),
                              ggtitle("My title"),
                              scale_color_brewer(palette = "Set2")))
@@ -56,13 +57,7 @@ render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
 
 \dontrun{
 if(F){ ## Saving .html widget (may require additional setup)
-  render_plotly(frames = manual_df, , axes = "bottomleft", fps = 10, 
-                tooltip = c("id", "frame", "x", "y", "category", "color"),
-                aes_args = list(color = clas, shape = clas),
-                identity_args = list(size = .8, alpha = .7),
-                ggproto = list(theme_void(),
-                               ggtitle("My title"),
-                               scale_color_brewer(palette = "Set2")),
+  render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
                 html_filename = "myRadialTour.html")
 }
 }

@@ -1,7 +1,7 @@
 ^CRAN-RELEASE$
 ^Meta$
 ^docs$
-^doc$
+^_pkgdown\.yml$
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
@@ -18,3 +18,5 @@
 
 ^inst/shiny_apps/global_shinyApps.r
 ^inst/shiny_apps/primary/.*$
+^_pkgdown\.yml$
+^pkgdown$

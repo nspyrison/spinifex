@@ -42,8 +42,8 @@ ret <- render_gganimate(frames = df_manual, axes = "left", manip_col = "purple",
                                        scale_color_brewer(palette = "Set2")))
 
 test_that("render_gganimate, class and dim", {
-  expect_is(ret, "gif_image")
-  expect_equal(length(ret), 1L)
+  expect_true(class(ret)  %in% c("gif_image", "character"))
+  expect_true(length(ret) %in% c(1L, 100L))
 })
 
 

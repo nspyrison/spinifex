@@ -28,7 +28,7 @@ for use in ggplots.
 }
 \examples{
 ## Setup
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- tourr::rescale(wine[, 2:14])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_pca(dat_std)
@@ -41,9 +41,9 @@ str(
 )
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
-save_hist <- tourr::save_history(data = dat_std, max_bases = 10)
+hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
 str(
   array2df(array = hist_array, data = dat_std,
-              label = paste0("MyLabs", 1:nrow(bas)))
+           label = paste0("MyLabs", 1:nrow(bas)))
 )
 }

@@ -63,7 +63,7 @@ play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
 play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
                  theta = .5 * pi, axes = "right", fps = 5,
                  aes_args = list(color = clas, shape = clas),
-                 identity_args = list(size = .8, alpha = .7),
+                 identity_args = list(size = 1.5, alpha = .7),
                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  render_type = render_gganimate)
 

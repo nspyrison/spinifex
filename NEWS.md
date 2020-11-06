@@ -9,7 +9,7 @@
 - Changed notation from "slide(s)" to "frame(s)" through-out
 - Renamed `oblique_frame()` to `view_frame()`, `oblique_frame()` will be phased out later
 - Renamed `oblique_basis()` to `print_basis()`, `oblique_basis()` will be phased out later
-- Depricating `view_basis()` in favor of `view_frame/oblique_frame`
+- Deprecated `view_basis()` in favor of `view_frame/oblique_frame`
 - Fixed theta labeling on `view_manip_space()`
 - Examples improved (simple case, adding more and more complexity) through-out 
 - Minor code, code comments, spelling, and grammar clean up through-out

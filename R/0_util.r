@@ -38,7 +38,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- tourr::rescale(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_pca(dat_std)
@@ -51,10 +51,10 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 #' )
 #' 
 #' ## tourr::save_history tour array to long df, as used in play_tour_path()
-#' save_hist <- tourr::save_history(data = dat_std, max_bases = 10)
+#' hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
 #' str(
 #'   array2df(array = hist_array, data = dat_std,
-#'               label = paste0("MyLabs", 1:nrow(bas)))
+#'            label = paste0("MyLabs", 1:nrow(bas)))
 #' )
 array2df <- function(array,
                      data = NULL,
@@ -65,11 +65,11 @@ array2df <- function(array,
   p <- dim(array)[1L]
   n_frames <- dim(array)[3L]
   
-  ## Page through array appending to df.
+  ## Basis condition handling
   basis_frames <- NULL
-  for(frame in 1:n_frames){
-    new_rows <- data.frame(cbind(as.data.frame(array[,, frame]), frame))
-    basis_frames <- rbind(basis_frames, new_rows)
+  for (frame in 1:n_frames){
+    basis_rows <- data.frame(cbind(array[,, frame], frame))
+    basis_frames <- rbind(basis_frames, basis_rows)
   }
   colnames(basis_frames) <- c("x", "y", "frame")
   
@@ -118,7 +118,7 @@ array2df <- function(array,
 #' 
 #' @param x Numeric table, first 2 columns and scaled and offset relative to 
 #' the `to` argument.
-#' @param position Text specifiying the position the axes should go to.
+#' @param position Text specifying the position the axes should go to.
 #' Defaults to "center" expects one of: "center", "left", "right", 
 #' "bottomleft", "topright", or "off".
 #' @param to Table to appropriately set the size and position of the axes to.
@@ -202,10 +202,10 @@ scale_axes <- function(x,
 #' @export
 #' @examples 
 #' rb <- tourr::basis_random(6, 2)
-#' pan_zoom(x = rb, pan = c(-1, 0), zoom = c(2/3, 2/3))
-pan_zoom <- function(x = NULL,
-                     pan = c(0L, 0L),
-                     zoom = c(1L, 1L)
+#' pan_zoom(pan = c(-1, 0), zoom = c(2/3, 2/3), x = rb)
+pan_zoom <- function(pan = c(0L, 0L),
+                     zoom = c(1L, 1L),
+                     x = NULL
 ){
   if(is.null(x)) return(list(pan = pan, zoom = zoom))
   ## Assumptions
@@ -348,7 +348,7 @@ basis_pca <- function(data, p = 2L){
 # #' @param class The class for each observation, coerced to a factor.
 # #' @param p Number of dimensions in the projection space.
 # #' @return Numeric matrix of the last basis of a guided tour.
-# #' @seealso \code{\link{MASS::lda}}
+# #' @seealso \code{\link[MASS]{lda}}
 # #' @export
 # #' @examples 
 # #' basis_lda(data = wine[, 2:14], class = wine$Type)
@@ -372,7 +372,7 @@ basis_pca <- function(data, p = 2L){
 #' @examples 
 #' basis_guided(data = wine[, 2:14], index_f = tourr::holes())
 #' 
-#' basis_guided(data = wine[, 2:14], index_f = tourr::cmass(), quiet = FALSE,
+#' basis_guided(data = wine[, 2:14], index_f = tourr::cmass(),
 #'              alpha = .4, cooling = .9, max.tries = 30)
 basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
   invisible(utils::capture.output(
@@ -393,7 +393,7 @@ basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
 #' manip_var_pca(data = wine[, 2:14])
 manip_var_pca <- function(data, rank = 1L){
   abs_pc1 <- abs(stats::prcomp(data)$rotation[, 1L])
-  which(order(abs_pc1, decreasing = TRUE) == rank)
+  order(abs_pc1, decreasing = TRUE)[rank]
 }
 
 # #' The number of the variable that has the max/min absolute value in the first
@@ -401,19 +401,18 @@ manip_var_pca <- function(data, rank = 1L){
 # #' 
 # #' @param data Numeric matrix or data.frame of the observations, coerced to matrix
 # #' @param class The class for each observation, coerced to a factor.
-# #' @param rank The number, specifying the variable with the `rank`-th largest 
-# #' contribution. Defaults to 1.
+# #' @param func The function to be applied, expects max or min.
 # #' @return Numeric matrix of the last basis of a guided tour.
-# #' @seealso \code{\link{MASS::lda}}
+# #' @seealso \code{\link[MASS]{lda}}
 # #' @export
 # #' @examples 
-# #' manip_var_lda(data = wine[, 2:14], class = wine$Type, rank = 1L)
-# manip_var_lda <- function(data, class, rank = 1){
+# #' manip_var_lda(data = wine[, 2:14], class = wine$Type)
+# manip_var_lda <- function(data, class, func = max){
 #   lda <- MASS::lda(x = as.matrix(data), grouping = as.factor(class))
 #   is_orthonormal(lda$scaling)
 #   ## MASS::lda is not giving orthonormal (!?)
 #   abs_ld1 <- abs(tourr::orthonormalise(lda$scaling[, 1L]))
-#   which(order(abs_ld1, decreasing = TRUE) == rank)
+#   which(abs_ld1 == func(abs_ld1))
 # }
 
 
@@ -421,10 +420,11 @@ manip_var_pca <- function(data, rank = 1L){
 #' Useful for setting the manip_var argument.
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
-#' @param index_f The index function to optimize.
+#' @param index_f The index function to optimise.
 #' {tourr} exports holes(), cmass(), and lda_pp(class).
 #' @param p Number of dimensions in the projection space.
-#' @param rank The function to be applied, expects `max` or `min`.
+#' @param rank The number, specifying the variable with the `rank`-th largest 
+#' contribution. Defaults to 1.
 #' @param ... Optional, other arguments to pass to `tourr::guided_tour`.
 #' @return Numeric matrix of the last basis of a guided tour.
 #' @seealso \code{\link[tourr]{guided_tour}} for annealing arguments.
@@ -432,19 +432,17 @@ manip_var_pca <- function(data, rank = 1L){
 #' @examples
 #' manip_var_guided(data = wine[, 2:14], index_f = tourr::holes())
 #' 
-#' manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), rank = 3,
+#' manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), rank = 2,
 #'                  alpha = .4, cooling = .9, max.tries = 30)
 manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
                              rank = 1L, ...){
   invisible(utils::capture.output( ## Mute the noisy function
-    hist <- tourr::save_history(data, 
-                                tourr::guided_tour(index_f = index_f, d = p, ...)
-    )
+    hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
   ))
   bas <- hist[, , length(hist)]
-  ## Row-wise norms, numeric vector
-  norm <- apply(bas, 1L, FUN = function(row) sqrt(sum(row^2)))
-  which(order(norm, decreasing = TRUE) == rank)
+  ## Row-wise norms
+  norm <- apply(bas, 1L, FUN = function(row) sqrt(sum(row)))
+  order(norm, decreasing = TRUE)[rank]
 }
 
 #' Centers by mean and scales by the standard deviation of each column of data.
@@ -454,10 +452,10 @@ manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
 #' @examples 
 #' scale_sd(data = wine[, 2:14])
 scale_sd <- function(data){
-  apply(data, 2, function(col) (col - mean(col)) / stats::sd(col))
+  apply(data, 2, function(c) (c - mean(c)) / stats::sd(c))
 }
 
-#' Standardize each column of data to have a range of (0, 1).
+#' Standarize each column of data to have a range of (0, 1).
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @export

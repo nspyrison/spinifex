@@ -44,7 +44,7 @@ play_tour_path(tour_path = tpath, data = dat_std)
 play_tour_path(tour_path = tpath, data = dat_std,
                axes = "bottomleft", angle = .08, fps = 8,
                aes_args = list(color = clas, shape = clas),
-               identity_args = list(size = .8, alpha = .7),
+               identity_args = list(size = 1.5, alpha = .7),
                ggproto = 
                  list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                render_type = render_gganimate)

@@ -14,9 +14,6 @@ view_frame(
   phi = 0L,
   label = NULL,
   rescale_data = FALSE,
-  aes_args = list(),
-  identity_args = list(),
-  ggproto = theme_spinifex(),
   ...
 )
 
@@ -28,9 +25,6 @@ view_basis(
   phi = 0L,
   label = NULL,
   rescale_data = FALSE,
-  aes_args = list(),
-  identity_args = list(),
-  ggproto = theme_spinifex(),
   ...
 )
 
@@ -42,9 +36,6 @@ oblique_basis(
   phi = 0L,
   label = NULL,
   rescale_data = FALSE,
-  aes_args = list(),
-  identity_args = list(),
-  ggproto = theme_spinifex(),
   ...
 )
 }
@@ -70,22 +61,6 @@ results in a 3 character abbreviation of the variable names.}
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
-\item{aes_args}{A list of aesthetic arguments to passed to
-\verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
-for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
-\code{aes_args = list(color = myCol, shape = myCol)}.}
-
-\item{identity_args}{A list of static, identity arguments passed into
-\code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
-Typically a single numeric for point size, alpha, or similar.
-For example, \code{geom_point(aes(), size = 2, alpha = .7)} becomes
-\code{identity_args = list(size = 2, alpha = .7)}.}
-
-\item{ggproto}{A list of ggplot2 function calls.
-Anything that would be "added" to ggplot(); in the case of applying a theme,
-\code{ggplot() + theme_bw()} becomes \code{ggproto = list(theme_bw())}.
-Intended for aesthetic ggplot2 functions (not geom_* family).}
-
 \item{...}{Optionally pass additional arguments to the \code{render_type} for
 projection point aesthetics;}
 }
@@ -110,8 +85,8 @@ view_frame(basis = bas)
 view_frame(basis = bas, data = dat_std, manip_var = mv)
 
 view_frame(basis = bas, data = dat_std, manip_var = mv,
-           theta = rtheta, phi = rphi, label = paste0("MyNm", 3:8), 
+           theta = rtheta, phi = rphi, label = paste0("MyNm", 1:ncol(dat_std)), 
            aes_args = list(color = clas, shape = clas),
-           identity_args = list(size = .8, alpha = .7),
+           identity_args = list(size = 1.5, alpha = .7),
            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

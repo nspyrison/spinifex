@@ -49,7 +49,7 @@
 #' require("ggplot2")
 #' render_(frames = manual_df, axes = "left", manip_col = "purple",
 #'         aes_args = list(color = clas, shape = clas),
-#'         identity_args = list(size = .8, alpha = .7),
+#'         identity_args = list(size = 1.5, alpha = .7),
 #'         ggproto = list(theme_void(),
 #'                        ggtitle("My title"),
 #'                        scale_color_brewer(palette = "Set2")))
@@ -194,7 +194,7 @@ render_ <- function(frames,
 #' (without the directory path). Defaults to NULL (no GIF saved). 
 #' For more output control, call `gganimate::anim_save()` on a return object of
 #' `render_gganimate()`.
-#' @param gif_dirpath Optional, A string of the directory path (without the
+#' @param gif_path Optional, A string of the directory path (without the
 #' filename) to save a GIF to. Defaults to NULL (current work directory).
 #' @param gganimate_args A list of arguments assigned to a vector passe outside
 #' of an aes() call. Anything that would be put in `geom_point(aes(), X)`.
@@ -228,12 +228,6 @@ render_ <- function(frames,
 #'   
 #' if(F){ ## Save as a .gif (may require additional setup)
 #'   render_gganimate(frames = manual_df, axes = "bottomleft",
-#'                    fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
-#'                    aes_args = list(color = clas, shape = clas),
-#'                    identity_args = list(size = .8, alpha = .7),
-#'                    ggproto = list(theme_void(),
-#'                                   ggtitle("My title"),
-#'                                   scale_color_brewer(palette = "Set2")),
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
 #' }
@@ -242,7 +236,7 @@ render_gganimate <- function(fps = 8L,
                              start_pause = .5,
                              end_pause = 1L,
                              gif_filename = NULL,
-                             gif_dirpath = NULL,
+                             gif_path = NULL,
                              gganimate_args = list(),
                              ...){
   requireNamespace("gganimate")
@@ -261,9 +255,9 @@ render_gganimate <- function(fps = 8L,
 
   ## Save condition handling
   if(is.null(gif_filename) == FALSE)
-    gganimate::anim_save(gif_filename, anim, gif_dirpath)
-  if(is.null(gif_dirpath) == FALSE & is.null(gif_filename) == TRUE) 
-    warning("gif_dirpath supplied with no gif_filename. Add a gif_filename to save a .gif.")
+    gganimate::anim_save(gif_filename, anim, gif_path)
+  if(is.null(gif_path) == FALSE & is.null(gif_filename) == TRUE) 
+    warning("gif_path supplied with no gif_filename. Add a gif_filename to save a .gif.")
   anim
 }
 
@@ -301,10 +295,11 @@ render_gganimate <- function(fps = 8L,
 #' 
 #' render_plotly(frames = manual_df)
 #' 
+#' require(ggplot2)
 #' render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
 #'               tooltip = c("label", "frame", "x", "y"),
 #'               aes_args = list(color = clas, shape = clas),
-#'               identity_args = list(size = .8, alpha = .7),
+#'               identity_args = list(size = 1.5, alpha = .7),
 #'               ggproto = list(theme_void(),
 #'                              ggtitle("My title"),
 #'                              scale_color_brewer(palette = "Set2")))
@@ -312,13 +307,7 @@ render_gganimate <- function(fps = 8L,
 #' 
 #' \dontrun{
 #' if(F){ ## Saving .html widget (may require additional setup)
-#'   render_plotly(frames = manual_df, , axes = "bottomleft", fps = 10, 
-#'                 tooltip = c("id", "frame", "x", "y", "category", "color"),
-#'                 aes_args = list(color = clas, shape = clas),
-#'                 identity_args = list(size = .8, alpha = .7),
-#'                 ggproto = list(theme_void(),
-#'                                ggtitle("My title"),
-#'                                scale_color_brewer(palette = "Set2")),
+#'   render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
 #'                 html_filename = "myRadialTour.html")
 #' }
 #' }
