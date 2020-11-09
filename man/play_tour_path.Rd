@@ -9,7 +9,6 @@ play_tour_path(
   data = NULL,
   angle = 0.05,
   render_type = render_plotly,
-  rescale_data = FALSE,
   ...
 )
 }
@@ -21,9 +20,6 @@ play_tour_path(
 \item{angle}{Target distance (in radians) between steps. Defaults to .05.}
 
 \item{render_type}{Graphics to render to. Defaults to \verb{render_plotly``, alternative use }render_gganimate`.}
-
-\item{rescale_data}{When TRUE scales the data columns to between 0 and 1.
-Defaults to FALSE.}
 
 \item{...}{Optionally pass additional arguments to \code{render_} and the
 function used in \code{render_type}.}

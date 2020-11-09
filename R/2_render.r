@@ -293,6 +293,7 @@ render_gganimate <- function(fps = 8L,
 #' manual_array <- manual_tour(basis = bas, manip_var = mv)
 #' manual_df <- array2df(array = manual_array, data = dat_std)
 #' 
+#' \dontrun{
 #' render_plotly(frames = manual_df)
 #' 
 #' require(ggplot2)
@@ -305,7 +306,6 @@ render_gganimate <- function(fps = 8L,
 #'                              scale_color_brewer(palette = "Set2")))
 #' 
 #' 
-#' \dontrun{
 #' if(F){ ## Saving .html widget (may require additional setup)
 #'   render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
 #'                 html_filename = "myRadialTour.html")

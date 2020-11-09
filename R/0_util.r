@@ -67,7 +67,7 @@ array2df <- function(array,
   
   ## Basis condition handling
   basis_frames <- NULL
-  for (frame in 1:n_frames){
+  for(frame in 1:n_frames){
     basis_rows <- data.frame(cbind(array[,, frame], frame))
     basis_frames <- rbind(basis_frames, basis_rows)
   }
@@ -77,7 +77,7 @@ array2df <- function(array,
   if(is.null(data) == FALSE){
     data <- as.matrix(data)
     data_frames <- NULL
-    for (frame in 1L:n_frames){
+    for(frame in 1L:n_frames){
       new_frame <- data %*% array[,, frame]
       ## Center the new frame
       new_frame[, 1] <- new_frame[, 1] - mean(new_frame[, 1])
