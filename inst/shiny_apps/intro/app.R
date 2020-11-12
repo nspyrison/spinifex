@@ -83,9 +83,7 @@ server <- function(input, output, session) {
     play_manual_tour(data  = selDat(),
                      basis = basis(),
                      manip_var = manip_var_num(),
-                     col  = sel_col(),
-                     pch  = sel_pch(),
-                     cex  = .5,
+                     aes_args = list(color = sel_col(), shape = sel_pch()),
                      axes = "left",
                      fps  = 9
     )

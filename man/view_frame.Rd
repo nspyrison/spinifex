@@ -2,33 +2,9 @@
 % Please edit documentation in R/3_visualize.r
 \name{view_frame}
 \alias{view_frame}
-\alias{view_basis}
-\alias{oblique_basis}
 \title{Plot a single frame of a manual tour}
 \usage{
 view_frame(
-  basis = NULL,
-  data = NULL,
-  manip_var = NULL,
-  theta = 0L,
-  phi = 0L,
-  label = NULL,
-  rescale_data = FALSE,
-  ...
-)
-
-view_basis(
-  basis = NULL,
-  data = NULL,
-  manip_var = NULL,
-  theta = 0L,
-  phi = 0L,
-  label = NULL,
-  rescale_data = FALSE,
-  ...
-)
-
-oblique_basis(
   basis = NULL,
   data = NULL,
   manip_var = NULL,

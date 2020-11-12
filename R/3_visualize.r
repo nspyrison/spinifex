@@ -251,12 +251,17 @@ view_frame <- function(basis = NULL,
 }
 
 #### Treat past alternative versions as view_frame, will work with fully qualified code.
-#' @rdname view_frame
-view_basis <- view_frame
+#' @export
+view_basis <- function(...) {
+  .Deprecated("view_frame")
+  view_frame(...)
+}
 
-#' @rdname view_frame
-oblique_basis <- view_frame
-
+#' @export
+oblique_basis <- function(...) {
+  .Deprecated("view_frame")
+  view_frame(...)
+}
 
 
 #' Plot projection frame and return the axes table.
