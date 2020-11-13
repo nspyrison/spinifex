@@ -251,12 +251,18 @@ view_frame <- function(basis = NULL,
 }
 
 #### Treat past alternative versions as view_frame, will work with fully qualified code.
+#' @rdname spinifex-deprecated
+#' @section \code{view_basis}:
+#' For \code{view_basis}, use \code{\link{view_frame}}.
 #' @export
 view_basis <- function(...) {
   .Deprecated("view_frame")
   view_frame(...)
 }
 
+#' @rdname spinifex-deprecated
+#' @section \code{oblique_basis}:
+#' For \code{oblique_basis}, use \code{\link{view_frame}}.
 #' @export
 oblique_basis <- function(...) {
   .Deprecated("view_frame")
