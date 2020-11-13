@@ -1,12 +1,10 @@
-# spinifex v0.2.6
-
-## v 0.2.6.1
+# spinifex v0.2.7
 
 - Gives deprecated warning when using `view_basis()` and `oblique_basis()`, no longer listed in `view_frame()` documentation
 - Fixed intro shiny app to reflect argument changes
 - Fixed example run time for `render_plotly()` going longer than 10 seconds
 
-## v 0.2.6
+# spinifex v0.2.6
 
 - New argument, `ggproto`, accepts a list of `ggplot2` objects for more control over visual output
 - New argument, `aes_args`, accepts a list of arguments to pass into the `aes()` call within `geom_point()`. This is used for variable mappings, such as color, but needs to be qualified as this is standard evaluation
@@ -36,7 +34,7 @@
 - Clarified and more consistent documentation
 
 
-# spinifex 0.2.0
+# spinifex v0.2.0
 
 ## Demo shiny app
 
@@ -63,7 +61,7 @@ To accommodate interactive use, rather than predefined paths:
 - `is_orthonormal()` slightly more general than tourr::is_orthonormal()
 
 
-# spinifex 0.1.0
+# spinifex v0.1.0
 
 Initial submission to CRAN. Vignette: "spinifex"
 
