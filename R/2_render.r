@@ -201,8 +201,7 @@ render_ <- function(frames,
 #' Typically a single numeric for point size, alpha, or similar
 #' For example, `geom_point(aes(), size = 2, alpha = .7)` becomes
 #' `identity_args = list(size = 2, alpha = .7)`.
-#' @param ... Optionally passes arguments to the projection points inside the 
-#' aesthetics; `geom_point(aes(...))`.
+#' @param ... Passes arguments to `render_(...)`.
 #' @seealso \code{\link{render_}} for `...` arguments.
 #' @seealso \code{\link[gganimate]{anim_save}} for more control of .gif output.
 #' @export
@@ -280,7 +279,7 @@ render_gganimate <- function(fps = 8L,
 #' or call `htmlwidgets::saveWidget()` on a return object of `render_plotly()`.
 #' @param save_widget_args A list of arguments to be called in 
 #' `htmlwidgets::saveWidget()` when used with a `html_filename`.
-#' @param ... Passes arguments to `render_(aes(...))`.
+#' @param ... Passes arguments to `render_(...)`.
 #' @seealso \code{\link{render_}} for `...` arguments.
 #' @seealso \code{\link[plotly]{ggplotly}} for source documentation of `tooltip`.
 #' @seealso \code{\link[htmlwidgets]{saveWidget}} for more control of .gif output.
@@ -332,8 +331,7 @@ render_plotly <- function(fps = 8L,
   ## Save condition handling
   if (is.null(html_filename) == FALSE){
     saveWidget_func <- function(...) 
-      htmlwidgets::saveWidget(widget = ggp, file = html_filename,
-                              ...)
+      htmlwidgets::saveWidget(widget = ggp, file = html_filename, ...)
     do.call(saveWidget_func, args = save_widget_args)
   }
   

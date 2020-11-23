@@ -29,7 +29,7 @@ or call \code{htmlwidgets::saveWidget()} on a return object of \code{render_plot
 \item{save_widget_args}{A list of arguments to be called in
 \code{htmlwidgets::saveWidget()} when used with a \code{html_filename}.}
 
-\item{...}{Passes arguments to \code{render_(aes(...))}.}
+\item{...}{Passes arguments to \code{render_(...)}.}
 }
 \description{
 Takes the result of \code{array2df()} and animations them via \code{{plotly}}

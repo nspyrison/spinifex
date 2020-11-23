@@ -41,8 +41,7 @@ Typically a single numeric for point size, alpha, or similar
 For example, \code{geom_point(aes(), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
 
-\item{...}{Optionally passes arguments to the projection points inside the
-aesthetics; \code{geom_point(aes(...))}.}
+\item{...}{Passes arguments to \code{render_(...)}.}
 }
 \description{
 Takes the result of \code{array2df()} and renders them into a
