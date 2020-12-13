@@ -116,6 +116,7 @@ play_tour_path <- function(tour_path = NULL,
 #' 
 #' play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
 #'                  theta = .5 * pi, axes = "right", fps = 5,
+#'                  angle = .08, phi_min = pi, phi_max = 2*pi
 #'                  aes_args = list(color = clas, shape = clas),
 #'                  identity_args = list(size = 1.5, alpha = .7),
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
@@ -157,7 +158,8 @@ play_manual_tour <- function(basis = NULL,
   if (is.null(manip_var)) stop("manip_var must be supplied.")
   
   data <- as.matrix(data)
-  tour_hist <- manual_tour(basis = basis, manip_var = manip_var, ...)
+  tour_hist <- manual_tour(basis = basis, manip_var = manip_var, angle = angle,
+                           theta = theta, phi_min = phi_min, phi_max = phi_max)
   tour_df <- array2df(array = tour_hist, data = data)
   anim <- render_type(frames = tour_df, ...)
   
