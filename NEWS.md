@@ -1,3 +1,15 @@
+# spinifex v0.2.8
+
+- Vectorized all for() loops
+TODO
+- New function, manual_tour_ls(), builds a list of the bases in a manual tour. 
+Use in shiny apps to allow for consistency after zeroing a variable. 
+Can be displayed with play_tour_path().
+- New function, stepwise_tour_hist().
+
+
+
+
 # spinifex v0.2.7
 
 - Gives deprecated warning when using `view_basis()` and `oblique_basis()`, no longer listed in `view_frame()` documentation
@@ -9,7 +21,7 @@
 - New argument, `ggproto`, accepts a list of `ggplot2` objects for more control over visual output
 - New argument, `aes_args`, accepts a list of arguments to pass into the `aes()` call within `geom_point()`. This is used for variable mappings, such as color, but needs to be qualified as this is standard evaluation
 - New argument, `identity_args`, accepts a list of arguments to pass call within `geom_point()`, but outside of `aes()`. This is used for scalar options or manually mapped vector such as point size or alpha
-- New datasets: `PimaIndiansDiabetes_long` & `PimaIndiansDiabetes_wide`
+- New datasets, `PimaIndiansDiabetes_long` & `PimaIndiansDiabetes_wide`
 - Fixed the centering of axes across frames
 - Fixed `scale_axes()` to automatically scale to data rather than assume the data is scaled to [0, 1]
 - Changed notation from "slide(s)" to "frame(s)" through-out

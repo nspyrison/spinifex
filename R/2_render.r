@@ -108,20 +108,21 @@ render_ <- function(frames,
     identity_args_out <- identity_args
     ## If AES_args exist, try to replicate
     if(length(aes_args) > 0L){
-      for(i in 1:length(aes_args)){
+      mute_for <- sapply(1L:length(aes_args), function(i){ ## Vectorization of for, does behave slightly diff than for loop.
         if(length(aes_args[[i]]) > 1L & ## Length more than 1 and vector
            is.vector(as.vector(aes_args[[i]])) == TRUE)
-          aes_args_out[[i]] <- as.factor(rep_len(aes_args[[i]], tgt_len))
-      }
+          aes_args_out[[i]] <<- as.factor(rep_len(aes_args[[i]], tgt_len))
+        
+      })
     } ## End if AES_args exist
     ## If IDENTITY_args args exist, try to replicate
     if(length(identity_args) > 0L){
-      for(i in 1:length(identity_args)){
+      mute_for <- sapply(1L:length(identity_args), function(i){ ## Vectorization of for, does behave slightly diff than for loop.
         if(length(identity_args[[i]]) > 1L & ## Length more than 1 and vector
            is.vector(as.vector(identity_args[[i]])) == TRUE)
-          identity_args_out[[i]] <-
+          identity_args_out[[i]] <<-
             as.factor(rep_len(identity_args[[i]], tgt_len))
-      }
+      })
     } ## End if IDENTITY_args exist
     ## aes() call
     aes_func <- function(...)

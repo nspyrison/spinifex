@@ -67,7 +67,7 @@ render_gganimate(frames = manual_df, axes = "bottomleft",
                                 ggtitle("My title"),
                                 scale_color_brewer(palette = "Set2")))
   
-if(F){ ## Save as a .gif (may require additional setup)
+if(F){ ## Save as a .gif(may require additional setup)
   render_gganimate(frames = manual_df, axes = "bottomleft",
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }

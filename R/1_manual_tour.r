@@ -202,11 +202,11 @@ manual_tour <- function(basis,
   n_frames <- length(phi_path)
   m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
   tour_array <- array(NA, dim = c(p, d, n_frames))
-  for(i in 1L:n_frames){
+  mute_for <- sapply(1L:n_frames, function(i){ ## Vectorization of for, does behave slightly diff than for loop.
     thisProj <-
       rotate_manip_space(manip_space = m_sp, theta = .theta, phi = phi_path[i])
-    tour_array[,, i] <- thisProj[, 1L:2L]
-  }
+    tour_array[,, i] <<- thisProj[, 1L:2L]
+  })
   attr(tour_array, "manip_var") <- manip_var
   
   ## Return

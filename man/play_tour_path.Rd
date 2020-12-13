@@ -45,7 +45,7 @@ play_tour_path(tour_path = tpath, data = dat_std,
                  list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                render_type = render_gganimate)
 
-if (F){ ## Saving output may require additional setup
+if(F){ ## Saving output may require additional setup
   ## Export plotly .html widget
   play_tour_path(tour_path = tpath, data = dat_std,
                  render_type = render_plotly,

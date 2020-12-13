@@ -67,24 +67,24 @@ array2df <- function(array,
   
   ## Basis condition handling
   basis_frames <- NULL
-  for(frame in 1:n_frames){
-    basis_rows <- data.frame(cbind(array[,, frame], frame))
-    basis_frames <- rbind(basis_frames, basis_rows)
-  }
+  mute_for <- sapply(1L:n_frames, function(i){ ## Vectorization of for, does behave slightly diff than for loop.
+    basis_rows <- data.frame(cbind(array[,, i], i))
+    basis_frames <<- rbind(basis_frames, basis_rows)
+  })
   colnames(basis_frames) <- c("x", "y", "frame")
   
   ## Data; if exists, array to long df
   if(is.null(data) == FALSE){
     data <- as.matrix(data)
     data_frames <- NULL
-    for(frame in 1L:n_frames){
-      new_frame <- data %*% array[,, frame]
+    mute_for <- sapply(1L:n_frames, function(i){ ## Vectorization of for, does behave slightly diff than for loop.
+      new_frame <- data %*% array[,, i]
       ## Center the new frame
       new_frame[, 1] <- new_frame[, 1] - mean(new_frame[, 1])
       new_frame[, 2] <- new_frame[, 2] - mean(new_frame[, 2])
-      new_frame <- cbind(new_frame, frame)
-      data_frames <- rbind(data_frames, new_frame)
-    }
+      new_frame <- cbind(new_frame, i)
+      data_frames <<- rbind(data_frames, new_frame)
+    })
     data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c("x", "y", "frame")
   }
@@ -356,11 +356,11 @@ manip_var_pca <- function(data, rank = 1L){
 manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
                              rank = 1L, ...){
   invisible(utils::capture.output( ## Mute the noisy function
-    hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
+      hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
   ))
   bas <- hist[, , length(hist)]
   ## Row-wise norms
-  norm <- apply(bas, 1L, FUN = function(row) sqrt(sum(row)))
+  norm <- sqrt(bas[, 1]^2 + bas[, 2]^2)
   order(norm, decreasing = TRUE)[rank]
 }
 
