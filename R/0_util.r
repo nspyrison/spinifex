@@ -17,7 +17,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
   x <- as.matrix(x)
   actual <- t(x) %*% x ## Collapses to identity matrix IFF x is orthonormal
   expected <- diag(ncol(x))
-  if (max(actual - expected) < tol) {TRUE} else {FALSE}
+  if(max(actual - expected) < tol) {TRUE} else {FALSE}
 }
 
 #' Turns a tour path array into a long data frame.
@@ -142,9 +142,9 @@ scale_axes <- function(x,
     return(pan_zoom(pan = position$pan, zoom = position$zoom, x = x))
   }
   ## Assumptions
-  if (position == "off") return()
-  if (ncol(x) != 2L) warning("pan_zoom is only defined for 2 variables. x has more than 2 columns")
-  if (is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+  if(position == "off") return()
+  if(ncol(x) != 2L) warning("pan_zoom is only defined for 2 variables. x has more than 2 columns")
+  if(is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
   
   ## Initialize
   position <-
@@ -158,23 +158,23 @@ scale_axes <- function(x,
   ycenter <- mean(y_to)
   
   ## Condition handling of position
-  if (position == "center"){
+  if(position == "center"){
     scale <- .3 * ydiff
     xoff  <- xcenter
     yoff  <- ycenter
-  } else if (position == "bottomleft"){
+  } else if(position == "bottomleft"){
     scale <- .25 * ydiff
     xoff <- -.25 * xdiff + xcenter
     yoff <- -.5 * ydiff + ycenter
-  } else if (position == "topright"){
+  } else if(position == "topright"){
     scale <- .25 * ydiff
     xoff <- .25 * xdiff + xcenter
     yoff <- .5 * ydiff + ycenter
-  } else if (position == "left"){
+  } else if(position == "left"){
     scale <- .3 * ydiff
     xoff <- -.7 * xdiff + xcenter
     yoff <- ycenter
-  } else if (position == "right"){
+  } else if(position == "right"){
     scale <- .3 * ydiff
     xoff <- .7 * xdiff + xcenter
     yoff <- ycenter

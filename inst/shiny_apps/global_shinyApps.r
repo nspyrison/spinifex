@@ -31,11 +31,11 @@ contextLine <- paste0("Spinifex app, '", .local_path,
 # messages the console with OBServe counter and increments it 
 # IFF .include_obs_msg == TRUE
 appObsMsg <- function(obsNm = NULL){
-  if (.include_obs_msg == FALSE) return()
-  if (!is.character(obsNm)) obsNm <- substitute(obsNm)
+  if(.include_obs_msg == FALSE) return()
+  if(!is.character(obsNm)) obsNm <- substitute(obsNm)
   .obs_msg_counter <<- .obs_msg_counter + 1
   message(paste0("Observe #", .obs_msg_counter, "; obs of ", obsNm))
-  if (is.null(obsNm) == T) environment()
+  if(is.null(obsNm) == T) environment()
   return()
 }
 

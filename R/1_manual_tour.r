@@ -173,7 +173,7 @@ manual_tour <- function(basis,
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)
   xArgs <- list(...) ## Terminate args meant for `render_()` also passed in `play_manual_tour()`.
   .theta <- theta
-  if (is.null(.theta))
+  if(is.null(.theta))
     .theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
   
   ## Find the values of phi for each 'leg'/walk (direction of motion)
@@ -188,7 +188,7 @@ manual_tour <- function(basis,
     ## Define segments
     segment <- seq(from = start, to = end - remainder, by = sign * angle)
     ## Add remaining partial step to the end if needed.
-    if (remainder != 0L) segment <- c(segment, end)
+    if(remainder != 0L) segment <- c(segment, end)
     ## Return
     segment
   }

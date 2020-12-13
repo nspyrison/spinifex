@@ -34,7 +34,7 @@
 #'                  list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                render_type = render_gganimate)
 #' 
-#' if (F){ ## Saving output may require additional setup
+#' if(F){ ## Saving output may require additional setup
 #'   ## Export plotly .html widget
 #'   play_tour_path(tour_path = tpath, data = dat_std,
 #'                  render_type = render_plotly,
@@ -51,7 +51,7 @@ play_tour_path <- function(tour_path = NULL,
                            angle = .05,
                            render_type = render_plotly,
                            ...) {
-  if (is.null(tour_path) & is.null(data)) stop("tour_path or data must be supplied.")
+  if(is.null(tour_path) & is.null(data)) stop("tour_path or data must be supplied.")
   ## Data condition handling
   if(is.null(data) & !is.null(attributes(tour_path)$data)){ 
     data <- attributes(tour_path)$data
@@ -143,19 +143,19 @@ play_manual_tour <- function(basis = NULL,
                              angle = .05,
                              render_type = render_plotly,
                              ...){
-  if (is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
+  if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
   ## Basis condition handling
-  if (is.null(basis) & !is.null(data)){
+  if(is.null(basis) & !is.null(data)){
     basis <- stats::prcomp(data)$rotation[, 1L:2L]
     message("NULL basis passed. Set to PCA basis.")
   }
   ## manip_var condition handling
-  if (is.null(manip_var) & !is.null(data)) {
+  if(is.null(manip_var) & !is.null(data)) {
     manip_var <- which(abs(basis[, 1L]) == max(abs(basis[, 1L])))
     message(paste0("NULL manip_var passed. Set to ", manip_var,
                    ", the number of the variable with largest contribution in the first column of the basis."))
   }
-  if (is.null(manip_var)) stop("manip_var must be supplied.")
+  if(is.null(manip_var)) stop("manip_var must be supplied.")
   
   data <- as.matrix(data)
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, angle = angle,
@@ -227,7 +227,7 @@ view_frame <- function(basis = NULL,
   if(is.null(manip_var) & (theta != 0L | phi != 0L))
     stop("theta or phi non-zero with a null manip_var. Manip_var required for manual_tour()")
   ## Basis condition handling
-  if (is.null(basis) & !is.null(data)) {
+  if(is.null(basis) & !is.null(data)) {
     basis <- stats::prcomp(data)$rotation[, 1L:2L]
     message("NULL basis passed. Set to PCA basis.")
   }

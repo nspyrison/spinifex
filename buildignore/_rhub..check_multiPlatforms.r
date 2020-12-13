@@ -24,7 +24,7 @@ nsCheck <- function(platforms_to_check =
                     validated_email = "list_validated_emails()[1]",
                     ...) { ## Additional arguments to pass to rhub::check()
   require("beepr"); require("tictoc"); require("rhub");
-  if (validated_email == "list_validated_emails()[1]")
+  if(validated_email == "list_validated_emails()[1]")
     validated_email <- as.character(rhub::list_validated_emails()[1])
   tictoc::tic("Starting rhub::check()")
   rhub::check(platform = platforms_to_check, email = validated_email, ...)
@@ -36,7 +36,7 @@ nsCheck <- function(platforms_to_check =
 nsChecks_prev <- function(validated_email = "list_validated_emails()[1]", 
                           last_n = 3){
   require("beepr"); require("tictoc"); require("rhub");
-  if (validated_email == "list_validated_emails()[1]")
+  if(validated_email == "list_validated_emails()[1]")
     validated_email <- rhub::list_validated_emails()[1]
   tictoc::tic("Starting rhub::check()")
   rhub::list_package_checks(email = validated_email, howmany = last_n)

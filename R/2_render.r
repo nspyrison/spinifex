@@ -75,13 +75,13 @@ render_ <- function(frames,
   
   ## If data exists; fix arg length and plot MUST COME BEFORE AXES
   data_frames <- NULL ## If NULL, scale_axes defaults to df(x=c(0,1), y=c(0,1))
-  if (length(frames) == 2L) data_frames <- data.frame(frames[["data_frames"]])
+  if(length(frames) == 2L) data_frames <- data.frame(frames[["data_frames"]])
   
   ## Axes setup
   angle <- seq(0L, 2L * pi, length = 360L)
   circ  <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes/circle
-  if (axes != "off"){
+  if(axes != "off"){
     center <- scale_axes(data.frame(x = 0L, y = 0L), axes, to = data_frames)
     circ <- scale_axes(circ, axes, to = data_frames)
     ## Rejoin frame number to the scaled bases frames
@@ -115,7 +115,7 @@ render_ <- function(frames,
       }
     } ## End if AES_args exist
     ## If IDENTITY_args args exist, try to replicate
-    if (length(identity_args) > 0L){
+    if(length(identity_args) > 0L){
       for(i in 1:length(identity_args)){
         if(length(identity_args[[i]]) > 1L & ## Length more than 1 and vector
            is.vector(as.vector(identity_args[[i]])) == TRUE)
@@ -144,11 +144,11 @@ render_ <- function(frames,
     ggplot2::ggplot() +
     ggproto
   ## Project data points, if data exists
-  if (is.null(data_frames) == FALSE){
+  if(is.null(data_frames) == FALSE){
     gg <- gg + geom_point_call
   }
   ## Add axes directions if needed
-  if (axes != "off"){
+  if(axes != "off"){
     gg <- gg +
       ## Circle path
       ggplot2::geom_path(
@@ -225,7 +225,7 @@ render_ <- function(frames,
 #'                                 ggtitle("My title"),
 #'                                 scale_color_brewer(palette = "Set2")))
 #'   
-#' if(F){ ## Save as a .gif (may require additional setup)
+#' if(F){ ## Save as a .gif(may require additional setup)
 #'   render_gganimate(frames = manual_df, axes = "bottomleft",
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
@@ -329,7 +329,7 @@ render_plotly <- function(fps = 8L,
                                      showgrid = FALSE, showline = FALSE)
   )
   ## Save condition handling
-  if (is.null(html_filename) == FALSE){
+  if(is.null(html_filename) == FALSE){
     saveWidget_func <- function(...) 
       htmlwidgets::saveWidget(widget = ggp, file = html_filename, ...)
     do.call(saveWidget_func, args = save_widget_args)

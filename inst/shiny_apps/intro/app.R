@@ -18,22 +18,22 @@ server <- function(input, output, session) {
   ##### Reactives ----
   ### Data initialize
   rawDat <- reactive({
-    if (is.null(input$dat)) {return(tourr::flea)}
-    if (input$dat == "flea") return(tourr::flea)
-    if (input$dat == "olive") return(tourr::olive)
-    if (input$dat == "wine") return(spinifex::wine)
-    if (input$dat == "weather") return(spinifex::weather)
-    if (input$dat == "breastcancer") return(spinifex::breastcancer)
-    if (input$dat == "mtcars") return(mtcars)
-    if (input$data_source == "Upload .csv file"){
+    if(is.null(input$dat)) {return(tourr::flea)}
+    if(input$dat == "flea") return(tourr::flea)
+    if(input$dat == "olive") return(tourr::olive)
+    if(input$dat == "wine") return(spinifex::wine)
+    if(input$dat == "weather") return(spinifex::weather)
+    if(input$dat == "breastcancer") return(spinifex::breastcancer)
+    if(input$dat == "mtcars") return(mtcars)
+    if(input$data_source == "Upload .csv file"){
       path <- input$data_file$datapath
       ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
       ## assumptions
-      if ((is.null(path) | length(path) == 0)) stop("Error in filepath length.")
-      if (!(ext %in% c(".csv", ".rda"))) stop("unexpected filepath extension.")
-      if (ext == ".csv")
+      if((is.null(path) | length(path) == 0)) stop("Error in filepath length.")
+      if(!(ext %in% c(".csv", ".rda"))) stop("unexpected filepath extension.")
+      if(ext == ".csv")
         return(read.csv(path, stringsAsFactors = FALSE))
-      if (ext == ".rda")
+      if(ext == ".rda")
         return(load(file = path))
     }
   stop("Unexpected error reading data.")
@@ -43,14 +43,14 @@ server <- function(input, output, session) {
   selDat <- reactive({
     dat <- rawDat()
     ret <- dat[, which(colnames(dat) %in% input$projVars)]
-    if (input$rescale_data) ret <- tourr::rescale(ret)
-    if (!is.matrix(ret)) ret <- as.matrix(ret)
+    if(input$rescale_data) ret <- tourr::rescale(ret)
+    if(!is.matrix(ret)) ret <- as.matrix(ret)
     return(ret)
   })
   sel_col <- reactive({
     var_nm <- input$col_var_nm
-    if (is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
-    if (var_nm == "<none>") {
+    if(is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
+    if(var_nm == "<none>") {
       var <- rep("a", n())
     } else {
       dat <- rawDat()
@@ -60,8 +60,8 @@ server <- function(input, output, session) {
   })
   sel_pch <- reactive({
     var_nm <- input$pch_var_nm
-    if (is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
-    if (var_nm == "<none>") {
+    if(is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
+    if(var_nm == "<none>") {
       var <- rep("a", n())
     } else {
       dat <- rawDat()
@@ -139,7 +139,7 @@ server <- function(input, output, session) {
   ## toggle display by setting .include_dev_display at the top of ../global_shinyApps.r
   
   ## Development help -- to display dev tools see the top of 'global_shinyApps.r'
-  if (.include_dev_display == TRUE) {
+  if(.include_dev_display == TRUE) {
     shinyjs::show("dev_toggle")
   } ## else (.include_dev_display != TRUE) dev content remains hidden.
   

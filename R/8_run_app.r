@@ -21,12 +21,12 @@ run_app <- function(app_nm = "intro", ...) {
   ### Additional dependancies for shiny app.
   shiny_depends <-  c("tibble", "shinythemes", "shinyjs")
   # ## Not applicable for v0.2.0.
-  # if (app_nm %in% c("primary", "devUnderConstruction")) {
+  # if(app_nm %in% c("primary", "devUnderConstruction")) {
   #   shiny_depends <- c(shiny_depends, "shinyBS", "reactlog", "DT")
   # }
   
   pkgs_needed <- !sapply(shiny_depends, requireNamespace)
-  if (max(pkgs_needed) == TRUE) { ## Needs atleast 1 package.
+  if(max(pkgs_needed) == TRUE) { ## Needs atleast 1 package.
     .inst_code <- 
       paste0("install.packages('", shiny_depends[pkgs_needed], "'); ", collapse = "")
 
@@ -46,7 +46,7 @@ run_app <- function(app_nm = "intro", ...) {
   #                     "'")
   
   ## If an invalid app_nm is given, throw an error
-  if (missing(app_nm) || !nzchar(app_nm) ||
+  if(missing(app_nm) || !nzchar(app_nm) ||
       !(app_nm %in% valid_app_nms)) {
     stop(paste0('App_nm was missing or invalid. \n',
                 #valid_msg,

@@ -35,8 +35,8 @@ NULL
 # color_of <- function(class, pallet_name = "Dark2") {
 #   class <- as.factor(class)
 #   .l_lvls <- length(levels(class))
-#   if (.l_lvls == 0L) stop("Length of 'class' cannot be zero.")
-#   if (.l_lvls > 12L) stop("'class' has more than the expected max of 12 levels.")
+#   if(.l_lvls == 0L) stop("Length of 'class' cannot be zero.")
+#   if(.l_lvls > 12L) stop("'class' has more than the expected max of 12 levels.")
 #   pal <- suppressWarnings(RColorBrewer::brewer.pal(.l_lvls, pallet_name))
 #   pal[as.integer(factor(class))]
 # }
@@ -53,8 +53,8 @@ NULL
 #   .l_shapes  <- length(unique(.shape_ord))
 #   class <- as.factor(class)
 #   .l_classes <- length(levels(class))
-#   if (.l_classes == 0L) stop("Length of 'class' cannot be zero.")
-#   if (.l_classes > 12L)
+#   if(.l_classes == 0L) stop("Length of 'class' cannot be zero.")
+#   if(.l_classes > 12L)
 #     stop(paste0("'class' has more than the expected max of ", .l_shapes, " levels."))
 #   .int_lvls <- as.integer(class)
 #   .shape_ord[.int_lvls]
@@ -75,8 +75,8 @@ NULL
 # color_of <- function(class, pallet_name = "Dark2"){
 #   class <- as.factor(class)
 #   .l_lvls <- length(levels(class))
-#   if (.l_lvls == 0L) stop("Length of 'class' cannot be zero.")
-#   if (.l_lvls > 12L) stop("'class' has more than the expected max of 12 levels.")
+#   if(.l_lvls == 0L) stop("Length of 'class' cannot be zero.")
+#   if(.l_lvls > 12L) stop("'class' has more than the expected max of 12 levels.")
 #   pal <- suppressWarnings(RColorBrewer::brewer.pal(.l_lvls, pallet_name))
 #   pal[as.integer(factor(class))]
 # }
@@ -93,8 +93,8 @@ NULL
 #   .l_shapes  <- length(unique(.shape_ord))
 #   class <- as.factor(class)
 #   .l_classes <- length(levels(class))
-#   if (.l_classes == 0L) stop("Length of 'class' cannot be zero.")
-#   if (.l_classes > 12L)
+#   if(.l_classes == 0L) stop("Length of 'class' cannot be zero.")
+#   if(.l_classes > 12L)
 #     stop(paste0("'class' has more than the expected max of ", .l_shapes, " levels."))
 #   .int_lvls <- as.integer(class)
 #   .shape_ord[.int_lvls]
