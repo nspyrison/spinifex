@@ -44,11 +44,11 @@ create_manip_space <- function(basis, manip_var){
   ## Conserve col/row names
   cn <- colnames(basis)
   if(is.null(cn) == TRUE)
-    cn <- paste0("Y", 1L:ncol(basis))
+    cn <- paste0("y", 1L:ncol(basis))
   colnames(manip_space) <- c(cn, "manip_sp")
   rn <- rownames(basis)
   if(is.null(cn) == TRUE)
-    rn <- paste0("X", 1L:nrow(basis))
+    rn <- paste0("x", 1L:nrow(basis))
   rownames(manip_space) <- rn
   
   ## Return
@@ -113,7 +113,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
   ## Conserve colnames (rownames already the same)
   cn <- colnames(manip_space)
   if(is.null(cn) == TRUE)
-    cn <- c(paste0("Y", 1L:(ncol(manip_space) - 1L)), "manip_sp")
+    cn <- c(paste0("y", 1L:(ncol(manip_space) - 1L)), "manip_sp")
   colnames(rotated_space) <- cn
   
   ## Return 

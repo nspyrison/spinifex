@@ -311,7 +311,7 @@ oblique_basis <- function(...) {
 view_manip_space <- function(basis,
                              manip_var,
                              tilt = .1 * pi,
-                             label = paste0("V", 1:nrow(basis)),
+                             label = paste0("x", 1:nrow(basis)),
                              manip_col = "blue",
                              manip_sp_col = "red",
                              line_size = 1,

@@ -96,7 +96,7 @@ array2df <- function(array,
   }else{
     if(!is.null(data)){basis_frames$label <- abbreviate(colnames(data), 3L)
     }else{
-      basis_frames$label <- paste0("V", 1L:p)
+      basis_frames$label <- paste0("x", 1L:p)
     }
   }
   attr(basis_frames, "manip_var") <- manip_var
