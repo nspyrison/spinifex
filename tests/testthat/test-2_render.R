@@ -13,7 +13,7 @@ mv <- manip_var_pca(bas)
 require("ggplot2")
 array_manual <- manual_tour(basis = bas, manip_var = mv)
 df_manual <- array2df(array = array_manual, data = dat_std,
-                         label = paste0("MyLabs", 1:nrow(bas)))
+                      label = paste0("MyLabs", 1:nrow(bas)))
 
 ### render_ -----
 

@@ -40,10 +40,16 @@ create_manip_space <- function(basis, manip_var){
   manip_space <- cbind(basis, rep(0L, len = nrow(basis)))
   manip_space[manip_var, ncol(manip_space)] <- 1L
   manip_space <- tourr::orthonormalise(manip_space)
-  colnames(manip_space) <-
-    c(paste0("P", 1L:(ncol(manip_space) - 1L)), "manip_sp")
-  rownames(manip_space) <-
-    paste0("V", 1L:nrow(manip_space))
+  
+  ## Conserve col/row names
+  cn <- colnames(basis)
+  if(is.null(cn) == TRUE)
+    cn <- paste0("Y", 1L:ncol(basis))
+  colnames(manip_space) <- c(cn, "manip_sp")
+  rn <- rownames(basis)
+  if(is.null(cn) == TRUE)
+    rn <- paste0("X", 1L:nrow(basis))
+  rownames(manip_space) <- rn
   
   ## Return
   manip_space
@@ -103,6 +109,12 @@ rotate_manip_space <- function(manip_space, theta, phi) {
                  c_phi),                            # 9 of 9
                nrow = 3L, ncol = 3L, byrow = TRUE)
   rotated_space <- manip_space %*% R3
+  
+  ## Conserve colnames (rownames already the same)
+  cn <- colnames(manip_space)
+  if(is.null(cn) == TRUE)
+    cn <- c(paste0("Y", 1L:(ncol(manip_space) - 1L)), "manip_sp")
+  colnames(rotated_space) <- cn
   
   ## Return 
   rotated_space
@@ -172,9 +184,8 @@ manual_tour <- function(basis,
   phi_start <- acos(sqrt(basis[manip_var, 1L]^2L + basis[manip_var, 2L]^2L))
   stopifnot(phi_min <= phi_start & phi_max >= phi_start)
   xArgs <- list(...) ## Terminate args meant for `render_()` also passed in `play_manual_tour()`.
-  .theta <- theta
-  if(is.null(.theta))
-    .theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
+  if(is.null(theta))
+    theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
   
   ## Find the values of phi for each 'leg'/walk (direction of motion)
   phi_segment  <- function(start, end){
@@ -204,7 +215,7 @@ manual_tour <- function(basis,
   tour_array <- array(NA, dim = c(p, d, n_frames))
   mute_for <- sapply(1L:n_frames, function(i){ ## Vectorization of for, does behave slightly diff than for loop.
     thisProj <-
-      rotate_manip_space(manip_space = m_sp, theta = .theta, phi = phi_path[i])
+      rotate_manip_space(manip_space = m_sp, theta = theta, phi = phi_path[i])
     tour_array[,, i] <<- thisProj[, 1L:2L]
   })
   attr(tour_array, "manip_var") <- manip_var

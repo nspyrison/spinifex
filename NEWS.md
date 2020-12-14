@@ -8,8 +8,6 @@ Can be displayed with play_tour_path().
 - New function, stepwise_tour_hist().
 
 
-
-
 # spinifex v0.2.7
 
 - Gives deprecated warning when using `view_basis()` and `oblique_basis()`, no longer listed in `view_frame()` documentation
