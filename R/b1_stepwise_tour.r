@@ -13,7 +13,7 @@
 #' 
 
 if(F){
-  start_basis = bas; data = dat;
+  library(spinifex); data = wine[, 2:14]; start_basis = basis_pca(data);
   measure = var; curr_dim = ncol(data); decreasing = TRUE;
 }
 stepwise_hist <- function(start_basis = NULL,
@@ -46,7 +46,7 @@ stepwise_hist <- function(start_basis = NULL,
   ## The work, making the basis list
   basis_ls <- list(NULL)
   basis_ls[[p]] <- basis_ord
-  sapply((p - 1L):2L, function(i){ ## i is the dim of the new_bas, this_* operates on i + 1
+  mute_apply <- sapply((p - 1L):2L, function(i){ ## i is the dim of the new_bas, this_* operates on i + 1
   #for(i in (p - 1L):2L){
     this_basis <- basis_ls[[i + 1L]]
     this_mv <- i + 1L
