@@ -51,8 +51,7 @@ create_manip_space <- function(basis, manip_var){
     rn <- paste0("x", 1L:nrow(basis))
   rownames(manip_space) <- rn
   
-  ## Return
-  manip_space
+  return(manip_space)
 }
 
 
@@ -116,8 +115,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
     cn <- c(paste0("y", 1L:(ncol(manip_space) - 1L)), "manip_sp")
   colnames(rotated_space) <- cn
   
-  ## Return 
-  rotated_space
+  return(rotated_space)
 }
 
 
@@ -220,7 +218,6 @@ manual_tour <- function(basis,
   })
   attr(tour_array, "manip_var") <- manip_var
   
-  ## Return
-  tour_array
+  return(tour_array)
 }
 

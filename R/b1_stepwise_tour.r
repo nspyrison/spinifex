@@ -1,24 +1,34 @@
+#' The last basis of a guided tour
+#' 
 #' @param basis A full (p x 2) basis to start removing variables from.
 #' @param data The data to project.
 #' @param measure A univariate function to apply to each of the variables of 
-#' the data.
-#' @param curr_dim 
+#' the data. Defaults to the variance, stats::var.
+#' @param curr_dim The target number of variables left with non-zero 
+#' contributions. Defaults to the full dimensionality, ncol(data).
+#' @param decreasing Whether or not the measure should be in decreasing order.
+#' Defaults to TRUE. Removing a variable will operate in the opposite order.
+#' @return A list, containing the data, measure table, basis list, and current 
+#' dimensionality. This is the object tracks the current and previous history of 
+#' the stepwise tour.
+#' @seealso \code{\link[spinifex]{stepwise_add}}
+#' \code{\link[spinifex]{stepwise_remove}}
+#' @export
 #' 
 #' @examples
 #' dat <- wine[, 2:14]
 #' bas <- basis_pca(dat)
 #' 
-#' sw_ret <- stepwise_hist(basis = bas, data = dat)
+#' sw_hist <- stepwise_hist(basis = bas, data = dat)
+#' str(sw_hist)
 #' 
-#' 
+#' sw_hist <- stepwise_hist(basis = bas, data = dat, measure = median,
+#'                          curr_dim = 5, decreasing = FALSE)
+#' str(sw_hist)
 
-if(F){
-  library(spinifex); data = wine[, 2:14]; basis = basis_pca(data);
-  measure = var; curr_dim = ncol(data); decreasing = TRUE;
-}
 stepwise_hist <- function(basis = NULL,
                           data = NULL,
-                          measure = var,
+                          measure = stats::var,
                           curr_dim = ncol(data), ##needed or no? maybe a start dim?
                           decreasing = TRUE){
   if(is.null(basis) == TRUE){basis <- tourr::basis_random(curr_dim, 2)}
@@ -67,13 +77,12 @@ stepwise_hist <- function(basis = NULL,
   return(ret)
 }
 
-
-
-if(F){ ### MANUAL TESTING ------
+### MANUAL TESTING ------
+if(F){ 
   library(spinifex); library(spinifex); 
   dat = tourr::flea[, 2:6];
   bas = basis_pca(dat);
-  stepwise_hist(basis = bas, data = dat)
+  sw_hist <- stepwise_hist(basis = bas, data = dat)
   
   ## aede2(+/+) zeros, 
   ## head(-/+) doesn't zero (which then causes an issue)

@@ -5,7 +5,7 @@
 \title{The number of the variable that has the max/min absolute norm in final basis.
 Useful for setting the manip_var argument.}
 \usage{
-manip_var_guided(data, index_f = tourr::holes(), p = 2L, rank = 1L, ...)
+manip_var_guided(data, index_f = tourr::holes(), d = 2L, rank = 1L, ...)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}
@@ -13,7 +13,7 @@ manip_var_guided(data, index_f = tourr::holes(), p = 2L, rank = 1L, ...)
 \item{index_f}{The index function to optimise.
 {tourr} exports holes(), cmass(), and lda_pp(class).}
 
-\item{p}{Number of dimensions in the projection space.}
+\item{d}{Number of dimensions in the projection space.}
 
 \item{rank}{The number, specifying the variable with the \code{rank}-th largest
 contribution. Defaults to 1.}

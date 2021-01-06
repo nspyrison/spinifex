@@ -17,7 +17,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
   x <- as.matrix(x)
   actual <- t(x) %*% x ## Collapses to identity matrix IFF x is orthonormal
   expected <- diag(ncol(x))
-  if(max(actual - expected) < tol) {TRUE} else {FALSE}
+  if(max(actual - expected) < tol){return(TRUE)}else{return(FALSE)}
 }
 
 #' Turns a tour path array into a long data frame.
@@ -107,8 +107,7 @@ array2df <- function(array,
     df_frames <- list(basis_frames = basis_frames, data_frames = data_frames)
   }
   
-  ## Return
-  df_frames
+  return(df_frames)
 }
 
 
@@ -248,30 +247,30 @@ theme_spinifex <- function(){
 #' The basis of Principal Component Analysis (PCA)
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
-#' @param p Number of dimensions in the projection space.
+#' @param d Number of dimensions in the projection space.
 #' @export
 #' @examples 
 #' basis_pca(data = wine[, 2:14])
-basis_pca <- function(data, p = 2L){
-  stats::prcomp(data)$rotation[, 1L:p]
+basis_pca <- function(data, d = 2L){
+  return(stats::prcomp(data)$rotation[, 1L:d])
 }
 
 
 # #' The basis of Linear Discriminant Analysis (LDA)
 # #' 
 # #' Returns a numeric matrix of the first `p` columns of the MASS::lda for the
-# #' given class. MASS::lda()$scaling is not orthonromal (!?); coerced
+# #' given class. MASS::lda()$scaling is not orthonormal (!?); coerced
 # #' with tourr::orthonormalise().
 # #' 
 # #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
 # #' @param class The class for each observation, coerced to a factor.
-# #' @param p Number of dimensions in the projection space.
+# #' @param d Number of dimensions in the projection space.
 # #' @return Numeric matrix of the last basis of a guided tour.
 # #' @seealso \code{\link[MASS]{lda}}
 # #' @export
 # #' @examples 
 # #' basis_lda(data = wine[, 2:14], class = wine$Type)
-# basis_lda <- function(data, class, p = 2L){
+# basis_lda <- function(data, class, d = 2L){
 #   lda <- MASS::lda(x = as.matrix(data), grouping = as.factor(class))
 #   ## MASS::lda is not giving orthonormal (!?)
 #   tourr::orthonormalise(lda$scaling[, 1L:p])
@@ -283,7 +282,7 @@ basis_pca <- function(data, p = 2L){
 #' @param data Numeric matrix or data.frame of the observations.
 #' @param index_f The index function to optimize.
 #' `{tourr}` exports `holes()`, `cmass()`, and `lda_pp(class)`.
-#' @param p Number of dimensions in the projection space.
+#' @param d Number of dimensions in the projection space.
 #' @param ... Optional, other arguments to pass to `tourr::guided_tour`.
 #' @return Numeric matrix of the last basis of a guided tour.
 #' @seealso \code{\link[tourr]{guided_tour}} for annealing arguments.
@@ -293,11 +292,14 @@ basis_pca <- function(data, p = 2L){
 #' 
 #' basis_guided(data = wine[, 2:14], index_f = tourr::cmass(),
 #'              alpha = .4, cooling = .9, max.tries = 30)
-basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
+basis_guided <- function(data, index_f = tourr::holes(), d = 2L, ...){
   invisible(utils::capture.output(
-    hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
+    hist <- tourr::save_history(
+      data,
+      tourr::guided_tour(index_f = index_f, d = d, ...)
+    )
   ))
-  matrix(hist[, , length(hist)], ncol = p)
+  return(matrix(hist[, , length(hist)], ncol = d))
 }
 
 #' The number of the variable that has the `max/min absolute value in the first
@@ -312,7 +314,7 @@ basis_guided <- function(data, index_f = tourr::holes(), p = 2L, ...){
 #' manip_var_pca(data = wine[, 2:14])
 manip_var_pca <- function(data, rank = 1L){
   abs_pc1 <- abs(stats::prcomp(data)$rotation[, 1L])
-  order(abs_pc1, decreasing = TRUE)[rank]
+  return(order(abs_pc1, decreasing = TRUE)[rank])
 }
 
 # #' The number of the variable that has the max/min absolute value in the first
@@ -341,7 +343,7 @@ manip_var_pca <- function(data, rank = 1L){
 #' @param data Numeric matrix or data.frame of the observations.
 #' @param index_f The index function to optimise.
 #' {tourr} exports holes(), cmass(), and lda_pp(class).
-#' @param p Number of dimensions in the projection space.
+#' @param d Number of dimensions in the projection space.
 #' @param rank The number, specifying the variable with the `rank`-th largest 
 #' contribution. Defaults to 1.
 #' @param ... Optional, other arguments to pass to `tourr::guided_tour`.
@@ -353,15 +355,15 @@ manip_var_pca <- function(data, rank = 1L){
 #' 
 #' manip_var_guided(data = wine[, 2:14], index_f = tourr::cmass(), rank = 2,
 #'                  alpha = .4, cooling = .9, max.tries = 30)
-manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
+manip_var_guided <- function(data, index_f = tourr::holes(), d = 2L,
                              rank = 1L, ...){
   invisible(utils::capture.output( ## Mute the noisy function
-      hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = p, ...))
+    hist <- tourr::save_history(data, guided_tour(index_f = index_f, d = d, ...))
   ))
   bas <- hist[, , length(hist)]
   ## Row-wise norms
   norm <- sqrt(bas[, 1]^2 + bas[, 2]^2)
-  order(norm, decreasing = TRUE)[rank]
+  return(order(norm, decreasing = TRUE)[rank])
 }
 
 #' Centers by mean and scales by the standard deviation of each column of data.
@@ -371,15 +373,15 @@ manip_var_guided <- function(data, index_f = tourr::holes(), p = 2L,
 #' @examples 
 #' scale_sd(data = wine[, 2:14])
 scale_sd <- function(data){
-  apply(data, 2, function(c) (c - mean(c)) / stats::sd(c))
+  return(apply(data, 2, function(c) (c - mean(c)) / stats::sd(c)))
 }
 
-#' Standarize each column of data to have a range of (0, 1).
+#' Standardize each column of data to have a range of (0, 1).
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @export
 #' @examples 
 #' scale_10(data = wine[, 2:14])
 scale_10 <- function(data){
-  tourr::rescale(data)
+  return(tourr::rescale(data))
 }

@@ -174,8 +174,7 @@ render_ <- function(frames,
       )
   }
   
-  ## Return
-  gg
+  return(gg)
 }
 
 
@@ -258,7 +257,8 @@ render_gganimate <- function(fps = 8L,
     gganimate::anim_save(gif_filename, anim, gif_path)
   if(is.null(gif_path) == FALSE & is.null(gif_filename) == TRUE) 
     warning("gif_path supplied with no gif_filename. Add a gif_filename to save a .gif.")
-  anim
+  
+  retrun(anim)
 }
 
 
@@ -331,13 +331,12 @@ render_plotly <- function(fps = 8L,
   )
   ## Save condition handling
   if(is.null(html_filename) == FALSE){
-    saveWidget_func <- function(...) 
+    saveWidget_func <- function(...)
       htmlwidgets::saveWidget(widget = ggp, file = html_filename, ...)
     do.call(saveWidget_func, args = save_widget_args)
   }
   
-  ## Return
-  ggp
+  return(ggp)
 }
 
 

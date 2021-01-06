@@ -68,10 +68,7 @@ play_tour_path <- function(tour_path = NULL,
   tour_df <- array2df(array = tour_path, data = data)
   
   ## Render
-  anim <- render_type(frames = tour_df, ...)
-  
-  ## Return
-  anim
+  return(render_type(frames = tour_df, ...))
 }
 
 
@@ -161,10 +158,7 @@ play_manual_tour <- function(basis = NULL,
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, angle = angle,
                            theta = theta, phi_min = phi_min, phi_max = phi_max)
   tour_df <- array2df(array = tour_hist, data = data)
-  anim <- render_type(frames = tour_df, ...)
-  
-  ## Return
-  anim
+  return(render_type(frames = tour_df, ...))
 }
 
 ##
@@ -246,10 +240,7 @@ view_frame <- function(basis = NULL,
   
   ## Render
   df_frames <- array2df(array = tour_array, data = data, label = label)
-  gg <- render_(frames = df_frames, ...)
-  
-  ## Return
-  gg
+  return(render_(frames = df_frames, ...))
 }
 
 #### Treat past alternative versions as view_frame, will work with fully qualified code.
@@ -403,14 +394,6 @@ view_manip_space <- function(basis,
     ggplot2::geom_path(
       data = theta_curve_r,
       mapping = ggplot2::aes(x = x , y),
-      color = manip_col, size = 0.2) #+
-  # ggplot2::geom_text(
-  #   data = 1.2 * phi_curve_r[ceiling(nrow(phi_curve_r) / 2L), ],
-  #   mapping = ggplot2::aes(x = x, y = y, label = "phi"),
-  #   color = manip_sp_col, size = text_size, parse = TRUE) +
-  # ggplot2::geom_path(
-  #   data = phi_curve_r,
-  #   mapping = ggplot2::aes(x = x, y = y),
-  #   color = manip_sp_col, size = 0.2)
+      color = manip_col, size = 0.2)
 }
 

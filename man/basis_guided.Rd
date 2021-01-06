@@ -4,7 +4,7 @@
 \alias{basis_guided}
 \title{The last basis of a guided tour}
 \usage{
-basis_guided(data, index_f = tourr::holes(), p = 2L, ...)
+basis_guided(data, index_f = tourr::holes(), d = 2L, ...)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}
@@ -12,7 +12,7 @@ basis_guided(data, index_f = tourr::holes(), p = 2L, ...)
 \item{index_f}{The index function to optimize.
 \code{{tourr}} exports \code{holes()}, \code{cmass()}, and \code{lda_pp(class)}.}
 
-\item{p}{Number of dimensions in the projection space.}
+\item{d}{Number of dimensions in the projection space.}
 
 \item{...}{Optional, other arguments to pass to \code{tourr::guided_tour}.}
 }

@@ -4,12 +4,12 @@
 \alias{basis_pca}
 \title{The basis of Principal Component Analysis (PCA)}
 \usage{
-basis_pca(data, p = 2L)
+basis_pca(data, d = 2L)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}
 
-\item{p}{Number of dimensions in the projection space.}
+\item{d}{Number of dimensions in the projection space.}
 }
 \description{
 The basis of Principal Component Analysis (PCA)
