@@ -258,7 +258,7 @@ render_gganimate <- function(fps = 8L,
   if(is.null(gif_path) == FALSE & is.null(gif_filename) == TRUE) 
     warning("gif_path supplied with no gif_filename. Add a gif_filename to save a .gif.")
   
-  retrun(anim)
+  return(anim)
 }
 
 
