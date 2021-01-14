@@ -176,7 +176,7 @@ manual_tour <- function(basis,
     basis <- tourr::orthonormalise(basis)
   }
   
-  ## Initalize
+  ## Initialize
   p <- nrow(basis)
   d <- 2L ## d fixed to 2 atm.
   phi_start <- acos(sqrt(basis[manip_var, 1L]^2L + basis[manip_var, 2L]^2L))
@@ -187,15 +187,16 @@ manual_tour <- function(basis,
   
   ## Find the values of phi for each 'leg'/walk (direction of motion)
   phi_segment  <- function(start, end){
-    ## Initalize
-    mvar_xsign <- -sign(basis[manip_var, 1L])
+    ## Initialize
+    mvar_x     <- basis[manip_var, 1L]
+    mvar_xsign <- ifelse(mvar_x < 0, -1L, 1L)
     start      <- mvar_xsign * (start - phi_start)
     end        <- mvar_xsign * (end   - phi_start)
     dist       <- abs(end - start)
     remainder  <- dist %% angle
-    sign       <- ifelse(end > start, 1L, -1L)
+    direction  <- ifelse(end > start, 1L, -1L)
     ## Define segments
-    segment <- seq(from = start, to = end - remainder, by = sign * angle)
+    segment <- seq(from = start, to = end - remainder, by = direction * angle)
     ## Add remaining partial step to the end if needed.
     if(remainder != 0L) segment <- c(segment, end)
     ## Return

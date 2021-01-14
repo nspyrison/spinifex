@@ -56,8 +56,8 @@
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
-                    line_size = .667,
-                    text_size = 5,
+                    line_size = 1L,
+                    text_size = 5L,
                     aes_args = list(),
                     identity_args = list(),
                     ggproto = list(theme_spinifex())

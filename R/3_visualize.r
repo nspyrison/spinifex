@@ -113,7 +113,7 @@ play_tour_path <- function(tour_path = NULL,
 #' 
 #' play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
 #'                  theta = .5 * pi, axes = "right", fps = 5,
-#'                  angle = .08, phi_min = pi, phi_max = 2*pi
+#'                  angle = .08, phi_min = 0, phi_max = 2 * pi,
 #'                  aes_args = list(color = clas, shape = clas),
 #'                  identity_args = list(size = 1.5, alpha = .7),
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
@@ -121,7 +121,7 @@ play_tour_path <- function(tour_path = NULL,
 #' 
 #' if(F){ ## Saving output may require additional setup
 #'   ## Export plotly .html widget
-#'   play_manual_tour(basis = bas, data = dat_std, manip_var = 6, 
+#'   play_manual_tour(basis = bas, data = dat_std, manip_var = 6,
 #'                    render_type = render_plotly,
 #'                    html_filename = "myRadialTour.html")
 #'   

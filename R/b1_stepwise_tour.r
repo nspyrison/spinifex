@@ -79,7 +79,7 @@ stepwise_hist <- function(basis = NULL,
 
 ### MANUAL TESTING ------
 if(F){ 
-  library(spinifex); library(spinifex); 
+  library(spinifex);
   dat = tourr::flea[, 2:6];
   bas = basis_pca(dat);
   sw_hist <- stepwise_hist(basis = bas, data = dat)
@@ -88,5 +88,8 @@ if(F){
   ## head(-/+) doesn't zero (which then causes an issue)
   ## tars2(-/+ !?!) zeros, why? may not be as simple as quadrant.
   
-  ##TODO need to look at phi and theta 
+  ###TODO need to look at phi and theta 
+  ## consider .$basis_ls[[2]]; head didn't 0 out correctly;
+  tgt <- as.data.frame(sw_hist$basis_ls[[2]])
+  
 } 
