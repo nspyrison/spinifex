@@ -283,9 +283,10 @@ oblique_basis <- function(...) {
 #' contributions of the basis. Defaults to 1.
 #' @param text_size The size of the text labels of the variable 
 #' contributions of the basis. Defaults to 5.
-#' @param ggproto Accepts a list of gg functions. Think of this as an
-#' alternative format to `ggplot() + ggproto[[1]]`.
-#' Intended for passing a `ggplot2::theme_*()` and related aesthetic functions.
+#' @param ggproto A list of ggplot2 function calls.
+#' Anything that would be "added" to ggplot(); in the case of applying a theme,
+#' `ggplot() + theme_bw()` becomes `ggproto = list(theme_bw())`.
+#' Intended for aesthetic ggplot2 functions (not geom_* family).
 #' @return ggplot object of the basis.
 #' @export
 #' @examples
@@ -305,8 +306,8 @@ view_manip_space <- function(basis,
                              label = paste0("x", 1:nrow(basis)),
                              manip_col = "blue",
                              manip_sp_col = "red",
-                             line_size = 1,
-                             text_size = 5,
+                             line_size = 1L,
+                             text_size = 5L,
                              ggproto = list(
                                theme_spinifex()
                              )
@@ -317,8 +318,8 @@ view_manip_space <- function(basis,
   #### Makes a df semi-circle, with 1 row per degree
   make_curve <- function(ang_st = 0L,
                          ang_stop = 2L * pi) {
-    degrees <- round(360L / (2L * pi) * abs(ang_st - ang_stop))
-    angle <- seq(ang_st, ang_stop, length = degrees)
+    n_degrees <- round(180L / pi * abs(ang_st - ang_stop))
+    angle <- seq(ang_st, ang_stop, length = n_degrees)
     data.frame(x = cos(angle), y = sin(angle), z = sin(angle))
   }
   rot <- function(df, ang = tilt){
@@ -338,22 +339,21 @@ view_manip_space <- function(basis,
   siz_v[manip_var] <- 1L
   ## Axes circle and angles
   circ_r <- rot(make_curve())
-  theta_ang <- find_angle(c(mvar$x, mvar$y),c(1L, 0L))
+  theta_ang <- find_angle(c(mvar$x, mvar$y), c(1L, 0L))
   theta_curve_r <- rot(.5 * make_curve(ang_st = 0L, ang_stop = theta_ang)) 
-  theta_curve_r$y <- theta_curve_r$y * sign(mvar$y)
+  mvar_ysign <- ifelse(mvar$y < 0L, -1L, 1L)
+  theta_curve_r$y <- theta_curve_r$y * mvar_ysign
   phi_ang <- find_angle(c(m_sp_r$x, m_sp_r$y), c(m_sp_r$x, m_sp_r$z))
   phi_curve <- .4 * make_curve(ang_st = theta_ang, ang_stop = phi_ang)
-  phi_curve$y <- phi_curve$y * sign(mvar$y)
-  ### Move to origin, rotate about blue manip by 90 degrees, move back
-  start_pt <- phi_curve[1, 1:2]
-  phi_curve <- dplyr::mutate(phi_curve, x = x - start_pt$x,
-                             y = y - start_pt$y)
-  tmp_x <- phi_curve$y + start_pt$x
-  tmp_y <- phi_curve$x + start_pt$y
-  phi_curve_r <- rot(data.frame(x = tmp_x, y = tmp_y, z = phi_curve$z))
+  phi_curve$y <- phi_curve$y * mvar_ysign
+  ### Center and rotate
+  start_pt <- phi_curve[1L, 1L:2L]
+  phi_curve_r <- rot(data.frame(x = start_pt$x + (phi_curve$y - start_pt$y),
+                                y = start_pt$y + (phi_curve$x - start_pt$x),
+                                z = phi_curve$z))
   
   ## Render (& implicit return)
-  ggplot2::ggplot() + 
+  ggplot2::ggplot() +
     ggproto +
     ## Axes circle
     ggplot2::geom_path(
@@ -381,14 +381,14 @@ view_manip_space <- function(basis,
     ggplot2::geom_segment(
       data = mvar_r,
       mapping = ggplot2::aes(x = x, y = z, xend = x, yend = y),
-      size = line_size, colour = "grey80", linetype = 2) +
+      size = line_size, colour = "grey80", linetype = 2L) +
     ggplot2::geom_text(
       data = mvar_r,
       mapping = ggplot2::aes(x = x, y = z, label = label[manip_var]),
       size = text_size, colour = manip_sp_col, vjust = "outward", hjust = "outward") +
     ## Label phi and theta
     ggplot2::geom_text(
-      data = 1.2 * theta_curve_r[ceiling(nrow(theta_curve_r)/2), ],
+      data = 1.2 * theta_curve_r[ceiling(nrow(theta_curve_r) / 2L), ],
       mapping = ggplot2::aes(x = x, y = y - .02, label = "theta"),
       color = manip_col, size = text_size, parse = TRUE) +
     ggplot2::geom_path(

@@ -169,7 +169,9 @@ manual_tour <- function(basis,
                         ...) {
   ## Assumptions
   basis <- as.matrix(basis)
-  if(length(manip_var) != 1 | manip_var < 1 | manip_var > nrow(basis))
+  p <- nrow(basis)
+  d <- ncol(basis)
+  if(length(manip_var) != 1L | manip_var < 1L | manip_var > p)
     stop("manip_var expected as a single integer between 1 and nrow(basis).")
   if(spinifex::is_orthonormal(basis) == FALSE){
     warning("Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
@@ -177,10 +179,11 @@ manual_tour <- function(basis,
   }
   
   ## Initialize
-  p <- nrow(basis)
-  d <- 2L ## d fixed to 2 atm.
   phi_start <- acos(sqrt(basis[manip_var, 1L]^2L + basis[manip_var, 2L]^2L))
-  stopifnot(phi_min <= phi_start & phi_max >= phi_start)
+  if((phi_min < phi_start) == FALSE)
+    stop("Phi is currently less than phi_min, please set phi_min below ", phi_start)
+  if((phi_max > phi_start) == FALSE)
+    stop("Phi is currently greather than phi_max, please set phi_max above ", phi_start)
   xArgs <- list(...) ## Terminate args meant for `render_()` also passed in `play_manual_tour()`.
   if(is.null(theta))
     theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
@@ -188,8 +191,7 @@ manual_tour <- function(basis,
   ## Find the values of phi for each 'leg'/walk (direction of motion)
   phi_segment  <- function(start, end){
     ## Initialize
-    mvar_x     <- basis[manip_var, 1L]
-    mvar_xsign <- ifelse(mvar_x < 0, -1L, 1L)
+    mvar_xsign <- ifelse(basis[manip_var, 1L] < 0L, -1L, 1L)
     start      <- mvar_xsign * (start - phi_start)
     end        <- mvar_xsign * (end   - phi_start)
     dist       <- abs(end - start)
@@ -214,7 +216,7 @@ manual_tour <- function(basis,
   tour_array <- array(NA, dim = c(p, d, n_frames))
   mute_for <- sapply(1L:n_frames, function(i){ ## Vectorization of for, does behave slightly diff than for loop.
     thisProj <-
-      rotate_manip_space(manip_space = m_sp, theta = theta, phi = phi_path[i])
+      rotate_manip_space(manip_space = m_sp, theta = theta, phi = -phi_path[i])
     tour_array[,, i] <<- thisProj[, 1L:2L]
   })
   attr(tour_array, "manip_var") <- manip_var
