@@ -376,12 +376,12 @@ scale_sd <- function(data){
   return(apply(data, 2, function(c) (c - mean(c)) / stats::sd(c)))
 }
 
-#' Standardize each column of data to have a range of (0, 1).
+#' Standardize each column of data to have a range of [0, 1].
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @export
 #' @examples 
-#' scale_10(data = wine[, 2:14])
-scale_10 <- function(data){
+#' scale_01(data = wine[, 2:14])
+scale_01 <- function(data){
   return(tourr::rescale(data))
 }

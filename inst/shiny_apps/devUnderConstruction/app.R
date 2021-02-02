@@ -514,7 +514,7 @@ server <- function(input, output, session) {
     if(input$manip_type == "Radial") {
       phi_i <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
       rad_val <- round(cos(phi_i), 1)
-      browser()
+      #browser()
       isolate(updateSliderInput(session, "manip_slider", value = rad_val))
       ## Changes rv$currbasis, which inturn tries to change this manip slider here.
     }
