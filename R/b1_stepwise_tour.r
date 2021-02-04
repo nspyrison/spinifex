@@ -19,14 +19,14 @@
 #' dat <- wine[, 2:14]
 #' bas <- basis_pca(dat)
 #' 
-#' sw_hist <- stepwise_hist(basis = bas, data = dat)
+#' sw_hist <- stepwise_path(basis = bas, data = dat)
 #' str(sw_hist)
 #' 
-#' sw_hist <- stepwise_hist(basis = bas, data = dat, measure = median,
+#' sw_hist <- stepwise_path(basis = bas, data = dat, measure = median,
 #'                          curr_dim = 5, decreasing = FALSE)
 #' str(sw_hist)
 
-stepwise_hist <- function(basis = NULL,
+stepwise_path <- function(basis = NULL,
                           data = NULL,
                           measure = stats::var,
                           curr_dim = ncol(data), ##needed or no? maybe a start dim?
@@ -36,7 +36,7 @@ stepwise_hist <- function(basis = NULL,
   ## Initialize
   data <- as.matrix(data)
   p <- ncol(data)
-  if(all(dim(basis) != c(p, 2)) == TRUE)
+  if(all(dim(basis) != c(p, 2L)) == TRUE)
     stop("Dimension of the starting basis not [p x 2].")
   
   ## Measure table, ordered
@@ -54,11 +54,11 @@ stepwise_hist <- function(basis = NULL,
     )
   
   ## The work, making the basis list
-  basis_ls <- list(NULL)
-  basis_ls[[p]] <- basis_ord
+  basis_set <- array(0L, dim = c(p, 2L, p))
+  basis_set[,, p] <- basis_ord
   mute_apply <- sapply((p - 1L):1L, function(i){ ## i is the dim of the new_bas, this_* operates on i + 1
   #for(i in (p - 1L):2L){
-    this_basis <- basis_ls[[i + 1L]]
+    this_basis <- basis_set[,, i + 1L]
     this_mv <- i + 1L
     ##TODO THE LINE ABOVE IS GOING TO BE OFF AT SOME PT BECUSE WE ARE CHANGING THE DIM FO THE BASIS, ALSO NEED TO UPDATE THE MEASURE_TBL.
     this_theta <- atan(this_basis[this_mv, 2L] / this_basis[this_mv, 1L]) ## Radial
@@ -67,14 +67,13 @@ stepwise_hist <- function(basis = NULL,
     new_bas    <- rotate_manip_space(manip_space = this_m_sp,
                                      theta = this_theta, phi = this_phi)[, 1L:2L]
     
-    basis_ls[[i]] <<- round(new_bas, 5) ## Add next lvl assignment when vectorizing
+    basis_set[,, i] <<- round(new_bas, 5)
   }) ##TODO, WHEN THERE IS EXCLUSIVELY 1 NEG PROJ COMPONENT IS DOESN"T GET ZEROED CORRECTLY.
   
-  ret <- list(data = data,
-              measure_tbl = measure_tbl,
-              basis_ls = basis_ls,
-              curr_dim = curr_dim)
-  return(ret)
+  list(data = data,
+       measure_tbl = measure_tbl,
+       basis_set = basis_set,
+       curr_dim = curr_dim)
 }
 
 ### MANUAL TESTING ------
@@ -82,14 +81,14 @@ if(F){
   library(spinifex);
   dat = tourr::flea[, 2:6];
   bas = basis_pca(dat);
-  sw_hist <- stepwise_hist(basis = bas, data = dat)
+  stepwise_path <- stepwise_path(basis = bas, data = dat)
   
-  ## aede2(+/+) zeros, 
+  ## aede2(+/+) zeros,
   ## head(-/+) doesn't zero (which then causes an issue)
   ## tars2(-/+ !?!) zeros, why? may not be as simple as quadrant.
   
   ###TODO need to look at phi and theta 
-  ## consider .$basis_ls[[2]]; head didn't 0 out correctly;
-  tgt <- as.data.frame(sw_hist$basis_ls[[2]])
+  ## consider .$basis_set[,, 2]; head didn't 0 out correctly;
+  tgt <- as.data.frame(sw_hist$basis_set[,, 2])
   
 } 
