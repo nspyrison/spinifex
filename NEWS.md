@@ -1,11 +1,13 @@
 # spinifex v0.2.8
 
 - Vectorized all for() loops
-TODO
-- New function, manual_tour_ls(), builds a list of the bases in a manual tour. 
+- as_historty_array(), coerces an array of bases into the same attributes and class as returns of tourr::save_history.
+- basis_olda(), the Orthonormal LDA basis, using Rdimtools::do.olda.
+- stepwise_history, creates the target frames of a stepwise tour. Can be displayed with play_tour_path().
+__ is this still wanted????? __
+- manual_tour_history, builds a list of the bases in a manual tour. 
 Use in shiny apps to allow for consistency after zeroing a variable. 
 Can be displayed with play_tour_path().
-- New function, stepwise_tour_hist().
 
 
 # spinifex v0.2.7

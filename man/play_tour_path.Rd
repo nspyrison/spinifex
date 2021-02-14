@@ -32,12 +32,18 @@ over the path and renders into a specified \code{render_type}.
 dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
-tpath <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
+
+## Tour history from stepwise_history
+sw_path <- stepwise_history(basis = bas, data = dat_std)
+
+## Tour history from tourr::save_history
+g_path <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 
 \dontrun{
-play_tour_path(tour_path = tpath, data = dat_std)
+play_tour_path(tour_path = sw_path, data = dat_std)
+play_tour_path(tour_path = g_path,  data = dat_std)
 
-play_tour_path(tour_path = tpath, data = dat_std,
+play_tour_path(tour_path = g_path, data = dat_std,
                axes = "bottomleft", angle = .08, fps = 8,
                aes_args = list(color = clas, shape = clas),
                identity_args = list(size = 1.5, alpha = .7),

@@ -59,7 +59,7 @@ is_orthonormal <- function(x, tol = 0.001) { ## (tol)erance of SUM of element-wi
 array2df <- function(array,
                      data = NULL,
                      label = NULL){
-  if(class(array) == "history_array") class(array) <- "array"
+  if("history_array" %in% class(array)) class(array) <- "array"
   ## Initialize
   manip_var <- attributes(array)$manip_var
   p <- dim(array)[1L]
@@ -216,6 +216,28 @@ pan_zoom <- function(pan = c(0L, 0L),
   return(ret)
 }
 
+#' Changes an array of bases into a "history_array" for use in `tourr::interpolate`
+#' 
+#' Attaches data 
+#' 
+#' @param basis_array An array of bases.
+#' @param data The data matrix to be projected through the basis. This is
+#' `tourr::save_history` objects, but not consumed downstream in `spinifex`.
+#' @return An array of numeric bases with custom class "history_array" for 
+#' consumption by `tourr::interpolate`.
+#' 
+#' @seealso \code{\link[tourr]{save_history}} for preset choices.
+#' @export
+#' @examples 
+#' rb <- tourr::basis_random(6, 2)
+#' pan_zoom(pan = c(-1, 0), zoom = c(2/3, 2/3), x = rb)
+as_historty_array <- function(basis_array, data){
+  if(missing(data) == FALSE) 
+    attr(basis_array, "data") <- as.matrix(data)
+  class(basis_array) <- "history_array"
+  return(basis_array)
+}
+
 ##
 ## GGPLOT2 AESTHETICS ------
 ##
@@ -239,7 +261,6 @@ theme_spinifex <- function(){
 }
 
 
-
 ##
 ## BASIS AND MANIP VAR HELPERS -----
 ##
@@ -256,25 +277,55 @@ basis_pca <- function(data, d = 2L){
 }
 
 
-# #' The basis of Linear Discriminant Analysis (LDA)
-# #' 
-# #' Returns a numeric matrix of the first `p` columns of the MASS::lda for the
-# #' given class. MASS::lda()$scaling is not orthonormal (!?); coerced
-# #' with tourr::orthonormalise().
-# #' 
-# #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
-# #' @param class The class for each observation, coerced to a factor.
-# #' @param d Number of dimensions in the projection space.
-# #' @return Numeric matrix of the last basis of a guided tour.
-# #' @seealso \code{\link[MASS]{lda}}
-# #' @export
-# #' @examples 
-# #' basis_lda(data = wine[, 2:14], class = wine$Type)
-# basis_lda <- function(data, class, d = 2L){
-#   lda <- MASS::lda(x = as.matrix(data), grouping = as.factor(class))
-#   ## MASS::lda is not giving orthonormal (!?)
-#   tourr::orthonormalise(lda$scaling[, 1L:p])
-# }
+#' The basis of Orthogonal Linear Discriminant Analysis (OLDA)
+#' 
+#' Returns a numeric matrix of the first `d` columns of `Rdimtools::do.olda()`.
+#' 
+#' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
+#' @param class The class for each observation, coerced to a factor.
+#' @param d Number of dimensions in the projection space.
+#' @return Orthogonal basis that best distinguishes the levels of `class`.
+#' @seealso \code{\link[Rdimtools]{do.olda}}
+#' @references
+#' Ye J (2005). “Characterization of a Family of Algorithms for Generalized 
+#' Discriminant Analysis on Undersampled Problems.” J. Mach. Learn. Res., 
+#' 6, 483–502. ISSN 1532-4435.
+#' @export
+#' @examples 
+#' basis_olda(data = wine[, 2:14], class = wine$Type)
+basis_olda <- function(data, class, d = 2L){
+  dat <- as.matrix(data)
+  ret <- Rdimtools::do.olda(X = as.matrix(data),
+                            label = as.factor(class),
+                            ndim = d)$projection
+  rownames(ret) <- colnames(dat)
+  return(ret)
+}
+
+#' The basis of Orthogonal Linear Discriminant Analysis (OLDA)
+#' 
+#' Returns a numeric matrix of the first `d` columns of `Rdimtools::do.olda()`.
+#' 
+#' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
+#' @param class The class for each observation, coerced to a factor.
+#' @param d Number of dimensions in the projection space.
+#' @return Orthogonal basis that best distinguishes the levels of `class`.
+#' @seealso \code{\link[Rdimtools]{do.olda}}
+#' @references
+#' Ye J (2005). “Characterization of a Family of Algorithms for Generalized 
+#' Discriminant Analysis on Undersampled Problems.” J. Mach. Learn. Res., 
+#' 6, 483–502. ISSN 1532-4435.
+#' @export
+#' @examples 
+#' basis_olda(data = wine[, 2:14], class = wine$Type)
+basis_olda <- function(data, class, d = 2L){
+  dat <- as.matrix(data)
+  ret <- Rdimtools::do.olda(X = as.matrix(data),
+                            label = as.factor(class),
+                            ndim = d)$projection
+  rownames(ret) <- colnames(dat)
+  return(ret)
+}
 
 
 #' The last basis of a guided tour
