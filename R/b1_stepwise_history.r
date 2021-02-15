@@ -47,7 +47,7 @@ stepwise_history <- function(basis = NULL,
     stop("Dimension of the starting basis not [p x 2].")
   
   ## Measure table, ordered
-  m   <- apply(data, 2L, measure)
+  m   <- sapply(data, measure)
   ord <- order(m, decreasing = decreasing)
   m   <- m[ord]
   cn  <- colnames(data)[ord]
@@ -63,7 +63,7 @@ stepwise_history <- function(basis = NULL,
   ## The work, making the basis list
   basis_array <- array(0L, dim = c(p, 2L, p))
   basis_array[,, p] <- as.matrix(basis_ord)
-  mute_apply <- sapply((p - 1L):1L, function(i){ ## i is the current basis, this_* operates on i + 1
+  .mute <- sapply((p - 1L):1L, function(i){ ## i is the current basis, this_* operates on i + 1
     this_basis <- basis_array[,, i + 1L]
     this_mv <- i + 1L
     this_theta <- atan(this_basis[this_mv, 2L] / this_basis[this_mv, 1L]) ## Radial

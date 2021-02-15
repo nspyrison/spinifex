@@ -52,12 +52,11 @@
 #'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 #' }
 #' }
-play_tour_path <- function(tour_path = NULL,
+play_tour_path <- function(tour_path,
                            data  = NULL,
                            angle = .05,
                            render_type = render_plotly,
                            ...) {
-  if(is.null(tour_path) & is.null(data)) stop("tour_path or data must be supplied.")
   ## Data condition handling
   if(is.null(data) & !is.null(attributes(tour_path)$data)){ 
     data <- attributes(tour_path)$data
@@ -136,29 +135,21 @@ play_tour_path <- function(tour_path = NULL,
 #' }
 #' }
 play_manual_tour <- function(basis = NULL,
-                             data = NULL,
-                             manip_var = NULL,
+                             data,
+                             manip_var,
                              theta = NULL,
                              phi_min = 0L,
                              phi_max = .5 * pi,
                              angle = .05,
                              render_type = render_plotly,
                              ...){
-  if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
+  data <- as.matrix(data)
   ## Basis condition handling
-  if(is.null(basis) & !is.null(data)){
-    basis <- stats::prcomp(data)$rotation[, 1L:2L]
+  if(is.null(basis)){
+    basis <- basis_pca(data)
     message("NULL basis passed. Set to PCA basis.")
   }
-  ## manip_var condition handling
-  if(is.null(manip_var) & !is.null(data)) {
-    manip_var <- which(abs(basis[, 1L]) == max(abs(basis[, 1L])))
-    message(paste0("NULL manip_var passed. Set to ", manip_var,
-                   ", the number of the variable with largest contribution in the first column of the basis."))
-  }
-  if(is.null(manip_var)) stop("manip_var must be supplied.")
   
-  data <- as.matrix(data)
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, angle = angle,
                            theta = theta, phi_min = phi_min, phi_max = phi_max)
   tour_df <- array2df(array = tour_hist, data = data)
@@ -168,7 +159,6 @@ play_manual_tour <- function(basis = NULL,
 ##
 ## HELPER & INTERMEDIATE VISUALIZATIONS -----
 ##
-
 
 
 #' Plot a single frame of a manual tour
@@ -221,25 +211,22 @@ view_frame <- function(basis = NULL,
                        label = NULL,
                        rescale_data = FALSE,
                        ...){
-  if(is.null(basis) & is.null(data)) stop("basis or data must be supplied.")
-  if(is.null(manip_var) & (theta != 0L | phi != 0L))
-    stop("theta or phi non-zero with a null manip_var. Manip_var required for manual_tour()")
   ## Basis condition handling
-  if(is.null(basis) & !is.null(data)) {
-    basis <- stats::prcomp(data)$rotation[, 1L:2L]
+  data <- as.matrix(data)
+  if(is.null(basis)) {
+    basis <- basis_pca(data)
     message("NULL basis passed. Set to PCA basis.")
   }
   
   ## Initialize
   p <- nrow(basis)
-  if(is.null(data) == FALSE)
-    data <- as.matrix(data)
-  if(is.null(manip_var) == FALSE){
+  
+  if(is.null(manip_var) == FALSE & (theta != 0L | phi != 0L)){
     m_sp <- create_manip_space(basis, manip_var)
     r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
-    basis <- r_m_sp[, 1L:2L] ## Really rotated basis
+    basis <- r_m_sp[, 1L:2L] ##  rotated basis
   }
-  tour_array <- array(basis, dim = c(dim(basis), 1))
+  tour_array <- array(basis, dim = c(dim(basis), 1L))
   attr(tour_array, "manip_var") <- manip_var
   
   ## Render
@@ -307,7 +294,7 @@ oblique_basis <- function(...) {
 view_manip_space <- function(basis,
                              manip_var,
                              tilt = .1 * pi,
-                             label = paste0("x", 1:nrow(basis)),
+                             label = paste0("x", 1L:nrow(basis)),
                              manip_col = "blue",
                              manip_sp_col = "red",
                              line_size = 1L,
@@ -319,23 +306,27 @@ view_manip_space <- function(basis,
   #### Finds the angle between two vectors
   find_angle <- function(a, b)
     acos(sum(a * b) / (sqrt(sum(a * a)) * sqrt(sum(b * b))) )
-  #### Makes a df semi-circle, with 1 row per degree
+  #### Makes a matrix semi-circle, with 1 row per degree
   make_curve <- function(ang_st = 0L,
                          ang_stop = 2L * pi) {
     n_degrees <- round(180L / pi * abs(ang_st - ang_stop))
     angle <- seq(ang_st, ang_stop, length = n_degrees)
-    data.frame(x = cos(angle), y = sin(angle), z = sin(angle))
+    matrix(c(cos(angle), sin(angle), sin(angle)),
+           ncol = 3L, dimnames = list(NULL, c("x", "y", "z")))
   }
-  rot <- function(df, ang = tilt){
-    dplyr::mutate(df, x = x * cos(ang), y = y * sin(ang), z = z * cos(ang))
+  rot <- function(mat, ang = tilt){
+    mat[, 1L] <- mat[, 1L] * cos(tilt)
+    mat[, 2L] <- mat[, 2L] * sin(tilt)
+    mat[, 3L] <- mat[, 3L] * cos(tilt)
+    return(mat)
   }
   ## Initialize
   p <- nrow(basis)
-  m_sp <- as.data.frame(create_manip_space(basis, manip_var))
-  colnames(m_sp) <- c("x", "y", "z")
+  m_sp <- create_manip_space(basis, manip_var)
+  colnames(m_sp) = c("x", "y", "z")
   m_sp_r <- rot(m_sp)
-  mvar   <- m_sp[manip_var, ]
-  mvar_r <- m_sp_r[manip_var, ]
+  mv_sp <- m_sp[manip_var, ]
+  mv_sp_r <- m_sp_r[manip_var, ]
   ## Aesthetics
   col_v <- rep("grey80", p)
   col_v[manip_var] <- manip_col
@@ -343,20 +334,29 @@ view_manip_space <- function(basis,
   siz_v[manip_var] <- 1L
   ## Axes circle and angles
   circ_r <- rot(make_curve())
-  theta_ang <- find_angle(c(mvar$x, mvar$y), c(1L, 0L))
+  theta_ang <- find_angle(c(mv_sp[1L], mv_sp[2L]), c(1L, 0L))
   theta_curve_r <- rot(.5 * make_curve(ang_st = 0L, ang_stop = theta_ang)) 
-  mvar_ysign <- ifelse(mvar$y < 0L, -1L, 1L)
-  theta_curve_r$y <- theta_curve_r$y * mvar_ysign
-  phi_ang <- find_angle(c(m_sp_r$x, m_sp_r$y), c(m_sp_r$x, m_sp_r$z))
+  mv_sp_ysign <- ifelse(mv_sp[2L]< 0L, -1L, 1L)
+  theta_curve_r[, 2L] <- theta_curve_r[, 2L] * mv_sp_ysign
+  phi_ang <- find_angle(c(m_sp_r[, 1L], m_sp_r[, 2L]),
+                        c(m_sp_r[, 1L], m_sp_r[, 3L]))
   phi_curve <- .4 * make_curve(ang_st = theta_ang, ang_stop = phi_ang)
-  phi_curve$y <- phi_curve$y * mvar_ysign
+  phi_curve[, 2L] <- phi_curve[, 2L] * mv_sp_ysign
   ### Center and rotate
   start_pt <- phi_curve[1L, 1L:2L]
-  phi_curve_r <- rot(data.frame(x = start_pt$x + (phi_curve$y - start_pt$y),
-                                y = start_pt$y + (phi_curve$x - start_pt$x),
-                                z = phi_curve$z))
+  phi_curve_r <- rot(
+    matrix(c(start_pt[1L] + (phi_curve[, 2L] - start_pt[2L]), 
+             start_pt[2L] + (phi_curve[, 1L] - start_pt[1L]),
+             phi_curve[, 3L]),
+           ncol = 3L, dimnames = list(NULL, c("x", "y", "z")))
+  )
   
-  ## Render (& implicit return)
+  circ_r <- as.data.frame(circ_r)
+  m_sp_r <- as.data.frame(m_sp_r)
+  mv_sp_r <- data.frame(x = mv_sp_r[, 1L], y = mv_sp_r[, 2L], z = mv_sp_r[, 3L])
+  theta_curve_r <- as.data.frame(theta_curve_r)
+  browser()
+  ## Render & return
   ggplot2::ggplot() +
     ggproto +
     ## Axes circle
@@ -379,15 +379,15 @@ view_manip_space <- function(basis,
       mapping = ggplot2::aes(x = x, y = z),
       color = manip_sp_col, size = line_size, inherit.aes = FALSE) +
     ggplot2::geom_segment(
-      data = mvar_r,
+      data = mv_sp_r,
       mapping = ggplot2::aes(x = x, y = z, xend = 0L, yend = 0L),
       size = 1, colour = manip_sp_col) +
     ggplot2::geom_segment(
-      data = mvar_r,
+      data = mv_sp_r,
       mapping = ggplot2::aes(x = x, y = z, xend = x, yend = y),
       size = line_size, colour = "grey80", linetype = 2L) +
     ggplot2::geom_text(
-      data = mvar_r,
+      data = mv_sp_r,
       mapping = ggplot2::aes(x = x, y = z, label = label[manip_var]),
       size = text_size, colour = manip_sp_col, vjust = "outward", hjust = "outward") +
     ## Label phi and theta

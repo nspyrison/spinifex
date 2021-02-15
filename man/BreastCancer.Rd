@@ -6,7 +6,7 @@
 \title{Wisconsin Breast Cancer Database}
 \format{
 Data frame with 675 observations of 11 variables: factor Id,
-9 numeric variables, and target factor Class.
+9 integer variables, and target factor Class.
 }
 \usage{
 BreastCancer
@@ -47,7 +47,7 @@ d <- BreastCancer
 d <- d[!duplicated(d), ] ## Remove 8 duplicate rows
 d <- d[complete.cases(d), ] ## Remove 16 row-wise incomplete rows
 mat <- as.matrix(d[ , 2:10])
-mat <- apply(mat, 2, as.numeric)
+mat <- sapply(mat, as.integer)
 BreastCancer <- 
   data.frame(Id = as.factor(d$Id), mat, Class = as.factor(d$Class))
 ## save(BreastCancer, file = "./data/BreastCancer.rda")

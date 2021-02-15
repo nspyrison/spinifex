@@ -8,7 +8,7 @@ view_manip_space(
   basis,
   manip_var,
   tilt = 0.1 * pi,
-  label = paste0("x", 1:nrow(basis)),
+  label = paste0("x", 1L:nrow(basis)),
   manip_col = "blue",
   manip_sp_col = "red",
   line_size = 1L,

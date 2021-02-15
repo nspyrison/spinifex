@@ -67,23 +67,24 @@ array2df <- function(array,
   
   ## Basis condition handling
   basis_frames <- NULL
-  mute_for <- sapply(1L:n_frames, function(i){ ## Vectorization of for, does behave slightly diff than for loop.
-    basis_rows <- data.frame(cbind(array[,, i], i))
+  .mute <- sapply(1L:n_frames, function(i){
+    basis_rows <- cbind(array[,, i], i)
     basis_frames <<- rbind(basis_frames, basis_rows)
   })
+  basis_frames <- as.data.frame(basis_frames)
   colnames(basis_frames) <- c("x", "y", "frame")
   
   ## Data; if exists, array to long df
   if(is.null(data) == FALSE){
     data <- as.matrix(data)
     data_frames <- NULL
-    mute_for <- sapply(1L:n_frames, function(i){ ## Vectorization of for, does behave slightly diff than for loop.
+    .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% array[,, i]
       ## Center the new frame
-      new_frame[, 1] <- new_frame[, 1] - mean(new_frame[, 1])
-      new_frame[, 2] <- new_frame[, 2] - mean(new_frame[, 2])
-      new_frame <- cbind(new_frame, i)
-      data_frames <<- rbind(data_frames, new_frame)
+      new_frame[, 1L] <- new_frame[, 1L] - mean(new_frame[, 1L])
+      new_frame[, 2L] <- new_frame[, 2L] - mean(new_frame[, 2L])
+      new_frame <- cbind(new_frame, i) ## Append frame number
+      data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
     data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c("x", "y", "frame")

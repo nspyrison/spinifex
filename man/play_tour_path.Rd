@@ -5,7 +5,7 @@
 \title{Animates the provided tour path.}
 \usage{
 play_tour_path(
-  tour_path = NULL,
+  tour_path,
   data = NULL,
   angle = 0.05,
   render_type = render_plotly,

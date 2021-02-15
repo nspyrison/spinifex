@@ -6,8 +6,8 @@
 \usage{
 play_manual_tour(
   basis = NULL,
-  data = NULL,
-  manip_var = NULL,
+  data,
+  manip_var,
   theta = NULL,
   phi_min = 0L,
   phi_max = 0.5 * pi,

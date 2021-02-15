@@ -64,8 +64,8 @@ render_ <- function(frames,
 ){
   if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
   #### Initialize
-  basis_frames  <- data.frame(frames[["basis_frames"]])
-  manip_var     <- attributes(frames$basis_frames)$manip_var
+  basis_frames  <- frames$basis_frames
+  manip_var     <- attributes(frames$data_frames)$manip_var
   n_frames      <- length(unique(basis_frames$frame))
   p             <- nrow(basis_frames) / n_frames
   d             <- 2L ## Hard-coded assumption for 2D display
@@ -75,7 +75,7 @@ render_ <- function(frames,
   
   ## If data exists; fix arg length and plot MUST COME BEFORE AXES
   data_frames <- NULL ## If NULL, scale_axes defaults to df(x=c(0,1), y=c(0,1))
-  if(length(frames) == 2L) data_frames <- data.frame(frames[["data_frames"]])
+  if(length(frames) == 2L) data_frames <- frames$data_frames
   
   ## Axes setup
   angle <- seq(0L, 2L * pi, length = 360L)
@@ -108,7 +108,7 @@ render_ <- function(frames,
     identity_args_out <- identity_args
     ## If AES_args exist, try to replicate
     if(length(aes_args) > 0L){
-      mute_for <- sapply(1L:length(aes_args), function(i){ ## Vectorization of for, does behave slightly diff than for loop.
+      .mute <- sapply(1L:length(aes_args), function(i){
         if(length(aes_args[[i]]) > 1L & ## Length more than 1 and vector
            is.vector(as.vector(aes_args[[i]])) == TRUE)
           aes_args_out[[i]] <<- as.factor(rep_len(aes_args[[i]], tgt_len))
@@ -117,7 +117,7 @@ render_ <- function(frames,
     } ## End if AES_args exist
     ## If IDENTITY_args args exist, try to replicate
     if(length(identity_args) > 0L){
-      mute_for <- sapply(1L:length(identity_args), function(i){ ## Vectorization of for, does behave slightly diff than for loop.
+      .mute <- sapply(1L:length(identity_args), function(i){
         if(length(identity_args[[i]]) > 1L & ## Length more than 1 and vector
            is.vector(as.vector(identity_args[[i]])) == TRUE)
           identity_args_out[[i]] <<-
