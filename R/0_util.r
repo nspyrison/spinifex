@@ -89,13 +89,13 @@ array2df <- function(array,
     data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c("x", "y", "frame")
   }
+
   
   ## Labels and attribute condition handling
-  basis_frames$label <- NULL
-  if(is.null(label) == FALSE){
+  if(length(label) > 0L){
     basis_frames$label <- rep(label, nrow(basis_frames) / length(label))
   }else{
-    if(!is.null(data)){basis_frames$label <- abbreviate(colnames(data), 3L)
+    if(is.null(data) == FALSE){basis_frames$label <- abbreviate(colnames(data), 3L)
     }else{
       basis_frames$label <- paste0("x", 1L:p)
     }
@@ -103,8 +103,10 @@ array2df <- function(array,
   attr(basis_frames, "manip_var") <- manip_var
   
   ## Frame condition handling
-  df_frames <- list(basis_frames = basis_frames)
-  if(is.null(data) == FALSE){
+  df_frames <- NULL
+  if(is.null(data) == TRUE){
+    df_frames <- list(basis_frames = basis_frames)
+  }else{
     df_frames <- list(basis_frames = basis_frames, data_frames = data_frames)
   }
   
@@ -137,25 +139,24 @@ scale_axes <- function(x,
                                     pan_zoom(c(-1L, 0L), c(.7, .7))),
                        to = data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
 ){
-  ## If position is pan_zoom call with x = NULL;
-  if(is.list(position) & length(position) == 2L){ 
-    return(pan_zoom(pan = position$pan, zoom = position$zoom, x = x))
-  }
   ## Assumptions
   if(position == "off") return()
-  if(ncol(x) != 2L) warning("pan_zoom is only defined for 2 variables. x has more than 2 columns")
-  if(is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+  ## If position is pan_zoom call with x = NULL;
+  if(is.list(position) & length(position) == 2L){
+    return(pan_zoom(pan = position$pan, zoom = position$zoom, x = x))
+  }
+
   
   ## Initialize
   position <-
     match.arg(tolower(position), several.ok = FALSE, choices = 
                 c("center", "bottomleft", "topright", "off", "left", "right"))
-  x_to <- c(min(to[, 1L]), max(to[, 1L]))
-  y_to <- c(min(to[, 2L]), max(to[, 2L]))
+  x_to <- to[, 1L]
+  y_to <- to[, 2L]
   xdiff   <- diff(x_to)
   ydiff   <- diff(y_to)
-  xcenter <- mean(x_to)
-  ycenter <- mean(y_to)
+  xcenter <- mean(xdiff)
+  ycenter <- mean(ydiff)
   
   ## Condition handling of position
   if(position == "center"){

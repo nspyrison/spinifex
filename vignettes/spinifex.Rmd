@@ -73,11 +73,11 @@ The following example will explore how changing the contributions of the variabl
 
 
 ```{r view-basis}
-flea_std <- tourr::rescale(tourr::flea[,-7])
-str(flea_std)
+dat_std <- scale_sd(tourr::flea[,-7])
+bas_pca <- basis_pca(dat_std)
+clas <- tourr::flea[, 7]
 
-flea_rb <- tourr::basis_random(n = ncol(flea_std), d = 2)
-view_frame(basis = flea_rb, lab = colnames(flea_std))
+view_frame(basis = bas_pca)
 ```
 
 We started from a random basis, that explains the orthogonal projection from $p$ to $d$ space. Use `view_frame()` to see the *reference axes*, a visual depiction of how the variables contributed to the xy directions of the 2D projection.
@@ -85,13 +85,14 @@ We started from a random basis, that explains the orthogonal projection from $p$
 We want to explore how the coefficients of `aede2`, the *manip var*, contributed to the structure in this projection. In order to change the contributions without breaking the orthogonality of the other variables, we need to add a dimension. We call this new space the manipulation space, which can be viewed with the function `view_manip_space()`. Note that the projection plane containing the reference frame is laid down on the surface, while the manipulation dimension is at a right angle out-of-plane, with a full contribution on the manip var.
 
 ```{r view-manip-space}
-view_manip_space(basis = flea_rb, manip_var = 3, lab = colnames(flea_std)) 
+view_manip_space(basis = bas_pca, manip_var = 3, lab = colnames(dat_std)) 
 ```
 
 Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
 
 ```{r, eval=F}
-play_manual_tour(data = flea_std, basis = flea_rb, manip_var = 3)
+play_manual_tour(data = dat_std, basis = bas_pca, manip_var = 3, axes = "bottomleft",
+                 aes_args = list(color = clas, shape = clas))
 ```
 
 *plotly animation not rendered in this vignette, but will display in viewer*
@@ -127,7 +128,7 @@ m_sp_x    <- create_manip_space(basis = bas, manip_var = 3)
 rot_mat_x <- rotate_manip_space(manip_space = m_sp_x, 
                                 theta = 0, phi = pi / 6)
 rot_x     <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_x))
-colnames(rot_x) <- c("x1", "x2", "manip_sp")
+colnames(rot_x) <- c("x1", "x2", "x_manip_sp")
 ```
 
 Likewise, we'll perform a vertical rotation ($\theta$` = pi/2`) on surface temperature (manip_var = 4). Combine the rotations and plot just the rotated values without lat/long or x/y markers, neat!
@@ -137,6 +138,7 @@ m_sp_y    <- create_manip_space(basis = bas, manip_var = 4)
 rot_mat_y <- rotate_manip_space(manip_space = m_sp_y, 
                                 theta = pi / 2, phi = pi / 6)
 rot_y     <- data.frame(as.matrix(nasa_std) %*% as.matrix(rot_mat_y))
+colnames(rot_y) <- c("y1", "y2", "y_manip_sp")
 
 ## Combine rotations
 rot_xy <- bind_cols(rot_x, rot_y, .name_repair = "unique") %>% 
@@ -152,11 +154,11 @@ ggplot(rot_xy, aes(x = x, y = y)) + geom_point(size = 0.3) +
 Radial tours are often employed after an interesting feature has been identified. How the contributions of each variable impact the structure of resulting PCA, for example, might be interesting to explore. Alternatively, we can perform projection pursuit to maximize an objective function within the projection and performing a hill-climbing algorithm and explore what effect the contributions of the variables have there. Let's do just that, optimizing a Holes indexed guided tour using the package `tourr`.
 
 ```{r}
-flea_std <- tourr::rescale(tourr::flea[,1:6])
-fpath    <- tourr::save_history(flea_std, tourr::guided_tour(tourr::holes()))
+dat_std <- tourr::rescale(tourr::flea[,1:6])
+fpath    <- tourr::save_history(dat_std, tourr::guided_tour(tourr::holes()))
 ```
 ```{r, eval=F}
-play_tour_path(tour_path = fpath, data = flea_std, angle = .15, 
+play_tour_path(tour_path = fpath, data = dat_std, angle = .15, 
   render_type = render_gganimate, col = tourr::flea$species, fps = 4)
 ```
 
@@ -164,13 +166,13 @@ This shows the optimization path of the holes index. We'll grab the reference ax
 
 ```{r}
 f_holes_bas  <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
-view_frame(f_holes_bas, lab = colnames(flea_std))
+view_frame(f_holes_bas, lab = colnames(dat_std))
 ```
 
 We'll select `aede2` as the manip_var, as it is mostly orthogonal to four of the other variables and often has a larger contribution than `tars1`.
 
 ```{r, eval=F}
-play_manual_tour(data = flea_std, basis = f_holes_bas, 
+play_manual_tour(data = dat_std, basis = f_holes_bas, 
                  manip_var = 5, col = tourr::flea$species)
 ```
 

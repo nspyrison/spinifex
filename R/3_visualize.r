@@ -191,13 +191,12 @@ play_manual_tour <- function(basis = NULL,
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_pca(dat_std)
 #' 
-#' rtheta <- runif(1, 0, 2 * pi)
-#' rphi   <- runif(1, 0, 2 * pi)
-#' 
 #' view_frame(basis = bas)
 #' 
 #' view_frame(basis = bas, data = dat_std, manip_var = mv)
 #' 
+#' rtheta <- runif(1, 0, 2 * pi)
+#' rphi   <- runif(1, 0, 2 * pi)
 #' view_frame(basis = bas, data = dat_std, manip_var = mv,
 #'            theta = rtheta, phi = rphi, label = paste0("MyNm", 1:ncol(dat_std)), 
 #'            aes_args = list(color = clas, shape = clas),
@@ -208,12 +207,14 @@ view_frame <- function(basis = NULL,
                        manip_var = NULL,
                        theta = 0L,
                        phi = 0L,
-                       label = NULL,
+                       label = abbreviate(row.names(basis), 3L),
                        rescale_data = FALSE,
                        ...){
   ## Basis condition handling
-  data <- as.matrix(data)
-  if(is.null(basis)) {
+  if(is.null(data) == FALSE)
+    data <- as.matrix(data)
+  
+  if(is.null(basis)){
     basis <- basis_pca(data)
     message("NULL basis passed. Set to PCA basis.")
   }
@@ -223,9 +224,9 @@ view_frame <- function(basis = NULL,
   
   if(is.null(manip_var) == FALSE & (theta != 0L | phi != 0L)){
     m_sp <- create_manip_space(basis, manip_var)
-    r_m_sp <- rotate_manip_space(manip_space = m_sp, theta, phi)
-    basis <- r_m_sp[, 1L:2L] ##  rotated basis
+    basis <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1L:2L]
   }
+
   tour_array <- array(basis, dim = c(dim(basis), 1L))
   attr(tour_array, "manip_var") <- manip_var
   
@@ -308,7 +309,7 @@ view_manip_space <- function(basis,
     acos(sum(a * b) / (sqrt(sum(a * a)) * sqrt(sum(b * b))) )
   #### Makes a matrix semi-circle, with 1 row per degree
   make_curve <- function(ang_st = 0L,
-                         ang_stop = 2L * pi) {
+                         ang_stop = 2L * pi){
     n_degrees <- round(180L / pi * abs(ang_st - ang_stop))
     angle <- seq(ang_st, ang_stop, length = n_degrees)
     matrix(c(cos(angle), sin(angle), sin(angle)),
@@ -353,9 +354,8 @@ view_manip_space <- function(basis,
   
   circ_r <- as.data.frame(circ_r)
   m_sp_r <- as.data.frame(m_sp_r)
-  mv_sp_r <- data.frame(x = mv_sp_r[, 1L], y = mv_sp_r[, 2L], z = mv_sp_r[, 3L])
+  mv_sp_r <- data.frame(x = mv_sp_r[1L], y = mv_sp_r[2L], z = mv_sp_r[3L])
   theta_curve_r <- as.data.frame(theta_curve_r)
-  browser()
   ## Render & return
   ggplot2::ggplot() +
     ggproto +
@@ -381,7 +381,7 @@ view_manip_space <- function(basis,
     ggplot2::geom_segment(
       data = mv_sp_r,
       mapping = ggplot2::aes(x = x, y = z, xend = 0L, yend = 0L),
-      size = 1, colour = manip_sp_col) +
+      size = 1L, colour = manip_sp_col) +
     ggplot2::geom_segment(
       data = mv_sp_r,
       mapping = ggplot2::aes(x = x, y = z, xend = x, yend = y),

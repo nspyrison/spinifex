@@ -48,11 +48,11 @@
 #' ## Full arguments
 #' require("ggplot2")
 #' render_(frames = manual_df, axes = "left", manip_col = "purple",
-#'         aes_args = list(color = clas, shape = clas),
-#'         identity_args = list(size = 1.5, alpha = .7),
-#'         ggproto = list(theme_void(),
-#'                        ggtitle("My title"),
-#'                        scale_color_brewer(palette = "Set2")))
+#'    aes_args = list(color = clas, shape = clas),
+#'    identity_args = list(size = 1.5, alpha = .7),
+#'    ggproto = list(theme_minimal(),
+#'                   ggtitle("My title"),
+#'                   scale_color_brewer(palette = "Set2")))
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
@@ -74,20 +74,19 @@ render_ <- function(frames,
   ggproto       <- as.list(ggproto)
   
   ## If data exists; fix arg length and plot MUST COME BEFORE AXES
-  data_frames <- NULL ## If NULL, scale_axes defaults to df(x=c(0,1), y=c(0,1))
-  if(length(frames) == 2L) data_frames <- frames$data_frames
+  data_frames <- frames$data_frames ## May be null.
   
   ## Axes setup
   angle <- seq(0L, 2L * pi, length = 360L)
   circ  <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes/circle
   if(axes != "off"){
-    center <- scale_axes(data.frame(x = 0L, y = 0L), axes, to = data_frames)
-    circ <- scale_axes(circ, axes, to = data_frames)
+    if(is.null(data_frames)){.to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+    }else{.to <- data_frames}
+    center <- scale_axes(data.frame(x = 0L, y = 0L), axes, to = .to)
+    circ <- scale_axes(circ, axes, to = .to)
     ## Rejoin frame number to the scaled bases frames
-    basis_frames <-
-      data.frame(scale_axes(basis_frames[, 1L:d], axes, to = data_frames),
-                 basis_frames[, (d + 1L):ncol(basis_frames)])
+    basis_frames <- scale_axes(basis_frames, axes, to = .to)
   }
   ## Manip var axes aesthetics
   axes_col <- "grey50"
@@ -102,10 +101,10 @@ render_ <- function(frames,
   }
   
   ## Recycle/replicate args if needed
-  if(length(frames) == 2L){ ## If data exists
-    tgt_len <- nrow(data_frames)
+  if(is.null(data_frames) == FALSE){ ## If data exists
     aes_args_out <- aes_args
     identity_args_out <- identity_args
+    tgt_len <- nrow(data_frames)
     ## If AES_args exist, try to replicate
     if(length(aes_args) > 0L){
       .mute <- sapply(1L:length(aes_args), function(i){
@@ -140,14 +139,10 @@ render_ <- function(frames,
                           data_frames))
   } ## End if data exist
   
-  ## Ploting
-  gg <-
-    ggplot2::ggplot() +
-    ggproto
+  ## Render
+  gg <- ggplot2::ggplot() + ggproto
   ## Project data points, if data exists
-  if(is.null(data_frames) == FALSE){
-    gg <- gg + geom_point_call
-  }
+  if(is.null(data_frames) == FALSE) gg <- gg + geom_point_call
   ## Add axes directions if needed
   if(axes != "off"){
     gg <- gg +
@@ -166,11 +161,12 @@ render_ <- function(frames,
       ) +
       ## Basis axes text labels
       suppressWarnings( ## Suppress for unused aes "frame".
-        ggplot2::geom_text(data = basis_frames,
-                           mapping = ggplot2::aes(x = x, y = y,
-                                                  frame = frame, label = label),
-                           vjust = "outward", hjust = "outward",
-                           colour = axes_col, size = text_size)
+        ggplot2::geom_text(
+          data = basis_frames,
+          mapping = ggplot2::aes(x = x, y = y,
+                                 frame = frame, label = label),
+          vjust = "outward", hjust = "outward",
+          colour = axes_col, size = text_size)
       )
   }
   

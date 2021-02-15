@@ -10,7 +10,7 @@ view_frame(
   manip_var = NULL,
   theta = 0L,
   phi = 0L,
-  label = NULL,
+  label = abbreviate(row.names(basis), 3L),
   rescale_data = FALSE,
   ...
 )
@@ -53,13 +53,12 @@ clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_pca(dat_std)
 
-rtheta <- runif(1, 0, 2 * pi)
-rphi   <- runif(1, 0, 2 * pi)
-
 view_frame(basis = bas)
 
 view_frame(basis = bas, data = dat_std, manip_var = mv)
 
+rtheta <- runif(1, 0, 2 * pi)
+rphi   <- runif(1, 0, 2 * pi)
 view_frame(basis = bas, data = dat_std, manip_var = mv,
            theta = rtheta, phi = rphi, label = paste0("MyNm", 1:ncol(dat_std)), 
            aes_args = list(color = clas, shape = clas),
