@@ -67,9 +67,7 @@ test_that("array2df: class and dim for single frame, spinifex and tourr case.", 
 
 
 
-
 ### scale_axes ------
-
 ret <- scale_axes(x = bas, position = "bottomleft")
 ret_to <- scale_axes(x = bas, position = "topright", to = wine[, 2:3])
 

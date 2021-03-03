@@ -17,7 +17,8 @@ An array of numeric bases with custom class "history_array" for
 consumption by \code{tourr::interpolate}.
 }
 \description{
-Attaches data
+Attaches data to an array and assigns the custom class "history_array" as
+used in \code{tourr}.
 }
 \examples{
 rb <- tourr::basis_random(6, 2)

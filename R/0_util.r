@@ -140,23 +140,23 @@ scale_axes <- function(x,
                        to = data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
 ){
   ## Assumptions
+  if(length(position) > 1) position <- position[1L]
   if(position == "off") return()
   ## If position is pan_zoom call with x = NULL;
   if(is.list(position) & length(position) == 2L){
     return(pan_zoom(pan = position$pan, zoom = position$zoom, x = x))
   }
-
   
   ## Initialize
   position <-
-    match.arg(tolower(position), several.ok = FALSE, choices = 
-                c("center", "bottomleft", "topright", "off", "left", "right"))
-  x_to <- to[, 1L]
-  y_to <- to[, 2L]
-  xdiff   <- diff(x_to)
-  ydiff   <- diff(y_to)
-  xcenter <- mean(xdiff)
-  ycenter <- mean(ydiff)
+    match.arg(tolower(position), several.ok = FALSE,
+              choices = c("center", "bottomleft", "topright", "off", "left", "right"))
+  xrange  <- range(to[, 1L])
+  yrange  <- range(to[, 2L])
+  xdiff   <- diff(xrange)
+  ydiff   <- diff(yrange)
+  xcenter <- mean(xrange)
+  ycenter <- mean(yrange)
   
   ## Condition handling of position
   if(position == "center"){
@@ -165,20 +165,20 @@ scale_axes <- function(x,
     yoff  <- ycenter
   } else if(position == "bottomleft"){
     scale <- .25 * ydiff
-    xoff <- -.25 * xdiff + xcenter
-    yoff <- -.5 * ydiff + ycenter
+    xoff  <- -.25 * xdiff + xcenter
+    yoff  <- -.5 * ydiff + ycenter
   } else if(position == "topright"){
     scale <- .25 * ydiff
-    xoff <- .25 * xdiff + xcenter
-    yoff <- .5 * ydiff + ycenter
+    xoff  <- .25 * xdiff + xcenter
+    yoff  <- .5 * ydiff + ycenter
   } else if(position == "left"){
     scale <- .3 * ydiff
-    xoff <- -.7 * xdiff + xcenter
-    yoff <- ycenter
+    xoff  <- -.7 * xdiff + xcenter
+    yoff  <- ycenter
   } else if(position == "right"){
     scale <- .3 * ydiff
-    xoff <- .7 * xdiff + xcenter
-    yoff <- ycenter
+    xoff  <- .7 * xdiff + xcenter
+    yoff  <- ycenter
   }
   
   ## Apply scale and return
@@ -186,7 +186,6 @@ scale_axes <- function(x,
   x[, 2L] <- scale * x[, 2L] + yoff
   return(x)
 }
-
 
 
 #' Pan (offset) and zoom (scale) a 2 column matrix or dataframe.
@@ -220,7 +219,8 @@ pan_zoom <- function(pan = c(0L, 0L),
 
 #' Changes an array of bases into a "history_array" for use in `tourr::interpolate`
 #' 
-#' Attaches data 
+#' Attaches data to an array and assigns the custom class "history_array" as 
+#' used in `tourr`.
 #' 
 #' @param basis_array An array of bases.
 #' @param data The data matrix to be projected through the basis. This is
@@ -234,7 +234,7 @@ pan_zoom <- function(pan = c(0L, 0L),
 #' rb <- tourr::basis_random(6, 2)
 #' pan_zoom(pan = c(-1, 0), zoom = c(2/3, 2/3), x = rb)
 as_historty_array <- function(basis_array, data){
-  if(missing(data) == FALSE) 
+  if(missing(data) == FALSE)
     attr(basis_array, "data") <- as.matrix(data)
   class(basis_array) <- "history_array"
   return(basis_array)

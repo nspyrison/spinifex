@@ -32,9 +32,9 @@
 #'   play_tour_path(tour_path = sw_path, data = dat_std)
 #' }
 stepwise_history <- function(basis = NULL,
-                          data = NULL,
-                          measure = stats::var,
-                          decreasing = TRUE){
+                             data = NULL,
+                             measure = stats::var,
+                             decreasing = TRUE){
   if(is.null(basis) == TRUE){
     message("basis is NULL, initalizing random basis.")
     basis <- tourr::basis_random(curr_dim, 2L)
@@ -47,7 +47,7 @@ stepwise_history <- function(basis = NULL,
     stop("Dimension of the starting basis not [p x 2].")
   
   ## Measure table, ordered
-  m   <- sapply(data, measure)
+  m   <- sapply(as.data.frame(data), measure) ## var/sd don't work on  matrices!?
   ord <- order(m, decreasing = decreasing)
   m   <- m[ord]
   cn  <- colnames(data)[ord]
@@ -86,13 +86,14 @@ if(F){
   library(spinifex);
   dat = tourr::flea[, 2:6];
   bas = basis_pca(dat);
-  sw_hist < stepwise_history(basis = bas, data = dat)
+  sw_hist <- stepwise_history(basis = bas, data = dat)
+  ?play_tour_path(sw_hist, data = dat)
   
   ## aede2(+/+) zeros,
   ## head(-/+) doesn't zero (which then causes an issue)
   ## tars2(-/+ !?!) zeros, why? may not be as simple as quadrant.
   
-  ###TODO need to look at phi and theta 
+  ###TODO need to look at phi and theta
   ## consider .$basis_set[,, 2]; head didn't 0 out correctly;
   tgt <- as.data.frame(sw_hist$basis_set[,, 2])
 }

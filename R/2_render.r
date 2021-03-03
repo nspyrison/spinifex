@@ -111,7 +111,6 @@ render_ <- function(frames,
         if(length(aes_args[[i]]) > 1L & ## Length more than 1 and vector
            is.vector(as.vector(aes_args[[i]])) == TRUE)
           aes_args_out[[i]] <<- as.factor(rep_len(aes_args[[i]], tgt_len))
-        
       })
     } ## End if AES_args exist
     ## If IDENTITY_args args exist, try to replicate
