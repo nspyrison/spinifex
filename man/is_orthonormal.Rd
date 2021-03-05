@@ -9,15 +9,16 @@ is_orthonormal(x, tol = 0.001)
 \arguments{
 \item{x}{Numeric matrix to test the orthonormality of.}
 
-\item{tol}{Tolerance of (the sum of element-wise) floating point differences.}
+\item{tol}{Max tolerance of floating point differences.
+Elecment-wise distance of t(x) \%*\% x from the identity matrix.}
 }
 \value{
-Single logical of the orthonormal matrix of the matrix.
+Single logical, whether or not the matrix is orthonormal.
 }
 \description{
 Handles more cases than tourr::is_orthonormal().
 }
 \examples{
 is_orthonormal(tourr::basis_random(n = 6))
-is_orthonormal(matrix(1:12, ncol=2), tol = 0.01)
+is_orthonormal(matrix(1:12, ncol = 2), tol = 0.01)
 }

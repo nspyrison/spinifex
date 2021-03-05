@@ -4,9 +4,7 @@
 \alias{basis_olda}
 \title{The basis of Orthogonal Linear Discriminant Analysis (OLDA)}
 \usage{
-basis_olda(data, class, d = 2L)
-
-basis_olda(data, class, d = 2L)
+basis_olda(data, class, d = 2L, ...)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations, coerced to matrix.}
@@ -14,32 +12,35 @@ basis_olda(data, class, d = 2L)
 \item{class}{The class for each observation, coerced to a factor.}
 
 \item{d}{Number of dimensions in the projection space.}
+
+\item{...}{Optional other arguments to pass to \link[Rdimtools]{do.odp}.}
 }
 \value{
-Orthogonal basis that best distinguishes the levels of \code{class}.
-
-Orthogonal basis that best distinguishes the levels of \code{class}.
+A numeric matrix, an orthogonal basis that best distinguishes the
+group means of \code{class}.
 }
 \description{
-Returns a numeric matrix of the first \code{d} columns of \code{Rdimtools::do.olda()}.
-
-Returns a numeric matrix of the first \code{d} columns of \code{Rdimtools::do.olda()}.
+Orthogonal LDA (OLDA) is an extension of classical LDA where the discriminant
+vectors are orthogonal to each other.
 }
 \examples{
-basis_olda(data = wine[, 2:14], class = wine$Type)
-basis_olda(data = wine[, 2:14], class = wine$Type)
+dat_std <- scale_sd(wine[, 2:14])
+clas <- wine$Type
+basis_olda(data = dat_std, class = clas)
 }
 \references{
-Ye J (2005). “Characterization of a Family of Algorithms for Generalized
-Discriminant Analysis on Undersampled Problems.” J. Mach. Learn. Res.,
-6, 483–502. ISSN 1532-4435.
-
-Ye J (2005). “Characterization of a Family of Algorithms for Generalized
-Discriminant Analysis on Undersampled Problems.” J. Mach. Learn. Res.,
-6, 483–502. ISSN 1532-4435.
+Ye J (2005). "Characterization of a Family of Algorithms for Generalized
+Discriminant Analysis on Undersampled Problems." J. Mach. Learn. Res.,
+6, 483-502. ISSN 1532-4435.
 }
 \seealso{
 \code{\link[Rdimtools]{do.olda}}
 
-\code{\link[Rdimtools]{do.olda}}
+Other {basis identifiers}: 
+\code{\link{basis_guided}()},
+\code{\link{basis_odp}()},
+\code{\link{basis_olpp}()},
+\code{\link{basis_onpp}()},
+\code{\link{basis_pca}()}
 }
+\concept{{basis identifiers}}

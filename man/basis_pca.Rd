@@ -11,9 +11,25 @@ basis_pca(data, d = 2L)
 
 \item{d}{Number of dimensions in the projection space.}
 }
+\value{
+A numeric matrix, an orthogonal basis that best distinguishes the
+group means of \code{class}.
+}
 \description{
 The basis of Principal Component Analysis (PCA)
 }
 \examples{
-basis_pca(data = wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:14])
+basis_pca(data = dat_std)
 }
+\seealso{
+\code{\link[Rdimtools]{do.pca}}
+
+Other {basis identifiers}: 
+\code{\link{basis_guided}()},
+\code{\link{basis_odp}()},
+\code{\link{basis_olda}()},
+\code{\link{basis_olpp}()},
+\code{\link{basis_onpp}()}
+}
+\concept{{basis identifiers}}

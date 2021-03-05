@@ -23,10 +23,11 @@ Defaults to "center" expects one of: "center", "left", "right",
 Based on the min/max of the first 2 columns.}
 }
 \value{
-Scaled and offset \code{x} typically controlling axes placement.
+Transformed values of \code{x}, dimension and class unchanged.
 }
 \description{
-Typically called, by other functions to scale axes.
+Typically called by other functions to scale the position of the axes
+relative to the data.
 }
 \examples{
 rb <- tourr::basis_random(4, 2)

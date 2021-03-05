@@ -18,7 +18,7 @@ consumption by \code{tourr::interpolate}.
 }
 \description{
 Attaches data to an array and assigns the custom class "history_array" as
-used in \code{tourr}.
+used in \code{tourr}. Typically called by other spinifex functions.
 }
 \examples{
 rb <- tourr::basis_random(6, 2)
