@@ -26,7 +26,7 @@ vector, with manip_var set to 1.
 ## Setup
 dat_std <- scale_sd(wine[, 2:14])
 bas <- basis_pca(dat_std)
-mv <- manip_var_pca(bas)
+mv <- manip_var_of(bas)
 
 create_manip_space(basis = bas, manip_var = mv)
 }

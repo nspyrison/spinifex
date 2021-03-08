@@ -23,7 +23,7 @@ dat_std <- scale_sd(wine[, 2:14])
 basis_pca(data = dat_std)
 }
 \seealso{
-\code{\link[Rdimtools]{do.pca}}
+\code{\link[Rdimtools:do.pca]{Rdimtools::do.pca}}
 
 Other {basis identifiers}: 
 \code{\link{basis_guided}()},

@@ -51,23 +51,29 @@ Takes the result of \code{array2df()} and renders them into a
 dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
-mv <- manip_var_pca(dat_std)
+mv <- manip_var_of(bas)
 manual_array <- manual_tour(basis = bas, manip_var = mv)
 manual_df <- array2df(array = manual_array, data = dat_std)
 
+anim <- render_gganimate(frames = manual_df)
 \dontrun{
-render_gganimate(frames = manual_df)
+anim
+}
 
 require("ggplot2")
-render_gganimate(frames = manual_df, axes = "bottomleft",
-                 fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
-                 aes_args = list(color = clas, shape = clas),
-                 identity_args = list(size = 2, alpha = .7),
-                 ggproto = list(theme_void(),
-                                ggtitle("My title"),
-                                scale_color_brewer(palette = "Set2")))
-  
-if(F){ ## Save as a .gif(may require additional setup)
+anim2 <-
+  render_gganimate(frames = manual_df, axes = "bottomleft",
+                   fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
+                   aes_args = list(color = clas, shape = clas),
+                   identity_args = list(size = 2, alpha = .7),
+                   ggproto = list(theme_void(),
+                                  ggtitle("My title"),
+                                  scale_color_brewer(palette = "Set2")))
+\dontrun{
+anim2
+
+## Saving a .gif(may require additional setup)
+if(F){ ## Don't run by mistake
   render_gganimate(frames = manual_df, axes = "bottomleft",
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 }
@@ -76,5 +82,5 @@ if(F){ ## Save as a .gif(may require additional setup)
 \seealso{
 \code{\link{render_}} for \code{...} arguments.
 
-\code{\link[gganimate]{anim_save}} for more control of .gif output.
+\code{\link[gganimate:anim_save]{gganimate::anim_save}} for more control of .gif output.
 }

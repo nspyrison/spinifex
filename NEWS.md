@@ -1,8 +1,13 @@
 # spinifex v0.2.8
 
 - Vectorized all for() loops
-- as_historty_array(), coerces an array of bases into the same attributes and class as returns of tourr::save_history.
-- basis_olda(), the Orthonormal LDA basis, using Rdimtools::do.olda.
+- as_history_array(), coerces an array of bases into the same attributes and class as returns of tourr::save_history.
+- basis_olda(), the Orthonormal LDA basis, as facilitated by {Rdimtools}.
+- basis_odp(), the Orthogonal Discriminant Projection, as facilitated by {Rdimtools}.
+- basis_olpp(), the Orthogonal Discriminant Projection, as facilitated by {Rdimtools}.
+- basis_odp(), the Orthogonal Discriminant Projection, as facilitated by {Rdimtools}.
+- basis_odp(), the Orthogonal Discriminant Projection, as facilitated by {Rdimtools}.
+
 - stepwise_history, creates the target frames of a stepwise tour. Can be displayed with play_tour_path().
 __ is this still wanted????? __
 - manual_tour_history, builds a list of the bases in a manual tour. 

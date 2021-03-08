@@ -31,7 +31,7 @@ to the projection plane.
 ## Setup
 dat_std <- scale_sd(wine[, 2:14])
 bas <- basis_pca(dat_std)
-mv <- manip_var_pca(bas)
+mv <- manip_var_of(bas)
 msp <- create_manip_space(basis = bas, manip_var = mv)
 
 rotate_manip_space(msp, theta = runif(1, max = 2 * pi),

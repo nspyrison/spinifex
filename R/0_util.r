@@ -222,7 +222,7 @@ pan_zoom <- function(pan = c(0L, 0L),
 #' Changes an array of bases into a "history_array" for use in `tourr::interpolate`
 #' 
 #' Attaches data to an array and assigns the custom class "history_array" as 
-#' used in `tourr`. Typically called by other spinifex functions.
+#' used in `tourr`. Typically called by other `spinifex` functions.
 #' 
 #' @param basis_array An array of bases.
 #' @param data The data matrix to be projected through the basis. This is
@@ -230,12 +230,17 @@ pan_zoom <- function(pan = c(0L, 0L),
 #' @return An array of numeric bases with custom class "history_array" for 
 #' consumption by `tourr::interpolate`.
 #' 
-#' @seealso \code{\link[tourr]{save_history}} for preset choices.
+#' @seealso \code{\link[tourr:save_history]{tourr::save_history}} for preset choices.
 #' @export
 #' @examples 
-#' rb <- tourr::basis_random(6, 2)
-#' pan_zoom(pan = c(-1, 0), zoom = c(2/3, 2/3), x = rb)
-as_historty_array <- function(basis_array, data){
+#' dat_std <- scale_sd(wine[, 2:14])
+#' clas <- wine$Type
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_of(bas)
+#' mt_array <- manual_tour(basis = bas, manip_var = mv)
+#' 
+#' as_history_array(mt_array, dat_std)
+as_history_array <- function(basis_array, data){
   if(missing(data) == FALSE)
     attr(basis_array, "data") <- as.matrix(data)
   class(basis_array) <- "history_array"
@@ -275,15 +280,16 @@ theme_spinifex <- function(){
 #' @param d Number of dimensions in the projection space.
 #' @return A numeric matrix, an orthogonal basis that best distinguishes the 
 #' group means of `class`.
-#' @seealso \code{\link[Rdimtools]{do.pca}}
+#' @seealso \code{\link[Rdimtools:do.pca]{Rdimtools::do.pca}}
 #' @export
 #' @family {basis identifiers}
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_pca(data = dat_std)
 basis_pca <- function(data, d = 2L){
-  return(Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection)
+  ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
   rownames(ret) <- colnames(dat)
+  return(ret)
 }
 
 
@@ -295,10 +301,9 @@ basis_pca <- function(data, d = 2L){
 #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
 #' @param class The class for each observation, coerced to a factor.
 #' @param d Number of dimensions in the projection space.
-#' @param ... Optional other arguments to pass to \link[Rdimtools]{do.odp}.
 #' @return A numeric matrix, an orthogonal basis that best distinguishes the 
 #' group means of `class`.
-#' @seealso \code{\link[Rdimtools]{do.olda}}
+#' @seealso \code{\link[Rdimtools:do.olda]{Rdimtools::do.olda}}
 #' @references
 #' Ye J (2005). "Characterization of a Family of Algorithms for Generalized 
 #' Discriminant Analysis on Undersampled Problems." J. Mach. Learn. Res., 
@@ -309,12 +314,11 @@ basis_pca <- function(data, d = 2L){
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' basis_olda(data = dat_std, class = clas)
-basis_olda <- function(data, class, d = 2L, ...){
+basis_olda <- function(data, class, d = 2L){
   dat <- as.matrix(data)
   ret <- Rdimtools::do.olda(X = as.matrix(data),
                             label = as.factor(class),
-                            ndim = d,
-                            ...)$projection
+                            ndim = d)$projection
   rownames(ret) <- colnames(dat)
   return(ret)
 }
@@ -330,7 +334,15 @@ basis_olda <- function(data, class, d = 2L, ...){
 #' @param class The class for each observation, coerced to a factor.
 #' @param d Number of dimensions in the projection space.
 #' of `class`.
-#' @seealso \code{\link[Rdimtools]{do.odp}}
+#' @param type A vector specifying the neighborhood graph construction. 
+#' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
+#' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
+#' square root of observations.
+#' @param ... Optional, other arguments to pass to \code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}}.
+#' @seealso \code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}} for locality
+#' preservation arguments.
+#' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
+#' details on `type`.
 #' @references
 #' Li B, Wang C, Huang D (2009). "Supervised feature extraction based on 
 #' orthogonal discriminant projection." Neurocomputing, 73(1-3), 191-196.
@@ -350,7 +362,7 @@ basis_odp <- function(data, class, d = 2L, ...){
   return(ret)
 }
 
-#' The basis of Orthogonal Locality Preserving Projection (OLPP) 
+#' The basis of Orthogonal Locality Preserving Projection (OLPP)
 #' 
 #' Orthogonal Locality Preserving Projection (OLPP) is the orthogonal variant of
 #' LPP, a linear approximation to Laplacian Eigenmaps. It finds a linear 
@@ -359,11 +371,18 @@ basis_odp <- function(data, class, d = 2L, ...){
 #' 
 #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
 #' @param d Number of dimensions in the projection space.
-#' @param ... Optional, other arguments to pass to \code{\link[Rdimtools]{do.odp}}.
+#' @param type A vector specifying the neighborhood graph construction. 
+#' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
+#' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
+#' square root of observations.
+#' @param ... Optional, other arguments to pass to \code{\link[Rdimtools]{do.olpp}}.
 #' @return Orthogonal matrix basis that distinguishes the levels of `class` 
 #' based on local and non-local variation as weighted against the neighborhood 
 #' graph.
-#' @seealso \code{\link[Rdimtools]{do.odp}}
+#' @seealso \code{\link[Rdimtools:do.olpp]{Rdimtools::do.olpp}} for locality
+#' preservation parameters.
+#' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
+#' details on `type`.
 #' @references
 #' He X (2005). Locality Preserving Projections. PhD Thesis, 
 #' University of Chicago, Chicago, IL, USA.
@@ -372,11 +391,12 @@ basis_odp <- function(data, class, d = 2L, ...){
 #' @examples
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_olpp(data = dat_std)
-basis_olpp <- function(data, d = 2L, ...){
+basis_olpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data))), ...){
   dat <- as.matrix(data)
-  ret <- Rdimtools::do.odp(X = as.matrix(data),
+  ret <- Rdimtools::do.olpp(X = as.matrix(data),
                            label = as.factor(class),
                            ndim = d,
+                           type = type,
                            ...)$projection
   rownames(ret) <- colnames(dat)
   return(ret)
@@ -388,7 +408,7 @@ basis_olpp <- function(data, d = 2L, ...){
 #' LPP, a linear approximation to Laplacian Eigenmaps. It finds a linear 
 #' approximation to the eigenfunctions of the Laplace-Beltrami operator on the 
 #' graph-approximated data manifold. For the more details on `type` see 
-#' \code{\link[Rdimtools]{aux.graphnbd}}.
+#' \code{\link[Rdimtools:aux.graphnbd()]{Rdimtools::aux.graphnbd()}}.
 #' 
 #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
 #' @param d Number of dimensions in the projection space.
@@ -399,8 +419,9 @@ basis_olpp <- function(data, d = 2L, ...){
 #' @return Orthogonal matrix basis that distinguishes the levels of `class` 
 #' based on local and non-local variation as weighted against the neighborhood 
 #' graph.
-#' @seealso \code{\link[Rdimtools]{do.onpp}}
-#' @seealso \code{\link[Rdimtools]{aux.graphnbd}}
+#' @seealso \code{\link[Rdimtools:do.onpp()]{Rdimtools::do.onpp()}}
+#' @seealso \code{\link[Rdimtools:aux.graphnbd()]{Rdimtools::aux.graphnbd()}} for 
+#' details on `type`.
 #' @references
 #' He X (2005). Locality Preserving Projections. PhD Thesis, 
 #' University of Chicago, Chicago, IL, USA.
@@ -409,7 +430,7 @@ basis_olpp <- function(data, d = 2L, ...){
 #' @examples
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_onpp(data = dat_std)
-basis_onpp <- function(data, d = 2L, type = c("proportion", 0.1)){
+basis_onpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data)))){
   dat <- as.matrix(data)
   ret <- Rdimtools::do.onpp(X = as.matrix(data),
                             label = as.factor(class),
@@ -423,16 +444,18 @@ basis_onpp <- function(data, d = 2L, type = c("proportion", 0.1)){
 #' Solve for the last basis of a guided tour.
 #' 
 #' Performs simulated annealing on the index function, solving for it's local
-#' extrema. Retruns only the last identified basis of the optimization. A 
+#' extrema. Returns only the last identified basis of the optimization. A 
 #' truncated, muted extension of tourr::save_history(guided_tour())).
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @param index_f The index function to optimize.
 #' `{tourr}` exports `holes()`, `cmass()`, and `lda_pp(class)`.
 #' @param d Number of dimensions in the projection space.
-#' @param ... Optional, other arguments to pass to \code{\link[tourr]{guided_tour}}.
+#' @param ... Optional, other arguments to pass to 
+#' \code{\link[tourr:guided_tour]{tourr::guided_tour}}
 #' @return Numeric matrix of the last basis of a guided tour.
-#' @seealso \code{\link[tourr]{guided_tour}} for annealing arguments.
+#' @seealso \code{\link[tourr:guided_tour]{tourr::guided_tour}} for annealing 
+#' arguments.
 #' @export
 #' @family {basis identifiers}
 #' @examples 
@@ -448,7 +471,7 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2L, ...){
       tourr::guided_tour(index_f = index_f, d = d, ...)
     )
   ))
-  return(matrix(hist[, , length(hist)], ncol = d))
+  return(matrix(hist[,, length(hist)], ncol = d))
 }
 
 #' Suggest a manipulation variable.
@@ -484,7 +507,7 @@ manip_var_of <- function(basis, rank = 1L){
 #' @examples 
 #' scale_sd(data = wine[, 2:14])
 scale_sd <- function(data){
-  return(apply(data, 2L, function(c) (c - mean(c)) / stats::sd(c)))
+  return(apply(data, 2L, function(c){(c - mean(c)) / stats::sd(c)}))
 }
 
 #' @rdname scale_sd
@@ -492,5 +515,5 @@ scale_sd <- function(data){
 #' @examples 
 #' scale_01(data = wine[, 2:14])
 scale_01 <- function(data){
-  return(tourr::rescale(data))
+  return(apply(df, 2L, function(c) (c - min(c)) / diff(range(c))))
 }

@@ -4,7 +4,7 @@
 \alias{basis_olda}
 \title{The basis of Orthogonal Linear Discriminant Analysis (OLDA)}
 \usage{
-basis_olda(data, class, d = 2L, ...)
+basis_olda(data, class, d = 2L)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations, coerced to matrix.}
@@ -12,8 +12,6 @@ basis_olda(data, class, d = 2L, ...)
 \item{class}{The class for each observation, coerced to a factor.}
 
 \item{d}{Number of dimensions in the projection space.}
-
-\item{...}{Optional other arguments to pass to \link[Rdimtools]{do.odp}.}
 }
 \value{
 A numeric matrix, an orthogonal basis that best distinguishes the
@@ -34,7 +32,7 @@ Discriminant Analysis on Undersampled Problems." J. Mach. Learn. Res.,
 6, 483-502. ISSN 1532-4435.
 }
 \seealso{
-\code{\link[Rdimtools]{do.olda}}
+\code{\link[Rdimtools:do.olda]{Rdimtools::do.olda}}
 
 Other {basis identifiers}: 
 \code{\link{basis_guided}()},

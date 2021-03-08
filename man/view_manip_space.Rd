@@ -55,7 +55,7 @@ the projection frame. Returns the corresponding table.
 \examples{
 dat_std <- scale_sd(wine[, 2:14])
 bas <- basis_pca(dat_std)
-mv <- manip_var_pca(dat_std)
+mv <- manip_var_of(bas)
 
 view_manip_space(basis = bas, manip_var = mv)
 

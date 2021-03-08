@@ -13,6 +13,13 @@ basis_odp(data, class, d = 2L, ...)
 
 \item{d}{Number of dimensions in the projection space.
 of \code{class}.}
+
+\item{...}{Optional, other arguments to pass to \code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}}.}
+
+\item{type}{A vector specifying the neighborhood graph construction.
+Expects; \code{c("knn", k)}, \code{c("enn", radius)}, or \code{c("proportion",ratio)}.
+Defaults to \code{c("knn", sqrt(nrow(data)))}, nearest neighbors equal to the
+square root of observations.}
 }
 \description{
 Orthogonal Discriminant Projection (ODP) is a linear dimension reduction
@@ -30,7 +37,11 @@ Li B, Wang C, Huang D (2009). "Supervised feature extraction based on
 orthogonal discriminant projection." Neurocomputing, 73(1-3), 191-196.
 }
 \seealso{
-\code{\link[Rdimtools]{do.odp}}
+\code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}} for locality
+preservation arguments.
+
+\code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for
+details on \code{type}.
 
 Other {basis identifiers}: 
 \code{\link{basis_guided}()},

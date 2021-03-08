@@ -14,14 +14,15 @@ basis_guided(data, index_f = tourr::holes(), d = 2L, ...)
 
 \item{d}{Number of dimensions in the projection space.}
 
-\item{...}{Optional, other arguments to pass to \code{\link[tourr]{guided_tour}}.}
+\item{...}{Optional, other arguments to pass to
+\code{\link[tourr:guided_tour]{tourr::guided_tour}}}
 }
 \value{
 Numeric matrix of the last basis of a guided tour.
 }
 \description{
 Performs simulated annealing on the index function, solving for it's local
-extrema. Retruns only the last identified basis of the optimization. A
+extrema. Returns only the last identified basis of the optimization. A
 truncated, muted extension of tourr::save_history(guided_tour())).
 }
 \examples{
@@ -32,7 +33,8 @@ basis_guided(data = dat_std, index_f = tourr::cmass(),
              alpha = .4, cooling = .9, max.tries = 30)
 }
 \seealso{
-\code{\link[tourr]{guided_tour}} for annealing arguments.
+\code{\link[tourr:guided_tour]{tourr::guided_tour}} for annealing
+arguments.
 
 Other {basis identifiers}: 
 \code{\link{basis_odp}()},

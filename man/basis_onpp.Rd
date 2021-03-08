@@ -4,7 +4,7 @@
 \alias{basis_onpp}
 \title{The basis of Orthogonal Locality Preserving Projection (OLPP)}
 \usage{
-basis_onpp(data, d = 2L, type = c("proportion", 0.1))
+basis_onpp(data, d = 2L, type = c("knn", sqrt(nrow(data))))
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations, coerced to matrix.}
@@ -26,7 +26,7 @@ Orthogonal Locality Preserving Projection (OLPP) is the orthogonal variant of
 LPP, a linear approximation to Laplacian Eigenmaps. It finds a linear
 approximation to the eigenfunctions of the Laplace-Beltrami operator on the
 graph-approximated data manifold. For the more details on \code{type} see
-\code{\link[Rdimtools]{aux.graphnbd}}.
+\code{\link[Rdimtools:aux.graphnbd()]{Rdimtools::aux.graphnbd()}}.
 }
 \examples{
 dat_std <- scale_sd(wine[, 2:14])
@@ -37,9 +37,10 @@ He X (2005). Locality Preserving Projections. PhD Thesis,
 University of Chicago, Chicago, IL, USA.
 }
 \seealso{
-\code{\link[Rdimtools]{do.onpp}}
+\code{\link[Rdimtools:do.onpp()]{Rdimtools::do.onpp()}}
 
-\code{\link[Rdimtools]{aux.graphnbd}}
+\code{\link[Rdimtools:aux.graphnbd()]{Rdimtools::aux.graphnbd()}} for
+details on \code{type}.
 
 Other {basis identifiers}: 
 \code{\link{basis_guided}()},

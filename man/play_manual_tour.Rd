@@ -55,7 +55,7 @@ For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}
 dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
-mv <- manip_var_pca(dat_std)
+mv <- manip_var_of(bas)
 
 \dontrun{
 play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
