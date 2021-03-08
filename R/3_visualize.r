@@ -109,7 +109,7 @@ play_tour_path <- function(tour_path,
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(dat_std)
+#' mv <- manip_var_of(bas)
 #' 
 #' \dontrun{
 #' play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
@@ -189,7 +189,7 @@ play_manual_tour <- function(basis = NULL,
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(dat_std)
+#' mv <- manip_var_of(bas)
 #' 
 #' view_frame(basis = bas)
 #' 
@@ -284,7 +284,7 @@ oblique_basis <- function(...) {
 #' @examples
 #' dat_std <- scale_sd(wine[, 2:14])
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(dat_std)
+#' mv <- manip_var_of(bas)
 #' 
 #' view_manip_space(basis = bas, manip_var = mv)
 #' 

@@ -3,7 +3,7 @@ library("testthat")
 dat_std <- scale_sd(wine[1:10, 2:5]) ## small chunk for speed.
 bas <- basis_pca(dat_std)
 clas <- wine$Type
-mv <- manip_var_pca(bas)
+mv <- manip_var_of(bas)
 
 ##
 ## RENDERING -----

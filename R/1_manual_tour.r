@@ -20,7 +20,7 @@
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:14])
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(bas)
+#' mv <- manip_var_of(bas)
 #' 
 #' create_manip_space(basis = bas, manip_var = mv)
 create_manip_space <- function(basis, manip_var){
@@ -77,7 +77,7 @@ create_manip_space <- function(basis, manip_var){
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:14])
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(bas)
+#' mv <- manip_var_of(bas)
 #' msp <- create_manip_space(basis = bas, manip_var = mv)
 #' 
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi),
@@ -152,7 +152,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(dat_std)
+#' mv <- manip_var_of(bas)
 #' 
 #' ## Required arguments
 #' manual_tour(basis = bas, manip_var = mv)

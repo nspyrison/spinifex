@@ -3,7 +3,7 @@ library("testthat")
 dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
-mv <- manip_var_pca(dat_std)
+mv <- manip_var_of(bas)
 
 ##
 ## MATH AND TRANSFORMS -----
@@ -122,28 +122,16 @@ test_that("basis_guided: class and dim", {
 
 
 
-### manip_var_pca ------
-
-ret <- manip_var_pca(data = dat_std)
-
+### manip_var_of ------
+ret <- manip_var_of(bas)
+ret_not_orth <- manip_var_of(not_orth)
 test_that("manip_var_pca: class and dim", {
   expect_is(ret, "integer")
   expect_equal(length(ret), 1)
+  expect_warning(manip_var_of(not_orth))
 })
 
 
-### manip_var_guided ------
-
-ret_holes <- manip_var_guided(data = dat_std, index_f = tourr::holes())
-ret_cmass <- manip_var_guided(data = dat_std, index_f = tourr::cmass(),
-                              alpha = .4, cooling = .9, max.tries = 30)
-
-test_that("manip_var_guided: class and dim", {
-  expect_is(ret_holes, "integer")
-  expect_is(ret_cmass, "integer")
-  expect_equal(length(ret_holes), 1)
-  expect_equal(length(ret_cmass), 1)
-})
 
 ## no roi for a unit test of basis_pca()
 

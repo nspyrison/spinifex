@@ -43,7 +43,7 @@ server <- function(input, output, session) {
   selDat <- reactive({
     dat <- rawDat()
     ret <- dat[, which(colnames(dat) %in% input$projVars)]
-    if(input$rescale_data) ret <- tourr::rescale(ret)
+    if(input$rescale_data) ret <- scale_sd(ret)
     if(!is.matrix(ret)) ret <- as.matrix(ret)
     return(ret)
   })
@@ -80,6 +80,7 @@ server <- function(input, output, session) {
                 angle = input$angle)
   })
   plotly_anim <- reactive({
+    req(manip_var_num())
     play_manual_tour(data  = selDat(),
                      basis = basis(),
                      manip_var = manip_var_num(),
@@ -127,13 +128,15 @@ server <- function(input, output, session) {
   ### Output ----
   output$rawDat_summary <- renderPrint({
     dat <- as.data.frame(rawDat()) ## For naming
-    tibble::as_tibble(dat)
+    summary(dat)
   })
   output$selDat_summary <- renderPrint({
     dat <- as.data.frame(selDat()) ## For naming
-    tibble::as_tibble(dat)
+    summary(dat)
   })
   output$plotlyAnim <- plotly::renderPlotly(plotly_anim())
+  outputOptions(output, "plotlyAnim", suspendWhenHidden = FALSE) ## Eager evaluation
+  
   
   #### Dev tools -----
   ## toggle display by setting .include_dev_display at the top of ../global_shinyApps.r

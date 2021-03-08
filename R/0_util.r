@@ -42,7 +42,7 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' dat_std <- tourr::rescale(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(dat_std)
+#' mv <- manip_var_of(bas)
 #' 
 #' ## Radial tour array to long df, as used in play_manual_tour()
 #' tour_array <- manual_tour(basis = bas, manip_var = mv)

@@ -48,7 +48,7 @@ tabData <- tabPanel(
         choices  = default_projVars,
         selected = default_projVars
       ),
-      checkboxInput("rescale_data", "Normalize values to [0, 1]", value = TRUE)
+      checkboxInput("rescale_data", "Standardize values to by Std.Dev.", value = TRUE)
     ),
     mainPanel(width = 9,
               h4("Raw input data summary"),

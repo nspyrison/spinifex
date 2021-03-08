@@ -37,7 +37,7 @@
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(dat_std)
+#' mv <- manip_var_of(bas)
 #' 
 #' manual_array <- manual_tour(basis = bas, manip_var = mv)
 #' manual_df <- array2df(array = manual_array, data = dat_std)
@@ -204,7 +204,7 @@ render_ <- function(frames,
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(dat_std)
+#' mv <- manip_var_of(bas)
 #' manual_array <- manual_tour(basis = bas, manip_var = mv)
 #' manual_df <- array2df(array = manual_array, data = dat_std)
 #' 
@@ -284,7 +284,7 @@ render_gganimate <- function(fps = 8L,
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
-#' mv <- manip_var_pca(dat_std)
+#' mv <- manip_var_of(bas)
 #' manual_array <- manual_tour(basis = bas, manip_var = mv)
 #' manual_df <- array2df(array = manual_array, data = dat_std)
 #' 
