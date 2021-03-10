@@ -288,7 +288,7 @@ theme_spinifex <- function(){
 #' basis_pca(data = dat_std)
 basis_pca <- function(data, d = 2L){
   ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
-  rownames(ret) <- colnames(dat)
+  rownames(ret) <- colnames(data)
   return(ret)
 }
 
