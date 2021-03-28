@@ -315,11 +315,10 @@ basis_pca <- function(data, d = 2L){
 #' clas <- wine$Type
 #' basis_olda(data = dat_std, class = clas)
 basis_olda <- function(data, class, d = 2L){
-  dat <- as.matrix(data)
   ret <- Rdimtools::do.olda(X = as.matrix(data),
                             label = as.factor(class),
                             ndim = d)$projection
-  rownames(ret) <- colnames(dat)
+  rownames(ret) <- colnames(data)
   return(ret)
 }
 
@@ -353,12 +352,11 @@ basis_olda <- function(data, class, d = 2L){
 #' clas <- wine$Type
 #' basis_odp(data = dat_std, class = clas)
 basis_odp <- function(data, class, d = 2L, ...){
-  dat <- as.matrix(data)
   ret <- Rdimtools::do.odp(X = as.matrix(data),
                            label = as.factor(class),
                            ndim = d,
                            ...)$projection
-  rownames(ret) <- colnames(dat)
+  rownames(ret) <- colnames(data)
   return(ret)
 }
 
@@ -392,13 +390,12 @@ basis_odp <- function(data, class, d = 2L, ...){
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_olpp(data = dat_std)
 basis_olpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data))), ...){
-  dat <- as.matrix(data)
   ret <- Rdimtools::do.olpp(X = as.matrix(data),
                            label = as.factor(class),
                            ndim = d,
                            type = type,
                            ...)$projection
-  rownames(ret) <- colnames(dat)
+  rownames(ret) <- colnames(data)
   return(ret)
 }
 
@@ -431,12 +428,11 @@ basis_olpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data))), ...){
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_onpp(data = dat_std)
 basis_onpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data)))){
-  dat <- as.matrix(data)
   ret <- Rdimtools::do.onpp(X = as.matrix(data),
                             label = as.factor(class),
                             ndim = d,
                             type = type)$projection
-  rownames(ret) <- colnames(dat)
+  rownames(ret) <- colnames(data)
   return(ret)
 }
 
@@ -473,6 +469,16 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2L, ...){
   ))
   return(matrix(hist[,, length(hist)], ncol = d))
 }
+
+## Basis half circle -----
+# basis_half_clock <- function(data){
+#   p <- ncol(data)
+#   p1 <- p + 1L
+#   ang <- seq(0L, pi, length.out = p1)[-p1]
+#   u_circ_p4 <- as.matrix(data.frame(x = sin(ang), y = cos(ang)))
+#   tourr::orthonormalise(u_circ_p4)
+# }
+
 
 #' Suggest a manipulation variable.
 #' 
