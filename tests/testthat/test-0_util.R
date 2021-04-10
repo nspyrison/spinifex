@@ -124,8 +124,7 @@ test_that("basis_guided: class and dim", {
 
 ### manip_var_of ------
 ret <- manip_var_of(bas)
-ret_not_orth <- manip_var_of(not_orth)
-test_that("manip_var_pca: class and dim", {
+test_that("manip_var_of: class and dim", {
   expect_is(ret, "integer")
   expect_equal(length(ret), 1)
   expect_warning(manip_var_of(not_orth))

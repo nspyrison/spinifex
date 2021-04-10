@@ -15,7 +15,7 @@
 #' differentiate from returns of `tourr::save_history`.
 #' @seealso \code{\link[spinifex]{stepwise_add}}
 #' \code{\link[spinifex]{stepwise_remove}}
-#' @export
+## #'  @export
 #' 
 #' @examples
 #' dat_std <- scale_sd(wine[, 2:14])

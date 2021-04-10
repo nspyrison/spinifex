@@ -22,9 +22,6 @@
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' 
-#' ## Tour history from stepwise_history
-#' sw_path <- stepwise_history(basis = bas, data = dat_std)
-#' 
 #' ## Tour history from tourr::save_history
 #' g_path <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 #' 
@@ -310,12 +307,12 @@ view_manip_space <- function(basis,
   #### Makes a matrix semi-circle, with 1 row per degree
   make_curve <- function(ang_st = 0L,
                          ang_stop = 2L * pi){
-    n_degrees <- round(180L / pi * abs(ang_st - ang_stop))
+    n_degrees <- max(round(180L / pi * abs(ang_st - ang_stop)), 1L)
     angle <- seq(ang_st, ang_stop, length = n_degrees)
     matrix(c(cos(angle), sin(angle), sin(angle)),
            ncol = 3L, dimnames = list(NULL, c("x", "y", "z")))
   }
-  rot <- function(mat, ang = tilt){
+  rotate <- function(mat, ang = tilt){
     mat[, 1L] <- mat[, 1L] * cos(tilt)
     mat[, 2L] <- mat[, 2L] * sin(tilt)
     mat[, 3L] <- mat[, 3L] * cos(tilt)
@@ -325,7 +322,7 @@ view_manip_space <- function(basis,
   p <- nrow(basis)
   m_sp <- create_manip_space(basis, manip_var)
   colnames(m_sp) = c("x", "y", "z")
-  m_sp_r <- rot(m_sp)
+  m_sp_r <- rotate(m_sp)
   mv_sp <- m_sp[manip_var, ]
   mv_sp_r <- m_sp_r[manip_var, ]
   ## Aesthetics
@@ -334,9 +331,9 @@ view_manip_space <- function(basis,
   siz_v <- rep(line_size, p)
   siz_v[manip_var] <- 1L
   ## Axes circle and angles
-  circ_r <- rot(make_curve())
+  circ_r <- rotate(make_curve())
   theta_ang <- find_angle(c(mv_sp[1L], mv_sp[2L]), c(1L, 0L))
-  theta_curve_r <- rot(.5 * make_curve(ang_st = 0L, ang_stop = theta_ang)) 
+  theta_curve_r <- rotate(.5 * make_curve(ang_st = 0L, ang_stop = theta_ang))
   mv_sp_ysign <- ifelse(mv_sp[2L]< 0L, -1L, 1L)
   theta_curve_r[, 2L] <- theta_curve_r[, 2L] * mv_sp_ysign
   phi_ang <- find_angle(c(m_sp_r[, 1L], m_sp_r[, 2L]),
@@ -345,7 +342,7 @@ view_manip_space <- function(basis,
   phi_curve[, 2L] <- phi_curve[, 2L] * mv_sp_ysign
   ### Center and rotate
   start_pt <- phi_curve[1L, 1L:2L]
-  phi_curve_r <- rot(
+  phi_curve_r <- rotate(
     matrix(c(start_pt[1L] + (phi_curve[, 2L] - start_pt[2L]), 
              start_pt[2L] + (phi_curve[, 1L] - start_pt[1L]),
              phi_curve[, 3L]),

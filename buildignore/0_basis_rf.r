@@ -10,36 +10,39 @@ require("spinifex")
 if(F) ## Working from: 
   browseURL("http://ema.drwhy.ai/shapley.html#SHAPRcode")
 
-titanic_imputed <- archivist::aread("pbiecek/models/27e5c")
-titanic_rf <- archivist::aread("pbiecek/models/4e0fc")
-henry <- archivist::aread("pbiecek/models/a6538")
-
-## Make a DALEX "explainer" of in sample data
-explain_rf <- DALEX::explain(model = titanic_rf,  
-                             data = titanic_imputed[, -9],
-                             y = titanic_imputed$survived == "yes", 
-                             label = "Random Forest")
-## Predict a single out of sample observation, "Henry"?
-predict(explain_rf, henry)
-
-tictoc::tic("shap_henry")
-shap_henry <- predict_parts(explainer = explain_rf,  ## ~ 10 s @ B=25
-                            new_observation = henry, 
-                            type = "shap",
-                            B = 10)
-tictoc::toc()
-plot(shap_henry, show_boxplots = FALSE)
-
-print("note that iBreakDown:::print.break_down prints an agg tbl, not the 11 perms tested and desplayed when coerced to tibble.")
-tib_shap_henry <- tibble::as.tibble(shap_henry) ## Note that SHAP is already showing only 7 of 77 branches.
-hist(tib_shap_henry$contribution)
-
-
-print("why isn't it showing the 7 largest contributions though??")
-library("dplyr")
-tib_shap_henry <- tib_shap_henry %>% arrange(desc(abs(contribution)))
-tib_shap_henry
-unique(tib_shap_henry$variable)
+message(interactive())
+if(interactive() == F){
+  titanic_imputed <- archivist::aread("pbiecek/models/27e5c")
+  titanic_rf <- archivist::aread("pbiecek/models/4e0fc")
+  henry <- archivist::aread("pbiecek/models/a6538")
+  
+  ## Make a DALEX "explainer" of in sample data
+  explain_rf <- DALEX::explain(model = titanic_rf,  
+                               data = titanic_imputed[, -9],
+                               y = titanic_imputed$survived == "yes", 
+                               label = "Random Forest")
+  ## Predict a single out of sample observation, "Henry"?
+  predict(explain_rf, henry)
+  
+  tictoc::tic("shap_henry")
+  shap_henry <- predict_parts(explainer = explain_rf,  ## ~ 10 s @ B=25
+                              new_observation = henry, 
+                              type = "shap",
+                              B = 10)
+  tictoc::toc()
+  plot(shap_henry, show_boxplots = FALSE)
+  
+  print("note that iBreakDown:::print.break_down prints an agg tbl, not the 11 perms tested and desplayed when coerced to tibble.")
+  tib_shap_henry <- tibble::as.tibble(shap_henry) ## Note that SHAP is already showing only 7 of 77 branches.
+  hist(tib_shap_henry$contribution)
+  
+  
+  print("why isn't it showing the 7 largest contributions though??")
+  library("dplyr")
+  tib_shap_henry <- tib_shap_henry %>% arrange(desc(abs(contribution)))
+  tib_shap_henry
+  unique(tib_shap_henry$variable)
+}
 
 ## Remade from: iBreakDown:::print.break_down_uncertainty
 ## Create the scree df for the local attribution from a DALEX::predict_parts return.

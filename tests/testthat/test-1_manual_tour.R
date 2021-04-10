@@ -3,7 +3,7 @@ library("testthat")
 dat_std <- scale_sd(rescale(wine[, 2:14]))
 bas     <- basis_pca(dat_std)
 clas    <- wine$Type
-mv      <- manip_var_pca(bas)
+mv      <- manip_var_of(bas)
 
 ##
 ## MANUAL TOUR WORK HORSES -----

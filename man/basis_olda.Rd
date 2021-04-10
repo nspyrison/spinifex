@@ -37,7 +37,6 @@ Discriminant Analysis on Undersampled Problems." J. Mach. Learn. Res.,
 Other {basis identifiers}: 
 \code{\link{basis_guided}()},
 \code{\link{basis_odp}()},
-\code{\link{basis_olpp}()},
 \code{\link{basis_onpp}()},
 \code{\link{basis_pca}()}
 }

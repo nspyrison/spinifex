@@ -33,9 +33,6 @@ dat_std <- scale_sd(wine[, 2:14])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 
-## Tour history from stepwise_history
-sw_path <- stepwise_history(basis = bas, data = dat_std)
-
 ## Tour history from tourr::save_history
 g_path <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 

@@ -46,7 +46,6 @@ Other {basis identifiers}:
 \code{\link{basis_guided}()},
 \code{\link{basis_odp}()},
 \code{\link{basis_olda}()},
-\code{\link{basis_olpp}()},
 \code{\link{basis_pca}()}
 }
 \concept{{basis identifiers}}

@@ -1,6 +1,6 @@
 Package: spinifex
 Title: Manual Tours, Manual Control of Dynamic Projections of Numeric Multivariate Data
-Version: 0.2.7.9000
+Version: 0.2.8
 Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
@@ -23,7 +23,6 @@ License: CC BY-NC-SA 4.0
 URL: https://github.com/nspyrison/spinifex/
 BugReports: https://github.com/nspyrison/spinifex/issues
 Imports: 
-    tourr,
     ggplot2,
     gganimate,
     plotly,

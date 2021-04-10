@@ -4,7 +4,7 @@
 \alias{basis_odp}
 \title{The basis of Orthogonal Discriminant Projection (ODP)}
 \usage{
-basis_odp(data, class, d = 2L, ...)
+basis_odp(data, class, d = 2L, type = c("proportion", 0.1), ...)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations, coerced to matrix.}
@@ -14,12 +14,12 @@ basis_odp(data, class, d = 2L, ...)
 \item{d}{Number of dimensions in the projection space.
 of \code{class}.}
 
-\item{...}{Optional, other arguments to pass to \code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}}.}
-
 \item{type}{A vector specifying the neighborhood graph construction.
 Expects; \code{c("knn", k)}, \code{c("enn", radius)}, or \code{c("proportion",ratio)}.
 Defaults to \code{c("knn", sqrt(nrow(data)))}, nearest neighbors equal to the
 square root of observations.}
+
+\item{...}{Optional, other arguments to pass to \code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}}.}
 }
 \description{
 Orthogonal Discriminant Projection (ODP) is a linear dimension reduction
@@ -46,7 +46,6 @@ details on \code{type}.
 Other {basis identifiers}: 
 \code{\link{basis_guided}()},
 \code{\link{basis_olda}()},
-\code{\link{basis_olpp}()},
 \code{\link{basis_onpp}()},
 \code{\link{basis_pca}()}
 }

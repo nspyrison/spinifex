@@ -2,6 +2,7 @@
 ^Meta$
 ^docs$
 ^_pkgdown\.yml$
+^pkgdown$
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
@@ -15,8 +16,8 @@
 ^inst/shiny_apps/.*\.gif$
 ^inst/shiny_apps/.*\.csv$
 ^inst/shiny_apps/.*\.txt$
-
 ^inst/shiny_apps/global_shinyApps.r
 ^inst/shiny_apps/primary/.*$
-^_pkgdown\.yml$
-^pkgdown$
+
+^R/b1_stepwise_history\.r
+^R/0_basis_rf\.r$

@@ -2,13 +2,13 @@
 % Please edit documentation in R/0_util.r
 \name{theme_spinifex}
 \alias{theme_spinifex}
-\title{A ggplot2 theme containing theme_void and coord_fixed.
+\title{A ggplot2 theme suggested for linear projections with spinifex.
 The default value for ggproto arguments in spinifex functions.}
 \usage{
 theme_spinifex()
 }
 \description{
-A ggplot2 theme containing theme_void and coord_fixed.
+A ggplot2 theme suggested for linear projections with spinifex.
 The default value for ggproto arguments in spinifex functions.
 }
 \examples{
