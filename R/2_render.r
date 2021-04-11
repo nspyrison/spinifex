@@ -312,7 +312,7 @@ render_gganimate <- function(fps = 8L,
 #' \dontrun{
 #' anim2
 #' 
-#' ## Saving a .gif(may require additional setup)
+#' ## Saving a .gif, may require additional setup
 #' if(F){ ## Don't run by mistake
 #'   render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
 #'                 html_filename = "myRadialTour.html")

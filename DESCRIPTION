@@ -27,16 +27,15 @@ Imports:
     gganimate,
     plotly,
     shiny,
-    RColorBrewer,
-    dplyr,
     Rdimtools
 Suggests: 
+    dplyr,
+    GGally,
     rmarkdown,
     htmlwidgets,
     knitr,
     testthat,
     covr,
-    GGally,
     spelling
 VignetteBuilder: knitr
 Encoding: UTF-8
