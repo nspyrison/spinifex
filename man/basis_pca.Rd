@@ -25,10 +25,11 @@ basis_pca(data = dat_std)
 \seealso{
 \code{\link[Rdimtools:do.pca]{Rdimtools::do.pca}}
 
-Other {basis identifiers}: 
+Other basis identifiers: 
 \code{\link{basis_guided}()},
+\code{\link{basis_half_circle}()},
 \code{\link{basis_odp}()},
 \code{\link{basis_olda}()},
 \code{\link{basis_onpp}()}
 }
-\concept{{basis identifiers}}
+\concept{basis identifiers}

@@ -279,7 +279,7 @@ theme_spinifex <- function(){
 #' group means of `class`.
 #' @seealso \code{\link[Rdimtools:do.pca]{Rdimtools::do.pca}}
 #' @export
-#' @family {basis identifiers}
+#' @family basis identifiers
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_pca(data = dat_std)
@@ -306,7 +306,7 @@ basis_pca <- function(data, d = 2L){
 #' Discriminant Analysis on Undersampled Problems." J. Mach. Learn. Res., 
 #' 6, 483-502. ISSN 1532-4435.
 #' @export
-#' @family {basis identifiers}
+#' @family basis identifiers
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
@@ -343,7 +343,7 @@ basis_olda <- function(data, class, d = 2L){
 #' Li B, Wang C, Huang D (2009). "Supervised feature extraction based on 
 #' orthogonal discriminant projection." Neurocomputing, 73(1-3), 191-196.
 #' @export
-#' @family {basis identifiers}
+#' @family basis identifiers
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
@@ -384,7 +384,7 @@ basis_odp <- function(data, class, d = 2L, type = c("proportion", 0.1), ...){
 # #' He X (2005). Locality Preserving Projections. PhD Thesis, 
 # #' University of Chicago, Chicago, IL, USA.
 # #' @export
-# #' @family {basis identifiers}
+# #' @family basis identifiers
 # #' @examples
 # #' dat_std <- scale_sd(wine[, 2:14])
 # #' basis_olpp(data = dat_std)
@@ -422,7 +422,7 @@ basis_odp <- function(data, class, d = 2L, type = c("proportion", 0.1), ...){
 #' He X (2005). Locality Preserving Projections. PhD Thesis, 
 #' University of Chicago, Chicago, IL, USA.
 #' @export
-#' @family {basis identifiers}
+#' @family basis identifiers
 #' @examples
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_onpp(data = dat_std)
@@ -451,7 +451,7 @@ basis_onpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data)))){
 #' @seealso \code{\link[tourr:guided_tour]{tourr::guided_tour}} for annealing 
 #' arguments.
 #' @export
-#' @family {basis identifiers}
+#' @family basis identifiers
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_guided(data = dat_std, index_f = tourr::holes())
@@ -477,6 +477,7 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2L, ...){
 #' 
 #' @param data The data to create a basis for.
 #' @export
+#' @family basis identifiers
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:14])
 #' bas <- basis_half_circle(dat_std)
