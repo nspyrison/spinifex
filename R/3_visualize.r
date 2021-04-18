@@ -22,11 +22,10 @@
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' 
+#' \dontrun{
 #' ## Tour history from tourr::save_history
 #' g_path <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 #' 
-#' \dontrun{
-#' play_tour_path(tour_path = sw_path, data = dat_std)
 #' play_tour_path(tour_path = g_path,  data = dat_std)
 #' 
 #' play_tour_path(tour_path = g_path, data = dat_std,
@@ -37,7 +36,8 @@
 #'                  list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                render_type = render_gganimate)
 #' 
-#' if(F){ ## Saving output may require additional setup
+#' ## Saving a .gif(may require additional setup)
+#' if(F){ ## Don't run by mistake
 #'   ## Export plotly .html widget
 #'   play_tour_path(tour_path = tpath, data = dat_std,
 #'                  render_type = render_plotly,
@@ -119,7 +119,8 @@ play_tour_path <- function(tour_path,
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
 #'                  render_type = render_gganimate)
 #' 
-#' if(F){ ## Saving output may require additional setup
+#' ## Saving output may require additional setup
+#' if(F){ ## Don't run by mistake
 #'   ## Export plotly .html widget
 #'   play_manual_tour(basis = bas, data = dat_std, manip_var = 6,
 #'                    render_type = render_plotly,
@@ -207,10 +208,8 @@ view_frame <- function(basis = NULL,
                        label = abbreviate(row.names(basis), 3L),
                        rescale_data = FALSE,
                        ...){
-  ## Basis condition handling
   if(is.null(data) == FALSE)
     data <- as.matrix(data)
-  
   if(is.null(basis)){
     basis <- basis_pca(data)
     message("NULL basis passed. Set to PCA basis.")
@@ -218,17 +217,17 @@ view_frame <- function(basis = NULL,
   
   ## Initialize
   p <- nrow(basis)
-  
   if(is.null(manip_var) == FALSE & (theta != 0L | phi != 0L)){
     m_sp <- create_manip_space(basis, manip_var)
     basis <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1L:2L]
   }
-
+  
+  ## The work
   tour_array <- array(basis, dim = c(dim(basis), 1L))
-  attr(tour_array, "manip_var") <- manip_var
+  df_frames <- array2df(array = tour_array, data = data, label = label)
+  attr(df_frames$data_frames, "manip_var") <- manip_var
   
   ## Render
-  df_frames <- array2df(array = tour_array, data = data, label = label)
   return(render_(frames = df_frames, ...))
 }
 

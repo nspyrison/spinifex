@@ -10,9 +10,10 @@ Basis_* functions to find features of interest, powered by `{Rdimtools}`.
 - `basis_odp()`
 
 New util functions:
--`scale_sd()` center and scale each variable by it's standard deviation
--`scale_01()` center and scale each variable to be between [0, 1]
--`as_history_array()`, coerces an array of bases into the same attributes and class as returns of `tourr::save_history()`
+- `scale_sd()` center and scale each variable by it's standard deviation
+- `scale_01()` center and scale each variable to be between [0, 1]
+- `basis_half_circle()`, variable agnostic basis with minimal variable dependence.
+- `as_history_array()`, coerces an array of bases into the same attributes and class as returns of `tourr::save_history()`
 
 
 # spinifex v0.2.7

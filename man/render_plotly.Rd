@@ -23,7 +23,7 @@ For example, tooltip = c("id", "frame", "x", "y", "category", "color").}
 
 \item{html_filename}{Optional, saves the plotly object as an HTML widget to
 this string (without the directory path).
-Defaults to NULL (not saved). For more output controluse \code{save_widget_args}
+Defaults to NULL (not saved). For more output control use \code{save_widget_args}
 or call \code{htmlwidgets::saveWidget()} on a return object of \code{render_plotly()}.}
 
 \item{save_widget_args}{A list of arguments to be called in
@@ -34,39 +34,6 @@ or call \code{htmlwidgets::saveWidget()} on a return object of \code{render_plot
 \description{
 Takes the result of \code{array2df()} and animations them via \code{{plotly}}
 into a  self-contained HTML widget.
-}
-\examples{
-dat_std <- scale_sd(wine[, 2:14])
-clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
-manual_array <- manual_tour(basis = bas, manip_var = mv)
-manual_df <- array2df(array = manual_array, data = dat_std)
-
-anim <- render_plotly(frames = manual_df)
-\dontrun{
-anim
-}
-
-require("ggplot2")
-anim2 <-
-  render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
-                tooltip = c("label", "frame", "x", "y"),
-                aes_args = list(color = clas, shape = clas),
-                identity_args = list(size = 1.5, alpha = .7),
-                ggproto = list(theme_void(),
-                               ggtitle("My title"),
-                               scale_color_brewer(palette = "Set2")))
-
-\dontrun{
-anim2
-
-## Saving a .gif, may require additional setup
-if(F){ ## Don't run by mistake
-  render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
-                html_filename = "myRadialTour.html")
-}
-}
 }
 \seealso{
 \code{\link{render_}} for \code{...} arguments.

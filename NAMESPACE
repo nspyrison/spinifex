@@ -3,6 +3,7 @@
 export(array2df)
 export(as_history_array)
 export(basis_guided)
+export(basis_half_circle)
 export(basis_odp)
 export(basis_olda)
 export(basis_onpp)

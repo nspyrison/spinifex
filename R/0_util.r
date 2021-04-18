@@ -234,11 +234,9 @@ pan_zoom <- function(pan = c(0L, 0L),
 #' @export
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:14])
-#' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' 
 #' as_history_array(mt_array, dat_std)
 as_history_array <- function(basis_array, data){
   if(missing(data) == FALSE)
@@ -470,14 +468,26 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2L, ...){
   return(matrix(hist[,, length(hist)], ncol = d))
 }
 
-## Basis half circle -----
-# basis_half_clock <- function(data){
-#   p <- ncol(data)
-#   p1 <- p + 1L
-#   ang <- seq(0L, pi, length.out = p1)[-p1]
-#   u_circ_p4 <- as.matrix(data.frame(x = sin(ang), y = cos(ang)))
-#   tourr::orthonormalise(u_circ_p4)
-# }
+
+#' Create a basis that gives uniform contribution in a circle
+#' 
+#' Orthonormalizes uniform variable contributions on a unit circle. This
+#' serves as a NULL basis, one that is variable agnostic while spacing the
+#' variables to have minimize variable dependence.
+#' 
+#' @param data The data to create a basis for.
+#' @export
+#' @examples 
+#' dat_std <- scale_sd(wine[, 2:14])
+#' bas <- basis_half_circle(dat_std)
+basis_half_circle <- function(data){
+  pp1 <- ncol(data) + 1L ## p++
+  arc <- seq(0L, pi, length.out = pp1)[-pp1]
+  u_circ <- as.matrix(data.frame(y1 = sin(arc), y2 = cos(arc)))
+  bas <- tourr::orthonormalise(u_circ)
+  rownames(bas) <- colnames(data)
+  return(bas)
+}
 
 
 #' Suggest a manipulation variable.
@@ -523,3 +533,4 @@ scale_sd <- function(data){
 scale_01 <- function(data){
   return(apply(data, 2L, function(c) (c - min(c)) / diff(range(c))))
 }
+

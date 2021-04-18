@@ -68,7 +68,8 @@ play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
                  render_type = render_gganimate)
 
-if(F){ ## Saving output may require additional setup
+## Saving output may require additional setup
+if(F){ ## Don't run by mistake
   ## Export plotly .html widget
   play_manual_tour(basis = bas, data = dat_std, manip_var = 6,
                    render_type = render_plotly,
