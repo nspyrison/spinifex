@@ -521,7 +521,7 @@ manip_var_of <- function(basis, rank = 1L){
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @export
-#' @examples 
+#' @examples
 #' scale_sd(data = wine[, 2:14])
 scale_sd <- function(data){
   return(apply(data, 2L, function(c){(c - mean(c)) / stats::sd(c)}))

@@ -1,7 +1,3 @@
-
-# #devtools::install_github('ModelOriented/treeshap')
-# ## uses an algorithm to compute SHAP values for tree ensemble models, in polynomial-time, Lundberg et.al (2018)
-
 require("DALEX")
 require("randomForest")
 require("Rdimtools")
@@ -10,7 +6,6 @@ require("spinifex")
 if(F) ## Working from: 
   browseURL("http://ema.drwhy.ai/shapley.html#SHAPRcode")
 
-message(interactive())
 if(interactive() == F){
   titanic_imputed <- archivist::aread("pbiecek/models/27e5c")
   titanic_rf <- archivist::aread("pbiecek/models/4e0fc")
@@ -36,7 +31,6 @@ if(interactive() == F){
   tib_shap_henry <- tibble::as.tibble(shap_henry) ## Note that SHAP is already showing only 7 of 77 branches.
   hist(tib_shap_henry$contribution)
   
-  
   print("why isn't it showing the 7 largest contributions though??")
   library("dplyr")
   tib_shap_henry <- tib_shap_henry %>% arrange(desc(abs(contribution)))
@@ -48,45 +42,56 @@ if(interactive() == F){
 ## Create the scree df for the local attribution from a DALEX::predict_parts return.
 ## !!may have overlap with iBreakDown:::plot.break_down_uncertainty.
 df_scree_local_attr <- function(x, ...){
-  result <- data.frame(
-    label = tapply(x$label, paste(x$label, x$variable, sep = ": "), unique, na.rm = TRUE),
+  local_attr_ALL_Y_LVLS <- data.frame(
     variable_name = tapply(x$variable_name, paste(x$label, x$variable, sep = ": "), unique, na.rm = TRUE),
-    variable_value = tapply(x$variable_value, paste(x$label, x$variable, sep = ": "), unique, na.rm = TRUE),
-    median_local_attr = tapply(x$contribution, paste(x$label, x$variable, sep = ": "), median, na.rm = TRUE)
+    oos_value = tapply(x$variable_value, paste(x$label, x$variable, sep = ": "), unique, na.rm = TRUE),
+    local_attr = tapply(x$contribution, paste(x$label, x$variable, sep = ": "), median, na.rm = TRUE)
   )
+  ## Reorder aggregate mean(abs(local_attr)) 
+  local_attr <-
+    aggregate(local_attr~., data = local_attr_ALL_Y_LVLS,
+              function(c){mean(abs(c))})
   ## Reorder
-  result <- result[order(abs(result$median_local_attr), decreasing = TRUE), ]
+  ret <- local_attr[order(abs(local_attr$local_attr), decreasing = TRUE), ]
   ## Add cumsum_rate
-  result$cumsum_rate_abs_median_local_attr <- cumsum(abs(result$median_local_attr)) / sum(abs(result$median_local_attr))
-  return(result)
+  ret$cumsum_local_attr <-
+    cumsum(abs(ret$median_local_attr)) / sum(abs(ret$median_local_attr))
+  return(ret)
 }
 df_local_attr <- df_scree_local_attr(shap_henry)
-
 v <- tourr::normalise(df_local_attr$median_local_attr)
 
-####
+#### TOY EXAMPLE -----
 ## Trying to go to a toy example
-library(tourr)
-library(spinifex)
-library(ggplot2)
-scaled_full <-  scale_sd(flea[, 1:6])
-f <- scaled_full[-10, 1:6]
-clas <- flea$species[-10]
-my_y <- clas == "Concinna "
-oos_obs <- scaled_full[10, 1:6]
+require("DALEX")
+require("randomForest")
+require("tourr")
+require("spinifex")
+require("ggplot2")
+dat <- scale_sd(flea[, 1:6]) %>% as.data.frame()
+clas <- flea$species
 
-f_rf <- randomForest(my_y~., data = data.frame(f, my_y))
-ex_f_rf <- DALEX::explain(model = f_rf,
-                          data = f,
-                          y = my_y,
-                          label = "Random Forest")
-shap_10 <- predict_parts(explainer = ex_f_rf, ## ~ 10 s @ B=25
-                         new_observation = oos_obs, 
-                         type = "shap",
-                         B = 10)
-plot(shap_10)#, show_boxplots = FALSE)
+.obs_r <- 10
+x <- dat[-.obs_r, ]
+x_clas <- clas[-.obs_r]
+oos <- dat[.obs_r, ]
 
-f_local_attr <- df_scree_local_attr(shap_10) ## 1 shap for each class :/...
+this_rf <- randomForest::randomForest(x_clas~., data = data.frame(x, x_clas))
+this_expl_rf <- DALEX::explain(model = this_rf,
+                               data = x,
+                               y = clas,
+                               label = "Random Forest")
+local_contrib <- DALEX::predict_parts(explainer = this_expl_rf, ## ~ 10 s @ B=25
+                                      new_observation = oos,
+                                      type = "shap",
+                                      B = 10)
+
+## Note that this will have Num Unique Y lvl [1xp] vectors,
+####  want to be agnostic, so average to 1 [1xp] vect?
+plot(local_contrib)#, show_boxplots = FALSE)
+str(local_contrib)
+
+scree_la <- df_scree_local_attr(local_contrib) ## 1 shap for each class :/...
 f_local_attr_heikert <- f_local_attr[f_local_attr$label == "Random Forest.Heikert. ",]
 v <- tourr::normalise(f_local_attr_heikert$median_local_attr[-7]) ## wants to be ordered by orig data order.
 olda <- basis_olda(f, my_y)
@@ -99,7 +104,7 @@ proj <- f %*% bas
 proj_oos_obs <- data.frame(matrix(oos_obs, nrow=1) %*% bas)
 
 view_frame(bas, f,
-           aes_args = list(color = clas, shape = clas)) + 
+           aes_args = list(color = clas, shape = clas)) +
   geom_point(aes(x = local_attr, y = ld1), proj_oos_obs, color = "red", size = 5, shape = 4) +
   theme(axis.title = element_text(),
         legend.position = "bottom",
@@ -109,44 +114,59 @@ view_frame(bas, f,
 
 
 
-
-
 ##### basis_rf_importance -----
-basis_olda_rf_imp <- function(data, class, d = 2L, type, ...){
+#' @examples 
+#' require("spinifex")
+#' dat <- scale_sd(wine[, 2:14])
+#' clas <- wine$Type
+#' bas <- basis_olda_rf_imp(dat, clas) ## Notice that rf_imp != olda1:2.
+#' view_frame(bas,dat,
+#'            aes_args = list(color = clas, shape = clas))
+#' 
+#' bas2 <- basis_olda(dat, clas)
+#' view_frame(bas2,dat,
+#'            aes_args = list(color = clas, shape = clas))
+#'            
+#' bas3 <- basis_pca(dat)
+#' view_frame(bas3,dat,
+#'            aes_args = list(color = clas, shape = clas))
+basis_olda_rf_imp <- function(data, class, d = 2L, imp_type = NULL, ...){
   ## OLDA space 
   olda_obj <- Rdimtools::do.olda(X = as.matrix(data),
-                                label = as.factor(class),
-                                ndim = ncol(dat) - 1L)
-  rf_mod <- randomForest(class~., data = data.matrix(olda_obj$Y, class))
-  imp <- importance(rf_mod, type = type, ...)
+                                 label = as.factor(class),
+                                 ndim = ncol(dat) - 1L)
+  rf_mod <- 
+    randomForest::randomForest(class~., data = data.matrix(olda_obj$Y, class))
+  imp <- randomForest::importance(rf_mod, type = imp_type, ...)
   ## Which olda basis columns to use.
   olda_idx <- order(imp, decreasing = TRUE)[1L:d]
   ret <- olda_obj$projection[, olda_idx]
   rownames(ret) <- colnames(data)
-  colnames(ret) <- paste0("OLDA", olda_idx)
+  colnames(ret) <- paste0("olda", olda_idx)
   return(ret)
 }
 
 ##### basis_olda_local_attr -----
-## TODO: How to handle new_obs, as a hold out number in rows? expect a new vector?
-basis_olda_local_attr <- function(data, class, new_obs, d = 2L, type, ...){
+## note: the arg new_obs, should be a row matrix/df
+basis_olda_local_attr <- function(data, class, new_obs, d = 2L, type = "shap", ...){
   dat <- as.matrix(data)
   clas <- as.factor(class)
   ## OLDA space 
   olda_obj <- Rdimtools::do.olda(X = dat,
                                  label = clas,
                                  ndim = ncol(dat) - 1L)
-  rf_mod <- randomForest(class~., data = data.matrix(olda_obj$Y, clas))
+  rf_mod <- randomForest::randomForest(class~., data = data.matrix(olda_obj$Y, clas))
   ## Explainer
   expl <- DALEX::explain(model = rf_mod,
                          data = dat,
                          y = clas,
                          label = "Random Forest")
-  shap <- predict_parts(explainer = expl,
-                        new_observation = new_obs,
-                        type = "shap", ...)
+  local_attr <- DALEX::predict_parts(explainer = expl,
+                                     new_observation = new_obs,
+                                     type = "shap", ...)
+  scree_la <- df_scree_local_attr(local_attr)
   ##TODO continue here
-  plot(shap_10)#, show_boxplots = FALSE)
+  plot(shap)#, show_boxplots = FALSE)
   f_local_attr <- df_scree_local_attr(shap_10) ## 1 shap for each class :/...
 
   
