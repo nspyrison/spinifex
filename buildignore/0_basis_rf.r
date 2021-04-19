@@ -3,10 +3,11 @@ require("randomForest")
 require("Rdimtools")
 require("spinifex")
 
-if(F) ## Working from: 
-  browseURL("http://ema.drwhy.ai/shapley.html#SHAPRcode")
-
+### Ema example ----
 if(interactive() == F){
+  if(F) ## Working from: 
+    browseURL("http://ema.drwhy.ai/shapley.html#SHAPRcode")
+  
   titanic_imputed <- archivist::aread("pbiecek/models/27e5c")
   titanic_rf <- archivist::aread("pbiecek/models/4e0fc")
   henry <- archivist::aread("pbiecek/models/a6538")
@@ -20,8 +21,8 @@ if(interactive() == F){
   predict(explain_rf, henry)
   
   tictoc::tic("shap_henry")
-  shap_henry <- predict_parts(explainer = explain_rf,  ## ~ 10 s @ B=25
-                              new_observation = henry, 
+  shap_henry <- predict_parts(explainer = explain_rf, ## ~10 s @ B=25
+                              new_observation = henry,
                               type = "shap",
                               B = 10)
   tictoc::toc()
@@ -86,69 +87,15 @@ if(F){
   v <- tourr::normalise(df_local_attr$median_local_attr)
 }
 
-#### TOY EXAMPLE -----
-## Trying to go to a toy example
-require("DALEX")
-require("randomForest")
-require("spinifex")
-dat <- as.data.frame(scale_sd(flea[, 1:6]))
-clas <- flea$species
-
-.obs_r <- 10
-x <- dat[-.obs_r, ]
-x_clas <- clas[-.obs_r]
-oos <- dat[.obs_r, ]
-
-this_rf <- randomForest::randomForest(x_clas~., data = data.frame(x, x_clas))
-this_expl <- DALEX::explain(model = this_rf,
-                            data = x,
-                            y = x_clas,
-                            label = "Random Forest")
-this_parts <- DALEX::predict_parts(explainer = this_expl, ## ~ 10 s @ B=25
-                                   new_observation = oos,
-                                   type = "shap",
-                                   B = 10)
-
-if(interactive() == TRUE){
-  ## Note that this will have Num Unique Y lvl [1xp] vectors,
-  ####  want to be agnostic, so average to 1 [1xp] vect?
-  plot(this_parts)#, show_boxplots = FALSE)
-  str(this_parts)
-}
-
-this_scree <- df_scree_local_attr(this_parts)
-shap <- {
-  this_scree$local_attr
-}
-v <- tourr::normalise(f_local_attr_heikert$median_local_attr[-7]) ## wants to be ordered by orig data order.
-olda <- basis_olda(f, my_y)
-
-v.olda <- cbind(as.data.frame(v), olda)
-colnames(v.olda) <- c("local_attr", "ld1", "ld2")
-bas <- as.matrix(tourr::orthonormalise(v.olda)[, 1:2])
-
-proj <- f %*% bas
-proj_oos_obs <- data.frame(matrix(oos_obs, nrow=1) %*% bas)
-
-view_frame(bas, f,
-           aes_args = list(color = clas, shape = clas)) +
-  geom_point(aes(x = local_attr, y = ld1), proj_oos_obs, color = "red", size = 5, shape = 4) +
-  theme(axis.title = element_text(),
-        legend.position = "bottom",
-        legend.direction = "horizontal", legend.box = "vertical") +
-  xlab("SHAP/normalized local attr") + ylab("LD1") +
-  ggtitle("Linear proj of Flea", "scale_sd, rm 1 obs, RF, SHAP, OLDA, orthonormalize(SHAP, LD1)")
-
-
 
 ##### basis_rf_importance -----
-#' @examples 
+#' @examples
 #' require("spinifex")
 #' dat <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_olda_rf_imp(dat, clas) ## Notice that rf_imp != olda1:2.
 #' 
-#' ##  Visualizing 
+#' ## Visualizing
 #' view_frame(bas, dat,
 #'            aes_args = list(color = clas, shape = clas))
 #' 
@@ -186,7 +133,7 @@ basis_olda_rf_imp <- function(data, class, d = 2L, imp_type = NULL, ...){
 #' oos <- dat[.obs_r, ]
 #' 
 #' basis_olda_local_attr(x, x_clas, oos)
-basis_olda_local_attr <- function(data, class, new_obs, d = 2L, type = "shap", ...){
+basis_olda_local_attr <- function(data, class, new_obs, d = 2L, predict_type = "shap", ...){
   dat <- as.matrix(data)
   clas <- as.factor(class)
   ## Olda space
@@ -201,14 +148,51 @@ basis_olda_local_attr <- function(data, class, new_obs, d = 2L, type = "shap", .
                               label = "Random Forest")
   this_parts <- DALEX::predict_parts(explainer = this_expl,
                                      new_observation = new_obs,
-                                     type = "shap", ...)
+                                     type = predict_type, ...)
   this_scree <- df_scree_local_attr(this_parts)
   ## Reorder scree to orig, grab local attr (la)
   .cn <- colnames(data)
   this_la <- this_scree[match(.cn, this_scree$variable_name), 3L]
   ## Get to basis
   bas <- tourr::orthonormalise(cbind(this_la, olda_obj$projection[, 1L:(d - 1L)]))
-  colnames(bas) <- c("local attr", paste0("olda", 1L:(d - 1L)))
+  colnames(bas) <- c("local_attr", paste0("olda", 1L:(d - 1L)))
   rownames(bas) <- colnames(data)
   return(bas)
 }
+
+
+
+#### Bringing it all together -----
+## Trying to go to a toy example
+if(interactive() == TRUE){
+  require("DALEX")
+  require("randomForest")
+  require("spinifex")
+  require("tourr")
+  
+  dat <- as.data.frame(scale_sd(flea[, 1:6]))
+  clas <- flea$species
+  
+  .obs_r <- 10
+  x <- dat[-.obs_r, ]
+  x_clas <- clas[-.obs_r]
+  oos <- dat[.obs_r, ]
+  
+  bas <- basis_olda_local_attr(x, x_clas, oos)
+  TMP_plot_cheem <- function(basis, data, class, new_obs){
+    proj <- as.matrix(data) %*% basis
+    proj_new_obs <- data.frame(as.matrix(new_obs) %*% basis)
+    view_frame(basis, data,
+               aes_args = list(color = class, shape = class)) +
+      geom_point(aes(x = local_attr, y = olda1), proj_new_obs, ## Red * at oos obs.
+                 color = "red", size = 5, shape = 8) +
+      theme(axis.title = element_text(),
+            legend.position = "bottom",
+            legend.direction = "horizontal", legend.box = "vertical") +
+      xlab("SHAP (local attribution relative to new observation)") + ylab("oLD1") +
+      ggtitle("Linear projection -- SHAP and oLD1 are X and Y axis respectively", "steps: scale_sd, hold out 1 obs, RF, SHAP, OLDA, orthonormalize(SHAP, LD1)")
+  }
+  TMP_plot_cheem(bas, x, x_clas, oos)
+  ggsave("./buildignore/PoC_cheem_proj.png", width = 8, height = 8, units = "in")
+}
+
