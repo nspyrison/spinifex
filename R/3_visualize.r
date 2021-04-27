@@ -178,11 +178,12 @@ play_manual_tour <- function(basis = NULL,
 #' results in a 3 character abbreviation of the variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
-#' @param ... Optionally pass additional arguments to the `render_type` for 
+#' @param ... Optionally pass additional arguments to the `render_` for 
 #' projection point aesthetics; 
 #' @return A ggplot object of the rotated projection.
 #' @import tourr
 #' @export
+#' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @examples
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
@@ -191,7 +192,7 @@ play_manual_tour <- function(basis = NULL,
 #' 
 #' view_frame(basis = bas)
 #' 
-#' view_frame(basis = bas, data = dat_std, manip_var = mv)
+#' view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
 #' 
 #' rtheta <- runif(1, 0, 2 * pi)
 #' rphi   <- runif(1, 0, 2 * pi)

@@ -37,7 +37,7 @@ results in a 3 character abbreviation of the variable names.}
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
-\item{...}{Optionally pass additional arguments to the \code{render_type} for
+\item{...}{Optionally pass additional arguments to the \code{render_} for
 projection point aesthetics;}
 }
 \value{
@@ -55,7 +55,7 @@ mv <- manip_var_of(bas)
 
 view_frame(basis = bas)
 
-view_frame(basis = bas, data = dat_std, manip_var = mv)
+view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
 
 rtheta <- runif(1, 0, 2 * pi)
 rphi   <- runif(1, 0, 2 * pi)
@@ -64,4 +64,7 @@ view_frame(basis = bas, data = dat_std, manip_var = mv,
            aes_args = list(color = clas, shape = clas),
            identity_args = list(size = 1.5, alpha = .7),
            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+}
+\seealso{
+\code{\link{render_}} For arguments to pass into \code{...}.
 }

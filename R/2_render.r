@@ -48,11 +48,11 @@
 #' ## Full arguments
 #' require("ggplot2")
 #' render_(frames = manual_df, axes = "left", manip_col = "purple",
-#'    aes_args = list(color = clas, shape = clas),
-#'    identity_args = list(size = 1.5, alpha = .7),
-#'    ggproto = list(theme_minimal(),
-#'                   ggtitle("My title"),
-#'                   scale_color_brewer(palette = "Set2")))
+#'         aes_args = list(color = clas, shape = clas),
+#'         identity_args = list(size = 1.5, alpha = .7),
+#'         ggproto = list(theme_minimal(),
+#'                        ggtitle("My title"),
+#'                        scale_color_brewer(palette = "Set2")))
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
