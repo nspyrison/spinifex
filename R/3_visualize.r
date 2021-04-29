@@ -10,7 +10,7 @@
 #' @param tour_path The result of `tourr::save_history()` or `manual_tour()`.
 #' @param data Optional, number of columns must match that of `tour_path`.
 #' @param angle Target distance (in radians) between steps. Defaults to .05.
-#' @param render_type Graphics to render to. Defaults to `render_plotly``,
+#' @param render_type Graphics to render to. Defaults to `render_plotly`,
 #' alternative use `render_gganimate`.
 #' @param ... Optionally pass additional arguments to `render_` and the 
 #' function used in `render_type`.
@@ -55,7 +55,7 @@ play_tour_path <- function(tour_path,
                            render_type = render_plotly,
                            ...) {
   ## Data condition handling
-  if(is.null(data) & !is.null(attributes(tour_path)$data)){ 
+  if(is.null(data) & !is.null(attributes(tour_path)$data)){
     data <- attributes(tour_path)$data
   }
   

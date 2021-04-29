@@ -19,7 +19,8 @@ play_tour_path(
 
 \item{angle}{Target distance (in radians) between steps. Defaults to .05.}
 
-\item{render_type}{Graphics to render to. Defaults to \verb{render_plotly``, alternative use }render_gganimate`.}
+\item{render_type}{Graphics to render to. Defaults to \code{render_plotly},
+alternative use \code{render_gganimate}.}
 
 \item{...}{Optionally pass additional arguments to \code{render_} and the
 function used in \code{render_type}.}
