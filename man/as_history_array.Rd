@@ -4,7 +4,7 @@
 \alias{as_history_array}
 \title{Changes an array of bases into a "history_array" for use in \code{tourr::interpolate}}
 \usage{
-as_history_array(basis_array, data)
+as_history_array(basis_array, data = NULL)
 }
 \arguments{
 \item{basis_array}{An array of bases.}

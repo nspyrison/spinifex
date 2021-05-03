@@ -141,8 +141,8 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
 #' the "out-of-plane" rotation, the z-axis of the reference frame. 
 #' Required, defaults to pi/2.
-#' @param angle Target distance (in radians) between steps. Defaults to .05.
-#' @param ... Handles unused arguments that are being also being passed from 
+#' @param angle Target angle (in radians) interpolation steps. Defaults to .05.
+#' @param ... Terminate unused arguments that are being also being passed from 
 #' `play_manual_tour()` to `render_()`.
 #' @return A (p, d, 4) history_array of the radial tour. The bases set for
 #' phi_start, `phi_min`, `phi_max`, and back to phi_start.
@@ -157,7 +157,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' ## Required arguments
 #' manual_tour(basis = bas, manip_var = mv)
 #' 
-#' ## Full arguments
+#' ## All arguments
 #' manual_tour(basis = bas, manip_var = mv,
 #'             theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .8)
 manual_tour <- function(basis,
@@ -223,4 +223,3 @@ manual_tour <- function(basis,
   
   return(tour_array)
 }
-

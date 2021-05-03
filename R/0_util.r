@@ -238,12 +238,32 @@ pan_zoom <- function(pan = c(0L, 0L),
 #' mv <- manip_var_of(bas)
 #' mt_array <- manual_tour(basis = bas, manip_var = mv)
 #' as_history_array(mt_array, dat_std)
-as_history_array <- function(basis_array, data){
-  if(missing(data) == FALSE)
+as_history_array <- function(basis_array, data = NULL){
+  if(length(data) > 0L)
     attr(basis_array, "data") <- as.matrix(data)
   class(basis_array) <- "history_array"
   return(basis_array)
 }
+
+
+#### print.history_array, not in use -----
+# #' Method for printing history_array object
+# #' 
+# #' When a history_array object is printed (or explicitly called) remove excess 
+# #' information or persisting attributes to be removed for a more friendly 
+# #' display of tour arrays. 
+# #' 
+# #' @param x any object of class "history_array"
+# #' @param ... Other arguments passed to print().
+# print.history_array <- function (x, ...){
+#   ## Remove all non- dim, class attributes before printing.
+#   .attr_nms <- names(attributes(x)) 
+#   .rm_attr_nms <- .attr_nms[!.attr_nms %in% c("dim", "class")]
+#   .mute <- sapply(.rm_attr_nms, function(atr){
+#     attr(x, atr) <<- NULL
+#   })
+#   NextMethod(...)
+# }
 
 ##
 ## GGPLOT2 AESTHETICS ------

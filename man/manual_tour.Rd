@@ -34,9 +34,9 @@ Required, defaults to 0.}
 the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
 
-\item{angle}{Target distance (in radians) between steps. Defaults to .05.}
+\item{angle}{Target angle (in radians) interpolation steps. Defaults to .05.}
 
-\item{...}{Handles unused arguments that are being also being passed from
+\item{...}{Terminate unused arguments that are being also being passed from
 \code{play_manual_tour()} to \code{render_()}.}
 }
 \value{
@@ -58,7 +58,7 @@ mv <- manip_var_of(bas)
 ## Required arguments
 manual_tour(basis = bas, manip_var = mv)
 
-## Full arguments
+## All arguments
 manual_tour(basis = bas, manip_var = mv,
             theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .8)
 }
