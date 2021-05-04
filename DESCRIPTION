@@ -27,7 +27,10 @@ Imports:
     gganimate,
     plotly,
     shiny,
-    Rdimtools
+    Rdimtools,
+    DALEX,
+    treeshap,
+    randomForest
 Suggests: 
     dplyr,
     GGally,

@@ -293,10 +293,11 @@ theme_spinifex <- function(){
 
 #' The basis of Principal Component Analysis (PCA)
 #' 
+#' The linear components of the variables in the next largest direction of 
+#' variance.
+#' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @param d Number of dimensions in the projection space.
-#' @return A numeric matrix, an orthogonal basis that best distinguishes the 
-#' group means of `class`.
 #' @seealso \code{\link[Rdimtools:do.pca]{Rdimtools::do.pca}}
 #' @export
 #' @family basis identifiers
@@ -393,9 +394,7 @@ basis_odp <- function(data, class, d = 2L, type = c("proportion", 0.1), ...){
 # #' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
 # #' square root of observations.
 # #' @param ... Optional, other arguments to pass to \code{\link[Rdimtools]{do.olpp}}.
-# #' @return Orthogonal matrix basis that distinguishes the levels of `class` 
-# #' based on local and non-local variation as weighted against the neighborhood 
-# #' graph.
+# #' @return Orthogonal matrix basis
 # #' @seealso \code{\link[Rdimtools:do.olpp]{Rdimtools::do.olpp}} for locality
 # #' preservation parameters.
 # #' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 

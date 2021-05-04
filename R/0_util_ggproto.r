@@ -1,9 +1,9 @@
-## 00_ggproto_util
+## 0_util_ggproto
 
 
-#' Replicate a list of args
+#' Replicate a list of arguments
 #' 
-#' Replicates each element of a list, to a target length for animating accross
+#' Replicates each element of a list, to a target length for animating across
 #' many frames.
 #'
 #' @param arg_ls A list of arguments that need to be replicated.

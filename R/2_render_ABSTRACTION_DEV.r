@@ -74,8 +74,6 @@ render_ <- function(frames,
   identity_args <- as.list(identity_args)
   ggproto       <- as.list(ggproto)
   
-  
-  
   ## Render
   gg <- ggplot2::ggplot() + ggproto
   ## Add projected data points, if data exists
