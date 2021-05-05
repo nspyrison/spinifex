@@ -29,7 +29,6 @@ Imports:
     shiny,
     Rdimtools,
     DALEX,
-    treeshap,
     randomForest
 Suggests: 
     dplyr,

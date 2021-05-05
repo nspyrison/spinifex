@@ -11,12 +11,9 @@ basis_pca(data, d = 2L)
 
 \item{d}{Number of dimensions in the projection space.}
 }
-\value{
-A numeric matrix, an orthogonal basis that best distinguishes the
-group means of \code{class}.
-}
 \description{
-The basis of Principal Component Analysis (PCA)
+The linear components of the variables in the next largest direction of
+variance.
 }
 \examples{
 dat_std <- scale_sd(wine[, 2:14])
