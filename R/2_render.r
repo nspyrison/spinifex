@@ -319,10 +319,11 @@ render_plotly <- function(fps = 8L,
                                 frame = 1L / fps * 1000L,
                                 transition = 0L,
                                 redraw = FALSE)
-  ggp <- plotly::layout(ggp, showlegend = FALSE,
-                        yaxis = list(showgrid = FALSE, showline = FALSE),
-                        xaxis = list(scaleanchor = "y", scalaratio = 1L,
-                                     showgrid = FALSE, showline = FALSE)
+  ggp <- plotly::layout(
+    ggp, showlegend = FALSE,
+    yaxis = list(showgrid = FALSE, showline = FALSE, fixedrange = TRUE),
+    xaxis = list(showgrid = FALSE, showline = FALSE, fixedrange = TRUE,
+                 scaleanchor = "y", scalaratio = 1L)
   )
   ggp <- plotly::config(ggp, displayModeBar = FALSE)
   
