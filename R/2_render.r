@@ -291,14 +291,13 @@ render_gganimate <- function(fps = 8L,
 #' 
 #' \dontrun{
 #' render_plotly(frames = manual_df)
-#' }
 #' 
 #' require("ggplot2")
 #' render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
 #'               tooltip = c("label", "frame", "x", "y"),
 #'               aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 1.5, alpha = .7),
-#'               ggproto = list(theme_spinifex,
+#'               ggproto = list(theme_spinifex(),
 #'                              scale_color_brewer(palette = "Set2")))
 #' 
 #' ## Saving a .gif, may require additional setup
@@ -325,6 +324,8 @@ render_plotly <- function(fps = 8L,
                         xaxis = list(scaleanchor = "y", scalaratio = 1L,
                                      showgrid = FALSE, showline = FALSE)
   )
+  ggp <- plotly::config(ggp, displayModeBar = FALSE)
+  
   ## Save condition handling
   if(is.null(html_filename) == FALSE){
     saveWidget_func <- function(...)
