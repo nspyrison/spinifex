@@ -1,6 +1,15 @@
+# spinifex v0.2.8.9000  ##v0.5?
+
+- Fixed a format issue with the `BeastCancer` dataset
+##TODO:
+- New api for visuals, see `ggplot_tour()` and `ggproto_*` functions
+- New vignette demonstating this api
+- Added `basis_cheem()`
+
+
 # spinifex v0.2.8
 
-- Vectorized all for loops
+- Vectorized all `for` loops
 - `manip_var_of(basis)` suggests a variable to used based on the rank of the contributions of the basis.
 
 Basis_* functions to find features of interest, powered by `{Rdimtools}`.
@@ -21,6 +30,7 @@ New util functions:
 - Gives deprecated warning when using `view_basis()` and `oblique_basis()`, no longer listed in `view_frame()` documentation
 - Fixed intro shiny app to reflect argument changes
 - Fixed example run time for `render_plotly()` going longer than 10 seconds
+
 
 # spinifex v0.2.6
 

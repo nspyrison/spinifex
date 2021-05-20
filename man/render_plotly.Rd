@@ -40,5 +40,5 @@ into a  self-contained HTML widget.
 
 \code{\link[plotly]{ggplotly}} for source documentation of \code{tooltip}.
 
-\code{\link[htmlwidgets]{saveWidget}} for more control of .gif output.
+\code{\link[htmlwidgets]{saveWidget}} for more control of .html output.
 }

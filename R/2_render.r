@@ -279,7 +279,7 @@ render_gganimate <- function(fps = 8L,
 #' @param ... Passes arguments to `render_(...)`.
 #' @seealso \code{\link{render_}} for `...` arguments.
 #' @seealso \code{\link[plotly]{ggplotly}} for source documentation of `tooltip`.
-#' @seealso \code{\link[htmlwidgets]{saveWidget}} for more control of .gif output.
+#' @seealso \code{\link[htmlwidgets]{saveWidget}} for more control of .html output.
 #' @export
 #' @examples
 #' dat_std <- scale_sd(wine[, 2:14])
