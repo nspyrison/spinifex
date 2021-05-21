@@ -5,7 +5,10 @@
 \title{A ggplot2 theme suggested for linear projections with spinifex.
 The default value for ggproto arguments in spinifex functions.}
 \usage{
-theme_spinifex()
+theme_spinifex(...)
+}
+\arguments{
+\item{...}{Optionally pass arguments to \code{theme_void()}.}
 }
 \description{
 A ggplot2 theme suggested for linear projections with spinifex.

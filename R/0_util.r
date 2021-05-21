@@ -272,6 +272,7 @@ as_history_array <- function(basis_array, data = NULL){
 #' A ggplot2 theme suggested for linear projections with spinifex.
 #' The default value for ggproto arguments in spinifex functions.
 #' 
+#' @param ... Optionally pass arguments to `theme_void()`.
 #' @export
 #' @examples 
 #' theme_spinifex()
