@@ -279,8 +279,8 @@ as_history_array <- function(basis_array, data = NULL){
 #' require("ggplot2")
 #' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
 #'   geom_point() + theme_spinifex()
-theme_spinifex <- function(){
-  list(ggplot2::theme_void(),
+theme_spinifex <- function(...){
+  list(ggplot2::theme_void(...),
        ggplot2::scale_color_brewer(palette = "Dark2"),
        ggplot2::coord_fixed()
   )
