@@ -388,7 +388,7 @@ view_manip_space <- function(basis,
       size = line_size, colour = "grey80", linetype = 2L) +
     ggplot2::geom_text(
       data = mv_sp_r,
-      mapping = ggplot2::aes(x = x, y = z, label = label[manip_var]),
+      mapping = ggplot2::aes(x = x, y = z, label = basis_label[manip_var]),
       size = text_size, colour = manip_sp_col, vjust = "outward", hjust = "outward") +
     ## Label phi and theta
     ggplot2::geom_text(

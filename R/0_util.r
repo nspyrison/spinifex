@@ -501,7 +501,9 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2L, ...){
       tourr::guided_tour(index_f = index_f, d = d, ...)
     )
   ))
-  return(matrix(hist[,, length(hist)], ncol = d))
+  ret <- matrix(hist[,, length(hist)], ncol = d)
+  rownames(ret) <- colnames(data)
+  return(ret)
 }
 
 
@@ -541,13 +543,17 @@ basis_half_circle <- function(data){
 #' @return Numeric scalar, the column number of a variable.
 #' @export
 #' @examples 
+#' ## Setup
 #' dat_std <- scale_sd(wine[, 2:14])
 #' bas <- basis_pca(dat_std)
-#' manip_var_of(basis = bas)
-manip_var_of <- function(basis, rank = 1L){
+#' 
+#' manip_var_of(basis = bas, rank = 1)
+manip_var_of <- function(basis, rank = 1){
   if(spinifex::is_orthonormal(basis) == FALSE) 
     warning("Supplied basis isn't orthonormal.")
-  return(order(abs(basis[, 1L]), decreasing = TRUE)[rank])
+  ret <- order(abs(basis[, 1L]), decreasing = TRUE)[rank]
+  names(ret) <- rownames(basis)[rank]
+  return(ret)
 }
 
 #' Preprocessing variable transformation

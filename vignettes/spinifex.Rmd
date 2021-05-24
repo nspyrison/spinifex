@@ -85,7 +85,7 @@ We started from a random basis, that explains the orthogonal projection from $p$
 We want to explore how the coefficients of `aede2`, the *manip var*, contributed to the structure in this projection. In order to change the contributions without breaking the orthogonality of the other variables, we need to add a dimension. We call this new space the manipulation space, which can be viewed with the function `view_manip_space()`. Note that the projection plane containing the reference frame is laid down on the surface, while the manipulation dimension is at a right angle out-of-plane, with a full contribution on the manip var.
 
 ```{r view-manip-space}
-view_manip_space(basis = bas_pca, manip_var = 3, lab = colnames(dat_std)) 
+view_manip_space(basis = bas_pca, manip_var = 3) 
 ```
 
 Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
@@ -155,25 +155,32 @@ Radial tours are often employed after an interesting feature has been identified
 
 ```{r}
 dat_std <- tourr::rescale(tourr::flea[,1:6])
-fpath    <- tourr::save_history(dat_std, tourr::guided_tour(tourr::holes()))
+fpath <- tourr::save_history(dat_std, tourr::guided_tour(tourr::holes(), ))
 ```
-```{r, eval=F}
-play_tour_path(tour_path = fpath, data = dat_std, angle = .15, 
-  render_type = render_gganimate, col = tourr::flea$species, fps = 4)
+```{r}
+play_tour_path(tour_path = fpath, data = dat_std, angle = .15,
+               aes_args = list(color = clas, shape = clas),
+               render_type = render_gganimate, fps = 8)
 ```
 
 This shows the optimization path of the holes index. We'll grab the reference axes from the last frame and used that a starting orientation for a manual tour.
 
 ```{r}
-f_holes_bas  <- matrix(as.numeric(fpath[,, dim(fpath)[3]]), ncol = 2)
-view_frame(f_holes_bas, lab = colnames(dat_std))
+## We added the basis_* functions, including basis_guided() to help:
+f_holes_bas <- basis_guided(dat_std, index_f = tourr::holes(), d = 2)
+
+view_frame(f_holes_bas)
 ```
 
 We'll select `aede2` as the manip_var, as it is mostly orthogonal to four of the other variables and often has a larger contribution than `tars1`.
 
 ```{r, eval=F}
-play_manual_tour(data = dat_std, basis = f_holes_bas, 
-                 manip_var = 5, col = tourr::flea$species)
+## Alternatively, ask for the variable by rank of the magnitude in the basis:
+(mv <- manip_var_of(f_holes_bas, rank = 1))
+
+play_manual_tour(data = dat_std, basis = f_holes_bas,
+                 aes_args = list(color = clas, shape = clas),
+                 manip_var = mv)
 ```
 
 We can see that `aede2` is important in distinguishing between the purple cluster and the green cluster. However, even when its contribution is zeros the contribution of `tars1` is enough to keep the cluster from overlapping.

@@ -4,7 +4,7 @@
 \alias{manip_var_of}
 \title{Suggest a manipulation variable.}
 \usage{
-manip_var_of(basis, rank = 1L)
+manip_var_of(basis, rank = 1)
 }
 \arguments{
 \item{basis}{Numeric matrix (p x d), orthogonal liner combinations of the
@@ -23,7 +23,9 @@ Useful for identifying a variable to change the contribution of in a manual
 tour, it's \code{manip_var} argument.
 }
 \examples{
+## Setup
 dat_std <- scale_sd(wine[, 2:14])
 bas <- basis_pca(dat_std)
-manip_var_of(basis = bas)
+
+manip_var_of(basis = bas, rank = 1)
 }
