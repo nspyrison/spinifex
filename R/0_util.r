@@ -32,9 +32,12 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' `manual_tour()`.
 #' @param data Optional, (n, p) dataset to project, consisting of numeric 
 #' variables.
-#' @param label Optional, labels for the reference frame of length 1 or the 
-#' number of variables used. Defaults to an abbreviation of the variables.
-#' @return A list containing an array of basis frames (p, d, n_frames) and
+#' @param basis_label Optional, labels for the reference frame, a character 
+#' vector of the number of variables.
+#' Defaults to the 3 character abbreviation of the original variables names.
+#' @param data_label Optional, labels for plotly tooltip and return object. 
+#' Defaults to the rownames of the data, if available.
+#' @return A list containing an array of basis frames (p, d, n_frames) and 
 #' an array of data frames (n, d, n_frames) if data is present.
 #' @export
 #' @examples
@@ -46,21 +49,20 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' 
 #' ## Radial tour array to long df, as used in play_manual_tour()
 #' tour_array <- manual_tour(basis = bas, manip_var = mv)
-#' str(
-#'   array2df(array = tour_array, data = dat_std,
-#'            label = paste0("MyLabs", 1:nrow(bas)))
-#' )
+#' ls_df_frames <- array2df(array = tour_array, data = dat_std,
+#'                          basis_label = paste0("MyLabs", 1:nrow(bas)))
+#' str(ls_df_frames)
 #' 
 #' ## tourr::save_history tour array to long df, as used in play_tour_path()
 #' hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
-#' str(
-#'   array2df(array = hist_array, data = dat_std,
-#'            label = paste0("MyLabs", 1:nrow(bas)))
-#' )
-array2df <- function(array,
-                     data = NULL,
-                     basis_label = NULL,
-                     data_label = NULL){
+#' ls_df_frames2 <- array2df(array = hist_array, data = dat_std)
+#' str(ls_df_frames2)
+array2df <- function(
+  array,
+  data = NULL,
+  basis_label = ifelse(is.null(data) == TRUE, paste0("x", 1:dim(array)[1], abbreviate(colnames(data)), 3L)),
+  data_label = ifelse(is.null(data) == TRUE, NULL, rownames(data))
+){
   if("history_array" %in% class(array)) class(array) <- "array"
   ## Initialize
   manip_var <- attributes(array)$manip_var
@@ -93,34 +95,17 @@ array2df <- function(array,
     data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c(.nms[1:(ncol(data_frames) - 1L)], "frame")
   }
-
   
-  ## Basis labels  condition handling & attr
-  if(length(basis_label) > 0L){
-    basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
-  }else{
-    if(is.null(data) == FALSE){basis_frames$label <- abbreviate(colnames(data), 3L)
-    }else{
-      basis_frames$label <- paste0("x", 1L:p)
-    }
-  }
+  ## Basis label and manip_var attribute.
+  basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
   attr(basis_frames, "manip_var") <- manip_var
   
-  ## Data Frame condition handling
-  ret <- NULL
-  if(is.null(data) == TRUE){
-    ret <- list(basis_frames = basis_frames)
-  }else{
+  ## Return obj, add data if it exists.
+  ret <- list(basis_frames = basis_frames) ## Init
+  if(is.null(data) == FALSE){ ##
     ## Data labels
-    if(length(data_label) > 0L){
-      data_frames$label <- rep_len(data_label, nrow(data_frames))
-    }else{
-      if(is.null(data) == FALSE){data_frames$label <- rownames(data)
-      }else{
-        data_frames$label <- paste0("n", 1L:n)
-      }
-    }
-    ret <- list(basis_frames = basis_frames, data_frames = data_frames)
+    data_frames$label <- rep_len(data_label, nrow(data_frames))
+    ret <- c(ret, data_frames = data_frames)
   }
   
   return(ret)

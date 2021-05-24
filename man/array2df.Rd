@@ -4,7 +4,13 @@
 \alias{array2df}
 \title{Turns a tour path array into a long data frame.}
 \usage{
-array2df(array, data = NULL, basis_label = NULL, data_label = NULL)
+array2df(
+  array,
+  data = NULL,
+  basis_label = ifelse(is.null(data) == TRUE, paste0("x", 1:dim(array)[1],
+    abbreviate(colnames(data)), 3L)),
+  data_label = ifelse(is.null(data) == TRUE, NULL, rownames(data))
+)
 }
 \arguments{
 \item{array}{A (p, d, n_frames) array of a tour, the output of
@@ -13,8 +19,12 @@ array2df(array, data = NULL, basis_label = NULL, data_label = NULL)
 \item{data}{Optional, (n, p) dataset to project, consisting of numeric
 variables.}
 
-\item{label}{Optional, labels for the reference frame of length 1 or the
-number of variables used. Defaults to an abbreviation of the variables.}
+\item{basis_label}{Optional, labels for the reference frame, a character
+vector of the number of variables.
+Defaults to the 3 character abbreviation of the original variables names.}
+
+\item{data_label}{Optional, labels for plotly tooltip and return object.
+Defaults to the rownames of the data, if available.}
 }
 \value{
 A list containing an array of basis frames (p, d, n_frames) and
@@ -35,15 +45,12 @@ mv <- manip_var_of(bas)
 
 ## Radial tour array to long df, as used in play_manual_tour()
 tour_array <- manual_tour(basis = bas, manip_var = mv)
-str(
-  array2df(array = tour_array, data = dat_std,
-           label = paste0("MyLabs", 1:nrow(bas)))
-)
+ls_df_frames <- array2df(array = tour_array, data = dat_std,
+                         basis_label = paste0("MyLabs", 1:nrow(bas)))
+str(ls_df_frames)
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
 hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
-str(
-  array2df(array = hist_array, data = dat_std,
-           label = paste0("MyLabs", 1:nrow(bas)))
-)
+ls_df_frames2 <- array2df(array = hist_array, data = dat_std)
+str(ls_df_frames2)
 }
