@@ -134,7 +134,7 @@ render_ <- function(frames,
       do.call(geom_point_func, c(list(aes_call), identity_args_out))
   }else{ ## Else, no data exists
     geom_point_call <- suppressWarnings( ## Suppressed unknown args: frame
-      ggplot2::geom_point(ggplot2::aes(x = x, y = y, frame = frame),
+      ggplot2::geom_point(ggplot2::aes(x = x, y = y, frame = frame, label = label),
                           data_frames))
   } ## End if data exist
   
@@ -265,11 +265,6 @@ render_gganimate <- function(fps = 8L,
 #' into a  self-contained HTML widget.
 #'
 #' @param fps Frames animated per second. Defaults to 8.
-#' @param tooltip Character vector of aesthetic mappings to show in the
-#' hover-over tooltip (passed to `plotly::ggplot()`).
-#' Defaults to "none". "all" shows all the aesthetic mappings.
-#' The order of text controls the order they appear.
-#' For example, tooltip = c("id", "frame", "x", "y", "category", "color").
 #' @param html_filename Optional, saves the plotly object as an HTML widget to
 #' this string (without the directory path).
 #' Defaults to NULL (not saved). For more output control use `save_widget_args` 
@@ -294,7 +289,6 @@ render_gganimate <- function(fps = 8L,
 #' 
 #' require("ggplot2")
 #' render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
-#'               tooltip = c("label", "frame", "x", "y"),
 #'               aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 1.5, alpha = .7),
 #'               ggproto = list(theme_spinifex(),
@@ -307,14 +301,18 @@ render_gganimate <- function(fps = 8L,
 #' }
 #' }
 render_plotly <- function(fps = 8L,
-                          tooltip = "none",
                           html_filename = NULL,
                           save_widget_args = list(),
                           ...){
   requireNamespace("plotly")
   ## Render
-  gg  <- render_(...)
-  ggp <- plotly::ggplotly(p = gg, tooltip = tooltip)
+  gg  <- render_(...) +
+    ## Mute plotly not being able to handle horizontal legend
+    ggplot2::theme(legend.position = "right",     ## Of plot
+                   legend.direction = "vertical", ## With-in aesthetic
+                   legend.box = "horizontal")     ## Between aesthetic
+    
+  ggp <- plotly::ggplotly(p = gg, tooltip = "label")
   ggp <- plotly::animation_opts(p = ggp,
                                 frame = 1L / fps * 1000L,
                                 transition = 0L,

@@ -43,14 +43,16 @@ ret_single <- array2df(array = array_single)
 ## Radial tour array to long df, as used in play_manual_tour()
 array_manual <- manual_tour(basis = bas, manip_var = mv)
 ret_manual <- array2df(array = array_manual, data = dat_std,
-                       label = paste0("MyLabs", 1:nrow(bas)))
+                       basis_label = paste0("MyLabs", 1:nrow(bas)),
+                       data_label = paste0("obs# ", 1:nrow(dat_std)))
 
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
 array_save_hist <- tourr::save_history(data = dat_std, max_bases = 10)
 class(array_save_hist) <- "array"
 ret_save_hist <- array2df(array = array_save_hist, data = dat_std,
-                          label = paste0("MyLabs", 1:nrow(bas)))
+                          basis_label = paste0("MyLabs", 1:nrow(bas)),
+                          data_label = paste0("obs# ", 1:nrow(dat_std)))
 
 test_that("array2df: class and dim for single frame, spinifex and tourr case.", {
   expect_is(ret_single,    "list")

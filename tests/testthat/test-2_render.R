@@ -11,7 +11,8 @@ mv <- manip_var_of(bas)
 ##
 array_manual <- manual_tour(basis = bas, manip_var = mv)
 df_manual <- array2df(array = array_manual, data = dat_std,
-                      label = paste0("MyLabs", 1:nrow(bas)))
+                      basis_label = paste0("MyLabs", 1:nrow(bas)),
+                      data_label = paste0("obs# ", 1:nrow(dat_std)))
 
 ### render_ -----
 library("ggplot2")
@@ -46,8 +47,7 @@ test_that("render_gganimate, class and dim", {
 
 ### render_plotly -----
 
-ret <- render_plotly(frames = df_manual, axes = "bottomleft", fps = 10,
-              tooltip = c("label", "frame", "x", "y"),
+ret <- render_plotly(frames = df_manual, axes = "bottomleft", fps = 10, 
               aes_args = list(color = clas, shape = clas),
               identity_args = list(size = .8, alpha = .7),
               ggproto = list(theme_classic(),

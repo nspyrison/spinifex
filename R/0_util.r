@@ -59,7 +59,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' )
 array2df <- function(array,
                      data = NULL,
-                     label = NULL){
+                     basis_label = NULL,
+                     data_label = NULL){
   if("history_array" %in% class(array)) class(array) <- "array"
   ## Initialize
   manip_var <- attributes(array)$manip_var
@@ -73,7 +74,9 @@ array2df <- function(array,
     basis_frames <<- rbind(basis_frames, basis_rows)
   })
   basis_frames <- as.data.frame(basis_frames)
-  colnames(basis_frames) <- c("x", "y", "frame")
+  .nms <- c("x", "y", "z", "w")
+  colnames(basis_frames) <- c(.nms[1:(ncol(basis_frames) - 1L)], "frame")
+
   
   ## Data; if exists, array to long df
   if(is.null(data) == FALSE){
@@ -88,13 +91,13 @@ array2df <- function(array,
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
     data_frames <- as.data.frame(data_frames)
-    colnames(data_frames) <- c("x", "y", "frame")
+    colnames(data_frames) <- c(.nms[1:(ncol(data_frames) - 1L)], "frame")
   }
 
   
-  ## Labels and attribute condition handling
-  if(length(label) > 0L){
-    basis_frames$label <- rep(label, nrow(basis_frames) / length(label))
+  ## Basis labels  condition handling & attr
+  if(length(basis_label) > 0L){
+    basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
   }else{
     if(is.null(data) == FALSE){basis_frames$label <- abbreviate(colnames(data), 3L)
     }else{
@@ -103,15 +106,24 @@ array2df <- function(array,
   }
   attr(basis_frames, "manip_var") <- manip_var
   
-  ## Frame condition handling
-  df_frames <- NULL
+  ## Data Frame condition handling
+  ret <- NULL
   if(is.null(data) == TRUE){
-    df_frames <- list(basis_frames = basis_frames)
+    ret <- list(basis_frames = basis_frames)
   }else{
-    df_frames <- list(basis_frames = basis_frames, data_frames = data_frames)
+    ## Data labels
+    if(length(data_label) > 0L){
+      data_frames$label <- rep_len(data_label, nrow(data_frames))
+    }else{
+      if(is.null(data) == FALSE){data_frames$label <- rownames(data)
+      }else{
+        data_frames$label <- paste0("n", 1L:n)
+      }
+    }
+    ret <- list(basis_frames = basis_frames, data_frames = data_frames)
   }
   
-  return(df_frames)
+  return(ret)
 }
 
 
@@ -142,7 +154,7 @@ scale_axes <- function(x,
                        to = data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
 ){
   ## Assumptions
-  if(length(position) > 1) position <- position[1L]
+  position <- match.arg(position)
   if(position == "off") return()
   ## If position is pan_zoom call with x = NULL;
   if(is.list(position) & length(position) == 2L){
@@ -150,9 +162,6 @@ scale_axes <- function(x,
   }
   
   ## Initialize
-  position <-
-    match.arg(tolower(position), several.ok = FALSE,
-              choices = c("center", "bottomleft", "topright", "off", "left", "right"))
   xrange  <- range(to[, 1L])
   yrange  <- range(to[, 2L])
   xdiff   <- diff(xrange)
@@ -283,7 +292,14 @@ as_history_array <- function(basis_array, data = NULL){
 theme_spinifex <- function(...){
   list(ggplot2::theme_void(...),
        ggplot2::scale_color_brewer(palette = "Dark2"),
-       ggplot2::coord_fixed()
+       ggplot2::coord_fixed(),
+       ggplot2::theme(legend.position = "bottom",      ## Of plot
+                      legend.direction = "horizontal", ## With-in aesthetic
+                      legend.box = "vertical",         ## Between aesthetic
+                      legend.margin = ggplot2::margin(),
+                      axis.title = ggplot2::element_text()),
+       ggplot2::labs(x = ggplot2::waiver(),
+                     y = ggplot2::waiver())
   )
 }
 

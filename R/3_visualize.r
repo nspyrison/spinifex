@@ -173,9 +173,8 @@ play_manual_tour <- function(basis = NULL,
 #' on the xy plane of the reference frame. Defaults to 0, no rotation.
 #' @param phi Angle in radians of the "out-of-projection plane" rotation, into 
 #' the z-direction of the axes. Defaults to 0, no rotation.
-#' @param label Optionally, provide a character vector of length p (or 1) 
-#' to label the variable contributions to the axes, Default NULL, 
-#' results in a 3 character abbreviation of the variable names.
+#' @param basis_label Optional, character vector of `p` length, add name to the axes
+#' in the frame, defaults to 3 letter abbriviation of the orginal variable names.
 #' @param rescale_data When TRUE scales the data to between 0 and 1.
 #' Defaults to FALSE.
 #' @param ... Optionally pass additional arguments to the `render_` for 
@@ -185,19 +184,23 @@ play_manual_tour <- function(basis = NULL,
 #' @export
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @examples
+#' ## Setup
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' 
+#' ## Minimal example
 #' view_frame(basis = bas)
 #' 
+#' ## Typical example
 #' view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
 #' 
+#' ## Full example
 #' rtheta <- runif(1, 0, 2 * pi)
 #' rphi   <- runif(1, 0, 2 * pi)
 #' view_frame(basis = bas, data = dat_std, manip_var = mv,
-#'            theta = rtheta, phi = rphi, label = paste0("MyNm", 1:ncol(dat_std)), 
+#'            theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
 #'            aes_args = list(color = clas, shape = clas),
 #'            identity_args = list(size = 1.5, alpha = .7),
 #'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
@@ -206,7 +209,7 @@ view_frame <- function(basis = NULL,
                        manip_var = NULL,
                        theta = 0L,
                        phi = 0L,
-                       label = abbreviate(row.names(basis), 3L),
+                       basis_label = abbreviate(row.names(basis), 3L),
                        rescale_data = FALSE,
                        ...){
   if(is.null(data) == FALSE)
@@ -225,7 +228,7 @@ view_frame <- function(basis = NULL,
   
   ## The work
   tour_array <- array(basis, dim = c(dim(basis), 1L))
-  df_frames <- array2df(array = tour_array, data = data, label = label)
+  df_frames <- array2df(array = tour_array, data = data, basis_label = basis_label)
   attr(df_frames$data_frames, "manip_var") <- manip_var
   
   ## Render
@@ -263,8 +266,8 @@ oblique_basis <- function(...) {
 #' @param manip_var Number of the column/dimension to rotate.
 #' @param tilt angle in radians to rotate the projection plane.
 #' Defaults to .1 * pi.
-#' @param label Optional, character vector of `p` length, add name to the axes
-#' in the reference frame, typically the variable names.
+#' @param basis_label Optional, character vector of `p` length, add name to the axes
+#' in the frame, defaults to 3 letter abbriviation of the orginal variable names.
 #' @param manip_col String of the color to highlight the `manip_var`.
 #' @param manip_sp_col Color to illustrate the z direction, orthogonal to the
 #' projection plane.
@@ -292,7 +295,7 @@ oblique_basis <- function(...) {
 view_manip_space <- function(basis,
                              manip_var,
                              tilt = .1 * pi,
-                             label = paste0("x", 1L:nrow(basis)),
+                             basis_label = abbreviate(row.names(basis), 3L),
                              manip_col = "blue",
                              manip_sp_col = "red",
                              line_size = 1L,
@@ -368,7 +371,7 @@ view_manip_space <- function(basis,
       size = siz_v, colour = col_v) +
     ggplot2::geom_text(
       data = m_sp_r,
-      mapping = ggplot2::aes(x = x, y = y, label = label),
+      mapping = ggplot2::aes(x = x, y = y, label = basis_label),
       size = text_size, colour = col_v, vjust = "outward", hjust = "outward") +
     ## Red manip space
     ggplot2::geom_path(

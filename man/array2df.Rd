@@ -4,7 +4,7 @@
 \alias{array2df}
 \title{Turns a tour path array into a long data frame.}
 \usage{
-array2df(array, data = NULL, label = NULL)
+array2df(array, data = NULL, basis_label = NULL, data_label = NULL)
 }
 \arguments{
 \item{array}{A (p, d, n_frames) array of a tour, the output of

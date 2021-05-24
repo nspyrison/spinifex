@@ -8,7 +8,7 @@ view_manip_space(
   basis,
   manip_var,
   tilt = 0.1 * pi,
-  label = paste0("x", 1L:nrow(basis)),
+  basis_label = abbreviate(row.names(basis), 3L),
   manip_col = "blue",
   manip_sp_col = "red",
   line_size = 1L,
@@ -26,8 +26,8 @@ Required, no default.}
 \item{tilt}{angle in radians to rotate the projection plane.
 Defaults to .1 * pi.}
 
-\item{label}{Optional, character vector of \code{p} length, add name to the axes
-in the reference frame, typically the variable names.}
+\item{basis_label}{Optional, character vector of \code{p} length, add name to the axes
+in the frame, defaults to 3 letter abbriviation of the orginal variable names.}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}.}
 

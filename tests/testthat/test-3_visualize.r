@@ -61,7 +61,7 @@ rphi   <- runif(1, 0, 2 * pi)
 ret_light <- view_frame(basis = bas, data = dat_std, manip_var = mv)
 
 ret_heavy <- view_frame(basis = bas, data = dat_std, manip_var = mv,
-                        theta = rtheta, phi = rphi, label = paste0("MyNm", 1:ncol(dat_std)),
+                        theta = rtheta, phi = rphi,
                         aes_args = list(color = clas, shape = clas),
                         identity_args = list(size = .8, alpha = .7),
                         ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
@@ -79,7 +79,7 @@ test_that("view_frame: gganimate class and length", {
 
 ret_light <- view_manip_space(basis = bas, manip_var = mv)
 ret_heavy <- view_manip_space(basis = bas, manip_var = mv,
-                              tilt = 2/12 * pi, label = paste0("MyNm", 1:ncol(dat_std)),
+                              tilt = 2/12 * pi, basis_label = paste0("MyNm", 1:ncol(dat_std)),
                               manip_col = "purple", manip_sp_col = "orange", 
                               ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 
