@@ -105,7 +105,7 @@ array2df <- function(
   if(is.null(data) == FALSE){ ##
     ## Data labels
     data_frames$label <- rep_len(data_label, nrow(data_frames))
-    ret <- c(ret, data_frames = data_frames)
+    ret <- c(ret, list(data_frames = data_frames))
   }
   
   return(ret)
