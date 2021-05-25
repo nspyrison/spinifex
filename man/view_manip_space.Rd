@@ -60,7 +60,7 @@ mv <- manip_var_of(bas)
 view_manip_space(basis = bas, manip_var = mv)
 
 view_manip_space(basis = bas, manip_var = mv,
-                 tilt = 2/12 * pi, label = paste0("MyNm", 1:ncol(dat_std)),
+                 tilt = 2/12 * pi, basis_label = paste0("MyNm", 1:ncol(dat_std)),
                  manip_col = "purple", manip_sp_col = "orange", 
                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }

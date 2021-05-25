@@ -289,7 +289,7 @@ oblique_basis <- function(...) {
 #' view_manip_space(basis = bas, manip_var = mv)
 #' 
 #' view_manip_space(basis = bas, manip_var = mv,
-#'                  tilt = 2/12 * pi, label = paste0("MyNm", 1:ncol(dat_std)),
+#'                  tilt = 2/12 * pi, basis_label = paste0("MyNm", 1:ncol(dat_std)),
 #'                  manip_col = "purple", manip_sp_col = "orange", 
 #'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 view_manip_space <- function(basis,
@@ -376,7 +376,7 @@ view_manip_space <- function(basis,
     ## Red manip space
     ggplot2::geom_path(
       data = circ_r,
-      mapping = ggplot2::aes(x = x, y = z),
+      mapping = ggplot2::aes(x = x, y = z, group = 1L),
       color = manip_sp_col, size = line_size, inherit.aes = FALSE) +
     ggplot2::geom_segment(
       data = mv_sp_r,
@@ -397,7 +397,7 @@ view_manip_space <- function(basis,
       color = manip_col, size = text_size, parse = TRUE) +
     ggplot2::geom_path(
       data = theta_curve_r,
-      mapping = ggplot2::aes(x = x , y),
+      mapping = ggplot2::aes(x = x , y = y, group = 1L),
       color = manip_col, size = 0.2)
 }
 
