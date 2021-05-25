@@ -102,9 +102,10 @@ array2df <- function(
   
   ## Return obj, add data if it exists.
   ret <- list(basis_frames = basis_frames) ## Init
-  if(is.null(data) == FALSE){ ##
-    ## Data labels
-    data_frames$label <- rep_len(data_label, nrow(data_frames))
+  if(is.null(data) == FALSE){
+    ## Data label rep if applicable
+    if(is.null(data_label) == FALSE)
+      data_frames$label <- rep_len(data_label, nrow(data_frames))
     ret <- c(ret, list(data_frames = data_frames))
   }
   
