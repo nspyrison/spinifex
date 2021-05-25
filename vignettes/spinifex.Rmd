@@ -6,9 +6,11 @@ output:
   rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{spinifex}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}{inputenc}
   \usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 <!-- #Example vignette: 
 https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->

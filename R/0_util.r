@@ -60,8 +60,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 array2df <- function(
   array,
   data = NULL,
-  basis_label = ifelse(is.null(data) == TRUE, paste0("x", 1:dim(array)[1], abbreviate(colnames(data)), 3L)),
-  data_label = ifelse(is.null(data) == TRUE, NULL, rownames(data))
+  basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3L) else paste0("x", 1:dim(array)[1]),
+  data_label = if(is.null(data) == FALSE) rownames(data) else NULL
 ){
   if("history_array" %in% class(array)) class(array) <- "array"
   ## Initialize
@@ -282,9 +282,9 @@ theme_spinifex <- function(...){
                       legend.direction = "horizontal", ## With-in aesthetic
                       legend.box = "vertical",         ## Between aesthetic
                       legend.margin = ggplot2::margin(),
-                      axis.title = ggplot2::element_text()),
-       ggplot2::labs(x = ggplot2::waiver(),
-                     y = ggplot2::waiver())
+                      axis.title = ggplot2::element_text()), ## Allow axis titles
+       ggplot2::labs(x = "", ## But, titles blank by default.
+                     y = "")
   )
 }
 

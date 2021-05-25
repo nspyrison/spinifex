@@ -7,9 +7,9 @@
 array2df(
   array,
   data = NULL,
-  basis_label = ifelse(is.null(data) == TRUE, paste0("x", 1:dim(array)[1],
-    abbreviate(colnames(data)), 3L)),
-  data_label = ifelse(is.null(data) == TRUE, NULL, rownames(data))
+  basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3L) else
+    paste0("x", 1:dim(array)[1]),
+  data_label = if (is.null(data) == FALSE) rownames(data) else NULL
 )
 }
 \arguments{
