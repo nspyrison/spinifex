@@ -87,8 +87,9 @@ array2df <- function(
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% array[,, i]
       ## Center the new frame
-      new_frame[, 1L] <- new_frame[, 1L] - mean(new_frame[, 1L])
-      new_frame[, 2L] <- new_frame[, 2L] - mean(new_frame[, 2L])
+      .mute <- sapply(1L:ncol(new_frame), function(i)
+        new_frame[, i] <<- new_frame[, i] - mean(new_frame[, i])
+      )
       new_frame <- cbind(new_frame, i) ## Append frame number
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
