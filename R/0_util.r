@@ -311,6 +311,7 @@ theme_spinifex <- function(...){
 basis_pca <- function(data, d = 2L){
   ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
   rownames(ret) <- colnames(data)
+  colnames(ret) <- paste0("PC", 1:d)
   return(ret)
 }
 
@@ -341,6 +342,7 @@ basis_olda <- function(data, class, d = 2L){
                             label = as.factor(class),
                             ndim = d)$projection
   rownames(ret) <- colnames(data)
+  colnames(ret) <- paste0("OLD", 1:d)
   return(ret)
 }
 
@@ -380,6 +382,7 @@ basis_odp <- function(data, class, d = 2L, type = c("proportion", 0.1), ...){
                            type = type,
                            ...)$projection
   rownames(ret) <- colnames(data)
+  colnames(ret) <- paste0("ODP", 1L:d)
   return(ret)
 }
 
@@ -418,15 +421,16 @@ basis_odp <- function(data, class, d = 2L, type = c("proportion", 0.1), ...){
 #                             type = type,
 #                             ...)$projection
 #   rownames(ret) <- colnames(data)
+#   colnames(ret) <- paste0("OLPP", 1L:d)
 #   return(ret)
 # }
 
-#' The basis of Orthogonal Locality Preserving Projection (OLPP)
+#' The basis of Orthogonal Neighborhood Preserving Projection (OLPP)
 #' 
-#' Orthogonal Locality Preserving Projection (OLPP) is the orthogonal variant of
-#' LPP, a linear approximation to Laplacian Eigenmaps. It finds a linear 
-#' approximation to the eigenfunctions of the Laplace-Beltrami operator on the 
-#' graph-approximated data manifold. For the more details on `type` see 
+#' Orthogonal Neighborhood Preserving Projection (ONPP) is an unsupervised 
+#' linear dimension reduction method. It constructs a weighted data graph from 
+#' LLE method. Also, it develops LPP method by preserving the structure of local 
+#' neighborhoods. For the more details on `type` see 
 #' \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd()}}.
 #' 
 #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
@@ -454,6 +458,7 @@ basis_onpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data)))){
                             ndim = d,
                             type = type)$projection
   rownames(ret) <- colnames(data)
+  colnames(ret) <- paste0("ONPP", 1L:d)
   return(ret)
 }
 
@@ -490,6 +495,7 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2L, ...){
   ))
   ret <- matrix(hist[,, length(hist)], ncol = d)
   rownames(ret) <- colnames(data)
+  colnames(ret) <- paste0(index_f, 1L:d)
   return(ret)
 }
 
@@ -512,6 +518,7 @@ basis_half_circle <- function(data){
   u_circ <- as.matrix(data.frame(y1 = sin(arc), y2 = cos(arc)))
   bas <- tourr::orthonormalise(u_circ)
   rownames(bas) <- colnames(data)
+  colnames(bas) <- paste0("half_circ", 1L:d)
   return(bas)
 }
 
