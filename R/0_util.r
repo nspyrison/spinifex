@@ -268,7 +268,8 @@ as_history_array <- function(basis_array, data = NULL){
 #' A ggplot2 theme suggested for linear projections with spinifex.
 #' The default value for ggproto arguments in spinifex functions.
 #' 
-#' @param ... Optionally pass arguments to `theme_void()`.
+#' @param ... Optionally pass arguments to `theme()`.
+#' @seealso \code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
 #' @export
 #' @examples 
 #' theme_spinifex()
@@ -277,7 +278,7 @@ as_history_array <- function(basis_array, data = NULL){
 #' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
 #'   geom_point() + theme_spinifex()
 theme_spinifex <- function(...){
-  list(ggplot2::theme_void(...),
+  list(ggplot2::theme_void(),
        ggplot2::scale_color_brewer(palette = "Dark2"),
        ggplot2::coord_fixed(),
        ggplot2::theme(legend.position = "bottom",      ## Of plot
@@ -285,8 +286,7 @@ theme_spinifex <- function(...){
                       legend.box = "vertical",         ## Between aesthetic
                       legend.margin = ggplot2::margin(),
                       axis.title = ggplot2::element_text()), ## Allow axis titles
-       ggplot2::labs(x = "", ## But, titles blank by default.
-                     y = "")
+       ggplot2::theme(...) ## Passed args applied over all defaults.
   )
 }
 

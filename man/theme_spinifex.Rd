@@ -8,7 +8,7 @@ The default value for ggproto arguments in spinifex functions.}
 theme_spinifex(...)
 }
 \arguments{
-\item{...}{Optionally pass arguments to \code{theme_void()}.}
+\item{...}{Optionally pass arguments to \code{theme()}.}
 }
 \description{
 A ggplot2 theme suggested for linear projections with spinifex.
@@ -20,4 +20,7 @@ theme_spinifex()
 require("ggplot2")
 ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
   geom_point() + theme_spinifex()
+}
+\seealso{
+\code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
 }
