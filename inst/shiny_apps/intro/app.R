@@ -23,13 +23,14 @@ server <- function(input, output, session) {
     if(input$dat == "olive") return(tourr::olive)
     if(input$dat == "wine") return(spinifex::wine)
     if(input$dat == "weather") return(spinifex::weather)
-    if(input$dat == "breastcancer") return(spinifex::breastcancer)
-    if(input$dat == "mtcars") return(mtcars)
+    if(input$dat == "breast cancer") return(spinifex::breastcancer)
+    if(input$dat == "diabetes, long") return(spinifex::PimaIndiansDiabetes_long)
+    if(input$dat == "diabetes, wide") return(spinifex::PimaIndiansDiabetes_wide)
     if(input$data_source == "Upload .csv file"){
       path <- input$data_file$datapath
-      ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
+      ext <- tolower(substr(path, nchar(path) - 4L + 1L, nchar(path)))
       ## assumptions
-      if((is.null(path) | length(path) == 0)) stop("Error in filepath length.")
+      if((is.null(path) | length(path) == 0L)) stop("Error in filepath length.")
       if(!(ext %in% c(".csv", ".rda"))) stop("unexpected filepath extension.")
       if(ext == ".csv")
         return(read.csv(path, stringsAsFactors = FALSE))
@@ -49,7 +50,7 @@ server <- function(input, output, session) {
   })
   sel_col <- reactive({
     var_nm <- input$col_var_nm
-    if(is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
+    if(is.null(var_nm) | length(var_nm) == 0L) var_nm <- "<none>"
     if(var_nm == "<none>") {
       var <- rep("a", n())
     } else {
@@ -60,7 +61,7 @@ server <- function(input, output, session) {
   })
   sel_pch <- reactive({
     var_nm <- input$pch_var_nm
-    if(is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
+    if(is.null(var_nm) | length(var_nm) == 0L) var_nm <- "<none>"
     if(var_nm == "<none>") {
       var <- rep("a", n())
     } else {
@@ -71,7 +72,7 @@ server <- function(input, output, session) {
   })
   n <- reactive(ncol(selDat()))
   manip_var_num <- reactive(which(colnames(selDat()) == input$manip_var_nm)) ## Number of the var
-  basis <- reactive({prcomp(selDat())[[2]][, 1:2]}) ## Init basis to PC1:2
+  basis <- reactive({prcomp(selDat())[[2L]][, 1L:2L]}) ## Init basis to PC1:2
   
   ## Tour and display
   tour_path <- reactive({
@@ -86,7 +87,7 @@ server <- function(input, output, session) {
                      manip_var = manip_var_num(),
                      aes_args = list(color = sel_col(), shape = sel_pch()),
                      axes = "left",
-                     fps  = 9
+                     fps  = 9L
     )
   })
   
@@ -99,7 +100,7 @@ server <- function(input, output, session) {
       is.numeric(x) & all(complete.cases(x))
     })
     numVars_nms <- names(dat[numVars_TF])
-    numSelected <- 1:min(length(numVars_nms), 6)
+    numSelected <- 1L:min(length(numVars_nms), 6L)
     updateCheckboxGroupInput(session,
                              "projVars",
                              choices  = numVars_nms,
@@ -117,8 +118,7 @@ server <- function(input, output, session) {
     opts <- c(clusterVars_nms, "<none>")
     updateSelectInput(session, "col_var_nm", choices = opts)
     updateSelectInput(session, "pch_var_nm", choices = opts)
-  }
-  )
+  })
   
   ### If projection variables change, update input$manip_var_nm
   observeEvent(input$projVars, {
@@ -142,7 +142,7 @@ server <- function(input, output, session) {
   ## toggle display by setting .include_dev_display at the top of ../global_shinyApps.r
   
   ## Development help -- to display dev tools see the top of 'global_shinyApps.r'
-  if(.include_dev_display == TRUE) {
+  if(.include_dev_display == TRUE)
     shinyjs::show("dev_toggle")
   } ## else (.include_dev_display != TRUE) dev content remains hidden.
   

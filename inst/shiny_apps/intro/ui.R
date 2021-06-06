@@ -3,11 +3,11 @@
 ##### Setup ----
 .include_dev_display  <- FALSE
 .include_obs_msg      <- FALSE
-.obs_msg_counter <- 0
+.obs_msg_counter <- 0L
 ## Creat lontextLine, a string containing App name, spinifex version, and sys date.
 .wd <- getwd()
 .regex <- regexpr("\\/[^\\/]*$", .wd)
-.local_path <- substr(.wd, .regex + 1, nchar(.wd))
+.local_path <- substr(.wd, .regex + 1L, nchar(.wd))
 contextLine <- paste0("Spinifex app, '", .local_path, 
                       "' --- (spinifex v", packageVersion("spinifex"),
                       ") --- Ran on ", Sys.Date())
@@ -20,27 +20,24 @@ require("shinythemes") ## Themes for shiny, think css files.
 require("shinyjs")     ## Extend JavaScript (Think HTML interactivity) control and formating, 
 ## also see ?shinyjs::toggle   &   https://daattali.com/shiny/shinyjs-basic/
 
-default_projVars <- names(tourr::flea[, 1:6])
+default_projVars <- names(tourr::flea[, 1L:6L])
 
 ### Data Tab -----
 tabData <- tabPanel(
   "Data", fluidPage(
     sidebarPanel(
-      width = 3,
+      width = 3L,
       ## Select data
-      selectInput("dat", "Dataset", 
-                  c("flea", "olive", "weather", 
-                    "wine", "breastcancer", "mtcars", 
-                    "Upload file"),
-                  "flea"
-      ),
+      selectInput("dat", "Dataset",
+                  c("flea", "olive", "weather", "wine", "breast cancer",
+                    "diabetes, long", "diabetes, wide"), #Upload file"), ## upload causing other errors
+                  "flea"),
       conditionalPanel("input.dat == 'Upload file'",
                        fileInput("data_file", "Data file",
                                  placeholder = "<Select a .csv or .rda file>",
                                  accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
                        ),
-                       verbatimTextOutput("data_msg")
-      ),
+                       verbatimTextOutput("data_msg")),
       ## Select the projection variables
       checkboxGroupInput(
         "projVars",
@@ -50,7 +47,7 @@ tabData <- tabPanel(
       ),
       checkboxInput("rescale_data", "Standardize values to by Std.Dev.", value = TRUE)
     ),
-    mainPanel(width = 9,
+    mainPanel(width = 9L,
               h4("Raw input data summary"),
               verbatimTextOutput("rawDat_summary"),
               h4("Selected data summary"),
@@ -64,13 +61,13 @@ tabData <- tabPanel(
 tabRadial <- tabPanel(
   "Radial manual tour", fluidPage(
     sidebarPanel(
-      width = 3,
-      selectInput('manip_var_nm', 'Manip var', 1),
-      fluidRow(column(6, selectInput("col_var_nm", "Point color", "<none>")),
-               column(6, selectInput("pch_var_nm", "Point shape", "<none>")))
+      width = 3L,
+      selectInput('manip_var_nm', 'Manip var', 1L),
+      fluidRow(column(6L, selectInput("col_var_nm", "Point color", "<none>")),
+               column(6L, selectInput("pch_var_nm", "Point shape", "<none>")))
     ),
     mainPanel(
-      width = 9,
+      width = 9L,
       plotly::plotlyOutput("plotlyAnim",
                            height = "600px")
     )
