@@ -85,7 +85,7 @@ array2df <- function(
     data <- as.matrix(data)
     data_frames <- NULL
     .mute <- sapply(1L:n_frames, function(i){
-      new_frame <- data %*% array[,, i]
+      new_frame <- data %*% matrix(array[,, i], nrow(array), ncol(array))
       ## Center the new frame
       .mute <- sapply(1L:ncol(new_frame), function(i)
         new_frame[, i] <<- new_frame[, i] - mean(new_frame[, i])
