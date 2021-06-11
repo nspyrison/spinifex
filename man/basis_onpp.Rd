@@ -4,7 +4,7 @@
 \alias{basis_onpp}
 \title{The basis of Orthogonal Neighborhood Preserving Projection (OLPP)}
 \usage{
-basis_onpp(data, d = 2L, type = c("knn", sqrt(nrow(data))))
+basis_onpp(data, d = 2, type = c("knn", sqrt(nrow(data))))
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations, coerced to matrix.}

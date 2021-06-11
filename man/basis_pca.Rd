@@ -4,7 +4,7 @@
 \alias{basis_pca}
 \title{The basis of Principal Component Analysis (PCA)}
 \usage{
-basis_pca(data, d = 2L)
+basis_pca(data, d = 2)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}

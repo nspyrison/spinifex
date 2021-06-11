@@ -308,7 +308,7 @@ theme_spinifex <- function(...){
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_pca(data = dat_std)
-basis_pca <- function(data, d = 2L){
+basis_pca <- function(data, d = 2){
   ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
   rownames(ret) <- colnames(data)
   colnames(ret) <- paste0("PC", 1:d)
@@ -337,7 +337,7 @@ basis_pca <- function(data, d = 2L){
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' basis_olda(data = dat_std, class = clas)
-basis_olda <- function(data, class, d = 2L){
+basis_olda <- function(data, class, d = 2){
   ret <- Rdimtools::do.olda(X = as.matrix(data),
                             label = as.factor(class),
                             ndim = d)$projection
@@ -375,7 +375,7 @@ basis_olda <- function(data, class, d = 2L){
 #' dat_std <- scale_sd(wine[, 2:14])
 #' clas <- wine$Type
 #' basis_odp(data = dat_std, class = clas)
-basis_odp <- function(data, class, d = 2L, type = c("proportion", 0.1), ...){
+basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
   ret <- Rdimtools::do.odp(X = as.matrix(data),
                            label = as.factor(class),
                            ndim = d,
@@ -414,7 +414,7 @@ basis_odp <- function(data, class, d = 2L, type = c("proportion", 0.1), ...){
 # #' @examples
 # #' dat_std <- scale_sd(wine[, 2:14])
 # #' basis_olpp(data = dat_std)
-# basis_olpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data))), ...){
+# basis_olpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data))), ...){
 #   
 #   ret <- Rdimtools::do.olpp(X = as.matrix(data),
 #                             ndim = d,
@@ -453,7 +453,7 @@ basis_odp <- function(data, class, d = 2L, type = c("proportion", 0.1), ...){
 #' @examples
 #' dat_std <- scale_sd(wine[, 2:14])
 #' basis_onpp(data = dat_std)
-basis_onpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data)))){
+basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
   ret <- Rdimtools::do.onpp(X = as.matrix(data),
                             ndim = d,
                             type = type)$projection
@@ -486,7 +486,7 @@ basis_onpp <- function(data, d = 2L, type = c("knn", sqrt(nrow(data)))){
 #' 
 #' basis_guided(data = dat_std, index_f = tourr::cmass(),
 #'              alpha = .4, cooling = .9, max.tries = 30)
-basis_guided <- function(data, index_f = tourr::holes(), d = 2L, ...){
+basis_guided <- function(data, index_f = tourr::holes(), d = 2, ...){
   invisible(utils::capture.output(
     hist <- tourr::save_history(
       data,
@@ -518,7 +518,7 @@ basis_half_circle <- function(data){
   u_circ <- as.matrix(data.frame(y1 = sin(arc), y2 = cos(arc)))
   bas <- tourr::orthonormalise(u_circ)
   rownames(bas) <- colnames(data)
-  colnames(bas) <- paste0("half_circ", 1L:d)
+  colnames(bas) <- paste0("half_circ", 1L:2L)
   return(bas)
 }
 

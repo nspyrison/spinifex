@@ -4,7 +4,7 @@
 \alias{basis_olda}
 \title{The basis of Orthogonal Linear Discriminant Analysis (OLDA)}
 \usage{
-basis_olda(data, class, d = 2L)
+basis_olda(data, class, d = 2)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations, coerced to matrix.}

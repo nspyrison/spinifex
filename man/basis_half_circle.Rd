@@ -4,7 +4,7 @@
 \alias{basis_half_circle}
 \title{Create a basis that gives uniform contribution in a circle}
 \usage{
-basis_half_circle(data)
+basis_half_circle(data, d = 2)
 }
 \arguments{
 \item{data}{The data to create a basis for.}

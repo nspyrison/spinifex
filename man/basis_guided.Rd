@@ -4,7 +4,7 @@
 \alias{basis_guided}
 \title{Solve for the last basis of a guided tour.}
 \usage{
-basis_guided(data, index_f = tourr::holes(), d = 2L, ...)
+basis_guided(data, index_f = tourr::holes(), d = 2, ...)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}
