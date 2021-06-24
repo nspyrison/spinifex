@@ -29,3 +29,4 @@ bas <- basis_pca(dat_std)
 
 manip_var_of(basis = bas, rank = 1)
 }
+\concept{manual tour}

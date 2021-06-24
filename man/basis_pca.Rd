@@ -12,8 +12,8 @@ basis_pca(data, d = 2)
 \item{d}{Number of dimensions in the projection space.}
 }
 \description{
-The linear components of the variables in the next largest direction of
-variance.
+The orthogonal linear components of the variables in the next largest
+direction of variance.
 }
 \examples{
 dat_std <- scale_sd(wine[, 2:14])
@@ -27,6 +27,7 @@ Other basis identifiers:
 \code{\link{basis_half_circle}()},
 \code{\link{basis_odp}()},
 \code{\link{basis_olda}()},
+\code{\link{basis_olpp}()},
 \code{\link{basis_onpp}()}
 }
 \concept{basis identifiers}

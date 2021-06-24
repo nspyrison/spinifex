@@ -31,8 +31,8 @@ A list containing an array of basis frames (p, d, n_frames) and
 an array of data frames (n, d, n_frames) if data is present.
 }
 \description{
-Typically called by a wrapper function, \code{play_manual_tour} or
-\code{play_tour_path}. Takes the result of \code{tourr::save_history()} or
+Internal function. Typically called by a wrapper function, \code{play_manual_tour}
+or \code{play_tour_path}. Takes the result of \code{tourr::save_history()} or
 \code{manual_tour()} and restructures the data from an array to a long data frame
 for use in ggplots.
 }

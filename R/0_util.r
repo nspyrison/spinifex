@@ -2,9 +2,9 @@
 ## MATH AND TRANSFORMS -----
 ##
 
-#' Test if a numeric matrix is orthonormal.
-#'
-#' Handles more cases than tourr::is_orthonormal().
+#' Test if a numeric matrix is orthonormal, that is, each column is orthogonal,
+#' at a right angle with the others, and each column has a norm 
+#' length of 1. This must be true for a projection to be linear.
 #'
 #' @param x Numeric matrix to test the orthonormality of.
 #' @param tol Max tolerance of floating point differences.
@@ -15,6 +15,7 @@
 #' is_orthonormal(tourr::basis_random(n = 6))
 #' is_orthonormal(matrix(1:12, ncol = 2), tol = 0.01)
 is_orthonormal <- function(x, tol = 0.001) {
+  if(is.numeric(x) == FALSE) stop("'x', expected to be numeric and coercable to matrix.")
   x <- as.matrix(x)
   actual <- t(x) %*% x ## Collapses to identity matrix IFF x is orthonormal
   expected <- diag(ncol(x))
@@ -23,8 +24,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 
 #' Turns a tour path array into a long data frame.
 #'
-#' Typically called by a wrapper function, `play_manual_tour` or 
-#' `play_tour_path`. Takes the result of `tourr::save_history()` or 
+#' Internal function. Typically called by a wrapper function, `play_manual_tour` 
+#' or `play_tour_path`. Takes the result of `tourr::save_history()` or 
 #' `manual_tour()` and restructures the data from an array to a long data frame 
 #' for use in ggplots.
 #'
@@ -39,7 +40,6 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' Defaults to the rownames of the data, if available.
 #' @return A list containing an array of basis frames (p, d, n_frames) and 
 #' an array of data frames (n, d, n_frames) if data is present.
-#' @export
 #' @examples
 #' ## Setup
 #' dat_std <- tourr::rescale(wine[, 2:14])
@@ -113,14 +113,41 @@ array2df <- function(
   return(ret)
 }
 
+#' Changes an array of bases into a "history_array" class for use 
+#' in `tourr::interpolate()`.
+#' 
+#' Internal function. Attaches data to an array and assigns the custom class "history_array" as 
+#' used in `tourr`. Typically called by basis arrays from `spinifex` functions.
+#' 
+#' @param basis_array An array of bases.
+#' @param data The data matrix to be projected through the basis. This is
+#' `tourr::save_history` objects, but not consumed downstream in `spinifex`.
+#' @return An array of numeric bases with custom class "history_array" for 
+#' consumption by `tourr::interpolate`.
+#' 
+#' @seealso \code{\link[tourr:save_history]{tourr::save_history}} for preset choices.
+# #' @export
+#' @examples 
+#' dat_std <- scale_sd(wine[, 2:14])
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_of(bas)
+#' mt_array <- manual_tour(basis = bas, manip_var = mv)
+#' as_history_array(mt_array, dat_std)
+as_history_array <- function(basis_array, data = NULL){
+  if(length(data) > 0L)
+    attr(basis_array, "data") <- as.matrix(data)
+  class(basis_array) <- "history_array"
+  return(basis_array)
+}
+
 
 #' Returns the axis scale and position.
 #' 
-#' Typically called by other functions to scale the position of the axes 
-#' relative to the data.
+#' Internal function. Typically called by other functions to scale the position
+#' of the axes data.frame or another data.frame to plot relative to the data.
 #' 
-#' @param x Numeric table, first 2 columns and scaled and offset relative to 
-#' the `to` argument.
+#' @param x Numeric matrix or data.frame, first 2 columns and scaled and offset 
+#' the `to` object.
 #' @param position Text specifying the position the axes should go to.
 #' Defaults to "center" expects one of: "center", "left", "right", 
 #' "bottomleft", "topright", or "off".
@@ -129,16 +156,17 @@ array2df <- function(
 #' @return Transformed values of `x`, dimension and class unchanged.
 #' @seealso \code{\link{pan_zoom}} for more manual control.
 #' @export
+#' @family Linear mapping
 #' @examples
 #' rb <- tourr::basis_random(4, 2)
 #' 
-#' scale_axes(x = rb, position = "bottomleft")
-#' scale_axes(x = rb, position = "right", to = wine[, 2:3])
-scale_axes <- function(x,
-                       position = c("center", "left", "right", "bottomleft",
-                                    "topright", "off", "pan_zoom() call;",
-                                    pan_zoom(c(-1L, 0L), c(.7, .7))),
-                       to = data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+#' map_relative(x = rb, position = "bottomleft")
+#' map_relative(x = rb, position = "right", to = wine[, 2:3])
+map_relative <- function(x,
+                         position = c("center", "left", "right", "bottomleft",
+                                      "topright", "off", "pan_zoom() call;",
+                                      pan_zoom(c(-1L, 0L), c(.7, .7))),
+                         to = data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
 ){
   ## Assumptions
   position <- match.arg(position)
@@ -185,81 +213,51 @@ scale_axes <- function(x,
   return(x)
 }
 
+#' @rdname spinifex-deprecated
+#' @section \code{scale_axes}:
+#' For \code{scale_axes}, use \code{\link{map_relative}}.
+#' @export
+scale_axes <- function(...) {
+  .Deprecated("map_relative")
+  map_relative(...)
+}
 
-#' Pan (offset) and zoom (scale) a 2 column matrix or dataframe.
+
+#' Manually offset and scale the first 2 columns of a matrix or data.frame.
 #' 
-#' A manual variant of `scale_axes()`. Can be used as the `axes` argument 
+#' A manual variant of `map_relative()`. Can be used as the `axes` argument 
 #' to manually set the size and locations of the axes.
 #' 
-#' @param pan 2 Numeric value to offset/pan the first 2 dimensions of `x`.
-#' @param zoom 2 Numeric value to scale/zoom the first 2 dimensions of `x`.
+#' @param pan 2 Numeric values to offset/pan the first 2 dimensions of `x`.
+#' @param zoom 2 Numeric values to scale/zoom the first 2 dimensions of `x`.
 #' @param x Numeric data object with 2 columns to scale and offset.
 #' Defaults to NULL, passing arguments to scale_axes for use internally.
 #' @return Scaled and offset `x`.
 #' @seealso \code{\link{scale_axes}} for preset choices.
 #' @export
+#' @family Linear mapping
 #' @examples 
-#' rb <- tourr::basis_random(6, 2)
-#' pan_zoom(pan = c(-1, 0), zoom = c(2/3, 2/3), x = rb)
-pan_zoom <- function(pan = c(0L, 0L),
-                     zoom = c(1L, 1L),
-                     x = NULL
+#' bas <- basis_random(4, 2)
+#' 
+#' map_absolute(pan = c(-2, 0), zoom = c(2/3, 2/3), x = bas)
+map_absolute <- function(x,
+                         offset = c(0L, 0L),
+                         scale = c(1L, 1L)
 ){
-  if(is.null(x)) return(list(pan = pan, zoom = zoom))
-  ## Assumptions
-  if(ncol(x) != 2L) warning("pan_zoom is only defined for 2 variables. x has more than 2 columns")
-  ## Apply scale and return
   ret <- x
   ret[, 1L] <- ret[, 1L] * zoom[1L] + pan[1L]
   ret[, 2L] <- ret[, 2L] * zoom[2L] + pan[2L]
   return(ret)
 }
 
-#' Changes an array of bases into a "history_array" for use in `tourr::interpolate`
-#' 
-#' Attaches data to an array and assigns the custom class "history_array" as 
-#' used in `tourr`. Typically called by other `spinifex` functions.
-#' 
-#' @param basis_array An array of bases.
-#' @param data The data matrix to be projected through the basis. This is
-#' `tourr::save_history` objects, but not consumed downstream in `spinifex`.
-#' @return An array of numeric bases with custom class "history_array" for 
-#' consumption by `tourr::interpolate`.
-#' 
-#' @seealso \code{\link[tourr:save_history]{tourr::save_history}} for preset choices.
+#' @rdname spinifex-deprecated
+#' @section \code{pan_zoom}:
+#' For \code{pan_zoom}, use \code{\link{map_absolute}}.
 #' @export
-#' @examples 
-#' dat_std <- scale_sd(wine[, 2:14])
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
-#' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' as_history_array(mt_array, dat_std)
-as_history_array <- function(basis_array, data = NULL){
-  if(length(data) > 0L)
-    attr(basis_array, "data") <- as.matrix(data)
-  class(basis_array) <- "history_array"
-  return(basis_array)
+pan_zoom <- function(...) {
+  .Deprecated("map_absolute")
+  map_absolute(...)
 }
-
-
-#### print.history_array, not in use -----
-# #' Method for printing history_array object
-# #' 
-# #' When a history_array object is printed (or explicitly called) remove excess 
-# #' information or persisting attributes to be removed for a more friendly 
-# #' display of tour arrays. 
-# #' 
-# #' @param x any object of class "history_array"
-# #' @param ... Other arguments passed to print().
-# print.history_array <- function (x, ...){
-#   ## Remove all non- dim, class attributes before printing.
-#   .attr_nms <- names(attributes(x)) 
-#   .rm_attr_nms <- .attr_nms[!.attr_nms %in% c("dim", "class")]
-#   .mute <- sapply(.rm_attr_nms, function(atr){
-#     attr(x, atr) <<- NULL
-#   })
-#   NextMethod(...)
-# }
 
 ##
 ## GGPLOT2 AESTHETICS ------
@@ -281,12 +279,12 @@ theme_spinifex <- function(...){
   list(ggplot2::theme_void(),
        ggplot2::scale_color_brewer(palette = "Dark2"),
        ggplot2::coord_fixed(),
-       ggplot2::theme(legend.position = "bottom",      ## Of plot
-                      legend.direction = "horizontal", ## With-in aesthetic
+       ggplot2::theme(legend.position = "bottom",
+                      legend.direction = "horizontal", ## Levels within aesthetic
                       legend.box = "vertical",         ## Between aesthetic
-                      legend.margin = ggplot2::margin(),
-                      axis.title = ggplot2::element_text()), ## Allow axis titles
-       ggplot2::theme(...) ## Passed args applied over all defaults.
+                      legend.margin = ggplot2::margin(-1,-1,-1,-1, "mm"), ## Tighter legend margin
+                      axis.title = ggplot2::element_text(), ## Allow axis titles
+                      ...) ## ... args applied over  defaults.
   )
 }
 
@@ -297,8 +295,8 @@ theme_spinifex <- function(...){
 
 #' The basis of Principal Component Analysis (PCA)
 #' 
-#' The linear components of the variables in the next largest direction of 
-#' variance.
+#' The orthogonal linear components of the variables in the next largest 
+#' direction of variance.
 #' 
 #' @param data Numeric matrix or data.frame of the observations.
 #' @param d Number of dimensions in the projection space.
@@ -386,44 +384,43 @@ basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
   return(ret)
 }
 
-#### TODO: Error in Rdimtools::do.olpp(), issue opened to GH 10/4/2021.
-# #' The basis of Orthogonal Locality Preserving Projection (OLPP)
-# #' 
-# #' Orthogonal Locality Preserving Projection (OLPP) is the orthogonal variant of
-# #' LPP, a linear approximation to Laplacian Eigenmaps. It finds a linear 
-# #' approximation to the eigenfunctions of the Laplace-Beltrami operator on the 
-# #' graph-approximated data manifold.
-# #' 
-# #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
-# #' @param d Number of dimensions in the projection space.
-# #' @param type A vector specifying the neighborhood graph construction. 
-# #' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
-# #' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
-# #' square root of observations.
-# #' @param ... Optional, other arguments to pass to \code{\link[Rdimtools]{do.olpp}}.
-# #' @return Orthogonal matrix basis
-# #' @seealso \code{\link[Rdimtools:do.olpp]{Rdimtools::do.olpp}} for locality
-# #' preservation parameters.
-# #' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
-# #' details on `type`.
-# #' @references
-# #' He X (2005). Locality Preserving Projections. PhD Thesis, 
-# #' University of Chicago, Chicago, IL, USA.
-# #' @export
-# #' @family basis identifiers
-# #' @examples
-# #' dat_std <- scale_sd(wine[, 2:14])
-# #' basis_olpp(data = dat_std)
-# basis_olpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data))), ...){
-#   
-#   ret <- Rdimtools::do.olpp(X = as.matrix(data),
-#                             ndim = d,
-#                             type = type,
-#                             ...)$projection
-#   rownames(ret) <- colnames(data)
-#   colnames(ret) <- paste0("OLPP", 1L:d)
-#   return(ret)
-# }
+
+#' The basis of Orthogonal Locality Preserving Projection (OLPP)
+#' 
+#' Orthogonal Locality Preserving Projection (OLPP) is the orthogonal variant of
+#' LPP, a linear approximation to Laplacian Eigenmaps. It finds a linear 
+#' approximation to the eigenfunctions of the Laplace-Beltrami operator on the 
+#' graph-approximated data manifold.
+#' 
+#' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
+#' @param d Number of dimensions in the projection space.
+#' @param type A vector specifying the neighborhood graph construction. 
+#' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
+#' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
+#' square root of observations.
+#' @param ... Optional, other arguments to pass to \code{\link[Rdimtools]{do.olpp}}.
+#' @return Orthogonal matrix basis
+#' @seealso \code{\link[Rdimtools:do.olpp]{Rdimtools::do.olpp}} for locality
+#' preservation parameters.
+#' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
+#' details on `type`.
+#' @references
+#' He X (2005). Locality Preserving Projections. PhD Thesis, 
+#' University of Chicago, Chicago, IL, USA.
+#' @export
+#' @family basis identifiers
+#' @examples
+#' dat_std <- scale_sd(wine[, 2:14])
+#' basis_olpp(data = dat_std)
+basis_olpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data))), ...){
+  ret <- Rdimtools::do.olpp(X = as.matrix(data),
+                            ndim = d,
+                            type = type,
+                            ...)$projection
+  rownames(ret) <- colnames(data)
+  colnames(ret) <- paste0("OLPP", 1L:d)
+  return(ret)
+}
 
 #' The basis of Orthogonal Neighborhood Preserving Projection (OLPP)
 #' 
@@ -536,6 +533,7 @@ basis_half_circle <- function(data){
 #' contribution. Defaults to 1.
 #' @return Numeric scalar, the column number of a variable.
 #' @export
+#' @family manual tour
 #' @examples 
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:14])
@@ -550,7 +548,7 @@ manip_var_of <- function(basis, rank = 1){
   return(ret)
 }
 
-#' Preprocessing variable transformation
+#' Preprocess numeric variables
 #' 
 #' Centers and scales each column by standard deviation (sd) or to the 
 #' interval (0, 1).

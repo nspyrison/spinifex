@@ -75,9 +75,9 @@ To accommodate interactive use, rather than predefined paths:
 - `oblique_frame()`
 - `run_app()` New shiny app!
 
-## New utility & internally-aimed functions
+## New utility functions
 
-- `pan_zoom()`
+- `map_absolute()`
 - `is_orthonormal()` slightly more general than `tourr::is_orthonormal()`
 
 ## Other changes

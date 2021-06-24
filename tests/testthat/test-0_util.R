@@ -81,17 +81,17 @@ test_that("scale_axes: class and dim", {
 })
 
 
-### pan_zoom -----
+### map_absolute -----
 
-ret_mat   <- pan_zoom(x = bas, pan = c(-1, 0), zoom = c(2/3, 2/3))
-ret_df    <- pan_zoom(x = mtcars[,1:2], pan = c(0, 100), zoom = c(.1, .1))
+ret_mat   <- map_absolute(x = bas, pan = c(-1, 0), zoom = c(2/3, 2/3))
+ret_df    <- map_absolute(x = mtcars[,1:2], pan = c(0, 100), zoom = c(.1, .1))
 
-test_that("pan_zoom: class and dim", {
+test_that("map_absolute: class and dim", {
   expect_is(ret_mat, "matrix")
   expect_is(ret_df,  "data.frame")
   expect_equal(dim(ret_mat), c(13, 2))
   expect_equal(dim(ret_df),  c(32, 2))
-  expect_warning(pan_zoom(x = mtcars))
+  expect_warning(map_absolute(x = mtcars))
 })
 
 ##

@@ -2,7 +2,9 @@
 % Please edit documentation in R/0_util.r
 \name{is_orthonormal}
 \alias{is_orthonormal}
-\title{Test if a numeric matrix is orthonormal.}
+\title{Test if a numeric matrix is orthonormal, that is, each column is orthogonal,
+at a right angle with the others, and each column has a norm
+length of 1. This must be true for a projection to be linear.}
 \usage{
 is_orthonormal(x, tol = 0.001)
 }
@@ -16,7 +18,9 @@ Elecment-wise distance of t(x) \%*\% x from the identity matrix.}
 Single logical, whether or not the matrix is orthonormal.
 }
 \description{
-Handles more cases than tourr::is_orthonormal().
+Test if a numeric matrix is orthonormal, that is, each column is orthogonal,
+at a right angle with the others, and each column has a norm
+length of 1. This must be true for a projection to be linear.
 }
 \examples{
 is_orthonormal(tourr::basis_random(n = 6))

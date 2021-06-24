@@ -4,7 +4,7 @@
 \alias{basis_half_circle}
 \title{Create a basis that gives uniform contribution in a circle}
 \usage{
-basis_half_circle(data, d = 2)
+basis_half_circle(data)
 }
 \arguments{
 \item{data}{The data to create a basis for.}
@@ -23,6 +23,7 @@ Other basis identifiers:
 \code{\link{basis_guided}()},
 \code{\link{basis_odp}()},
 \code{\link{basis_olda}()},
+\code{\link{basis_olpp}()},
 \code{\link{basis_onpp}()},
 \code{\link{basis_pca}()}
 }

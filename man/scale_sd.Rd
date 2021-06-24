@@ -3,7 +3,7 @@
 \name{scale_sd}
 \alias{scale_sd}
 \alias{scale_01}
-\title{Preprocessing variable transformation}
+\title{Preprocess numeric variables}
 \usage{
 scale_sd(data)
 

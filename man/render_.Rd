@@ -20,7 +20,7 @@ render_(
 
 \item{axes}{Position of the axes, expects one of:
 "center", "left", "right", "bottomleft", "topright", "off", or a
-pan_zoom() call. Defaults to "center".}
+map_absolute() call. Defaults to "center".}
 
 \item{manip_col}{String of the color to highlight the \code{manip_var}, if used.
 Defaults to "blue".}

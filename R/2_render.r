@@ -11,7 +11,7 @@
 #' @param frames The result of `array2df()`, a long df of the projected frames.
 #' @param axes Position of the axes, expects one of: 
 #' "center", "left", "right", "bottomleft", "topright", "off", or a 
-#' pan_zoom() call. Defaults to "center".
+#' map_absolute() call. Defaults to "center".
 #' @param manip_col String of the color to highlight the `manip_var`, if used.
 #' Defaults to "blue".
 #' @param line_size The size of the lines of the unit circle and variable 
@@ -83,10 +83,10 @@ render_ <- function(frames,
   if(axes != "off"){
     if(is.null(data_frames)){.to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
     }else{.to <- data_frames}
-    center <- scale_axes(data.frame(x = 0L, y = 0L), axes, to = .to)
-    circ <- scale_axes(circ, axes, to = .to)
+    center <- map_relative(data.frame(x = 0L, y = 0L), axes, to = .to)
+    circ <- map_relative(circ, axes, to = .to)
     ## Rejoin frame number to the scaled bases frames
-    basis_frames <- scale_axes(basis_frames, axes, to = .to)
+    basis_frames <- map_relative(basis_frames, axes, to = .to)
   }
   ## Manip var axes aesthetics
   axes_col <- "grey50"
