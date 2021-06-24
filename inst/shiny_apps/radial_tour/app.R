@@ -1,4 +1,4 @@
-### "Intro" app.R -----
+### "radial_tour" app.R -----
 # options(shiny.error = FALSE)
 
 #' Shiny app for exploring toy multivariate datasets with the manual tour
@@ -26,24 +26,27 @@ server <- function(input, output, session) {
     if(input$dat == "breast cancer") return(spinifex::breastcancer)
     if(input$dat == "diabetes, long") return(spinifex::PimaIndiansDiabetes_long)
     if(input$dat == "diabetes, wide") return(spinifex::PimaIndiansDiabetes_wide)
-    if(input$data_source == "Upload .csv file"){
+    if(input$dat == "Upload file"){
+      req(input$data_file)
       path <- input$data_file$datapath
       ext <- tolower(substr(path, nchar(path) - 4L + 1L, nchar(path)))
       ## assumptions
       if((is.null(path) | length(path) == 0L)) stop("Error in filepath length.")
       if(!(ext %in% c(".csv", ".rda"))) stop("unexpected filepath extension.")
       if(ext == ".csv")
-        return(read.csv(path, stringsAsFactors = FALSE))
+        return(read.csv(path, stringsAsFactors = TRUE, sep = ","))
       if(ext == ".rda")
         return(load(file = path))
     }
-  stop("Unexpected error reading data.")
+    stop("Unexpected data selection.")
   })
   
   ### Input initialize
   selDat <- reactive({
+    req(rawDat())
+    req(input$projVars)
     dat <- rawDat()
-    ret <- dat[, which(colnames(dat) %in% input$projVars)]
+    ret <- dat[complete.cases(dat), which(colnames(dat) %in% input$projVars)]
     if(input$rescale_data) ret <- scale_sd(ret)
     if(!is.matrix(ret)) ret <- as.matrix(ret)
     return(ret)
@@ -52,23 +55,23 @@ server <- function(input, output, session) {
     var_nm <- input$col_var_nm
     if(is.null(var_nm) | length(var_nm) == 0L) var_nm <- "<none>"
     if(var_nm == "<none>") {
-      var <- rep("a", n())
+      vect <- rep("a", n())
     } else {
       dat <- rawDat()
-      var <- dat[, which(colnames(dat) == var_nm)]
+      vect <- dat[complete.cases(dat), which(colnames(dat) == var_nm)]
     }
-    var
+    vect
   })
   sel_pch <- reactive({
     var_nm <- input$pch_var_nm
     if(is.null(var_nm) | length(var_nm) == 0L) var_nm <- "<none>"
     if(var_nm == "<none>") {
-      var <- rep("a", n())
+      vect <- rep("a", n())
     } else {
       dat <- rawDat()
-      var <- dat[, which(colnames(dat) == var_nm)]
+      vect <- dat[complete.cases(dat), which(colnames(dat) == var_nm)]
     }
-    var
+    vect
   })
   n <- reactive(ncol(selDat()))
   manip_var_num <- reactive(which(colnames(selDat()) == input$manip_var_nm)) ## Number of the var
@@ -93,18 +96,17 @@ server <- function(input, output, session) {
   
   ##### Observes -----
   ## If rawDat() changes, update the projection variables.
-  observeEvent(rawDat() ,{
+  output$inputProjVars <- renderUI({
+    req(rawDat())
     dat <- rawDat()
-    ## Logical for columns that are numeric AND column-complete
-    numVars_TF  <- sapply(dat, function(x) {
-      is.numeric(x) & all(complete.cases(x))
-    })
-    numVars_nms <- names(dat[numVars_TF])
-    numSelected <- 1L:min(length(numVars_nms), 6L)
-    updateCheckboxGroupInput(session,
-                             "projVars",
-                             choices  = numVars_nms,
-                             selected = numVars_nms[numSelected])
+    col_idx  <- sapply(dat, is.numeric)
+    nms <- names(dat[col_idx])
+    col_selected <- 1L:min(length(nms), 6L)
+    checkboxGroupInput("projVars",
+                       label = "Projection variables",
+                       choices  = nms,
+                       selected = nms[col_selected]
+    )
   })
   
   ### If rawDat() changes, Update pch/col var 
@@ -131,20 +133,12 @@ server <- function(input, output, session) {
     summary(dat)
   })
   output$selDat_summary <- renderPrint({
+    req(selDat())
     dat <- as.data.frame(selDat()) ## For naming
     summary(dat)
   })
   output$plotlyAnim <- plotly::renderPlotly(plotly_anim())
   outputOptions(output, "plotlyAnim", suspendWhenHidden = FALSE) ## Eager evaluation
-  
-  
-  #### Dev tools -----
-  ## toggle display by setting .include_dev_display at the top of ../global_shinyApps.r
-  
-  ## Development help -- to display dev tools see the top of 'global_shinyApps.r'
-  if(.include_dev_display == TRUE)
-    shinyjs::show("dev_toggle")
-  } ## else (.include_dev_display != TRUE) dev content remains hidden.
   
   ## Browser button
   observeEvent(input$browser, {browser()})

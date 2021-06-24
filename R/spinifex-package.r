@@ -13,7 +13,7 @@
 #'
 #' Its main functions are:
 #' \itemize{
-#'   \item [run_app()], running `run_app("intro")` will open an introductory `shiny` app demonstrating radial tours.
+#'   \item [run_app()], running `run_app("radial_tour")` will open a `shiny` app demonstrating radial, manual tours.
 #'   \item [play_manual_tour()], performs a manual tour, returning a `plotly` animate by default.
 #'   \item [play_tour_path()], turns a tour path into an animation, returning a `plotly` object by default.
 #'   \item [view_frame()], plot a basis set on a reference axis.

@@ -28,7 +28,7 @@ New util functions:
 # spinifex v0.2.7
 
 - Gives deprecated warning when using `view_basis()` and `oblique_basis()`, no longer listed in `view_frame()` documentation
-- Fixed intro shiny app to reflect argument changes
+- Fixed "radial_tour" shiny app to reflect argument changes
 - Fixed example run time for `render_plotly()` going longer than 10 seconds
 
 
@@ -66,7 +66,7 @@ New util functions:
 
 ## Demo shiny app
 
-- `run_app("intro")`
+- `run_app("radial_tour")`
 
 ## New functions
 To accommodate interactive use, rather than predefined paths:

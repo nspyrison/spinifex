@@ -42,7 +42,7 @@ remotes::install_github("nspyrison/spinifex")
 ```
 library("spinifiex") ## Load into session
 vignette("spinifex") ## View the example code vignette
-run_app("intro") ## Run a local shiny app, demonstrating radial manual tours
+run_app("radial_tour") ## Run a local shiny app, demonstrating radial manual tours
 help(package = "spinifex") ## Review the package contents and documentation
 ```
 
