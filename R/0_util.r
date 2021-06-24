@@ -22,9 +22,10 @@ is_orthonormal <- function(x, tol = 0.001) {
   if(max(abs(actual - expected)) < tol){return(TRUE)}else{return(FALSE)}
 }
 
+
 #' Turns a tour path array into a long data frame.
 #'
-#' Internal function. Typically called by a wrapper function, `play_manual_tour` 
+#' Internal function, many end users will not need this. Typically called by a wrapper function, `play_manual_tour` 
 #' or `play_tour_path`. Takes the result of `tourr::save_history()` or 
 #' `manual_tour()` and restructures the data from an array to a long data frame 
 #' for use in ggplots.
@@ -40,6 +41,7 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' Defaults to the rownames of the data, if available.
 #' @return A list containing an array of basis frames (p, d, n_frames) and 
 #' an array of data frames (n, d, n_frames) if data is present.
+#' @export
 #' @examples
 #' ## Setup
 #' dat_std <- tourr::rescale(wine[, 2:14])
@@ -116,7 +118,7 @@ array2df <- function(
 #' Changes an array of bases into a "history_array" class for use 
 #' in `tourr::interpolate()`.
 #' 
-#' Internal function. Attaches data to an array and assigns the custom class "history_array" as 
+#' Internal function, many end users will not need this. Attaches data to an array and assigns the custom class "history_array" as 
 #' used in `tourr`. Typically called by basis arrays from `spinifex` functions.
 #' 
 #' @param basis_array An array of bases.
@@ -126,7 +128,7 @@ array2df <- function(
 #' consumption by `tourr::interpolate`.
 #' 
 #' @seealso \code{\link[tourr:save_history]{tourr::save_history}} for preset choices.
-# #' @export
+#' @export
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:14])
 #' bas <- basis_pca(dat_std)
@@ -152,9 +154,10 @@ as_history_array <- function(basis_array, data = NULL){
 #' Defaults to "center" expects one of: "center", "left", "right", 
 #' "bottomleft", "topright", or "off".
 #' @param to Table to appropriately set the size and position of the axes to.
-#' Based on the min/max of the first 2 columns.
+#' Based on the min/max of the first 2 columns. If left NULL defaults to 
+#' data.frame(x = c(-1L, 1L), y = c(-1L, 1L).
 #' @return Transformed values of `x`, dimension and class unchanged.
-#' @seealso \code{\link{pan_zoom}} for more manual control.
+#' @seealso \code{\link{map_absolute}} for more manual control.
 #' @export
 #' @family Linear mapping
 #' @examples
@@ -164,16 +167,16 @@ as_history_array <- function(basis_array, data = NULL){
 #' map_relative(x = rb, position = "right", to = wine[, 2:3])
 map_relative <- function(x,
                          position = c("center", "left", "right", "bottomleft",
-                                      "topright", "off", "pan_zoom() call;",
-                                      pan_zoom(c(-1L, 0L), c(.7, .7))),
-                         to = data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+                                      "topright", "off"),
+                         to = NULL
 ){
   ## Assumptions
+  if(is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
   position <- match.arg(position)
   if(position == "off") return()
-  ## If position is pan_zoom call with x = NULL;
+  ## If position is map_absolute call with x = NULL;
   if(is.list(position) & length(position) == 2L){
-    return(pan_zoom(pan = position$pan, zoom = position$zoom, x = x))
+    return(map_absolute(pan = position$pan, zoom = position$zoom, x = x))
   }
   
   ## Initialize
@@ -279,11 +282,12 @@ theme_spinifex <- function(...){
   list(ggplot2::theme_void(),
        ggplot2::scale_color_brewer(palette = "Dark2"),
        ggplot2::coord_fixed(),
+       ggplot2::labs(x = "", y = ""),
        ggplot2::theme(legend.position = "bottom",
                       legend.direction = "horizontal", ## Levels within aesthetic
                       legend.box = "vertical",         ## Between aesthetic
                       legend.margin = ggplot2::margin(-1,-1,-1,-1, "mm"), ## Tighter legend margin
-                      axis.title = ggplot2::element_text(), ## Allow axis titles
+                      axis.title = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
                       ...) ## ... args applied over  defaults.
   )
 }
@@ -492,7 +496,6 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2, ...){
   ))
   ret <- matrix(hist[,, length(hist)], ncol = d)
   rownames(ret) <- colnames(data)
-  colnames(ret) <- paste0(index_f, 1L:d)
   return(ret)
 }
 

@@ -9,7 +9,6 @@ mv <- manip_var_of(bas)
 ## TARGET WRAPPER FUNCTIONS -----
 ##
 
-
 ### play_tour_path -------
 tpath <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5L)
 
@@ -31,7 +30,6 @@ test_that("play_tour_path: gganimate class and length", {
 
 
 ### play_manual_tour -----
-
 
 ret_light <- play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
 

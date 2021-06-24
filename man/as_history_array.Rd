@@ -18,7 +18,7 @@ An array of numeric bases with custom class "history_array" for
 consumption by \code{tourr::interpolate}.
 }
 \description{
-Internal function. Attaches data to an array and assigns the custom class "history_array" as
+Internal function, many end users will not need this. Attaches data to an array and assigns the custom class "history_array" as
 used in \code{tourr}. Typically called by basis arrays from \code{spinifex} functions.
 }
 \examples{

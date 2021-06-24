@@ -6,9 +6,8 @@
 \usage{
 map_relative(
   x,
-  position = c("center", "left", "right", "bottomleft", "topright", "off",
-    "pan_zoom() call;", pan_zoom(c(-1L, 0L), c(0.7, 0.7))),
-  to = data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+  position = c("center", "left", "right", "bottomleft", "topright", "off"),
+  to = NULL
 )
 }
 \arguments{
@@ -20,7 +19,8 @@ Defaults to "center" expects one of: "center", "left", "right",
 "bottomleft", "topright", or "off".}
 
 \item{to}{Table to appropriately set the size and position of the axes to.
-Based on the min/max of the first 2 columns.}
+Based on the min/max of the first 2 columns. If left NULL defaults to
+data.frame(x = c(-1L, 1L), y = c(-1L, 1L).}
 }
 \value{
 Transformed values of \code{x}, dimension and class unchanged.
@@ -36,7 +36,7 @@ map_relative(x = rb, position = "bottomleft")
 map_relative(x = rb, position = "right", to = wine[, 2:3])
 }
 \seealso{
-\code{\link{pan_zoom}} for more manual control.
+\code{\link{map_absolute}} for more manual control.
 
 Other Linear mapping: 
 \code{\link{map_absolute}()}
