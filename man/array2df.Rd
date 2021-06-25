@@ -37,8 +37,8 @@ or \code{play_tour_path}. Takes the result of \code{tourr::save_history()} or
 for use in ggplots.
 }
 \examples{
-## Setup
-dat_std <- tourr::rescale(wine[, 2:14])
+## !!This function is not meant for external use!!
+dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)

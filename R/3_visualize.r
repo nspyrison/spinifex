@@ -18,7 +18,7 @@
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' 
@@ -103,7 +103,7 @@ play_tour_path <- function(tour_path,
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
@@ -185,7 +185,7 @@ play_manual_tour <- function(basis = NULL,
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @examples
 #' ## Setup
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
@@ -282,7 +282,7 @@ oblique_basis <- function(...) {
 #' @return ggplot object of the basis.
 #' @export
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' 

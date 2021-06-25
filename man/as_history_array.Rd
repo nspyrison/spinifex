@@ -22,7 +22,8 @@ Internal function, many end users will not need this. Attaches data to an array 
 used in \code{tourr}. Typically called by basis arrays from \code{spinifex} functions.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+## !!This function is not meant for external use!!
+dat_std <- scale_sd(wine[, 2:6])
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 mt_array <- manual_tour(basis = bas, manip_var = mv)

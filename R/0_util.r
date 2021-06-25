@@ -43,8 +43,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' an array of data frames (n, d, n_frames) if data is present.
 #' @export
 #' @examples
-#' ## Setup
-#' dat_std <- tourr::rescale(wine[, 2:14])
+#' ## !!This function is not meant for external use!!
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
@@ -130,7 +130,8 @@ array2df <- function(
 #' @seealso \code{\link[tourr:save_history]{tourr::save_history}} for preset choices.
 #' @export
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:14])
+#' ## !!This function is not meant for external use!!
+#' dat_std <- scale_sd(wine[, 2:6])
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' mt_array <- manual_tour(basis = bas, manip_var = mv)
@@ -161,6 +162,7 @@ as_history_array <- function(basis_array, data = NULL){
 #' @export
 #' @family Linear mapping
 #' @examples
+#' ## !!This function is not meant for external use!!
 #' rb <- tourr::basis_random(4, 2)
 #' 
 #' map_relative(x = rb, position = "bottomleft")
@@ -308,7 +310,7 @@ theme_spinifex <- function(...){
 #' @export
 #' @family basis identifiers
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' basis_pca(data = dat_std)
 basis_pca <- function(data, d = 2){
   ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
@@ -336,7 +338,7 @@ basis_pca <- function(data, d = 2){
 #' @export
 #' @family basis identifiers
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' basis_olda(data = dat_std, class = clas)
 basis_olda <- function(data, class, d = 2){
@@ -374,7 +376,7 @@ basis_olda <- function(data, class, d = 2){
 #' @export
 #' @family basis identifiers
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' basis_odp(data = dat_std, class = clas)
 basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
@@ -414,7 +416,7 @@ basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
 #' @export
 #' @family basis identifiers
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' basis_olpp(data = dat_std)
 basis_olpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data))), ...){
   ret <- Rdimtools::do.olpp(X = as.matrix(data),
@@ -452,7 +454,7 @@ basis_olpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data))), ...){
 #' @export
 #' @family basis identifiers
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' basis_onpp(data = dat_std)
 basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
   ret <- Rdimtools::do.onpp(X = as.matrix(data),
@@ -482,7 +484,7 @@ basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
 #' @export
 #' @family basis identifiers
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' basis_guided(data = dat_std, index_f = tourr::holes())
 #' 
 #' basis_guided(data = dat_std, index_f = tourr::cmass(),
@@ -510,7 +512,7 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2, ...){
 #' @export
 #' @family basis identifiers
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' bas <- basis_half_circle(dat_std)
 basis_half_circle <- function(data){
   pp1 <- ncol(data) + 1L ## p++
@@ -526,7 +528,7 @@ basis_half_circle <- function(data){
 #' Suggest a manipulation variable.
 #' 
 #' Find the column number of the variable with the `rank`-ith largest 
-#' contribution in the first column of the supplied basis. 
+#' contribution of the `basis`. 
 #' Useful for identifying a variable to change the contribution of in a manual 
 #' tour, it's `manip_var` argument.
 #' 
@@ -539,14 +541,16 @@ basis_half_circle <- function(data){
 #' @family manual tour
 #' @examples 
 #' ## Setup
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' bas <- basis_pca(dat_std)
 #' 
-#' manip_var_of(basis = bas, rank = 1)
+#' manip_var_of(basis = bas) ## Variable with the largest contribution
+#' manip_var_of(basis = bas, rank = 5) ## Variable with 5th-largest contribution
 manip_var_of <- function(basis, rank = 1){
-  if(spinifex::is_orthonormal(basis) == FALSE) 
+  if(spinifex::is_orthonormal(basis) == FALSE)
     warning("Supplied basis isn't orthonormal.")
-  ret <- order(abs(basis[, 1L]), decreasing = TRUE)[rank]
+  row_norm <- sqrt(apply(basis, 1, function(c) {sum(c^2)}))
+  ret <- order(abs(row_norm), decreasing = TRUE)[rank]
   names(ret) <- rownames(basis)[rank]
   return(ret)
 }
@@ -559,7 +563,7 @@ manip_var_of <- function(basis, rank = 1){
 #' @param data Numeric matrix or data.frame of the observations.
 #' @export
 #' @examples
-#' scale_sd(data = wine[, 2:14])
+#' scale_sd(data = wine[, 2:6])
 scale_sd <- function(data){
   return(apply(data, 2L, function(c){(c - mean(c)) / stats::sd(c)}))
 }
@@ -567,7 +571,7 @@ scale_sd <- function(data){
 #' @rdname scale_sd
 #' @export
 #' @examples 
-#' scale_01(data = wine[, 2:14])
+#' scale_01(data = wine[, 2:6])
 scale_01 <- function(data){
   return(apply(data, 2L, function(c) (c - min(c)) / diff(range(c))))
 }

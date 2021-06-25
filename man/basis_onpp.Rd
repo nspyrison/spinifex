@@ -29,7 +29,7 @@ neighborhoods. For the more details on \code{type} see
 \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd()}}.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 basis_onpp(data = dat_std)
 }
 \references{

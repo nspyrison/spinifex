@@ -121,8 +121,10 @@ We'll perform a horizontal rotation and followed by the vertical rotation before
 
 ```{r Horizontal}
 ## Initialize
-nasa_std <- 
-  cbind(GGally::nasa[c("x", "y")], tourr::rescale(GGally::nasa[c("day", "surftemp")]))
+nasa_std <- cbind(
+  GGally::nasa[c("x", "y")],
+  scale_sd(GGally::nasa[c("day", "surftemp")])
+)
 bas <- tourr::basis_init(ncol(nasa_std), 2)
 
 ## Horizontal rotation
@@ -156,7 +158,7 @@ ggplot(rot_xy, aes(x = x, y = y)) + geom_point(size = 0.3) +
 Radial tours are often employed after an interesting feature has been identified. How the contributions of each variable impact the structure of resulting PCA, for example, might be interesting to explore. Alternatively, we can perform projection pursuit to maximize an objective function within the projection and performing a hill-climbing algorithm and explore what effect the contributions of the variables have there. Let's do just that, optimizing a Holes indexed guided tour using the package `tourr`.
 
 ```{r}
-dat_std <- tourr::rescale(tourr::flea[,1:6])
+dat_std <- scale_sd(tourr::flea[, 1:6])
 fpath <- tourr::save_history(dat_std, tourr::guided_tour(tourr::holes(), ))
 ```
 ```{r}

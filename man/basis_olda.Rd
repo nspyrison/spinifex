@@ -22,7 +22,7 @@ Orthogonal LDA (OLDA) is an extension of classical LDA where the discriminant
 vectors are orthogonal to each other.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 basis_olda(data = dat_std, class = clas)
 }

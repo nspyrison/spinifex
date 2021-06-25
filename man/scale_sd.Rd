@@ -17,6 +17,6 @@ Centers and scales each column by standard deviation (sd) or to the
 interval (0, 1).
 }
 \examples{
-scale_sd(data = wine[, 2:14])
-scale_01(data = wine[, 2:14])
+scale_sd(data = wine[, 2:6])
+scale_01(data = wine[, 2:6])
 }

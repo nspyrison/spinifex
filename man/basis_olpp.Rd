@@ -28,7 +28,7 @@ approximation to the eigenfunctions of the Laplace-Beltrami operator on the
 graph-approximated data manifold.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 basis_olpp(data = dat_std)
 }
 \references{

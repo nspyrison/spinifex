@@ -26,7 +26,7 @@ extrema. Returns only the last identified basis of the optimization. A
 truncated, muted extension of tourr::save_history(guided_tour())).
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 basis_guided(data = dat_std, index_f = tourr::holes())
 
 basis_guided(data = dat_std, index_f = tourr::cmass(),

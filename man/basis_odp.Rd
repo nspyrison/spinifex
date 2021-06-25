@@ -28,7 +28,7 @@ and non-local scatter while local information is also preserved by
 constructing a neighborhood graph.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 basis_odp(data = dat_std, class = clas)
 }

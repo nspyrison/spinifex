@@ -48,7 +48,7 @@ Takes the result of \code{array2df()} and renders them into a
 \emph{gganimate} animation.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)

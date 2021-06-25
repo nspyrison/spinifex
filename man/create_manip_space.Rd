@@ -4,14 +4,15 @@
 \alias{create_manip_space}
 \title{Create a manipulation space to rotate the manip variable in.}
 \usage{
-create_manip_space(basis, manip_var)
+create_manip_space(basis, manip_var = manip_var_of(bas))
 }
 \arguments{
 \item{basis}{A (p, d) orthonormal numeric matrix,
 the linear combination the original variables contribute to projection frame.
 Required, no default.}
 
-\item{manip_var}{The number of the variable/column to rotate.}
+\item{manip_var}{The number of the variable/column to rotate. Defaults to
+\code{manip_var_of(basis)}, the variable with the largest contribution in the basis.}
 }
 \value{
 A (p, d + 1) orthonormal matrix, the manipulation space to
@@ -24,7 +25,7 @@ vector, with manip_var set to 1.
 }
 \examples{
 ## Setup
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 

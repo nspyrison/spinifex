@@ -29,7 +29,7 @@ to the projection plane.
 }
 \examples{
 ## Setup
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 msp <- create_manip_space(basis = bas, manip_var = mv)

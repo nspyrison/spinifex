@@ -53,7 +53,7 @@ Uses base graphics to plot the circle with axes representing
 the projection frame. Returns the corresponding table.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 

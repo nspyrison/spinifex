@@ -30,7 +30,7 @@ Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interp
 over the path and renders into a specified \code{render_type}.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 

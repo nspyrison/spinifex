@@ -34,7 +34,7 @@
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
@@ -81,8 +81,6 @@ render_ <- function(frames,
   circ  <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes/circle
   if(axes != "off"){
-    if(is.null(data_frames)){.to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
-    }else{.to <- data_frames}
     center <- map_relative(data.frame(x = 0L, y = 0L), axes, to = .to)
     circ <- map_relative(circ, axes, to = .to)
     ## Rejoin frame number to the scaled bases frames
@@ -201,7 +199,7 @@ render_ <- function(frames,
 #' @seealso \code{\link[gganimate:anim_save]{gganimate::anim_save}} for more control of .gif output.
 #' @export
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
@@ -277,7 +275,7 @@ render_gganimate <- function(fps = 8L,
 #' @seealso \code{\link[htmlwidgets]{saveWidget}} for more control of .html output.
 #' @export
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)

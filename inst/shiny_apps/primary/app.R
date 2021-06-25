@@ -35,22 +35,18 @@ server <- function(input, output, session) {
   })
   selDat <- reactive({
     dat <- rawDat()
-    ret <- dat[, which(colnames(dat) %in% input$projVars)]
-    if(input$rescale_data) ret <- tourr::rescale(ret)
+    ret <- dat[complete.cases(dat), which(colnames(dat) %in% input$projVars)]
+    if(input$rescale_data) ret <- scale_sd(ret)
     return(as.data.frame(ret))
   })
   
   n <- reactive(nrow(selDat()))
   p <- reactive(ncol(selDat()))
   numericVars_TF <- reactive({ ## Columns that are numeric AND column-complete
-    sapply(rawDat(), function(x) {
-      is.numeric(x) & all(complete.cases(x))
-    })
+    sapply(rawDat(), is.numeric)
   }) 
   clusterVars_TF <- reactive({ ## Columns that are (character OR factor) AND column-complete
-    sapply(rawDat(), function(x) {
-      (is.character(x)|is.factor(x)) & all(complete.cases(x))
-    })
+    sapply(rawDat(), function(x) (is.character(x)|is.factor(x)))
   })
 
   ## Throttle manip_slider, tries to return value while held
@@ -62,23 +58,23 @@ server <- function(input, output, session) {
     var_nm <- input$col_var_nm
     if(is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
     if(var_nm == "<none>") {
-      var <- rep("a", n())
+      vect <- rep("a", n())
     } else {
       dat <- rawDat()
-      var <- dat[, which(colnames(dat) == var_nm)]
+      vect <- dat[, which(colnames(dat) == var_nm)]
     }
-    col_of(var) ## A column of hexidecmal color code strings
+    return(vect)
   })
   sel_pch <- reactive({
     var_nm <- input$pch_var_nm
     if(is.null(var_nm) | length(var_nm) == 0) var_nm <- "<none>"
     if(var_nm == "<none>") {
-      var <- rep("a", n())
+      vect <- rep("a", n())
     } else {
       dat <- rawDat()
-      var <- dat[, which(colnames(dat) == var_nm)]
+      vect <- dat[complete.cases(dat), which(colnames(dat) == var_nm)]
     }
-    pch_of(var) ## A column of integers ,the 'pch' of the data point
+    return(vect)
   })
   
   ## Add col and row names  to the current basis
@@ -94,12 +90,10 @@ server <- function(input, output, session) {
   ## Tour args:
   basis <- reactive({
     if(input$basis_init == "Random") ret <- tourr::basis_random(n = p(), d = 2)
-    if(input$basis_init == "PCA")    ret <- prcomp(selDat())[[2]][, 1:2]
+    if(input$basis_init == "PCA")    ret <- basis_pca(selDat(), d = 2)
     if(input$basis_init == "From file") {
-      ##TODO: trouble shoot
-      browser()
       path <- input$basis_file$datapath
-      ext <- tolower(substr(path, nchar(path)-4+1, nchar(path)))
+      ext <- tolower(substr(path, nchar(path) - 4 + 1, nchar(path)))
       if(ext == ".csv") x <- read.csv(path, stringsAsFactors = FALSE)
       if(ext == ".rda"){ # load .rda object, not just name.
         tmp <- new.env()
@@ -109,10 +103,9 @@ server <- function(input, output, session) {
     }
     if(input$basis_init == "Projection pursuit") {
       pp_cluster <- NA
-
       if(input$pp_type %in% c("lda_pp", "pda_pp")){
-        culster_dat <- rawDat()[clusterVars_TF()]
-        pp_cluster <- culster_dat[input$pp_cluster]
+        cluster_dat <- rawDat()[clusterVars_TF()]
+        pp_cluster <- cluster_dat[input$pp_cluster]
       }
       tour_func <- getGuidedTour(input$pp_type, pp_cluster)
       tour_hist <- tourr::save_history(selDat(), tour_func)
@@ -282,8 +275,10 @@ server <- function(input, output, session) {
         phi_start <- acos(sqrt(mv_sp[1]^2 + mv_sp[2]^2))
         phi <- (acos(manip_slider_t()) - phi_start) * - sign(mv_sp[1])
       }
-      ret <- oblique_basis(basis = rv$curr_basis, manip_var = manip_var_num(),
-                           theta = theta, phi = phi)
+      mv <- manip_var_num()
+      m_sp <- create_manip_space(basis = rv$curr_basis, manip_var = mv)
+      ret <- rotate_manip_space(m_sp, manip_var = mv,
+                                theta = theta, phi = phi)[, 1:2]
       row.names(ret) <- colnames(selDat())
       
       return(ret)
@@ -415,7 +410,7 @@ server <- function(input, output, session) {
     rv$gif_save_cnt <- rv$gif_save_cnt + 1
     
     ##TODO:: DEBUGGING
-    flea_std <- tourr::rescale(tourr::flea[,1:6])
+    flea_std <- scale_sd(tourr::flea[,1:6])
     tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 3)
     str(tpath)
     str(rv$tour_array)

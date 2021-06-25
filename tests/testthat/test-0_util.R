@@ -1,6 +1,6 @@
 library("spinifex")
 library("testthat")
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)

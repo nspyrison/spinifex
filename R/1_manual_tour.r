@@ -11,19 +11,20 @@
 #' @param basis A (p, d) orthonormal numeric matrix,
 #' the linear combination the original variables contribute to projection frame.
 #' Required, no default.
-#' @param manip_var The number of the variable/column to rotate.
+#' @param manip_var The number of the variable/column to rotate. Defaults to 
+#' `manip_var_of(basis)`, the variable with the largest contribution in the basis.
 #' @return A (p, d + 1) orthonormal matrix, the manipulation space to 
 #' manipulate the projection in.
 #' @import tourr
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' 
 #' create_manip_space(basis = bas, manip_var = mv)
-create_manip_space <- function(basis, manip_var){
+create_manip_space <- function(basis, manip_var = manip_var_of(bas)){
   ## Assumptions
   basis <- as.matrix(basis)
   if(spinifex::is_orthonormal(basis) == FALSE){
@@ -75,7 +76,7 @@ create_manip_space <- function(basis, manip_var){
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' msp <- create_manip_space(basis = bas, manip_var = mv)
@@ -149,7 +150,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @export
 #' @examples
 #' ## Setup
-#' dat_std <- scale_sd(wine[, 2:14])
+#' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)

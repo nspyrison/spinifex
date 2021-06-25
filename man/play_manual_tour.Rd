@@ -52,7 +52,7 @@ Performs the a manual tour and returns an animation of \code{render_type}.
 For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)

@@ -18,15 +18,16 @@ Numeric scalar, the column number of a variable.
 }
 \description{
 Find the column number of the variable with the \code{rank}-ith largest
-contribution in the first column of the supplied basis.
+contribution of the \code{basis}.
 Useful for identifying a variable to change the contribution of in a manual
 tour, it's \code{manip_var} argument.
 }
 \examples{
 ## Setup
-dat_std <- scale_sd(wine[, 2:14])
+dat_std <- scale_sd(wine[, 2:6])
 bas <- basis_pca(dat_std)
 
-manip_var_of(basis = bas, rank = 1)
+manip_var_of(basis = bas) ## Variable with the largest contribution
+manip_var_of(basis = bas, rank = 5) ## Variable with 5th-largest contribution
 }
 \concept{manual tour}
