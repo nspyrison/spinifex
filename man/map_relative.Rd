@@ -30,6 +30,7 @@ Internal function. Typically called by other functions to scale the position
 of the axes data.frame or another data.frame to plot relative to the data.
 }
 \examples{
+## !!This function is not meant for external use!!
 rb <- tourr::basis_random(4, 2)
 
 map_relative(x = rb, position = "bottomleft")
