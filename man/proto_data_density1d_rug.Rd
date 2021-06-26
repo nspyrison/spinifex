@@ -2,42 +2,42 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{proto_data_density1d_rug}
 \alias{proto_data_density1d_rug}
-\title{#TODO: HEADER TEXT}
+\title{Tour proto for data, 1D density, with rug}
 \usage{
-proto_data_density1d_rug(
-  aes_args = list(),
-  identity_args = list(),
-  density_position = c("stack", "identity")
-)
+proto_data_density1d_rug(aes_args = list(), identity_args = list())
 }
 \arguments{
-\item{#TODO:}{PARAMETER TEXT}
+\item{aes_args}{A list of aesthetic arguments to passed to
+\verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
+for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
+\code{aes_args = list(color = myCol, shape = myCol)}.}
+
+\item{identity_args}{A list of static, identity arguments passed into
+\code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
+Typically a single numeric for point size, alpha, or similar.}
 }
 \description{
-#TODO: paragraph TEXT
+Adds \code{geom_density()} and \code{geom_rug} of the projected data.
 }
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
 bas <- basis_pca(dat)
-gt_array <- save_history(dat, grand_tour(), max = 3, start = bas)
+gt_path <- save_history(dat, grand_tour(), max = 3, start = bas)
 
-tictoc::tic("gg assign")
-gg <- ggtour(gt_array, dat, map_to = "density") +
-  proto_data_density1d_rug(aes_args = list(color = clas, fill = clas))
-tictoc::toc()
-
-tictoc::tic("animate")
-animate_gganimate(gg) ## ~48 seconds 
-tictoc::toc()
+ggt <- ggtour(gt_path, dat) +
+  proto_data_density1d_rug(aes_args = list(color = clas, fill = clas)) + 
+  proto_basis_1d()
+  
+animate_plotly(ggt)
 }
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
 \code{\link{proto_basis_1d}()},
 \code{\link{proto_basis_2d}()},
-\code{\link{proto_data_background}()},
 \code{\link{proto_data_hex}()},
+\code{\link{proto_data_origin}()},
 \code{\link{proto_data_points}()},
 \code{\link{proto_data_text}()}
 }

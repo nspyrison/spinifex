@@ -2,31 +2,47 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{proto_data_text}
 \alias{proto_data_text}
-\title{#TODO: HEADER TEXT}
+\title{Tour proto for data, text labels}
 \usage{
-proto_data_text(
-  aes_args = list(label = as.character(1:nrow(dat))),
-  identity_args = list()
-)
+proto_data_text(aes_args = list(), identity_args = list(), label = NULL)
 }
 \arguments{
-\item{#TODO:}{PARAMETER TEXT}
+\item{aes_args}{A list of aesthetic arguments to passed to
+\verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
+for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
+\code{aes_args = list(color = myCol, shape = myCol)}.}
+
+\item{identity_args}{A list of static, identity arguments passed into
+\code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
+Typically a single numeric for point size, alpha, or similar.}
+
+\item{label}{A character vector, the texts that should be in the location of
+the data. Default is NULL, will b e}
 }
 \description{
-#TODO: paragraph TEXT
+Adds \code{geom_text()} of the projected data.
 }
 \examples{
-#TODO: EXAMPLES
+dat <- scale_sd(tourr::flea[, 1:6])
+clas <- tourr::flea$species
+bas <- basis_pca(dat)
+mv <- manip_var_of(bas)
+gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
+ggt <- ggtour(mt_path, dat) +
+  proto_data_text(list(color = clas))
+\dontrun{
+animate_plotly(ggt)
+}
 }
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
 \code{\link{proto_basis_1d}()},
 \code{\link{proto_basis_2d}()},
-\code{\link{proto_data_background}()},
 \code{\link{proto_data_density1d_rug}()},
 \code{\link{proto_data_hex}()},
+\code{\link{proto_data_origin}()},
 \code{\link{proto_data_points}()}
 }
 \concept{ggtour proto}

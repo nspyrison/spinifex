@@ -2,31 +2,36 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{proto_data_hex}
 \alias{proto_data_hex}
-\title{#TODO: HEADER TEXT}
+\title{Tour proto for data, hexagonal heatmap}
 \usage{
-proto_data_hex(bins = 30, aes_args = list(), identity_args = list())
+proto_data_hex(aes_args = list(), identity_args = list(), bins = 30)
 }
 \arguments{
-\item{#TODO:}{PARAMETER TEXT}
+\item{aes_args}{A list of aesthetic arguments to passed to
+\verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
+for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
+\code{aes_args = list(color = myCol, shape = myCol)}.}
+
+\item{identity_args}{A list of static, identity arguments passed into
+\code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
+Typically a single numeric for point size, alpha, or similar.}
+
+\item{bins}{Numeric vector giving number of bins in both vertical and
+horizontal directions. Defaults to 30.}
 }
 \description{
-#TODO: paragraph TEXT
+Adds \code{geom_hex()} of the projected data.
 }
 \examples{
-#TODO: EXAMPLES
+diam_sub <- diamonds[sample(nrow(diamonds), 1000),]
+dat <- scale_sd(diam_sub[, c(1, 5:6, 8:10)])
+gt_path <- save_history(dat, grand_tour(), max = 3)
 
-diam_sm <- diamonds[sample(nrow(diamonds), 1000),]
-dat <- scale_sd(diam_sm[, c(1, 5:6, 8:10)])
-clas <- diam_sm$color
-bas <- basis_pca(dat)
-gt_array <- save_history(dat, grand_tour(), max = 3, start = bas)
-
-ggp <- ggtour(gt_array, dat) +
+ggp <- ggtour(gt_path, dat) +
   proto_basis_2d() +
-  proto_data_hex(50, list(group = clas, fill= clas) ) +
-  proto_data_background()
+  proto_data_hex(bins = 20)
 
-tictoc::
+## Doesn't work with animate_plotly()
 animate_gganimate(ggp)
 }
 \seealso{
@@ -34,8 +39,8 @@ Other ggtour proto:
 \code{\link{ggtour}()},
 \code{\link{proto_basis_1d}()},
 \code{\link{proto_basis_2d}()},
-\code{\link{proto_data_background}()},
 \code{\link{proto_data_density1d_rug}()},
+\code{\link{proto_data_origin}()},
 \code{\link{proto_data_points}()},
 \code{\link{proto_data_text}()}
 }

@@ -2,44 +2,52 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{proto_basis_1d}
 \alias{proto_basis_1d}
-\title{#TODO: HEADER TEXT}
+\title{Tour proto for a 1D basis axes}
 \usage{
 proto_basis_1d(
-  position = "left",
+  position = c("left", "center", "right", "bottomleft", "topright", "off"),
   manip_col = "blue",
   segment_size = 2,
   text_size = 5
 )
 }
 \arguments{
-\item{#TODO:}{PARAMETER TEXT}
+\item{manip_col}{The color to highlight the manipulation variable with. Not
+applied if the tour isn't a manual tour. Defaults to "blue".}
+
+\item{segment_size}{Thickness of the bars used to make the axes.}
+
+\item{text_size}{Size of the text label of the variables.}
 }
 \description{
-#TODO: paragraph TEXT
+Adds 1D basis axes to the animation, the direction and magnitude of
+contributions of the variables to the projection space.
 }
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv  <- manip_var_of(bas)
-mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
+gt <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 
-ggt <- ggtour(mt_path, dat) +
-  proto_basis_1d() +
-  proto_data_background() +
-  proto_data_points(aes_args = list(color = clas, shape = clas),
-                    identity_args = list(size = 1.5, alpha = .7))
-#animate_plotly(ggt) ## plotly::ggplotly() throwing error: 
-## Error in -data$group : invalid argument to unary operator
-animate_gganimate(ggt)
+ggt <- ggtour(gt, dat) +
+  proto_basis_1d()
+\dontrun{
+animate_plotly(ggt)
+}
+
+ggt2 <- ggtour(gt, dat) +
+  proto_basis_1d(position = "right",
+                 segment_size = .8, 
+                 text_size = 8)
+\dontrun{
+animate_plotly(ggt2)
+}
 }
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
 \code{\link{proto_basis_2d}()},
-\code{\link{proto_data_background}()},
 \code{\link{proto_data_density1d_rug}()},
 \code{\link{proto_data_hex}()},
+\code{\link{proto_data_origin}()},
 \code{\link{proto_data_points}()},
 \code{\link{proto_data_text}()}
 }

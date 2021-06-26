@@ -2,32 +2,60 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{proto_basis_2d}
 \alias{proto_basis_2d}
-\title{#TODO: HEADER TEXT}
+\title{Tour proto for a 2D basis axes}
 \usage{
 proto_basis_2d(
-  position = "left",
+  position = c("left", "center", "right", "bottomleft", "topright", "off"),
   manip_col = "blue",
   line_size = 1,
   text_size = 5
 )
 }
 \arguments{
-\item{#TODO:}{PARAMETER TEXT}
+\item{position}{The position, to place the basis axes relative to the centered
+data. Expects one of c("left", "center", "right", "bottomleft", "topright",
+"off"), defaults to "left".}
+
+\item{manip_col}{The color to highlight the manipulation variable with. Not
+applied if the tour isn't a manual tour. Defaults to "blue".}
+
+\item{line_size}{Thickness of the lines used to make the axes and unit
+circle.}
+
+\item{text_size}{Size of the text label of the variables.}
 }
 \description{
-#TODO: paragraph TEXT
+Adds 2D basis axes to the animation, the direction and magnitude of
+contributions of the variables to the projection space inscribed in a unit
+circle.
 }
 \examples{
-#TODO: EXAMPLES
+dat <- scale_sd(tourr::flea[, 1:6])
+clas <- tourr::flea$species
+bas <- basis_pca(dat)
+mv <- manip_var_of(bas)
+mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 
+ggt <- ggtour(mt_path, dat) +
+  proto_basis_2d()
+\dontrun{
+animate_plotly(ggt)
+}
+
+ggt2 <- ggtour(mt_path, dat) +
+  proto_basis_2d(position = "right", manip_col = "red", 
+                 line_size = .8, text_size = 8)
+\dontrun{
+animate_plotly(ggt2)
+}
 }
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
 \code{\link{proto_basis_1d}()},
-\code{\link{proto_data_background}()},
 \code{\link{proto_data_density1d_rug}()},
 \code{\link{proto_data_hex}()},
+\code{\link{proto_data_origin}()},
 \code{\link{proto_data_points}()},
 \code{\link{proto_data_text}()}
 }
