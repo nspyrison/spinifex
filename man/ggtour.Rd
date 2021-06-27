@@ -29,7 +29,7 @@ mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 ggtour(mt_path, dat) ## Returns headless ggplot(), but required for other spinifex protos
 
 ggt <- ggtour(mt_path, dat, angle = .1) +
-  proto_basis_2d() +
+  proto_basis2d() +
   proto_data_points(list(color = clas, shape = clas),
                     list(size = 1.5))
 \dontrun{
@@ -38,12 +38,12 @@ animate_plotly(ggt)
 }
 \seealso{
 Other ggtour proto: 
-\code{\link{proto_basis_1d}()},
-\code{\link{proto_basis_2d}()},
+\code{\link{proto_basis1d}()},
+\code{\link{proto_basis2d}()},
 \code{\link{proto_data_density1d_rug}()},
 \code{\link{proto_data_hex}()},
 \code{\link{proto_data_origin}()},
-\code{\link{proto_data_points}()},
+\code{\link{proto_data_point}()},
 \code{\link{proto_data_text}()}
 }
 \concept{ggtour proto}

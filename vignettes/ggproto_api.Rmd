@@ -1,0 +1,139 @@
+---
+title: "ggproto API"
+author: "Nicholas Spyrison"
+date: "2021-06-27"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{spinifex}
+  %\VignetteEncoding{UTF-8}{inputenc}
+  \usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+<!-- #Example vignette: 
+https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo       = TRUE,   # code
+  include    = TRUE,   # plots
+  results    = "hide", # text: "hide", "show"
+  eval       = TRUE,   # chunk
+  message    = FALSE,
+  warning    = FALSE,
+  error      = FALSE,
+  collapse   = TRUE,
+  comment    = "#>",
+  fig.height = 4,
+  fig.width  = 6,
+  fig.align  = "center",
+  cache      = FALSE
+)
+```
+
+# Introduction
+
+We are moving to a new '`ggproto`' API for constructing animated tours from `{ggplot2}` objects. This interface should feel more comfortable to people already familiar with `{ggplot2}`. `ggproto` is a parent class of `geom`s, `layer`s, some other plotting elements. 
+
+Proto objects, or lists of them can be assigned to a variable without `ggplot()`, they store _unevaluated_ code that will be used to plot. 
+
+```{r, results = "show"}
+library("ggplot2")
+
+## A ggproto:
+gp <- geom_point()
+class(gp)
+
+## A list of ggplot elements, a 'head-less' ggplot call
+gg_ls <- list(
+  gp,
+  geom_smooth(),
+  ggtitle("Orange tree growth", "Trunk circumference explained by age"),
+  facet_grid(cols = vars(Tree))
+)
+lapply(gg_ls, class)
+
+## ggplot call, without geoms, a 'body-less' ggplot call
+gghead <- ggplot(Orange, aes(age, circumference, color = Tree))
+
+## Evaluate together
+gghead +
+  gg_ls
+```
+
+In the `ggproto` API we use this feature to create `proto_*()` functions, the counter-parts of `geom_*()` functions. These proto functions are used in composition with `ggtour()`, which replaces `ggplot()`, to create animated tours. In adopting this additive, composition approach we aim to maximize the flexibility for the end users to customize tours, while keeping the door open for extension from development of further `proto` functions.
+
+```{r, echo = FALSE, results = "show"}
+tibble::tribble(
+  ~object,  ~ggplot2,   ~`ggproto api`, ~`previous api`,
+  "head",   "ggplot()", "ggtour()",     "play_manual_tour()",
+  "body",   "geom_*()", "proto_*()",    "play_manual_tour()",
+  "render", "NA",       "animate_*()",  "play_manual_tour(render_*())") |>
+  knitr::kable()
+```
+
+# Why `proto_` instead of new `geom_`
+
+`{spinifex} proto_*` functions return a list of several `geom`s, that are were designed for a specialized purpose; to facilitate animation across many projection bases. We abstract away of work and complexity that comes with creating and animating tours, but this comes at the price of flexibility. For instance, `proto`s do not know how to deal with facets, and hard-code the number and type of `geom`s which would otherwise become very burdensome to specify.
+
+# Application
+
+## Manual tour
+```{r, results = "show"}
+library("spinifex")
+
+## Scale our numeric data
+dat <- scale_sd(tourr::flea[, 1:6])
+## Use species as a class to set color and shape with
+clas <- tourr::flea$species
+
+## Manual tour
+bas <- basis_pca(dat) ## Start basis
+mv <- manip_var_of(bas) ## Number of the variable to manipulate
+mt_path <- manual_tour(bas, manip_var = mv) ## Tour path
+
+## Create a static ggplot2 plot with all frames of the tour
+ggt <- ggtour(mt_path, dat, angle = .1) +
+  proto_basis_2d() +
+  proto_data_points(aes_args = list(color = clas, shape = clas),
+                    identity_args = list(size = 1.5))
+
+## Animate the tour with an animate_* function.
+animate_plotly(ggt, fps = 5) ## As a plotly .html widget.
+animate_gganimate(ggt, fps = 8, rewind = TRUE) ## As a gganimate .gif
+```
+
+## Tours from `{tourr}`
+```{r, results = "show"}
+## A grand tour, projecting through randomly selected bases
+gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 3)
+
+## Create a static ggplot2 plot with all frames of the tour
+ggt <- ggtour(gt_path, dat, angle = .1) + ## Include geodesic interpolation angle between the selected bases.
+  proto_basis_2d(position = "topright") +
+  proto_data_points(list(color = clas, shape = clas))
+
+## Animate the tour with an animate_* function.
+animate_plotly(ggt)
+animate_gganimate(ggt)
+```
+
+# proto functions
+
+```{r, echo = FALSE, results = "show"}
+tibble::tribble(
+  ~`proto functions`,  ~`related geom_*`,    ~detail,
+  "ggtour",            "ggplot",             "Also perfroms setup for the tour.",
+  "proto_data_point",  "geom_point",         "-",
+  "proto_data_text",   "geom_text",          "-",
+  "proto_data_hex",    "geom_hex",           "Heatmap hexegons, for high observation density",
+  "proto_data_origin", "NA",                 "Line segments for the origin, the space where 0 values project to",
+  "proto_data_density1d_rug", "geom- _density & _rug", "1D density with run hash marks underneath, `position = 'stack'` not working with {plotly}.",
+  "proto_basis2d",    "geom- _segment & _text", "Direction and magnetude of variables to the projection displayed on a unit circle.",
+  "proto_basis1d",    "geom- _rect & _text", "Direction and magnetude of variables to the projection displayed on a rectangle with unit width.",
+  "animate_plotly",    "NA", ".html widget, row numbers added as tooltip on hover. {plotly} doesn't presicly map all {ggplot2} settings; legends, point size and opacity may vary.",
+  "animate_gganimate", "NA", ".gif animation. {gganimate} consumes native ggplots, aestheics should be consistant."
+   ) |>
+  knitr::kable()
+```

@@ -28,7 +28,7 @@ dat <- scale_sd(diam_sub[, c(1, 5:6, 8:10)])
 gt_path <- save_history(dat, grand_tour(), max = 3)
 
 ggp <- ggtour(gt_path, dat) +
-  proto_basis_2d() +
+  proto_basis2d() +
   proto_data_hex(bins = 20)
 
 ## Doesn't work with animate_plotly()
@@ -37,11 +37,11 @@ animate_gganimate(ggp)
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
-\code{\link{proto_basis_1d}()},
-\code{\link{proto_basis_2d}()},
+\code{\link{proto_basis1d}()},
+\code{\link{proto_basis2d}()},
 \code{\link{proto_data_density1d_rug}()},
 \code{\link{proto_data_origin}()},
-\code{\link{proto_data_points}()},
+\code{\link{proto_data_point}()},
 \code{\link{proto_data_text}()}
 }
 \concept{ggtour proto}

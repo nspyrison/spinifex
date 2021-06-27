@@ -2,6 +2,35 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{proto_data_density1d_rug}
 \alias{proto_data_density1d_rug}
+\alias{proto_data_density,}
+\alias{proto_data_density1d}
+\alias{dat}
+\alias{<-}
+\alias{scale_sd(tourr::flea[,}
+\alias{1:6])}
+\alias{clas}
+\alias{tourr::flea$species}
+\alias{bas}
+\alias{basis_pca(dat)}
+\alias{gt_path}
+\alias{save_history(dat,}
+\alias{grand_tour(),}
+\alias{max}
+\alias{=}
+\alias{3,}
+\alias{start}
+\alias{bas)}
+\alias{ggt}
+\alias{ggtour(gt_path,}
+\alias{dat)}
+\alias{+}
+\alias{proto_data_density1d_rug(aes_args}
+\alias{list(color}
+\alias{clas,}
+\alias{fill}
+\alias{clas))}
+\alias{proto_basis1d()}
+\alias{animate_plotly(ggt)}
 \title{Tour proto for data, 1D density, with rug}
 \usage{
 proto_data_density1d_rug(aes_args = list(), identity_args = list())
@@ -19,26 +48,14 @@ Typically a single numeric for point size, alpha, or similar.}
 \description{
 Adds \code{geom_density()} and \code{geom_rug} of the projected data.
 }
-\examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-bas <- basis_pca(dat)
-gt_path <- save_history(dat, grand_tour(), max = 3, start = bas)
-
-ggt <- ggtour(gt_path, dat) +
-  proto_data_density1d_rug(aes_args = list(color = clas, fill = clas)) + 
-  proto_basis_1d()
-  
-animate_plotly(ggt)
-}
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
-\code{\link{proto_basis_1d}()},
-\code{\link{proto_basis_2d}()},
+\code{\link{proto_basis1d}()},
+\code{\link{proto_basis2d}()},
 \code{\link{proto_data_hex}()},
 \code{\link{proto_data_origin}()},
-\code{\link{proto_data_points}()},
+\code{\link{proto_data_point}()},
 \code{\link{proto_data_text}()}
 }
 \concept{ggtour proto}

@@ -23,7 +23,7 @@
 #' ggtour(mt_path, dat) ## Returns headless ggplot(), but required for other spinifex protos
 #' 
 #' ggt <- ggtour(mt_path, dat, angle = .1) +
-#'   proto_basis_2d() +
+#'   proto_basis2d() +
 #'   proto_data_points(list(color = clas, shape = clas),
 #'                     list(size = 1.5))
 #' \dontrun{
@@ -70,7 +70,7 @@ ggtour <- function(basis_array,
 # print.ggtour <- function(x, ...){
 #   class(x) <- c("gg", "ggplot")
 #   x +
-#     proto_basis_2d() +
+#     proto_basis2d() +
 #     proto_data_background(gridline_probs = FALSE) +
 #     proto_data_points()
 # }
@@ -161,7 +161,7 @@ lapply_rep_len <- function(list,
 #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_basis_2d() +
+#'   proto_basis2d() +
 #'   proto_data_background() +
 #'   proto_data_points(aes_args = list(color = clas, shape = clas),
 #'                     identity_args = list(size = 1.5, alpha = .7)) +
@@ -231,7 +231,7 @@ animate_gganimate <- function(
 #' 
 #' ggt <- ggtour(mt_path, dat) +
 #'   proto_data_background() +
-#'   proto_basis_2d() +
+#'   proto_basis2d() +
 #'   proto_data_points(aes_args = list(color = clas, shape = clas),
 #'                     identity_args = list(size = 1.5, alpha = .7))
 #' 
@@ -304,7 +304,7 @@ animate_plotly <- function(ggtour,
 # #' mt <- manual_tour(bas, manip_var = mv, angle = .1)
 # #' 
 # #' ggt <- ggtour(mt_path, dat) +
-# #'   proto_basis_2d() +
+# #'   proto_basis2d() +
 # #'   proto_data_background() +
 # #'   proto_data_points(aes_args = list(color = clas, shape = clas),
 # #'                     identity_args = list(size = 1.5, alpha = .7))
@@ -342,6 +342,7 @@ animate_plotly <- function(ggtour,
 #' circle.
 #' @param text_size Size of the text label of the variables.
 #' @export
+#' @aliases proto_basis
 #' @family ggtour proto
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
@@ -351,18 +352,18 @@ animate_plotly <- function(ggtour,
 #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_basis_2d()
+#'   proto_basis2d()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ggt2 <- ggtour(mt_path, dat) +
-#'   proto_basis_2d(position = "right", manip_col = "red", 
+#'   proto_basis2d(position = "right", manip_col = "red", 
 #'                  line_size = .8, text_size = 8)
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
-proto_basis_2d <- function(position = c("left", "center", "right", "bottomleft",
+proto_basis2d <- function(position = c("left", "center", "right", "bottomleft",
                                         "topright", "off"),
                            manip_col = "blue",
                            line_size = 1,
@@ -432,23 +433,23 @@ proto_basis_2d <- function(position = c("left", "center", "right", "bottomleft",
 #' gt <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 #' 
 #' ggt <- ggtour(gt, dat) +
-#'   proto_basis_1d()
+#'   proto_basis1d()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ggt2 <- ggtour(gt, dat) +
-#'   proto_basis_1d(position = "right",
-#'                  segment_size = .8, 
-#'                  text_size = 8)
+#'   proto_basis1d(position = "right",
+#'                 segment_size = .8, 
+#'                 text_size = 8)
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
-proto_basis_1d <- function(position = c("left", "center", "right", "bottomleft",
-                                        "topright", "off"),
-                           manip_col = "blue",
-                           segment_size = 2,
-                           text_size = 5
+proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
+                                       "topright", "off"),
+                          manip_col = "blue",
+                          segment_size = 2,
+                          text_size = 5
 ){
   ## Assumptions
   position = match.arg(position)
@@ -518,6 +519,7 @@ proto_basis_1d <- function(position = c("left", "center", "right", "bottomleft",
 #' circle.
 #' @param text_size Size of the text label of the variables.
 #' @export
+#' @aliases proto_data_points
 #' @family ggtour proto
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
@@ -538,7 +540,7 @@ proto_basis_1d <- function(position = c("left", "center", "right", "bottomleft",
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
-proto_data_points <- function(aes_args = list(),
+proto_data_point <- function(aes_args = list(),
                               identity_args = list()
 ){
   ## Assumptions
@@ -634,6 +636,7 @@ proto_data_origin <- function(){
 #' @export
 #' @family ggtour proto
 #' @examples
+#' @aliases proto_data_density, proto_data_density1d
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
 #' bas <- basis_pca(dat)
@@ -641,7 +644,7 @@ proto_data_origin <- function(){
 #' 
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_data_density1d_rug(aes_args = list(color = clas, fill = clas)) + 
-#'   proto_basis_1d()
+#'   proto_basis1d()
 #'   
 #' animate_plotly(ggt)
 proto_data_density1d_rug <- function(aes_args = list(),
@@ -761,7 +764,7 @@ proto_data_text <- function(aes_args = list(),
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ggp <- ggtour(gt_path, dat) +
-#'   proto_basis_2d() +
+#'   proto_basis2d() +
 #'   proto_data_hex(bins = 20)
 #' 
 #' ## Doesn't work with animate_plotly()

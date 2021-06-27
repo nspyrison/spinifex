@@ -37,7 +37,7 @@ mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 
 ggt <- ggtour(mt_path, dat) +
   proto_data_background() +
-  proto_basis_2d() +
+  proto_basis2d() +
   proto_data_points(aes_args = list(color = clas, shape = clas),
                     identity_args = list(size = 1.5, alpha = .7))
 
