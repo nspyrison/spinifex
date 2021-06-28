@@ -576,3 +576,17 @@ scale_01 <- function(data){
   return(apply(data, 2L, function(c) (c - min(c)) / diff(range(c))))
 }
 
+#' ## <<experimental>> Mutes verbose functions, without suppressing warnings or error,
+#' ## wrapper function for .mute <- capture.output(x <- value)
+#' #' @examples 
+#' #' ## mute assignment
+#' #' mute(gt <- tourr::save_history(mtcars, max_bases = 3))
+#' mute <- function(...){
+#'   .mute <- capture.output(
+#'     ret <- for (i in seq_len(...length())) {
+#'       out <- withVisible(...elt(i))
+#'       if (out$visible) 
+#'         print(out$value)
+#'     }
+#'   )
+#' }

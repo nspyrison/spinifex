@@ -44,11 +44,11 @@ animate_plotly(ggt2)
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
-\code{\link{proto_basis2d}()},
-\code{\link{proto_data_density1d_rug}()},
-\code{\link{proto_data_hex}()},
-\code{\link{proto_data_origin}()},
-\code{\link{proto_data_point}()},
-\code{\link{proto_data_text}()}
+\code{\link{proto_basis}()},
+\code{\link{proto_density}()},
+\code{\link{proto_hex}()},
+\code{\link{proto_origin}()},
+\code{\link{proto_point}()},
+\code{\link{proto_text}()}
 }
 \concept{ggtour proto}

@@ -23,8 +23,8 @@
 #' ggtour(mt_path, dat) ## Returns headless ggplot(), but required for other spinifex protos
 #' 
 #' ggt <- ggtour(mt_path, dat, angle = .1) +
-#'   proto_basis2d() +
-#'   proto_data_points(list(color = clas, shape = clas),
+#'   proto_basis() +
+#'   proto_points(list(color = clas, shape = clas),
 #'                     list(size = 1.5))
 #' \dontrun{
 #' animate_plotly(ggt)
@@ -70,9 +70,9 @@ ggtour <- function(basis_array,
 # print.ggtour <- function(x, ...){
 #   class(x) <- c("gg", "ggplot")
 #   x +
-#     proto_basis2d() +
-#     proto_data_background(gridline_probs = FALSE) +
-#     proto_data_points()
+#     proto_basis() +
+#     proto_background(gridline_probs = FALSE) +
+#     proto_points()
 # }
 
 
@@ -161,9 +161,9 @@ lapply_rep_len <- function(list,
 #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_basis2d() +
-#'   proto_data_background() +
-#'   proto_data_points(aes_args = list(color = clas, shape = clas),
+#'   proto_basis() +
+#'   proto_background() +
+#'   proto_points(aes_args = list(color = clas, shape = clas),
 #'                     identity_args = list(size = 1.5, alpha = .7)) +
 #' 
 #' \dontrun{
@@ -230,9 +230,9 @@ animate_gganimate <- function(
 #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_data_background() +
-#'   proto_basis2d() +
-#'   proto_data_points(aes_args = list(color = clas, shape = clas),
+#'   proto_background() +
+#'   proto_basis() +
+#'   proto_points(aes_args = list(color = clas, shape = clas),
 #'                     identity_args = list(size = 1.5, alpha = .7))
 #' 
 #' \dontrun{
@@ -304,9 +304,9 @@ animate_plotly <- function(ggtour,
 # #' mt <- manual_tour(bas, manip_var = mv, angle = .1)
 # #' 
 # #' ggt <- ggtour(mt_path, dat) +
-# #'   proto_basis2d() +
-# #'   proto_data_background() +
-# #'   proto_data_points(aes_args = list(color = clas, shape = clas),
+# #'   proto_basis() +
+# #'   proto_background() +
+# #'   proto_points(aes_args = list(color = clas, shape = clas),
 # #'                     identity_args = list(size = 1.5, alpha = .7))
 # #' 
 # #' \dontrun{
@@ -352,22 +352,22 @@ animate_plotly <- function(ggtour,
 #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_basis2d()
+#'   proto_basis()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ggt2 <- ggtour(mt_path, dat) +
-#'   proto_basis2d(position = "right", manip_col = "red", 
+#'   proto_basis(position = "right", manip_col = "red", 
 #'                  line_size = .8, text_size = 8)
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
-proto_basis2d <- function(position = c("left", "center", "right", "bottomleft",
-                                        "topright", "off"),
-                           manip_col = "blue",
-                           line_size = 1,
-                           text_size = 5
+proto_basis <- function(position = c("left", "center", "right", "bottomleft",
+                                     "topright", "off"),
+                        manip_col = "blue",
+                        line_size = 1,
+                        text_size = 5
 ){
   ## Assumptions
   position = match.arg(position) 
@@ -459,8 +459,8 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
   .init4proto()
   
   ## Find the height of density to map_to
-  .den <- density(df_data[, 1L])
-  .map_to1d <- data.frame(x = quantile(df_data[, 1L], probs = c(.01, .99)),
+  .den <- density(.df_data[, 1L])
+  .map_to1d <- data.frame(x = quantile(.df_data[, 1L], probs = c(.01, .99)),
                         y = 1.8 * range(.den[[2L]]))
   
   ## Aesthetics for the axes segments
@@ -493,19 +493,22 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
   
   ## Return proto
   return(list(
-    geom_segment(aes(x = min(x), y = min(y), xend = max(x), yend = max(y)),
-                 .df_seg0, color = "grey80", linetype = 2L),
-    geom_rect(aes(xmin = min(x), xmax = max(x), ymin = min(y), ymax = max(y)),
-              .df_rect, fill = NA, color = "grey60"),
-    geom_text(aes(x, y, label = label), .df_txt, size = text_size, color = .axes_col),
-    suppressWarnings(geom_segment(
-      aes(x, y, xend = .df_zero[,1L], yend = y, frame = frame),
+    ggplot2::geom_segment(
+      ggplot2::aes(x = min(x), y = min(y), xend = max(x), yend = max(y)),
+      .df_seg0, color = "grey80", linetype = 2L),
+    ggplot2::geom_rect(
+      ggplot2::aes(xmin = min(x), xmax = max(x), ymin = min(y), ymax = max(y)),
+      .df_rect, fill = NA, color = "grey60"),
+    ggplot2::geom_text(
+      ggplot2::aes(x, y, label = label), .df_txt, size = text_size, color = .axes_col),
+    suppressWarnings(ggplot2::geom_segment(
+      ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
       .df_seg, color = .axes_col, size = .axes_siz))
   ))
 }
 
 
-### PROTO_DATA_* ----
+### PROTO_* for data obs ----
 #' Tour proto for data point
 #'
 #' Adds `geom_point()` of the projected data.
@@ -519,7 +522,7 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
 #' circle.
 #' @param text_size Size of the text label of the variables.
 #' @export
-#' @aliases proto_data_points
+#' @aliases proto_points
 #' @family ggtour proto
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
@@ -529,19 +532,19 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_data_points()
+#'   proto_point()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ggt2 <- ggtour(mt_path, dat) +
-#'   proto_data_points(list(color = clas, shape = clas),
-#'                     list(size = 2, alpha = .7))
+#'   proto_point(list(color = clas, shape = clas),
+#'                list(size = 2, alpha = .7))
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
-proto_data_point <- function(aes_args = list(),
-                              identity_args = list()
+proto_point <- function(aes_args = list(),
+                        identity_args = list()
 ){
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
@@ -585,14 +588,14 @@ proto_data_point <- function(aes_args = list(),
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_data_origin() +
-#'   proto_data_points()
+#'   proto_origin() +
+#'   proto_points()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 ##TODO: gridlines still not lined up wit zero mark as it's powered from the extrema, not 0.
 ##TODO: Tune the right line_size for the grids.
-proto_data_origin <- function(){
+proto_origin <- function(){
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Assumes data is in the center.
@@ -622,9 +625,10 @@ proto_data_origin <- function(){
   )
 }
 
-#' Tour proto for data, 1D density, with rug
+#' Tour proto for data, 1D density, with rug marks
 #'
-#' Adds `geom_density()` and `geom_rug` of the projected data.
+#' Adds `geom_density()` and `geom_rug` of the projected data. Density 
+#' `postion = "stack"` does not work with animate_plotly, GH issue is open. 
 #' 
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
@@ -634,29 +638,28 @@ proto_data_origin <- function(){
 #' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
 #' Typically a single numeric for point size, alpha, or similar.
 #' @export
+#' @aliases proto_density1d
 #' @family ggtour proto
 #' @examples
-#' @aliases proto_data_density, proto_data_density1d
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
 #' bas <- basis_pca(dat)
 #' gt_path <- save_history(dat, grand_tour(), max = 3, start = bas)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
-#'   proto_data_density1d_rug(aes_args = list(color = clas, fill = clas)) + 
+#'   proto_density(aes_args = list(color = clas, fill = clas)) + 
 #'   proto_basis1d()
-#'   
+#' 
 #' animate_plotly(ggt)
-proto_data_density1d_rug <- function(aes_args = list(),
-                                     identity_args = list()
+proto_density <- function(aes_args = list(),
+                          identity_args = list(),
+                          density_position = c("identity", "stack")
 ){
-  #density_position = "identity" #c("identity", "stack") 
+  ## Assumptions
+  position <- "center" ## Data assumed center.
+  density_position <- match.arg(density_position)
   ## "identity" is the only position working right now. 
   ## see: https://github.com/ropensci/plotly/issues/1544
-
-  ## Assumptions
-  #density_position <- match.arg(density_position)
-  position <- "center" ## Data assumed center.
   aes_args <- as.list(aes_args)
   identity_args <- as.list(identity_args)
   
@@ -672,7 +675,7 @@ proto_data_density1d_rug <- function(aes_args = list(),
   ## do.call geom over identity_args
   .geom_func1 <- function(...) suppressWarnings(
     ggplot2::geom_density(mapping = .aes_call, data = .df_data, ...,
-                          position = "identity", color = "black")
+                          position = density_position, color = "black")
   )
   .geom_call1 <- do.call(.geom_func1, identity_args)
   ## do.call geom over identity_args #2:
@@ -709,13 +712,13 @@ proto_data_density1d_rug <- function(aes_args = list(),
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_data_text(list(color = clas))
+#'   proto_text(list(color = clas))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_data_text <- function(aes_args = list(),
-                            identity_args = list(),
-                            label = NULL
+proto_text <- function(aes_args = list(),
+                       identity_args = list(),
+                       label = NULL
 ){
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
@@ -764,14 +767,14 @@ proto_data_text <- function(aes_args = list(),
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ggp <- ggtour(gt_path, dat) +
-#'   proto_basis2d() +
-#'   proto_data_hex(bins = 20)
+#'   proto_basis() +
+#'   proto_hex(bins = 20)
 #' 
 #' ## Doesn't work with animate_plotly()
 #' animate_gganimate(ggp)
-proto_data_hex <- function(aes_args = list(),
-                           identity_args = list(),
-                           bins = 30
+proto_hex <- function(aes_args = list(),
+                      identity_args = list(),
+                      bins = 30
 ){
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
