@@ -26,6 +26,7 @@ alternative use \code{render_gganimate}.}
 function used in \code{render_type}.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}, see \code{\link{ggtour}}.
 Takes the result of \code{tourr::save_history()} or \code{manual_tour()}, interpolates
 over the path and renders into a specified \code{render_type}.
 }

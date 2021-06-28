@@ -4,6 +4,8 @@
 
 #' Animates the provided tour path.
 #'
+#' @description
+#' `r lifecycle::badge('superseded')`, see \code{\link{ggtour}}.
 #' Takes the result of `tourr::save_history()` or `manual_tour()`, interpolates
 #' over the path and renders into a specified `render_type`.
 #'
@@ -54,6 +56,7 @@ play_tour_path <- function(tour_path,
                            angle = .05,
                            render_type = render_plotly,
                            ...) {
+  lifecycle::deprecate_warn("0.3.0", "play_tour_path()", "spinifex::ggtour()")
   ## Data condition handling
   if(is.null(data) & !is.null(attributes(tour_path)$data)){
     data <- attributes(tour_path)$data
@@ -74,6 +77,8 @@ play_tour_path <- function(tour_path,
 
 #' Animate a manual tour
 #'
+#' @description
+#' `r lifecycle::badge('superseded')`, see \code{\link{ggtour}}.
 #' Performs the a manual tour and returns an animation of `render_type`.
 #' For use with `tourr::save_history()` tour paths see `play_tour_path()`. 
 #' 
@@ -141,6 +146,7 @@ play_manual_tour <- function(basis = NULL,
                              angle = .05,
                              render_type = render_plotly,
                              ...){
+  lifecycle::deprecate_warn("0.3.0", "play_manual_tour()", "spinifex::ggtour()")
   data <- as.matrix(data)
   ## Basis condition handling
   if(is.null(basis)){
@@ -161,6 +167,8 @@ play_manual_tour <- function(basis = NULL,
 
 #' Plot a single frame of a manual tour
 #'
+#' @description
+#' `r lifecycle::badge('superseded')`, see \code{\link{ggtour}}.
 #' Projects the specified rotation as a 2D ggplot object. One static frame of 
 #' manual tour. Useful for providing user-guided interaction.
 #' 
@@ -212,6 +220,8 @@ view_frame <- function(basis = NULL,
                        basis_label = abbreviate(row.names(basis), 3L),
                        rescale_data = FALSE,
                        ...){
+  lifecycle::deprecate_warn("0.3.0", "view_frame()", "spinifex::ggtour()")
+  ## Assumptions
   if(is.null(data) == FALSE)
     data <- as.matrix(data)
   if(is.null(basis)){

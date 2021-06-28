@@ -5,6 +5,8 @@
 
 #' Prepare the ggplot object before passing to either animation package.
 #'
+#' @description
+#' `r lifecycle::badge('superseded')`, see \code{\link{ggtour}}.
 #' Typically called by `render_plotly()` or `render_gganimate()`. Takes the
 #' result of `array2df()`, and renders them into a ggplot2 object.
 #'
@@ -62,6 +64,7 @@ render_ <- function(frames,
                     identity_args = list(),
                     ggproto = list(theme_spinifex())
 ){
+  lifecycle::deprecate_warn("0.3.0", "render_()", "spinifex::ggtour()")
   if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
   #### Initialize
   basis_frames  <- frames$basis_frames
@@ -173,6 +176,8 @@ render_ <- function(frames,
 
 #' Render the frames as a *gganimate* animation.
 #'
+#' @description
+#' `r lifecycle::badge('superseded')`, see \code{\link{ggtour}}.
 #' Takes the result of `array2df()` and renders them into a 
 #' *gganimate* animation.
 #'
@@ -232,6 +237,7 @@ render_gganimate <- function(fps = 8L,
                              gif_path = NULL,
                              gganimate_args = list(),
                              ...){
+
   requireNamespace("gganimate")
   ## Render and animate
   gg  <- render_(...)
@@ -259,6 +265,8 @@ render_gganimate <- function(fps = 8L,
 
 #' Animation the frames as a HTML widget.
 #'
+#' @description
+#' `r lifecycle::badge('superseded')`, see \code{\link{ggtour}}.
 #' Takes the result of `array2df()` and animations them via `{plotly}`
 #' into a  self-contained HTML widget.
 #'

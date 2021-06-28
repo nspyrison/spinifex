@@ -43,6 +43,7 @@ projection point aesthetics;}
 A ggplot object of the rotated projection.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}, see \code{\link{ggtour}}.
 Projects the specified rotation as a 2D ggplot object. One static frame of
 manual tour. Useful for providing user-guided interaction.
 }

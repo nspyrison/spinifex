@@ -48,6 +48,7 @@ Anything that would be "added" to ggplot(); in the case of applying a theme,
 Intended for aesthetic ggplot2 functions (not geom_* family).}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}, see \code{\link{ggtour}}.
 Typically called by \code{render_plotly()} or \code{render_gganimate()}. Takes the
 result of \code{array2df()}, and renders them into a ggplot2 object.
 }

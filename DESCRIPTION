@@ -27,9 +27,7 @@ Imports:
     gganimate,
     plotly,
     shiny,
-    Rdimtools,
-    DALEX,
-    randomForest
+    Rdimtools
 Suggests: 
     dplyr,
     GGally,
@@ -37,6 +35,7 @@ Suggests:
     htmlwidgets,
     knitr,
     testthat,
+    lifecycle,
     covr,
     spelling
 VignetteBuilder: knitr

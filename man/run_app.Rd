@@ -21,7 +21,7 @@ traditional techniques for static projections of multivariate data sets.
 }
 \examples{
 \dontrun{
-run_app(app_nm= "radial_tour")
-run_app(app_nm= "radial_tour", display.mode = "showcase")
+run_app(app_nm = "radial_tour")
+run_app(app_nm = "radial_tour", display.mode = "showcase")
 }
 }

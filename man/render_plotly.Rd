@@ -20,6 +20,7 @@ or call \code{htmlwidgets::saveWidget()} on a return object of \code{render_plot
 \item{...}{Passes arguments to \code{render_(...)}.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}, see \code{\link{ggtour}}.
 Takes the result of \code{array2df()} and animations them via \code{{plotly}}
 into a  self-contained HTML widget.
 }
