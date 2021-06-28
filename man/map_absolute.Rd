@@ -24,7 +24,7 @@ to manually set the size and locations of the axes.
 \examples{
 bas <- basis_random(4, 2)
 
-map_absolute(pan = c(-2, 0), zoom = c(2/3, 2/3), x = bas)
+map_absolute(bas, offset = c(-2, 0), scale = c(2/3, 2/3))
 }
 \seealso{
 \code{\link{scale_axes}} for preset choices.

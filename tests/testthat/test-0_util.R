@@ -1,6 +1,6 @@
 library("spinifex")
 library("testthat")
-dat_std <- scale_sd(wine[, 2:6])
+dat_std <- scale_sd(wine[1:5, 2:6])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
@@ -54,44 +54,46 @@ ret_save_hist <- array2df(array = array_save_hist, data = dat_std,
                           basis_label = paste0("MyLabs", 1:nrow(bas)),
                           data_label = paste0("obs# ", 1:nrow(dat_std)))
 
-test_that("array2df: class and dim for single frame, spinifex and tourr case.", {
+test_that("array2df: class", {
   expect_is(ret_single,    "list")
   expect_is(ret_manual,    "list")
   expect_is(ret_save_hist, "list")
-  expect_equal(length(ret_single),    1)
-  expect_equal(length(ret_manual),    2)
-  expect_equal(length(ret_save_hist), 2)
-  expect_equal(dim(ret_single[[1]]),    c(13,  4))
-  expect_true(dim(ret_manual[[1]])[1] > 500)
-  expect_equal(dim(ret_manual[[1]])[2], 4)
-  expect_equal(dim(ret_save_hist[[1]]), c(130, 4))
+})
+test_that("array2df: length", {
+  expect_true(length(ret_single) == 1)
+  expect_true(length(ret_manual) == 2)
+  expect_true(length(ret_save_hist) == 2)
+})
+test_that("array2df: dim", {
+  expect_true(nrow(ret_manual[[1]]) == 340)
+  expect_true(ncol(ret_manual[[1]]) == 4)
+  expect_equal(dim(ret_single[[1]]),  c(5, 4))
+  expect_equal(dim(ret_save_hist[[1]]), c(50, 4))
 })
 
 
 
-### scale_axes ------
-ret <- scale_axes(x = bas, position = "bottomleft")
-ret_to <- scale_axes(x = bas, position = "topright", to = wine[, 2:3])
+### map_relative ------
+ret <- map_relative(x = bas, position = "bottomleft")
+ret_to <- map_relative(x = bas, position = "topright", to = wine[, 2:3])
 
-test_that("scale_axes: class and dim", {
+test_that("map_relative: class and dim", {
   expect_is(ret, "matrix")
   expect_is(ret_to, "matrix")
-  expect_equal(dim(ret), c(13, 2))
-  expect_equal(dim(ret_to), c(13, 2))
+  expect_equal(dim(ret), c(5, 2))
+  expect_equal(dim(ret_to), c(5, 2))
 })
 
 
 ### map_absolute -----
-
-ret_mat   <- map_absolute(x = bas, pan = c(-1, 0), zoom = c(2/3, 2/3))
-ret_df    <- map_absolute(x = mtcars[,1:2], pan = c(0, 100), zoom = c(.1, .1))
+ret_mat   <- map_absolute(x = bas, offset = c(-1, 0), scale = c(2/3, 2/3))
+ret_df    <- map_absolute(x = mtcars[,1:2], offset = c(0, 100), scale = c(.1, .1))
 
 test_that("map_absolute: class and dim", {
   expect_is(ret_mat, "matrix")
   expect_is(ret_df,  "data.frame")
-  expect_equal(dim(ret_mat), c(13, 2))
+  expect_equal(dim(ret_mat), c(5, 2))
   expect_equal(dim(ret_df),  c(32, 2))
-  expect_warning(map_absolute(x = mtcars))
 })
 
 ##
@@ -118,8 +120,8 @@ ret_cmass <- basis_guided(data = dat_std, index_f = tourr::cmass(),
 test_that("basis_guided: class and dim", {
   expect_is(ret_holes, "matrix")
   expect_is(ret_cmass, "matrix")
-  expect_equal(dim(ret_holes), c(13, 2))
-  expect_equal(dim(ret_cmass), c(13, 2))
+  expect_equal(dim(ret_holes), c(5, 2))
+  expect_equal(dim(ret_cmass), c(5, 2))
 })
 
 
@@ -132,28 +134,66 @@ test_that("manip_var_of: class and dim", {
   expect_warning(manip_var_of(not_orth))
 })
 
+## Other basis_* :-----
+t <- theme_spinifex() 
+g <- ggplot2::ggplot() + t
+test_that("theme_spinifex()", {
+  expect_is(t, "list")
+  expect_is(g, c("gg", "ggplot"))
+})
 
+dat  <- tourr::flea[, -7]
+clas <- tourr::flea[, 7]
 
-## no roi for a unit test of basis_pca()
+pca <- basis_pca(dat)
+olda <- basis_olda(dat, clas)
+odp  <- basis_odp(dat, clas)
+#olpp <- basis_olpp(dat) ## NOT orthogonal
+onpp <- basis_onpp(dat)
+half_circ <- basis_half_circle(dat)
 
-## no roi for a unit test of scale_10()
+test_that("other basis_* class, orth, ", {
+  expect_is(pca, "matrix")
+  expect_is(olda, "matrix")
+  expect_is(odp,  "matrix")
+  expect_is(half_circ, "matrix")
+  expect_true(is_orthonormal(pca))
+  expect_true(is_orthonormal(olda))
+  expect_true(is_orthonormal(odp))
+  expect_true(is_orthonormal(half_circ))
+})
+
+## scale functions ----
+s1 <- scale_sd(mtcars)
+s2 <- scale_01(dat)
+s3 <- mtcars |> as.matrix() |> scale_01()
+
+test_that("scale, class, bounds, dim", {
+  expect_is(s1, "matrix") ## coerced to matrix.
+  expect_is(s2, "matrix") ## coerced to matrix.
+  expect_is(s3, "matrix")
+  expect_equal(min(s2), 0)
+  expect_equal(max(s2), 1)
+  expect_equal(min(s3), 0)
+  expect_equal(max(s3), 1)
+  expect_equal(dim(s1), dim(mtcars))
+  expect_equal(dim(s2), dim(dat))
+  expect_equal(dim(s3), dim(mtcars))
+})
+min(s2)
 
 
 ##
-## DEPRICATED: color_of, shape_of -----
+## DEPRICATED:  -----
 ##
 
-# ret <- color_of(tourr::flea$species)
-# 
-# test_that("col_of: class and length", {
-#   expect_is(ret, "character")
-#   expect_equal(length(ret), 74)
-# })
-# 
-# ret <- shape_of(tourr::flea$species)
-# 
-# test_that("pch_of: class and length", {
-#   expect_is(ret, "integer")
-#   expect_equal(length(ret), 74)
-# })
+## low roi for testing deprecated.
+sa <- scale_axes(mtcars)
+pz <- pan_zoom(mtcars)
 
+test_that("other basis_* class, orth, ", {
+  expect_warning(scale_axes(mtcars))
+  expect_equal(sa, map_relative(mtcars))
+  expect_warning(pan_zoom(mtcars))
+  expect_equal(pz, map_absolute(mtcars))
+})

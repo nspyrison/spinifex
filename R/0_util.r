@@ -176,10 +176,10 @@ map_relative <- function(x,
   if(is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
   position <- match.arg(position)
   if(position == "off") return()
-  ## If position is map_absolute call with x = NULL;
-  if(is.list(position) & length(position) == 2L){
-    return(map_absolute(pan = position$pan, zoom = position$zoom, x = x))
-  }
+  # ## If position is map_absolute call with x = NULL;
+  # if(is.list(position) & length(position) == 2L){
+  #   return(map_absolute(x, offset = position$pan, scale = position$zoom))
+  # }
   
   ## Initialize
   xrange  <- range(to[, 1L])
@@ -244,14 +244,14 @@ scale_axes <- function(...) {
 #' @examples 
 #' bas <- basis_random(4, 2)
 #' 
-#' map_absolute(pan = c(-2, 0), zoom = c(2/3, 2/3), x = bas)
+#' map_absolute(bas, offset = c(-2, 0), scale = c(2/3, 2/3))
 map_absolute <- function(x,
                          offset = c(0L, 0L),
                          scale = c(1L, 1L)
 ){
   ret <- x
-  ret[, 1L] <- ret[, 1L] * zoom[1L] + pan[1L]
-  ret[, 2L] <- ret[, 2L] * zoom[2L] + pan[2L]
+  ret[, 1L] <- ret[, 1L] * offset[1L] + scale[1L]
+  ret[, 2L] <- ret[, 2L] * offset[2L] + scale[2L]
   return(ret)
 }
 
@@ -259,9 +259,9 @@ map_absolute <- function(x,
 #' @section \code{pan_zoom}:
 #' For \code{pan_zoom}, use \code{\link{map_absolute}}.
 #' @export
-pan_zoom <- function(...) {
+pan_zoom <- function(x, pan = c(0L, 0L), zoom = c(1L, 1L)) {
   .Deprecated("map_absolute")
-  map_absolute(...)
+  map_absolute(x, pan, zoom)
 }
 
 ##
@@ -390,43 +390,43 @@ basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
   return(ret)
 }
 
-
-#' The basis of Orthogonal Locality Preserving Projection (OLPP)
-#' 
-#' Orthogonal Locality Preserving Projection (OLPP) is the orthogonal variant of
-#' LPP, a linear approximation to Laplacian Eigenmaps. It finds a linear 
-#' approximation to the eigenfunctions of the Laplace-Beltrami operator on the 
-#' graph-approximated data manifold.
-#' 
-#' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
-#' @param d Number of dimensions in the projection space.
-#' @param type A vector specifying the neighborhood graph construction. 
-#' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
-#' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
-#' square root of observations.
-#' @param ... Optional, other arguments to pass to \code{\link[Rdimtools]{do.olpp}}.
-#' @return Orthogonal matrix basis
-#' @seealso \code{\link[Rdimtools:do.olpp]{Rdimtools::do.olpp}} for locality
-#' preservation parameters.
-#' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
-#' details on `type`.
-#' @references
-#' He X (2005). Locality Preserving Projections. PhD Thesis, 
-#' University of Chicago, Chicago, IL, USA.
-#' @export
-#' @family basis identifiers
-#' @examples
-#' dat_std <- scale_sd(wine[, 2:6])
-#' basis_olpp(data = dat_std)
-basis_olpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data))), ...){
-  ret <- Rdimtools::do.olpp(X = as.matrix(data),
-                            ndim = d,
-                            type = type,
-                            ...)$projection
-  rownames(ret) <- colnames(data)
-  colnames(ret) <- paste0("OLPP", 1L:d)
-  return(ret)
-}
+# ### not Orthogonal... bug logged 6/28/2021, https://github.com/kisungyou/Rdimtools/issues/10
+# #' The basis of Orthogonal Locality Preserving Projection (OLPP)
+# #' 
+# #' Orthogonal Locality Preserving Projection (OLPP) is the orthogonal variant of
+# #' LPP, a linear approximation to Laplacian Eigenmaps. It finds a linear 
+# #' approximation to the eigenfunctions of the Laplace-Beltrami operator on the 
+# #' graph-approximated data manifold.
+# #' 
+# #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
+# #' @param d Number of dimensions in the projection space.
+# #' @param type A vector specifying the neighborhood graph construction. 
+# #' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
+# #' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
+# #' square root of observations.
+# #' @param ... Optional, other arguments to pass to \code{\link[Rdimtools]{do.olpp}}.
+# #' @return Orthogonal matrix basis
+# #' @seealso \code{\link[Rdimtools:do.olpp]{Rdimtools::do.olpp}} for locality
+# #' preservation parameters.
+# #' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
+# #' details on `type`.
+# #' @references
+# #' He X (2005). Locality Preserving Projections. PhD Thesis, 
+# #' University of Chicago, Chicago, IL, USA.
+# #' @export
+# #' @family basis identifiers
+# #' @examples
+# #' dat_std <- scale_sd(wine[, 2:6])
+# #' basis_olpp(data = dat_std)
+# basis_olpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data))), ...){
+#   ret <- Rdimtools::do.olpp(X = as.matrix(data),
+#                             ndim = d,
+#                             type = type,
+#                             ...)$projection
+#   rownames(ret) <- colnames(data)
+#   colnames(ret) <- paste0("OLPP", 1L:d)
+#   return(ret)
+# }
 
 #' The basis of Orthogonal Neighborhood Preserving Projection (OLPP)
 #' 

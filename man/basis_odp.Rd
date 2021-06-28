@@ -47,7 +47,6 @@ Other basis identifiers:
 \code{\link{basis_guided}()},
 \code{\link{basis_half_circle}()},
 \code{\link{basis_olda}()},
-\code{\link{basis_olpp}()},
 \code{\link{basis_onpp}()},
 \code{\link{basis_pca}()}
 }
