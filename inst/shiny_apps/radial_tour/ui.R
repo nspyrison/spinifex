@@ -2,6 +2,7 @@
 require("spinifex")
 require("shinythemes")     ## Themes for shiny, think css files.
 require("shinycssloaders") ## shinycssloaders::withSpinner()
+require("plotly")
 
 ##### Initialize ----
 ## Create contextLine, a string containing App name, spinifex version, and sys date.
@@ -10,7 +11,7 @@ require("shinycssloaders") ## shinycssloaders::withSpinner()
 .local_path <- substr(.wd, .regex + 1L, nchar(.wd))
 contextLine <- paste0("Spinifex app, '", .local_path,
                       "' --- (spinifex v", packageVersion("spinifex"),
-                      ") --- Ran on ", Sys.Date())
+                      ") --- ", Sys.Date())
 
 ### tabData -----
 tabData <- tabPanel(
@@ -20,8 +21,8 @@ tabData <- tabPanel(
       width = 3L,
       ## Select data
       selectInput("dat", "Dataset",
-                  c("flea", "Upload file", "olive", "weather", "wine", "breast cancer",
-                    "diabetes, long", "diabetes, wide"),
+                  c("flea", "Upload file", "olive", "weather", "wine",
+                    "breast cancer", "diabetes, long", "diabetes, wide"),
                   "flea"),
       conditionalPanel("input.dat == 'Upload file'",
                        fileInput("data_file", "Data file",
@@ -30,15 +31,15 @@ tabData <- tabPanel(
                        ),
                        verbatimTextOutput("data_msg")),
       ## Select the projection variables
-      uiOutput("inputProjVars"),
+      uiOutput("input__proj_vars"),
       p("Rows with NA values excluded if present."),
       checkboxInput("rescale_data", "Standardize values to by Std.Dev.", value = TRUE)
     ),
     mainPanel(width = 9L,
               h4("Input data summary"),
-              verbatimTextOutput("rawDat_summary"),
+              verbatimTextOutput("raw_dat_summary"),
               h4("Processed data summary"),
-              verbatimTextOutput("selDat_summary")
+              verbatimTextOutput("sel_dat_summary")
     )
     
   )
@@ -46,32 +47,32 @@ tabData <- tabPanel(
 
 ### tabRadial ----
 tabRadial <- tabPanel(
-  "Radial manual tour", 
+  "Radial manual tour",
   fluidPage(
     sidebarPanel(
       width = 3L,
-      selectInput('manip_var_nm', 'Manip var', 1L),
-      fluidRow(column(6L, selectInput("col_var_nm", "Point color", "<none>")),
-               column(6L, selectInput("pch_var_nm", "Point shape", "<none>")))
+      uiOutput("input__manip_var_nm"),
+      fluidRow(column(6L, uiOutput("input__col_var_nm")),
+               column(6L, uiOutput("input__pch_var_nm")))
     ),
-    mainPanel(
-      width = 9L,
-      shinycssloaders::withSpinner(
-        plotly::plotlyOutput("plotlyAnim", height = "600px"), 
-        type = 8L)
+    mainPanel(width = 9L,
+              plotly::plotlyOutput("plotly_anim", height = "600px") |> 
+                shinycssloaders::withSpinner(type = 8L)
     )
   )
 ) ## Assign tab
 
 ##### ui, combine tabs -----
-ui <- fluidPage(theme = shinythemes::shinytheme("flatly"), 
-                ## Esp see the themes: "flatly", "spacelab", "journal"
-                ## Make the lines, hr() black:
-                tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
-                #### Content:
-                navbarPage(paste0("Spinifex app -- ", .local_path, ""),
-                           tabData,
-                           tabRadial
-                ),
+ui <- fluidPage(
+  theme = shinythemes::shinytheme("flatly"),
+  ## Also see the themes: "flatly", "spacelab", "journal"
+  ## Make the lines, hr() black:
+  tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+  #### Content:
+  navbarPage(
+    paste0("Spinifex app -- ", .local_path, ""),
+    tabData,
+    tabRadial
+  ),
 )
 
