@@ -64,7 +64,7 @@ render_ <- function(frames,
                     identity_args = list(),
                     ggproto = list(theme_spinifex())
 ){
-  lifecycle::deprecate_warn("0.3.0", "render_()", "spinifex::ggtour()")
+  #lifecycle::deprecate_warn("0.3.0", "render_()", "spinifex::ggtour()") ## warn higher.
   if(axes == "off" & length(frames) == 1L) stop("render_ called with no data and axes = 'off'")
   #### Initialize
   basis_frames  <- frames$basis_frames
@@ -78,16 +78,20 @@ render_ <- function(frames,
   
   ## If data exists; fix arg length and plot MUST COME BEFORE AXES
   data_frames <- frames$data_frames ## May be null.
+  .map_to <- data.frame(
+    c(min(data_frames[, 1L]), max(data_frames[, 1L])),
+    c(min(data_frames[, 2L]), max(data_frames[, 2L]))
+  )
   
   ## Axes setup
   angle <- seq(0L, 2L * pi, length = 360L)
   circ  <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes/circle
   if(axes != "off"){
-    center <- map_relative(data.frame(x = 0L, y = 0L), axes, to = .to)
-    circ <- map_relative(circ, axes, to = .to)
+    center <- map_relative(data.frame(x = 0L, y = 0L), axes, to = .map_to)
+    circ <- map_relative(circ, axes, to = .map_to)
     ## Rejoin frame number to the scaled bases frames
-    basis_frames <- map_relative(basis_frames, axes, to = .to)
+    basis_frames <- map_relative(basis_frames, axes, to = .map_to)
   }
   ## Manip var axes aesthetics
   axes_col <- "grey50"
@@ -297,7 +301,7 @@ render_gganimate <- function(fps = 8L,
 #' render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
 #'               aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 1.5, alpha = .7),
-#'               ggproto = list(theme_spinifex(),
+#'               ggproto = list(theme_bw(),
 #'                              scale_color_brewer(palette = "Set2")))
 #' 
 #' ## Saving a .gif, may require additional setup

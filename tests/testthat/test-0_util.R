@@ -188,12 +188,10 @@ min(s2)
 ##
 
 ## low roi for testing deprecated.
-sa <- scale_axes(mtcars)
-pz <- pan_zoom(mtcars)
 
 test_that("other basis_* class, orth, ", {
-  expect_warning(scale_axes(mtcars))
+  expect_warning(sa <- scale_axes(mtcars))
   expect_equal(sa, map_relative(mtcars))
-  expect_warning(pan_zoom(mtcars))
+  expect_warning(pz <- pan_zoom(mtcars))
   expect_equal(pz, map_absolute(mtcars))
 })

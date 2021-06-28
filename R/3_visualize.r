@@ -66,7 +66,9 @@ play_tour_path <- function(tour_path,
   data <- as.matrix(data)
 
   ## Tour array to tour df
-  tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
+  .mute <- capture.output(
+    tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
+  )
   attr(tour_path, "class") <- "array"
   tour_df <- array2df(array = tour_path, data = data)
   

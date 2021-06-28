@@ -16,13 +16,14 @@ df_manual <- array2df(array = array_manual, data = dat_std,
 
 ### render_ -----
 library("ggplot2")
-ret <- render_(frames = df_manual, axes = "left", manip_col = "purple",
-               aes_args = list(color = clas, shape = clas),
-               identity_args = list(size = .8, alpha = .7),
-               ggproto = list(theme_spinifex(),
-                              ggtitle("My title"),
-                              scale_color_brewer(palette = "Set2")))
 
+suppressWarnings( ## suppress 8hr deprecation warning
+  ret <- render_(frames = df_manual, axes = "left", manip_col = "purple",
+                        aes_args = list(color = clas, shape = clas),
+                        identity_args = list(size = .8, alpha = .7),
+                        ggproto = list(theme_spinifex(),
+                                       ggtitle("My title")))
+)
 
 test_that("render_, class and dim", {
   expect_is(ret, c("gg", "ggplot"))
@@ -30,14 +31,13 @@ test_that("render_, class and dim", {
 })
 
 ### render_gganimate -----
-
-
-ret <- render_gganimate(frames = df_manual, axes = "left", manip_col = "purple",
-                        aes_args = list(color = clas, shape = clas),
-                        identity_args = list(size = .8, alpha = .7),
-                        ggproto = list(theme_spinifex(),
-                                       ggtitle("My title"),
-                                       scale_color_brewer(palette = "Set2")))
+suppressWarnings( ## suppress 8hr deprecation warning
+  ret <- render_gganimate(frames = df_manual, axes = "left", manip_col = "purple",
+                          aes_args = list(color = clas, shape = clas),
+                          identity_args = list(size = .8, alpha = .7),
+                          ggproto = list(theme_spinifex(),
+                                         ggtitle("My title")))
+)
 
 test_that("render_gganimate, class and dim", {
   expect_true(class(ret)  %in% c("gif_image", "character"))
