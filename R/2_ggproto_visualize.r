@@ -189,7 +189,7 @@ animate_gganimate <- function(
   ... ## Passed to gganimate::animate or gganimate::knit_print.gganim
 ){
   ## Assumptions
-  if(length(ggtour$layers) == 0) stop("No layers found, did you forget to add a proto_*?")
+  if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(.spinifex_df_basis$frame))
   if(n_frames == 1L){
     warning("ggtour df_basis only has 1 frame, printing ggtour ggplot2 object instead.")
@@ -254,7 +254,7 @@ animate_plotly <- function(ggtour,
                            ... ## Passed to plotly::layout().
 ){
   ## Assumptions
-  if(length(ggtour$layers) == 0) stop("No layers found, did you forget to add a proto_*?")
+  if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(.spinifex_df_basis$frame))
   if(n_frames == 1L){
     warning("ggtour df_basis only has 1 frame, applying just plotly::ggplotly instead.")
@@ -602,10 +602,10 @@ proto_origin <- function(){
   .max <- max(max(.map_to[, 1L]), max(.map_to[, 2L]))
   .tail <- .05 * (.max - .min)
   
-  .df_origin <- data.frame(x     = .center[, 1L] - .tail,
-                           x_end = .center[, 1L] + .tail,
-                           y     = .center[, 2L] - .tail,
-                           y_end = .center[, 2L] + .tail)
+  .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
+                           x_end = c(.center[, 1L] + .tail, .center[, 1L]),
+                           y     = c(.center[, 2L], .center[, 2L] - .tail),
+                           y_end = c(.center[, 2L], .center[, 2L] + .tail))
   
   ## Return
   return(
@@ -644,19 +644,12 @@ proto_origin1d <- function(){
                           y = 1.8 * range(.den[[2L]]))
   
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to1d)
-  .min <- min(.map_to[, 1L])
-  .max <- max(.map_to[, 1L])
-  .tail <- .05 * (.max - .min)
-  
-  .df_origin1d <- data.frame(y     = c(.min - .tail),
-                             y_end = c(.max + .tail))
   
   ## Return
   return(
-    ggplot2::geom_segment(
-      data = .df_origin1d,
-      color = "grey60", size = 1L, alpha = .7,
-      mapping = ggplot2::aes(x = 0, y = y, xend = 0, yend = y_end)
+    ggplot2::geom_vline(
+      xintercept = .center[, 1L],
+      color = "grey60", size = 1L, alpha = .7
     )
   )
 }
@@ -802,7 +795,7 @@ proto_text <- function(aes_args = list(),
 #' @export
 #' @family ggtour proto
 #' @examples
-#' diam_sub <- diamonds[sample(nrow(diamonds), 1000),]
+#' diam_sub <- diamonds[sample(nrow(diamonds), 1000), ]
 #' dat <- scale_sd(diam_sub[, c(1, 5:6, 8:10)])
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
@@ -902,6 +895,7 @@ proto_default1d <- function(aes_args = list(),
                             identity_args = list()
 ){
   return(list(
+    proto_origin1d(),
     proto_density(aes_args, identity_args),
     proto_basis1d()
   ))

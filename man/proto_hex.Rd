@@ -23,7 +23,7 @@ horizontal directions. Defaults to 30.}
 Adds \code{geom_hex()} of the projected data.
 }
 \examples{
-diam_sub <- diamonds[sample(nrow(diamonds), 1000),]
+diam_sub <- diamonds[sample(nrow(diamonds), 1000), ]
 dat <- scale_sd(diam_sub[, c(1, 5:6, 8:10)])
 gt_path <- save_history(dat, grand_tour(), max = 3)
 

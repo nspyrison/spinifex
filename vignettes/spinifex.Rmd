@@ -79,7 +79,7 @@ dat_std <- scale_sd(tourr::flea[,-7])
 bas_pca <- basis_pca(dat_std)
 clas <- tourr::flea[, 7]
 
-view_frame(basis = bas_pca)
+ggtour(basis_array = bas_pca, data = dat_std) + proto_default()
 ```
 
 We started from a random basis, that explains the orthogonal projection from $p$ to $d$ space. Use `view_frame()` to see the *reference axes*, a visual depiction of how the variables contributed to the xy directions of the 2D projection.

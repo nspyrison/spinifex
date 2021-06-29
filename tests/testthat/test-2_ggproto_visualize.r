@@ -76,8 +76,8 @@ test_that("animate_plotly", {
 })
 
 ## proto_basis -----
-pb_mt   <- ggtour(mt)              + proto_basis()
-pb_gt   <- ggtour(gt,   angle = 1) + proto_basis()
+pb_mt   <- ggtour(mt  , dat      ) + proto_basis()
+pb_gt   <- ggtour(gt  , angle = 1) + proto_basis()
 pb_gt1d <- ggtour(gt1d, angle = 1) + proto_basis1d()
 test_that("proto_basis", {
   expect_is(pb_mt  , c("gg", "ggplot"))

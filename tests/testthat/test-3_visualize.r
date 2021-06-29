@@ -19,7 +19,7 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 suppressWarnings( ## suppress 8hr deprecation warning
   ret_heavy <- play_tour_path(tour_path = tpath, data = dat_std, angle = 1,
-                              axes = "bottomleft", angle = 1, fps = 8L,
+                              axes = "bottomleft", fps = 8L,
                               aes_args = list(color = clas, shape = clas),
                               identity_args = list(size = .8, alpha = .7),
                               ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
