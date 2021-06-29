@@ -39,7 +39,7 @@ ggt <- ggtour(mt_path, dat) +
   proto_background() +
   proto_basis() +
   proto_points(aes_args = list(color = clas, shape = clas),
-                    identity_args = list(size = 1.5, alpha = .7))
+               identity_args = list(size = 1.5, alpha = .7))
 
 \dontrun{
 animate_plotly(ggtour)

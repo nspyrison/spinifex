@@ -38,8 +38,8 @@ animate_plotly(ggt)
 }
 \seealso{
 Other ggtour proto: 
-\code{\link{proto_basis1d}()},
 \code{\link{proto_basis}()},
+\code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_origin}()},

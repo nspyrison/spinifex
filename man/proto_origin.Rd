@@ -2,9 +2,13 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{proto_origin}
 \alias{proto_origin}
+\alias{proto_origin2d}
+\alias{proto_origin1d}
 \title{Tour proto for data origin zero mark}
 \usage{
 proto_origin()
+
+proto_origin1d()
 }
 \arguments{
 \item{position}{The position, to place the basis axes relative to the centered
@@ -17,13 +21,22 @@ Adds a zero mark showing the location of the origin for the central data area.
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
+
+## 2D case:
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
-ggt <- ggtour(mt_path, dat) +
+ggt <- ggtour(gt_path, dat) +
   proto_origin() +
   proto_points()
+\dontrun{
+animate_plotly(ggt)
+}
+## 1D case:
+gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 5)
+
+ggt <- ggtour(gt_path, dat) +
+  proto_origin1d() +
+  proto_density()
 \dontrun{
 animate_plotly(ggt)
 }
@@ -31,8 +44,17 @@ animate_plotly(ggt)
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
-\code{\link{proto_basis1d}()},
 \code{\link{proto_basis}()},
+\code{\link{proto_default}()},
+\code{\link{proto_density}()},
+\code{\link{proto_hex}()},
+\code{\link{proto_point}()},
+\code{\link{proto_text}()}
+
+Other ggtour proto: 
+\code{\link{ggtour}()},
+\code{\link{proto_basis}()},
+\code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_point}()},

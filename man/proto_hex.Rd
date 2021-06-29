@@ -37,8 +37,8 @@ animate_gganimate(ggp)
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
-\code{\link{proto_basis1d}()},
 \code{\link{proto_basis}()},
+\code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_origin}()},
 \code{\link{proto_point}()},

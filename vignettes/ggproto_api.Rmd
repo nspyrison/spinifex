@@ -160,11 +160,11 @@ tibble::tribble(
   "ggtour",           "ggplot",          "Also perfroms setup for the tour.",
   "proto_point",      "geom_point",      "-",
   "proto_text",       "geom_text",       "-",
-  "proto_hex",        "geom_hex",        "Heatmap hexegons, for high observation density",
-  "proto_origin",     "NA",              "Line segments for the origin, the space where 0 values project to",
+  "proto_hex", "geom_hex", "Heatmap hexegons, for high observation density",
+  "proto_origin /1d", "NA", "Line segments for the origin, the space where 0 values project to",
   "proto_density", "geom- _density & _rug", "1D density with run hash marks underneath, `position = 'stack'` not working with {plotly}.",
-  "proto_basis",    "geom- _segment & _text", "Direction and magnetude of variables to the projection displayed on a unit circle.",
-  "proto_basis1d",    "geom- _rect & _text", "Direction and magnetude of variables to the projection displayed on a rectangle with unit width.",
+  "proto_basis /1d",    "geom- _segment & _text", "Direction and magnetude of variables to the projection displayed on a unit circle/rectangle.",
+  "proto_default /1d", "several", "Default protos for 2/1D tours",
   "animate_plotly",    "NA", ".html widget, row numbers added as tooltip on hover. {plotly} doesn't presicly map all {ggplot2} settings; legends, point size and opacity may vary.",
   "animate_gganimate", "NA", ".gif animation. {gganimate} consumes native ggplots, aestheics should be consistant."
 ) |>

@@ -17,7 +17,7 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 Typically a single numeric for point size, alpha, or similar.}
 
 \item{label}{A character vector, the texts that should be in the location of
-the data. Default is NULL, will b e}
+the data. Default is NULL, which goes to the rownumber.}
 }
 \description{
 Adds \code{geom_text()} of the projected data.
@@ -38,8 +38,8 @@ animate_plotly(ggt)
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
-\code{\link{proto_basis1d}()},
 \code{\link{proto_basis}()},
+\code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_origin}()},

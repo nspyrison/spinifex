@@ -2,12 +2,20 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{proto_basis}
 \alias{proto_basis}
-\title{Tour proto for a 2D basis axes}
+\alias{proto_basis1d}
+\title{Tour proto for a 2D and 1D basis axes respectively}
 \usage{
 proto_basis(
   position = c("left", "center", "right", "bottomleft", "topright", "off"),
   manip_col = "blue",
   line_size = 1,
+  text_size = 5
+)
+
+proto_basis1d(
+  position = c("left", "center", "right", "bottomleft", "topright", "off"),
+  manip_col = "blue",
+  segment_size = 2,
   text_size = 5
 )
 }
@@ -25,11 +33,12 @@ circle.}
 \item{text_size}{Size of the text label of the variables.}
 }
 \description{
-Adds 2D basis axes to the animation, the direction and magnitude of
+Adds basis axes to the animation, the direction and magnitude of
 contributions of the variables to the projection space inscribed in a unit
-circle.
+circle for 2D or rectangle of unit width for 1D.
 }
 \examples{
+## 2D case:
 dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
 bas <- basis_pca(dat)
@@ -43,16 +52,33 @@ animate_plotly(ggt)
 }
 
 ggt2 <- ggtour(mt_path, dat) +
-  proto_basis(position = "right", manip_col = "red", 
-                 line_size = .8, text_size = 8)
+  proto_basis(position = "right", manip_col = "green",
+              line_size = .8, text_size = 8)
 \dontrun{
 animate_plotly(ggt2)
+}
+## 1D case:
+gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+
+ggt <- ggtour(gt_path1d, dat) +
+  proto_basis1d()
+\dontrun{
+animate_plotly(ggt)
 }
 }
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
-\code{\link{proto_basis1d}()},
+\code{\link{proto_default}()},
+\code{\link{proto_density}()},
+\code{\link{proto_hex}()},
+\code{\link{proto_origin}()},
+\code{\link{proto_point}()},
+\code{\link{proto_text}()}
+
+Other ggtour proto: 
+\code{\link{ggtour}()},
+\code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_origin}()},

@@ -26,11 +26,9 @@ Adds \code{geom_point()} of the projected data.
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
-ggt <- ggtour(mt_path, dat) +
+ggt <- ggtour(gt_path, dat) +
   proto_point()
 \dontrun{
 animate_plotly(ggt)
@@ -46,8 +44,8 @@ animate_plotly(ggt2)
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
-\code{\link{proto_basis1d}()},
 \code{\link{proto_basis}()},
+\code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_origin}()},

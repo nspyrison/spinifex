@@ -28,8 +28,7 @@ Adds \code{geom_density()} and \code{geom_rug} of the projected data. Density
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
-bas <- basis_pca(dat)
-gt_path <- save_history(dat, grand_tour(), max = 3, start = bas)
+gt_path <- save_history(dat, grand_tour(), max = 3)
 
 ggt <- ggtour(gt_path, dat) +
   proto_density(aes_args = list(color = clas, fill = clas)) + 
@@ -40,8 +39,8 @@ animate_plotly(ggt)
 \seealso{
 Other ggtour proto: 
 \code{\link{ggtour}()},
-\code{\link{proto_basis1d}()},
 \code{\link{proto_basis}()},
+\code{\link{proto_default}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_origin}()},
 \code{\link{proto_point}()},
