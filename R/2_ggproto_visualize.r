@@ -41,7 +41,8 @@ ggtour <- function(basis_array,
   
   ## Interpolate if needed and apply array2df
   if(is.null(manip_var)) ## If tourr::save_history(), interpolate it quietly
-    capture.output(basis_array <- tourr::interpolate(basis_array, angle = angle))
+    .mute <- capture.output(
+      basis_array <- tourr::interpolate(basis_array, angle = angle))
   df_ls <- array2df(basis_array, data)
   df_basis <- df_ls$basis_frames
   df_data  <- df_ls$data_frames
@@ -380,6 +381,8 @@ proto_basis <- function(position = c("left", "center", "right",
   
   ## Initialize
   .init4proto()
+  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
+  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   
   ## Setup and transform
   .angles <- seq(0L, 2L * pi, length = 360L)
@@ -541,6 +544,8 @@ proto_point <- function(aes_args = list(),
   
   ## Initialize, replicate arg lists.
   .init4proto()
+  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
+  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   .df_data$rownum <- rep_len(1L:.n, .nrow_df_data)
@@ -588,22 +593,24 @@ proto_origin <- function(){
   
   ## Initialize
   .init4proto()
+  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
+  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   
-  #### Setup zero mark, 5% on each side.
+  #### Setup origin, zero mark, 5% on each side.
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
   .min <- min(min(.map_to[, 1L]), min(.map_to[, 2L]))
   .max <- max(max(.map_to[, 1L]), max(.map_to[, 2L]))
   .tail <- .05 * (.max - .min)
   
-  .df_zero_mark <- data.frame(x     = .center[, 1L] - .tail,
-                              x_end = .center[, 1L] + .tail,
-                              y     = .center[, 2L] - .tail,
-                              y_end = .center[, 2L] + .tail)
+  .df_origin <- data.frame(x     = .center[, 1L] - .tail,
+                           x_end = .center[, 1L] + .tail,
+                           y     = .center[, 2L] - .tail,
+                           y_end = .center[, 2L] + .tail)
   
   ## Return
   return(
     ggplot2::geom_segment(
-      data = .df_zero_mark, color = "grey60", size = 1L, alpha = .7,
+      data = .df_origin, color = "grey60", size = 1L, alpha = .7,
       mapping = ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end)
     )
   )
@@ -631,7 +638,7 @@ proto_origin1d <- function(){
   ## Initialize
   .init4proto()
   
-  #### Setup zero mark, 5% on each side.
+  #### Setup origin, zero mark, 5% along y axis.
   .den <- density(.df_data[, 1L])
   .map_to1d <- data.frame(x = quantile(.df_data[, 1L], probs = c(.01, .99)),
                           y = 1.8 * range(.den[[2L]]))
@@ -641,13 +648,13 @@ proto_origin1d <- function(){
   .max <- max(.map_to[, 1L])
   .tail <- .05 * (.max - .min)
   
-  .df_zero_mark1d <- data.frame(y     = c(.min - .tail),
-                                y_end = c(.max + .tail))
+  .df_origin1d <- data.frame(y     = c(.min - .tail),
+                             y_end = c(.max + .tail))
   
   ## Return
   return(
     ggplot2::geom_segment(
-      data = .df_zero_mark,
+      data = .df_origin1d,
       color = "grey60", size = 1L, alpha = .7,
       mapping = ggplot2::aes(x = 0, y = y, xend = 0, yend = y_end)
     )
@@ -759,6 +766,8 @@ proto_text <- function(aes_args = list(),
   
   ## Initialize, replicate arg lists.
   .init4proto()
+  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
+  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   if(is.null(label)) label <- 1L:.n
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
@@ -815,6 +824,8 @@ proto_hex <- function(aes_args = list(),
   
   ## Initialize, replicate arg lists.
   .init4proto()
+  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
+  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   

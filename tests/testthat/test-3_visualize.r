@@ -11,13 +11,15 @@ mv <- manip_var_of(bas)
 ##
 
 ### play_tour_path -------
-tpath <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5L)
-suppressWarnings( ## suppress 8hr deprecation warning
-  ret_light <- play_tour_path(tour_path = tpath, data = dat_std)
+.mute <- capture.output(
+  tpath <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5L)
 )
 suppressWarnings( ## suppress 8hr deprecation warning
-  ret_heavy <- play_tour_path(tour_path = tpath, data = dat_std,
-                              axes = "bottomleft", angle = .08, fps = 8L,
+  ret_light <- play_tour_path(tour_path = tpath, data = dat_std, angle = 1)
+)
+suppressWarnings( ## suppress 8hr deprecation warning
+  ret_heavy <- play_tour_path(tour_path = tpath, data = dat_std, angle = 1,
+                              axes = "bottomleft", angle = 1, fps = 8L,
                               aes_args = list(color = clas, shape = clas),
                               identity_args = list(size = .8, alpha = .7),
                               ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
@@ -35,10 +37,10 @@ test_that("play_tour_path: gganimate class and length", {
 ### play_manual_tour -----
 
 suppressWarnings( ## suppress 8hr deprecation warning
-  ret_light <- play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
+  ret_light <- play_manual_tour(basis = bas, data = dat_std, manip_var = mv, angle = 1)
 )
 suppressWarnings( ## suppress 8hr deprecation warning
-  ret_heavy <- play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
+  ret_heavy <- play_manual_tour(basis = bas, data = dat_std, manip_var = mv, angle = 1,
                                 theta = .5 * pi, axes = "right", fps = 5L,
                                 aes_args = list(color = clas, shape = clas),
                                 identity_args = list(size = .8, alpha = .7),

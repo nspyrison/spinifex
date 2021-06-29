@@ -35,9 +35,9 @@ test_that("rotate_manip_space, class and dim", {
 
 ### manual_tour -----
 
-ret_light <- manual_tour(basis = bas, manip_var = mv)
+ret_light <- manual_tour(basis = bas, manip_var = mv, angle = 1)
 ret_heavy <- manual_tour(basis = bas, manip_var = mv,
-                         theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .8)
+                         theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = 1)
 
 
 test_that("manual_tour, class and dim", {
