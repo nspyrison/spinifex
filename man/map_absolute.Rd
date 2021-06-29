@@ -10,9 +10,9 @@ map_absolute(x, offset = c(0L, 0L), scale = c(1L, 1L))
 \item{x}{Numeric data object with 2 columns to scale and offset.
 Defaults to NULL, passing arguments to scale_axes for use internally.}
 
-\item{pan}{2 Numeric values to offset/pan the first 2 dimensions of \code{x}.}
+\item{offset}{2 Numeric values to offset/pan the first 2 dimensions of \code{x}.}
 
-\item{zoom}{2 Numeric values to scale/zoom the first 2 dimensions of \code{x}.}
+\item{scale}{2 Numeric values to scale/zoom to the first 2 dimensions of \code{x}.}
 }
 \value{
 Scaled and offset \code{x}.

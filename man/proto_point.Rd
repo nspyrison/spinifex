@@ -8,17 +8,14 @@
 proto_point(aes_args = list(), identity_args = list())
 }
 \arguments{
-\item{position}{The position, to place the basis axes relative to the centered
-data. Expects one of c("left", "center", "right", "bottomleft", "topright",
-"off"), defaults to "left".}
+\item{aes_args}{A list of aesthetic arguments to passed to
+\verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
+for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
+\code{aes_args = list(color = myCol, shape = myCol)}.}
 
-\item{manip_col}{The color to highlight the manipulation variable with. Not
-applied if the tour isn't a manual tour. Defaults to "blue".}
-
-\item{line_size}{Thickness of the lines used to make the axes and unit
-circle.}
-
-\item{text_size}{Size of the text label of the variables.}
+\item{identity_args}{A list of static, identity arguments passed into
+\code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
+Typically a single numeric for point size, alpha, or similar.}
 }
 \description{
 Adds \code{geom_point()} of the projected data.

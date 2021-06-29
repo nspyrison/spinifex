@@ -20,10 +20,14 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \item{identity_args}{A list of static, identity arguments passed into
 \code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
 Typically a single numeric for point size, alpha, or similar.}
+
+\item{density_position}{The \code{ggplot2} position of \code{geom_density()}. Either
+c("identity", "stack"), defaults to "identity". Warning: "stack" does not
+work with \code{animate_plotly()} at the moment.}
 }
 \description{
-Adds \code{geom_density()} and \code{geom_rug} of the projected data. Density
-\code{postion = "stack"} does not work with animate_plotly, GH issue is open.
+Adds \code{geom_density()} and \code{geom_rug()} of the projected data. Density
+\code{postion = "stack"} does not work with \code{animate_plotly()}, GH issue is open.
 }
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
@@ -31,7 +35,7 @@ clas <- tourr::flea$species
 gt_path <- save_history(dat, grand_tour(), max = 3)
 
 ggt <- ggtour(gt_path, dat) +
-  proto_density(aes_args = list(color = clas, fill = clas)) + 
+  proto_density(aes_args = list(color = clas, fill = clas)) +
   proto_basis1d()
 
 animate_plotly(ggt)

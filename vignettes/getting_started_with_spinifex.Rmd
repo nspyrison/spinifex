@@ -1,11 +1,11 @@
 ---
-title: "spinifex"
+title: "getting started with spinifex"
 author: "Nicholas Spyrison"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{spinifex}
+  %\VignetteIndexEntry{getting started with spinifex}
   %\VignetteEncoding{UTF-8}{inputenc}
   \usepackage[utf8]{inputenc}
   %\VignetteEngine{knitr::rmarkdown}
@@ -79,7 +79,8 @@ dat_std <- scale_sd(tourr::flea[,-7])
 bas_pca <- basis_pca(dat_std)
 clas <- tourr::flea[, 7]
 
-ggtour(basis_array = bas_pca, data = dat_std) + proto_default()
+ggtour(basis_array = bas_pca, data = dat_std) +
+  proto_default()
 ```
 
 We started from a random basis, that explains the orthogonal projection from $p$ to $d$ space. Use `view_frame()` to see the *reference axes*, a visual depiction of how the variables contributed to the xy directions of the 2D projection.
@@ -92,9 +93,14 @@ view_manip_space(basis = bas_pca, manip_var = 3)
 
 Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
 
-```{r, eval=F}
-play_manual_tour(data = dat_std, basis = bas_pca, manip_var = 3, axes = "bottomleft",
-                 aes_args = list(color = clas, shape = clas))
+```{r}
+mt_path <- manual_tour(basis = bas_pca, manip_var = 3)
+
+my_ggtour <- ggtour(basis_array = mt_path, data = dat_std) +
+  proto_default()
+```
+```{r, eval=FALSE}
+animate_plotly(ggtour = my_ggtour)
 ```
 
 *plotly animation not rendered in this vignette, but will display in viewer*
@@ -159,32 +165,32 @@ Radial tours are often employed after an interesting feature has been identified
 
 ```{r}
 dat_std <- scale_sd(tourr::flea[, 1:6])
-fpath <- tourr::save_history(dat_std, tourr::guided_tour(tourr::holes(), ))
+holes_path <- tourr::save_history(dat_std, tourr::guided_tour(tourr::holes(), ))
+
+ggt <- ggtour(holes_path, dat_std) + proto_default()
 ```
-```{r}
-play_tour_path(tour_path = fpath, data = dat_std, angle = .15,
-               aes_args = list(color = clas, shape = clas),
-               render_type = render_gganimate, fps = 8)
+```{r, eval=FALSE}
+animate_plotly(ggt)
 ```
 
 This shows the optimization path of the holes index. We'll grab the reference axes from the last frame and used that a starting orientation for a manual tour.
 
 ```{r}
 ## We added the basis_* functions, including basis_guided() to help:
-f_holes_bas <- basis_guided(dat_std, index_f = tourr::holes(), d = 2)
+holes_bas <- basis_guided(dat_std, index_f = tourr::holes(), d = 2)
 
-view_frame(f_holes_bas)
+ggtour(holes_bas, dat_std) + proto_default()
 ```
 
 We'll select `aede2` as the manip_var, as it is mostly orthogonal to four of the other variables and often has a larger contribution than `tars1`.
 
-```{r, eval=F}
+```{r}
 ## Alternatively, ask for the variable by rank of the magnitude in the basis:
-(mv <- manip_var_of(f_holes_bas, rank = 1))
-
-play_manual_tour(data = dat_std, basis = f_holes_bas,
-                 aes_args = list(color = clas, shape = clas),
-                 manip_var = mv)
+(mv <- manip_var_of(holes_bas, rank = 1))
+mt_path <- manual_tour(holes_bas, mv)
+```
+```{r, eval=FALSE}
+ggtour(mt_path, dat_std) + proto_default()
 ```
 
 We can see that `aede2` is important in distinguishing between the purple cluster and the green cluster. However, even when its contribution is zeros the contribution of `tars1` is enough to keep the cluster from overlapping.

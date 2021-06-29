@@ -10,7 +10,6 @@ animate_gganimate(
   rewind = FALSE,
   start_pause = 1,
   end_pause = 1,
-  knit_pdf_anim = FALSE,
   ...
 )
 }

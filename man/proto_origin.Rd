@@ -10,11 +10,6 @@ proto_origin()
 
 proto_origin1d()
 }
-\arguments{
-\item{position}{The position, to place the basis axes relative to the centered
-data. Expects one of c("left", "center", "right", "bottomleft", "topright",
-"off"), defaults to "left".}
-}
 \description{
 Adds a zero mark showing the location of the origin for the central data area.
 }

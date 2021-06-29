@@ -27,10 +27,13 @@ data. Expects one of c("left", "center", "right", "bottomleft", "topright",
 \item{manip_col}{The color to highlight the manipulation variable with. Not
 applied if the tour isn't a manual tour. Defaults to "blue".}
 
-\item{line_size}{Thickness of the lines used to make the axes and unit
-circle.}
+\item{line_size}{(2D bases only) the thickness of the lines used to make the
+axes and unit circle. Defaults to 1.}
 
 \item{text_size}{Size of the text label of the variables.}
+
+\item{segment_size}{(1D bases only) the width thickness of the rectangle bar
+showing variable magnitude on the axes. Defaults to 2.}
 }
 \description{
 Adds basis axes to the animation, the direction and magnitude of

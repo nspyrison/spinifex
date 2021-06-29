@@ -27,7 +27,8 @@ Imports:
     gganimate,
     plotly,
     shiny,
-    Rdimtools
+    Rdimtools,
+    transformr
 Suggests: 
     dplyr,
     GGally,

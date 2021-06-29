@@ -65,15 +65,18 @@ gghead +
 In the `ggproto` API we use this feature to create `proto_*()` functions, the counter-parts of `geom_*()` functions. These proto functions are used in composition with `ggtour()`, which replaces `ggplot()`, to create animated tours. In adopting this additive, composition approach we aim to maximize the flexibility for the end-users to customize tours while keeping the door open for extension of the development of further `proto` functions.
 
 ```{r, echo = FALSE}
-tibble::tribble(
-  ~object,  ~ggplot2,   ~`ggproto api`, ~`previous api`,
-  "head",   "ggplot()", "ggtour()",     "play_manual_tour()",
-  "body",   "geom_*()", "proto_*()",    "play_manual_tour()",
-  "render", "NA",       "animate_*()",  "play_manual_tour(render_*())") |>
+data.frame(
+  object = c("head", "body", "render"),
+  ggplot2 = c("ggplot()", "geom_*()", "NA"),
+  `ggproto api` = c("ggtour()", "proto_*()", "animate_*()"),
+  `previous api` = c("play_manual_tour()", "play_manual_tour()", "play_manual_tour(render_*())")
+) |>
   knitr::kable()
 ```
 
-# Why 'proto's instead of new 'geom's
+`play_manual_tour()` abstracted away complexity, but it was becoming too big, and consuming workflow which a function should venue too far into. This made it too bloated to allow for some flexibility, but hard to understand all of the arguments. By paring back to `proto_*` can keep details where they are more relevant without becoming overbearing in one monster function.
+
+# Why 'proto_\*' instead of new 'geom_\*'
 
 `{spinifex} proto_*` functions return a list of several `geom_*` functions, that were designed to facilitate animation across many projection bases. We abstract away of work and complexity that comes with creating and animating tours, but this comes at the price of flexibility. For instance, protos do not know how to deal with facets and hard-code the number and type of geoms which would otherwise become very burdensome to specify all the specifics of.
 
@@ -98,7 +101,8 @@ ggt <- ggtour(mt_path, dat, angle = .1) +
   proto_basis() +
   proto_point(aes_args = list(color = clas, shape = clas),
               identity_args = list(size = 1.5))
-
+```
+```{r, eval=FALSE}
 ## Animate the tour with an animate_* function.
 animate_plotly(ggt, fps = 5) ## As a plotly .html widget.
 #animate_gganimate(ggt, fps = 8, rewind = TRUE) ## As a gganimate .gif
@@ -115,7 +119,8 @@ animate_plotly(ggt, fps = 5) ## As a plotly .html widget.
 ggt <- ggtour(gt_path, dat, angle = .1) + ## Include geodesic interpolation angle between the selected bases.
   proto_basis(position = "topright") +
   proto_point(list(color = clas, shape = clas))
-
+```
+```{r, eval=FALSE}
 ## Animate
 animate_plotly(ggt)
 animate_gganimate(ggt)
@@ -133,7 +138,8 @@ ggt <- ggtour(guided_path, dat, angle = .1) + ## Include geodesic interpolation 
   proto_basis1d(position = "right") +
   proto_density(list(fill = clas), density_position = "stack")
 ## Note that proto_density(density_position = "stack") does not work with animate_plotly().
-
+```
+```{r, eval=FALSE}
 ## Animate
 animate_gganimate(ggt)
 ```
@@ -147,7 +153,8 @@ ggt <- ggt +
   theme_bw() +
   ggtitle("My Tour animation") +
   labs(x = "Projection Y1", y = "density")
-
+```
+```{r, eval=FALSE}
 animate_gganimate(ggt)
 ```
 
@@ -155,18 +162,13 @@ animate_gganimate(ggt)
 # Proto functions
 
 ```{r, echo = FALSE}
-tibble::tribble(
-  ~`proto functions`, ~`related geom_*`, ~detail,
-  "ggtour",           "ggplot",          "Also perfroms setup for the tour.",
-  "proto_point",      "geom_point",      "-",
-  "proto_text",       "geom_text",       "-",
-  "proto_hex", "geom_hex", "Heatmap hexegons, for high observation density",
-  "proto_origin /1d", "NA", "Line segments for the origin, the space where 0 values project to",
-  "proto_density", "geom- _density & _rug", "1D density with run hash marks underneath, `position = 'stack'` not working with {plotly}.",
-  "proto_basis /1d",    "geom- _segment & _text", "Direction and magnetude of variables to the projection displayed on a unit circle/rectangle.",
-  "proto_default /1d", "several", "Default protos for 2/1D tours",
-  "animate_plotly",    "NA", ".html widget, row numbers added as tooltip on hover. {plotly} doesn't presicly map all {ggplot2} settings; legends, point size and opacity may vary.",
-  "animate_gganimate", "NA", ".gif animation. {gganimate} consumes native ggplots, aestheics should be consistant."
+data.frame(
+  `proto functions` =
+    c("ggtour", "proto_point", "proto_text", "proto_hex", "proto_origin/1d", "proto_density", "proto_basis/1d", "proto_default/1d", "animate_plotly", "animate_gganimate"),
+  `related geom_*` =
+    c("ggplot", "geom_point", "geom_text", "geom_hex", "NA", "geom- _density & _rect", "geom- _segment & _text", "several protos", "NA", "NA"),
+  detail =
+    c("Also perfroms setup for the tour.", "-", "-", "Heatmap hexegons, for high observation density", "Line segments for the origin, the space where 0 values project to", "1D density with run hash marks underneath, `position = 'stack'` not working with {plotly}.", ".html widget, row numbers added as tooltip on hover. {plotly} doesn't presicly map all {ggplot2} settings; legends, point size and opacity may vary.", "Direction and magnetude of variables to the projection disp~", "Default protos for 2/1D tours", ".gif animation. {gganimate} consumes native ggplots, aestheics should be consistant.")
 ) |>
   knitr::kable()
 ```

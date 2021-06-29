@@ -8,7 +8,7 @@
 #'
 #' @param x Numeric matrix to test the orthonormality of.
 #' @param tol Max tolerance of floating point differences.
-#' Elecment-wise distance of t(x) %*% x from the identity matrix.
+#' Element-wise distance of t(x) %*% x from the identity matrix.
 #' @return Single logical, whether or not the matrix is orthonormal.
 #' @export
 #' @examples 
@@ -233,8 +233,8 @@ scale_axes <- function(...) {
 #' A manual variant of `map_relative()`. Can be used as the `axes` argument 
 #' to manually set the size and locations of the axes.
 #' 
-#' @param pan 2 Numeric values to offset/pan the first 2 dimensions of `x`.
-#' @param zoom 2 Numeric values to scale/zoom the first 2 dimensions of `x`.
+#' @param offset 2 Numeric values to offset/pan the first 2 dimensions of `x`.
+#' @param scale 2 Numeric values to scale/zoom to the first 2 dimensions of `x`.
 #' @param x Numeric data object with 2 columns to scale and offset.
 #' Defaults to NULL, passing arguments to scale_axes for use internally.
 #' @return Scaled and offset `x`.

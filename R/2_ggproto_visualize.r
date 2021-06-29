@@ -116,24 +116,22 @@ lapply_rep_len <- function(list,
 #' @family Internal utility
 #' @examples
 #' ## This function is not meant for external use.
-.init4proto <- function(){
+### .init4proto expression -----
+.init4proto <- expr({ ## expression, not function
   ## Assumption
   if(exists(".spinifex_df_basis") == FALSE) 
     stop("`.spinifex_df_basis` does not exsist, have you run `ggtour()` yet?")
   
   ## Initialization, littering hidden objects 1 level up, not in global.
-  .df_basis <<- .spinifex_df_basis ## Give alterable local copies of _basis and _data
-  .df_data  <<- .spinifex_df_data
-  .map_to   <<- .spinifex_map_to
-  .n_frames <<- length(unique(.df_basis$frame))
-  .nrow_df_data <<- nrow(.df_data)
-  .p <<- nrow(.df_basis) / .n_frames
-  .n <<- .nrow_df_data   / .n_frames
-  .manip_var <<- attr(.df_basis, "manip_var") ## NULL if not a manual tour
-  
-  ## Note: Cannot replicate ls args here; passing to wrong environment/scope?
-  return()
-}
+  .df_basis <- .spinifex_df_basis ## Give alterable local copies of _basis and _data
+  .df_data  <- .spinifex_df_data
+  .map_to   <- .spinifex_map_to
+  .n_frames <- length(unique(.df_basis$frame))
+  .nrow_df_data <- nrow(.df_data)
+  .p <- nrow(.df_basis) / .n_frames
+  .n <- .nrow_df_data   / .n_frames
+  .manip_var <- attr(.df_basis, "manip_var") ## NULL if not a manual tour
+})
 
 ### ANIMATE_* ------
 
@@ -144,7 +142,7 @@ lapply_rep_len <- function(list,
 #'
 #' @param ggtour The return of a `ggtour()`and added `proto_*()` functions.
 #' @param fps Scalar number of Frames Per Second, the speed the animation should 
-#' play at. 
+#' play at.
 #' @param rewind Whether or not the animation should play backwards,
 #' in reverse order once reaching the end. Defaults to FALSE.
 #' @param start_pause The duration in seconds to wait before starting the 
@@ -184,8 +182,6 @@ animate_gganimate <- function(
   rewind = FALSE,
   start_pause = 1,
   end_pause = 1,
-  knit_pdf_anim = FALSE,
-  ## Do gganimate::knit_print.gganim() instead of gganimate::animate? If so, ignore above named arguments.
   ... ## Passed to gganimate::animate or gganimate::knit_print.gganim
 ){
   ## Assumptions
@@ -217,13 +213,7 @@ animate_gganimate <- function(
 #'
 #' @param ggtour The return of a `ggtour()`and added `proto_*()` functions.
 #' @param fps Scalar number of Frames Per Second, the speed the animation should 
-#' play at. 
-#' @param rewind Whether or not the animation should play backwards,
-#' in reverse order once reaching the end. Defaults to FALSE.
-#' @param start_pause The duration in seconds to wait before starting the 
-#' animation. Defaults to 1 second.
-#' @param end_pause The duration in seconds to wait after ending the animation,
-#' before it restarts from the first frame. Defaults to 1 second.
+#' play at.
 #' @param ... other arguments to pass to `gganimate::animate()`.
 #' @export
 #' @family ggtour animator
@@ -343,8 +333,8 @@ animate_plotly <- function(ggtour,
 #' "off"), defaults to "left".
 #' @param manip_col The color to highlight the manipulation variable with. Not
 #' applied if the tour isn't a manual tour. Defaults to "blue".
-#' @param line_size Thickness of the lines used to make the axes and unit 
-#' circle.
+#' @param line_size (2D bases only) the thickness of the lines used to make the 
+#' axes and unit circle. Defaults to 1.
 #' @param text_size Size of the text label of the variables.
 #' @export
 #' @aliases proto_basis
@@ -380,7 +370,7 @@ proto_basis <- function(position = c("left", "center", "right",
   if(position == "off") return()
   
   ## Initialize
-  .init4proto()
+  eval(.init4proto)
   if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
   if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   
@@ -426,6 +416,8 @@ proto_basis <- function(position = c("left", "center", "right",
 
 
 #' @rdname proto_basis
+#' @param segment_size (1D bases only) the width thickness of the rectangle bar
+#' showing variable magnitude on the axes. Defaults to 2.
 #' @export
 #' @family ggtour proto
 #' @examples
@@ -448,10 +440,10 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
   if(position == "off") return()
   
   ## Initialize
-  .init4proto()
+  eval(.init4proto)
   
   ## Find the height of density to map_to
-  .den <- density(.df_data[, 1L])
+  .den <- stats::density(.df_data[, 1L])
   .map_to1d <- data.frame(x = quantile(.df_data[, 1L], probs = c(.01, .99)),
                         y = 1.8 * range(.den[[2L]]))
   
@@ -505,14 +497,13 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
 #'
 #' Adds `geom_point()` of the projected data.
 #'
-#' @param position The position, to place the basis axes relative to the centered 
-#' data. Expects one of c("left", "center", "right", "bottomleft", "topright", 
-#' "off"), defaults to "left".
-#' @param manip_col The color to highlight the manipulation variable with. Not
-#' applied if the tour isn't a manual tour. Defaults to "blue".
-#' @param line_size Thickness of the lines used to make the axes and unit 
-#' circle.
-#' @param text_size Size of the text label of the variables.
+#' @param aes_args A list of aesthetic arguments to passed to 
+#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
+#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
+#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
+#' Typically a single numeric for point size, alpha, or similar.
 #' @export
 #' @aliases proto_points
 #' @family ggtour proto
@@ -543,7 +534,7 @@ proto_point <- function(aes_args = list(),
   identity_args <- as.list(identity_args)
   
   ## Initialize, replicate arg lists.
-  .init4proto()
+  eval(.init4proto)
   if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
   if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
@@ -567,9 +558,6 @@ proto_point <- function(aes_args = list(),
 #'
 #' Adds a zero mark showing the location of the origin for the central data area.
 #'
-#' @param position The position, to place the basis axes relative to the centered 
-#' data. Expects one of c("left", "center", "right", "bottomleft", "topright", 
-#' "off"), defaults to "left".
 #' @export
 #' @aliases proto_origin2d
 #' @family ggtour proto
@@ -592,7 +580,7 @@ proto_origin <- function(){
   position <- "center" ## Assumes data is in the center.
   
   ## Initialize
-  .init4proto()
+  eval(.init4proto)
   if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
   if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   
@@ -636,11 +624,11 @@ proto_origin1d <- function(){
   position <- "center" ## Assumes data is in the center.
   
   ## Initialize
-  .init4proto()
+  eval(.init4proto)
   
   #### Setup origin, zero mark, 5% along y axis.
-  .den <- density(.df_data[, 1L])
-  .map_to1d <- data.frame(x = quantile(.df_data[, 1L], probs = c(.01, .99)),
+  .den <- stats::density(.df_data[, 1L])
+  .map_to1d <- data.frame(x = stats::quantile(.df_data[, 1L], probs = c(.01, .99)),
                           y = 1.8 * range(.den[[2L]]))
   
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to1d)
@@ -656,8 +644,8 @@ proto_origin1d <- function(){
 
 #' Tour proto for data, 1D density, with rug marks
 #'
-#' Adds `geom_density()` and `geom_rug` of the projected data. Density 
-#' `postion = "stack"` does not work with animate_plotly, GH issue is open. 
+#' Adds `geom_density()` and `geom_rug()` of the projected data. Density 
+#' `postion = "stack"` does not work with `animate_plotly()`, GH issue is open. 
 #' 
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
@@ -666,6 +654,9 @@ proto_origin1d <- function(){
 #' @param identity_args A list of static, identity arguments passed into 
 #' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
 #' Typically a single numeric for point size, alpha, or similar.
+#' @param density_position The `ggplot2` position of `geom_density()`. Either 
+#' c("identity", "stack"), defaults to "identity". Warning: "stack" does not 
+#' work with `animate_plotly()` at the moment.
 #' @export
 #' @aliases proto_density1d
 #' @family ggtour proto
@@ -675,7 +666,7 @@ proto_origin1d <- function(){
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
-#'   proto_density(aes_args = list(color = clas, fill = clas)) + 
+#'   proto_density(aes_args = list(color = clas, fill = clas)) +
 #'   proto_basis1d()
 #' 
 #' animate_plotly(ggt)
@@ -686,16 +677,16 @@ proto_density <- function(aes_args = list(),
   ## Assumptions
   position <- "center" ## Data assumed center.
   density_position <- match.arg(density_position)
-  ## "identity" is the only position working right now. 
+  ## "identity" is the only position working right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
   aes_args <- as.list(aes_args)
   identity_args <- as.list(identity_args)
   .nms <- names(aes_args)
-  if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms)) 
-    warn("aes_args: color used without fill in, did you mean to use 'fill' with density?")
+  if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
+    warning("aes_args: color used without fill in, did you mean to use 'fill' with density?")
   
   ## Initialize, replicate list args
-  .init4proto()
+  eval(.init4proto)
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
@@ -758,7 +749,7 @@ proto_text <- function(aes_args = list(),
   identity_args <- as.list(identity_args)
   
   ## Initialize, replicate arg lists.
-  .init4proto()
+  eval(.init4proto)
   if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
   if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   if(is.null(label)) label <- 1L:.n
@@ -816,7 +807,7 @@ proto_hex <- function(aes_args = list(),
   identity_args <- as.list(identity_args)
   
   ## Initialize, replicate arg lists.
-  .init4proto()
+  eval(.init4proto)
   if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
   if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)

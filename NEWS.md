@@ -3,7 +3,7 @@
 - Fixed a format issue with the `BeastCancer` dataset
 ##TODO:
 - New api for visuals, see `ggplot_tour()` and `ggproto_*` functions
-- New vignette demonstating this api
+- New vignette demonstrating this api
 - Added `basis_cheem()`
 
 

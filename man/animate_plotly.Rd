@@ -13,15 +13,6 @@ animate_plotly(ggtour, fps = 8, ...)
 play at.}
 
 \item{...}{other arguments to pass to \code{gganimate::animate()}.}
-
-\item{rewind}{Whether or not the animation should play backwards,
-in reverse order once reaching the end. Defaults to FALSE.}
-
-\item{start_pause}{The duration in seconds to wait before starting the
-animation. Defaults to 1 second.}
-
-\item{end_pause}{The duration in seconds to wait after ending the animation,
-before it restarts from the first frame. Defaults to 1 second.}
 }
 \description{
 Animates the static \code{ggtour()} and added \verb{proto_*()} functions as a \code{{plotly}}

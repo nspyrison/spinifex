@@ -23,6 +23,6 @@ replicates vectors of length data to length of data*frames for animation.
 }
 \seealso{
 Other Internal utility: 
-\code{\link{.init4proto}()}
+\code{\link{.init4proto}}
 }
 \concept{Internal utility}
