@@ -1,6 +1,6 @@
 Package: spinifex
 Title: Manual Tours, Manual Control of Dynamic Projections of Numeric Multivariate Data
-Version: 0.2.8.9000
+Version: 0.3.0
 Authors@R: c(
     person("Nicholas", "Spyrison", email = "spyrison@gmail.com", role = c("aut", "cre")),
     person("Dianne", "Cook", role = c("aut", "ths"))
@@ -28,10 +28,11 @@ Imports:
     plotly,
     shiny,
     Rdimtools,
-    transformr,
-    hexbin,
     magrittr
 Suggests: 
+    transformr,
+    hexbin,
+    htmlwidgets,
     dplyr,
     GGally,
     rmarkdown,

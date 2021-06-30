@@ -41,9 +41,11 @@ ggtour <- function(basis_array,
     basis_array <- array(as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   
   ## Interpolate if needed and apply array2df
-  if(is.null(manip_var)) ## If tourr::save_history(), interpolate it quietly
-    .mute <- utils::capture.output(
-      basis_array <- tourr::interpolate(basis_array, angle = angle))
+  if(is.null(manip_var)){ ## AND if not 1 basis
+    if(dim(basis_array)[3L] != 1L)
+      .mute <- utils::capture.output(
+        basis_array <- tourr::interpolate(basis_array, angle = angle))
+  }
   df_ls <- array2df(basis_array, data)
   df_basis <- df_ls$basis_frames
   df_data  <- df_ls$data_frames
@@ -66,7 +68,7 @@ ggtour <- function(basis_array,
   ## Return ggplot head with theme, 3x .spinifex_* obj assign globally above.
   ggplot2::ggplot() + spinifex::theme_spinifex()
 }
-# ## Print method
+# ## Print method ->> proto_default()
 # #### Was a good idea, but ggplot stops working when you change the first class, 
 # #### and doesn't effect if you append.
 # print.ggtour <- function(x, ...){
@@ -95,6 +97,7 @@ lapply_rep_len <- function(list,
                            nrow_frames,
                            nrow_data
 ){
+  list <- as.list(list)
   .nms <- names(list)
   .mute <- lapply(seq_along(list), function(i){
     .this_vector <- list[[i]]
@@ -297,7 +300,7 @@ animate_plotly <- function(ggtour,
 # #' clas <- tourr::flea$species
 # #' bas <- basis_pca(dat)
 # #' mv <- manip_var_of(bas)
-# #' mt <- manual_tour(bas, manip_var = mv, angle = .1)
+# #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 # #' 
 # #' ggt <- ggtour(mt_path, dat) +
 # #'   proto_basis() +
@@ -366,14 +369,12 @@ proto_basis <- function(position = c("left", "center", "right",
                         line_size = 1,
                         text_size = 5
 ){
-  ## Assumptions
-  position = match.arg(position) 
-  if(position == "off") return()
-  
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
   if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  ## Assumptions
+  position = match.arg(position)
+  if(position == "off") return()
   
   ## Setup and transform
   .angles <- seq(0L, 2L * pi, length = 360L)
@@ -436,12 +437,11 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
                           segment_size = 2,
                           text_size = 5
 ){
+  ## Initialize
+  eval(.init4proto)
   ## Assumptions
   position = match.arg(position)
   if(position == "off") return()
-  
-  ## Initialize
-  eval(.init4proto)
   
   ## Find the height of density to map_to
   .den <- stats::density(.df_data[, 1L])
@@ -519,7 +519,7 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
 #' animate_plotly(ggt)
 #' }
 #' 
-#' ggt2 <- ggtour(mt_path, dat) +
+#' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_point(list(color = clas, shape = clas),
 #'                list(size = 2, alpha = .7))
 #' \dontrun{
@@ -528,16 +528,14 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
 proto_point <- function(aes_args = list(),
                         identity_args = list()
 ){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  if(is.null(.df_data)) message("Data missing. Did you callDid you call ggtour() on a manual tour without passing data?");return()
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Data assumed center.
-  aes_args <- as.list(aes_args)
-  identity_args <- as.list(identity_args)
-  
-  ## Initialize, replicate arg lists.
-  eval(.init4proto)
-  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
-  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  ## Replicate arg lists.
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   .df_data$rownum <- rep_len(1L:.n, .nrow_df_data)
@@ -578,14 +576,13 @@ proto_point <- function(aes_args = list(),
 #' animate_plotly(ggt)
 #' }
 proto_origin <- function(fraction = .05){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(.df_data)) message("Data missing. Did you callggtour() on a manual tour without passing data?");return()
+  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Assumes data is in the center.
-  
-  ## Initialize
-  eval(.init4proto)
-  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
-  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   
   #### Setup origin, zero mark, 5% on each side.
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
@@ -622,12 +619,12 @@ proto_origin <- function(fraction = .05){
 #' animate_plotly(ggt)
 #' }
 proto_origin1d <- function(){
+  ## Initialize
+  eval(.init4proto)
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Assumes data is in the center.
-  
-  ## Initialize
-  eval(.init4proto)
+
   
   #### Setup origin, zero mark, 5% along y axis.
   .den <- stats::density(.df_data[, 1L])
@@ -677,21 +674,17 @@ proto_density <- function(aes_args = list(),
                           identity_args = list(),
                           density_position = c("identity", "stack")
 ){
+  ## Initialize
+  requireNamespace("transformr")
+  eval(.init4proto)
   ## Assumptions
   position <- "center" ## Data assumed center.
   density_position <- match.arg(density_position)
-  ## "identity" is the only position working right now.
+  ## "identity" is the only position working in plotly right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
-  aes_args <- as.list(aes_args)
-  identity_args <- as.list(identity_args)
   .nms <- names(aes_args)
   if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
     warning("aes_args: color used without fill in, did you mean to use 'fill' with density?")
-  
-  ## Initialize, replicate list args
-  eval(.init4proto)
-  aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
-  identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
@@ -736,7 +729,7 @@ proto_density <- function(aes_args = list(),
 #' mv <- manip_var_of(bas)
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
-#' ggt <- ggtour(mt_path, dat) +
+#' ggt <- ggtour(gt_path, dat) +
 #'   proto_text(list(color = clas))
 #' \dontrun{
 #' animate_plotly(ggt)
@@ -745,17 +738,15 @@ proto_text <- function(aes_args = list(),
                        identity_args = list(),
                        label = NULL
 ){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(.df_data)) message("Data missing. Did you callggtour() on a manual tour without passing data?");return()
+  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  if(is.null(label)) label <- 1L:.n
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Data assumed center.
-  aes_args <- as.list(aes_args)
-  identity_args <- as.list(identity_args)
-  
-  ## Initialize, replicate arg lists.
-  eval(.init4proto)
-  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
-  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
-  if(is.null(label)) label <- 1L:.n
+  ## Replicate arg lists
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
@@ -801,21 +792,22 @@ proto_text <- function(aes_args = list(),
 #'   proto_hex(bins = 20)
 #' 
 #' ## Hexagons don't show up in plotly animation.
+#' \dontrun{
 #' animate_gganimate(ggp)
+#' }
 proto_hex <- function(aes_args = list(),
                       identity_args = list(),
                       bins = 30
 ){
+  ## Initialize
+  requireNamespace("hexbin")
+  eval(.init4proto)
+  if(is.null(.df_data)) message("Data missing. Did you callggtour() on a manual tour without passing data?");return()
+  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Data assumed center.
-  aes_args <- as.list(aes_args)
-  identity_args <- as.list(identity_args)
-  
-  ## Initialize, replicate arg lists.
-  eval(.init4proto)
-  if(is.null(.df_data)) stop("Data missing. ggtour() on a manual tour without passing data?")
-  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  ## Replicate arg lists.
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   

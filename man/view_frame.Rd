@@ -31,12 +31,12 @@ on the xy plane of the reference frame. Defaults to 0, no rotation.}
 the z-direction of the axes. Defaults to 0, no rotation.}
 
 \item{basis_label}{Optional, character vector of \code{p} length, add name to the axes
-in the frame, defaults to 3 letter abbriviation of the orginal variable names.}
+in the frame, defaults to 3 letter abbreviation of the original variable names.}
 
 \item{rescale_data}{When TRUE scales the data to between 0 and 1.
 Defaults to FALSE.}
 
-\item{...}{Optionally pass additional arguments to the \code{render_} for
+\item{...}{Optionally pass additional arguments to the \code{proto_default} for
 projection point aesthetics;}
 }
 \value{
@@ -55,20 +55,26 @@ bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 
 ## Minimal example
+\dontrun{
 view_frame(basis = bas)
+}
 
 ## Typical example
+\dontrun{
 view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
+}
 
 ## Full example
 rtheta <- runif(1, 0, 2 * pi)
 rphi   <- runif(1, 0, 2 * pi)
+\dontrun{
 view_frame(basis = bas, data = dat_std, manip_var = mv,
            theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
            aes_args = list(color = clas, shape = clas),
            identity_args = list(size = 1.5, alpha = .7),
            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
 }
+}
 \seealso{
-\code{\link{render_}} For arguments to pass into \code{...}.
+\code{\link{proto_default}} For arguments to pass into \code{...}.
 }

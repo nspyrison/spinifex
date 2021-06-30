@@ -31,7 +31,7 @@ ggt <- ggtour(gt_path, dat) +
 animate_plotly(ggt)
 }
 
-ggt2 <- ggtour(mt_path, dat) +
+ggt2 <- ggtour(gt_path, dat) +
   proto_point(list(color = clas, shape = clas),
                list(size = 2, alpha = .7))
 \dontrun{

@@ -29,7 +29,7 @@ bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
-ggt <- ggtour(mt_path, dat) +
+ggt <- ggtour(gt_path, dat) +
   proto_text(list(color = clas))
 \dontrun{
 animate_plotly(ggt)

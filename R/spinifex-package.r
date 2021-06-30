@@ -24,10 +24,8 @@
   packageStartupMessage("--------------------------------------------------------")
 }
 
-## Reexport pipe
+## Import pipe
 #' @importFrom magrittr %>%
-#' @export
-magrittr::`%>%`
 
 ## Manual tour globals:
 if(getRversion() >= "2.15.1"){
