@@ -6,9 +6,13 @@
 \alias{proto_origin1d}
 \title{Tour proto for data origin zero mark}
 \usage{
-proto_origin()
+proto_origin(fraction = 0.05)
 
 proto_origin1d()
+}
+\arguments{
+\item{fraction}{(2D case only) how long the origin mark should extend ]
+relative to the observations. Defaults to .05, 5\% of the data space.}
 }
 \description{
 Adds a zero mark showing the location of the origin for the central data area.
@@ -22,7 +26,7 @@ gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat) +
   proto_origin() +
-  proto_points()
+  proto_point()
 \dontrun{
 animate_plotly(ggt)
 }

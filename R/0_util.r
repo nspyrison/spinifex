@@ -490,12 +490,11 @@ basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
 #' basis_guided(data = dat_std, index_f = tourr::cmass(),
 #'              alpha = .4, cooling = .9, max.tries = 30)
 basis_guided <- function(data, index_f = tourr::holes(), d = 2, ...){
-  invisible(utils::capture.output(
+  .mute <- utils::capture.output(
     hist <- tourr::save_history(
       data,
-      tourr::guided_tour(index_f = index_f, d = d, ...)
-    )
-  ))
+      tourr::guided_tour(index_f = index_f, d = d, ...))
+  )
   ret <- matrix(hist[,, length(hist)], ncol = d)
   rownames(ret) <- colnames(data)
   return(ret)

@@ -30,9 +30,9 @@ mt <- manual_tour(bas, mv, angle = 1L)
 #' })
 
 ## ggtourr -----
-gg_mt   <- ggtour(mt  , dat      ) + proto_default()
-gg_gt   <- ggtour(gt  , angle = 1) + proto_default()
-gg_gt1d <- ggtour(gt1d, angle = 1) + proto_default1d()
+gg_mt   <- ggtour(mt  , dat       ) + proto_default()
+gg_gt   <- ggtour(gt  , angle = 1L) + proto_default()
+gg_gt1d <- ggtour(gt1d, angle = 1L) + proto_default1d()
 test_that("ggtourr", {
   expect_error(ggtour(mt) + proto_default())
   expect_is(gg_mt  , c("gg", "ggplot"))
@@ -57,9 +57,9 @@ test_that("animate_gganimate", {
   expect_true(class(ag_mt  ) %in% c("gif_image", "character"))
   expect_true(class(ag_gt  ) %in% c("gif_image", "character"))
   expect_true(class(ag_gt1d) %in% c("gif_image", "character"))
-  expect_equal(length(ag_mt  ), 1)
-  expect_equal(length(ag_gt  ), 1)
-  expect_equal(length(ag_gt1d), 1)
+  expect_true(length(ag_mt)   %in% c(1L, 99L, 100L))
+  expect_true(length(ag_gt)   %in% c(1L, 99L, 100L))
+  expect_true(length(ag_gt1d) %in% c(1L, 99L, 100L))
 })
 
 ## animate_plotly -----
@@ -76,9 +76,9 @@ test_that("animate_plotly", {
 })
 
 ## proto_basis -----
-pb_mt   <- ggtour(mt  , dat      ) + proto_basis()
-pb_gt   <- ggtour(gt  , angle = 1) + proto_basis()
-pb_gt1d <- ggtour(gt1d, angle = 1) + proto_basis1d()
+pb_mt   <- ggtour(mt  , dat       ) + proto_basis()
+pb_gt   <- ggtour(gt  , angle = 1L) + proto_basis()
+pb_gt1d <- ggtour(gt1d, angle = 1L) + proto_basis1d()
 test_that("proto_basis", {
   expect_is(pb_mt  , c("gg", "ggplot"))
   expect_is(pb_gt  , c("gg", "ggplot"))
@@ -89,11 +89,11 @@ test_that("proto_basis", {
 })
 
 ## proto_point  & density-----
-pp_mt   <- ggtour(mt  , dat      ) + proto_point()
-pp_gt   <- ggtour(gt,   angle = 1) + proto_point()
-pd_gt1d <- ggtour(gt1d, angle = 1) + proto_density()
+pp_mt   <- ggtour(mt  , dat       ) + proto_point()
+pp_gt   <- ggtour(gt,   angle = 1L) + proto_point()
+pd_gt1d <- ggtour(gt1d, angle = 1L) + proto_density()
 test_that("proto_point", {
-  expect_error(ggtour(gt1d, angle=1) + proto_point())
+  expect_error(ggtour(gt1d, angle = 1L) + proto_point())
   expect_is(pp_mt  , c("gg", "ggplot"))
   expect_is(pp_gt  , c("gg", "ggplot"))
   expect_is(pd_gt1d, c("gg", "ggplot"))
@@ -104,9 +104,9 @@ test_that("proto_point", {
 
 
 ## proto_origin -----
-po_mt   <- ggtour(mt  , dat      ) + proto_origin()
-po_gt   <- ggtour(gt,   angle = 1) + proto_origin()
-po_gt1d <- ggtour(gt1d, angle = 1) + proto_origin1d()
+po_mt   <- ggtour(mt  , dat       ) + proto_origin()
+po_gt   <- ggtour(gt,   angle = 1L) + proto_origin()
+po_gt1d <- ggtour(gt1d, angle = 1L) + proto_origin1d()
 test_that("proto_basis", {
   expect_error(ggtour(gt1d, angle=1) + proto_origin())
   expect_is(po_mt  , c("gg", "ggplot"))
@@ -118,10 +118,10 @@ test_that("proto_basis", {
 })
 
 ## proto_text -----
-pt_mt <- ggtour(mt           ) + proto_text()
-pt_gt <- ggtour(gt, angle = 1) + proto_text()
+pt_mt <- ggtour(mt            ) + proto_text()
+pt_gt <- ggtour(gt, angle = 1L) + proto_text()
 test_that("proto_basis", {
-  expect_error(ggtour(gt1d, angle = 1) + proto_text())
+  expect_error(ggtour(gt1d, angle = 1L) + proto_text())
   expect_is(pt_mt, c("gg", "ggplot"))
   expect_is(pt_gt, c("gg", "ggplot"))
   expect_equal(length(pt_mt), 9L)
@@ -140,11 +140,11 @@ test_that("proto_basis", {
 })
 
 ## proto_default -----
-pd_mt   <- ggtour(mt  , dat      )+ proto_default()
-pd_gt   <- ggtour(gt  , angle = 1) + proto_default()
-pd_gt1d <- ggtour(gt1d, angle = 1) + proto_default1d()
+pd_mt   <- ggtour(mt  , dat       )+ proto_default()
+pd_gt   <- ggtour(gt  , angle = 1L) + proto_default()
+pd_gt1d <- ggtour(gt1d, angle = 1L) + proto_default1d()
 test_that("proto_basis", {
-  expect_error(ggtour(gt1d, angle = 1) + proto_default())
+  expect_error(ggtour(gt1d, angle = 1L) + proto_default())
   expect_is(pt_mt  , c("gg", "ggplot"))
   expect_is(pt_gt  , c("gg", "ggplot"))
   expect_is(pd_gt1d, c("gg", "ggplot"))

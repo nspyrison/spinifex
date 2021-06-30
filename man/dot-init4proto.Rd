@@ -5,17 +5,17 @@
 \alias{.init4proto}
 \title{Initialize common obj from .global \code{ggtour()} objects & test their existence}
 \format{
-An object of class \code{{} of length 10.
+An object of class \code{expression} of length 1.
 }
 \usage{
 .init4proto
 }
 \description{
-Internal function. Creates local .objects to be commonly consumed by spinifex
-proto_* functions
+Internal expression. Creates local .objects to be commonly consumed by
+spinifex proto_* functions.
 }
 \examples{
-## This function is not meant for external use.
+## This expression. is not meant for external use.
 }
 \seealso{
 Other Internal utility: 

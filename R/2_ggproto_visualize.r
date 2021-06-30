@@ -16,6 +16,7 @@
 #' @family ggtour proto
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
+#' clas <- tourr::flea$species
 #' bas <- basis_pca(dat)
 #' mv <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
@@ -24,8 +25,8 @@
 #' 
 #' ggt <- ggtour(mt_path, dat, angle = .1) +
 #'   proto_basis() +
-#'   proto_points(list(color = clas, shape = clas),
-#'                     list(size = 1.5))
+#'   proto_point(list(color = clas, shape = clas),
+#'               list(size = 1.5))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -41,7 +42,7 @@ ggtour <- function(basis_array,
   
   ## Interpolate if needed and apply array2df
   if(is.null(manip_var)) ## If tourr::save_history(), interpolate it quietly
-    .mute <- capture.output(
+    .mute <- utils::capture.output(
       basis_array <- tourr::interpolate(basis_array, angle = angle))
   df_ls <- array2df(basis_array, data)
   df_basis <- df_ls$basis_frames
@@ -58,9 +59,9 @@ ggtour <- function(basis_array,
   } ## Note: to be basis dim agnostic need to calculate density height in basis_1d for example.
   
   ## Assign hidden prepared dataframes
-  assign(x = ".spinifex_df_basis", value = df_basis, envir = globalenv())
-  assign(x = ".spinifex_df_data",  value = df_data,  envir = globalenv())
-  assign(x = ".spinifex_map_to",   value = map_to,   envir = globalenv())
+  assign(x = ".spinifex_df_basis", value = df_basis)
+  assign(x = ".spinifex_df_data",  value = df_data )
+  assign(x = ".spinifex_map_to",   value = map_to  )
   
   ## Return ggplot head with theme, 3x .spinifex_* obj assign globally above.
   ggplot2::ggplot() + spinifex::theme_spinifex()
@@ -72,8 +73,8 @@ ggtour <- function(basis_array,
 #   class(x) <- c("gg", "ggplot")
 #   x +
 #     proto_basis() +
-#     proto_background(gridline_probs = FALSE) +
-#     proto_points()
+#     proto_origin(gridline_probs = FALSE) +
+#     proto_point()
 # }
 
 
@@ -109,15 +110,15 @@ lapply_rep_len <- function(list,
 
 #' Initialize common obj from .global `ggtour()` objects & test their existence
 #' 
-#' Internal function. Creates local .objects to be commonly consumed by spinifex
-#' proto_* functions
+#' Internal expression. Creates local .objects to be commonly consumed by 
+#' spinifex proto_* functions.
 #'
 #' @export
 #' @family Internal utility
 #' @examples
-#' ## This function is not meant for external use.
+#' ## This expression. is not meant for external use.
 ### .init4proto expression -----
-.init4proto <- expr({ ## expression, not function
+.init4proto <- expression({ ## expression, not function
   ## Assumption
   if(exists(".spinifex_df_basis") == FALSE) 
     stop("`.spinifex_df_basis` does not exsist, have you run `ggtour()` yet?")
@@ -161,9 +162,9 @@ lapply_rep_len <- function(list,
 #' 
 #' ggt <- ggtour(mt_path, dat) +
 #'   proto_basis() +
-#'   proto_background() +
-#'   proto_points(aes_args = list(color = clas, shape = clas),
-#'                identity_args = list(size = 1.5, alpha = .7)) +
+#'   proto_origin() +
+#'   proto_point(aes_args = list(color = clas, shape = clas),
+#'               identity_args = list(size = 1.5, alpha = .7))
 #' 
 #' \dontrun{
 #' animate_gganimate(ggtour)
@@ -225,10 +226,10 @@ animate_gganimate <- function(
 #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_background() +
+#'   proto_origin() +
 #'   proto_basis() +
-#'   proto_points(aes_args = list(color = clas, shape = clas),
-#'                identity_args = list(size = 1.5, alpha = .7))
+#'   proto_point(aes_args = list(color = clas, shape = clas),
+#'               identity_args = list(size = 1.5, alpha = .7))
 #' 
 #' \dontrun{
 #' animate_plotly(ggtour)
@@ -300,9 +301,9 @@ animate_plotly <- function(ggtour,
 # #' 
 # #' ggt <- ggtour(mt_path, dat) +
 # #'   proto_basis() +
-# #'   proto_background() +
-# #'   proto_points(aes_args = list(color = clas, shape = clas),
-# #'                     identity_args = list(size = 1.5, alpha = .7))
+# #'   proto_origin() +
+# #'   proto_point(aes_args = list(color = clas, shape = clas),
+# #'               identity_args = list(size = 1.5, alpha = .7))
 # #' 
 # #' \dontrun{
 # #' animate_gganimate_knit2pdf(ggtour)
@@ -444,7 +445,7 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
   
   ## Find the height of density to map_to
   .den <- stats::density(.df_data[, 1L])
-  .map_to1d <- data.frame(x = quantile(.df_data[, 1L], probs = c(.01, .99)),
+  .map_to1d <- data.frame(x = stats::quantile(.df_data[, 1L], probs = c(.01, .99)),
                         y = 1.8 * range(.den[[2L]]))
   
   ## Aesthetics for the axes segments
@@ -558,6 +559,8 @@ proto_point <- function(aes_args = list(),
 #'
 #' Adds a zero mark showing the location of the origin for the central data area.
 #'
+#' @param fraction (2D case only) how long the origin mark should extend ]
+#' relative to the observations. Defaults to .05, 5% of the data space.
 #' @export
 #' @aliases proto_origin2d
 #' @family ggtour proto
@@ -570,11 +573,11 @@ proto_point <- function(aes_args = list(),
 #' 
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_origin() +
-#'   proto_points()
+#'   proto_point()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_origin <- function(){
+proto_origin <- function(fraction = .05){
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Assumes data is in the center.
@@ -588,7 +591,7 @@ proto_origin <- function(){
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
   .min <- min(min(.map_to[, 1L]), min(.map_to[, 2L]))
   .max <- max(max(.map_to[, 1L]), max(.map_to[, 2L]))
-  .tail <- .05 * (.max - .min)
+  .tail <- fraction / 2L  * (.max - .min)
   
   .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
                            x_end = c(.center[, 1L] + .tail, .center[, 1L]),

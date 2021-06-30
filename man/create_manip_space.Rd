@@ -4,7 +4,7 @@
 \alias{create_manip_space}
 \title{Create a manipulation space to rotate the manip variable in.}
 \usage{
-create_manip_space(basis, manip_var = manip_var_of(bas))
+create_manip_space(basis, manip_var = manip_var_of(basis))
 }
 \arguments{
 \item{basis}{A (p, d) orthonormal numeric matrix,

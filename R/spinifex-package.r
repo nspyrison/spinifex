@@ -26,21 +26,46 @@
 #' @docType package
 "_PACKAGE"
 
-# Manual tour globals:
-globalVariables(c("phi_min",
-                  "phi_max",
-                  "manip_col",
-                  "n_frames",
-                  "theta",
-                  "angle")
-)
+.onAttach <- function(...){
+  ## Print on Screen
+  packageStartupMessage("--------------------------------------------------------")
+  packageStartupMessage("spinifex --- version ", packageVersion("spinifex"))
+  packageStartupMessage("Please share bugs, suggestions, and feature requests at:")
+  packageStartupMessage("https://github.com/nspyrison/spinifex/issues/")
+  packageStartupMessage("--------------------------------------------------------")
+}
 
-# ggplot aes globals:
-globalVariables(c("x",
-                  "y",
-                  "z",
-                  "xend",
-                  "yend",
-                  "label",
-                  "frame")
-)
+## Manual tour globals:
+if(getRversion() >= "2.15.1"){
+  utils::globalVariables(c("phi_min",
+                           "phi_max",
+                           "manip_col",
+                           "n_frames",
+                           "theta",
+                           "angle"))
+  ## ggproto globals:
+  utils::globalVariables(c(".spinifex_df_basis",
+                           ".spinifex_df_data",
+                           ".spinifex_map_to",
+                           ".df_data",
+                           ".df_basis",
+                           ".map_to",
+                           ".n_frames",
+                           ".nrow_df_data",
+                           ".n",
+                           ".p",
+                           ".manip_var"))
+  
+  ## ggplot aes globals:
+  
+  utils::globalVariables(c("x",
+                           "y",
+                           "z",
+                           "xend",
+                           "yend",
+                           "x_end",
+                           "y_end",
+                           "label",
+                           "frame",   ## Animation frame
+                           "rownum")) ## plotly tooltip
+}

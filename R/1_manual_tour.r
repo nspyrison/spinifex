@@ -24,7 +24,7 @@
 #' mv <- manip_var_of(bas)
 #' 
 #' create_manip_space(basis = bas, manip_var = mv)
-create_manip_space <- function(basis, manip_var = manip_var_of(bas)){
+create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
   ## Assumptions
   basis <- as.matrix(basis)
   if(spinifex::is_orthonormal(basis) == FALSE){

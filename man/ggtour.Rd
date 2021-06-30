@@ -22,6 +22,7 @@ stored as an attribute of the the \code{basis_array}.}
 }
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
+clas <- tourr::flea$species
 bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
@@ -30,8 +31,8 @@ ggtour(mt_path, dat) ## Returns headless ggplot(), but required for other spinif
 
 ggt <- ggtour(mt_path, dat, angle = .1) +
   proto_basis() +
-  proto_points(list(color = clas, shape = clas),
-                    list(size = 1.5))
+  proto_point(list(color = clas, shape = clas),
+              list(size = 1.5))
 \dontrun{
 animate_plotly(ggt)
 }
