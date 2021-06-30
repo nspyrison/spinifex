@@ -48,7 +48,9 @@ ret_manual <- array2df(array = array_manual, data = dat_std,
 
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
-array_save_hist <- tourr::save_history(data = dat_std, max_bases = 10)
+.mute <- capture.output(
+  array_save_hist <- tourr::save_history(data = dat_std, max_bases = 10)
+)
 class(array_save_hist) <- "array"
 ret_save_hist <- array2df(array = array_save_hist, data = dat_std,
                           basis_label = paste0("MyLabs", 1:nrow(bas)),

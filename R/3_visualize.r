@@ -217,8 +217,7 @@ play_manual_tour <- function(basis = NULL,
 #' view_frame(basis = bas, data = dat_std, manip_var = mv,
 #'            theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
 #'            aes_args = list(color = clas, shape = clas),
-#'            identity_args = list(size = 1.5, alpha = .7),
-#'            ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+#'            identity_args = list(size = 1.5, alpha = .7))
 #' }
 view_frame <- function(basis = NULL,
                        data = NULL,
@@ -237,27 +236,39 @@ view_frame <- function(basis = NULL,
     message("NULL basis passed. Set to PCA basis.")
   }
   
-  ## Return
-  ggtour(basis, data) + proto_default(...)
+  ## Initialize
+  p <- nrow(basis)
+  if(is.null(manip_var) == FALSE & (theta != 0L | phi != 0L)){
+    m_sp <- create_manip_space(basis, manip_var)
+    basis <- rotate_manip_space(manip_space = m_sp, theta, phi)[, 1L:2L]
+  }
+  
+  ## The work
+  tour_array <- array(basis, dim = c(dim(basis), 1L))
+  df_frames <- array2df(array = tour_array, data = data, basis_label = basis_label)
+  attr(df_frames$data_frames, "manip_var") <- manip_var
+  
+  ## Render
+  return(render_(frames = df_frames, ...))
 }
 
 
 #### Treat past alternative versions as view_frame, will work with fully qualified code.
 #' @rdname spinifex-deprecated
-#' @section \code{view_basis}:
+#' @section \code{ggtour}:
 #' For \code{view_basis}, use \code{\link{view_frame}}.
 #' @export
 view_basis <- function(...) {
-  .Deprecated("view_frame")
+  .Deprecated("ggtour")
   view_frame(...)
 }
 
 #' @rdname spinifex-deprecated
 #' @section \code{oblique_basis}:
-#' For \code{oblique_basis}, use \code{\link{view_frame}}.
+#' For \code{oblique_basis}, please use the new api with \code{\link{ggtour}}.
 #' @export
 oblique_basis <- function(...) {
-  .Deprecated("view_frame")
+  .Deprecated("ggtour")
   view_frame(...)
 }
 

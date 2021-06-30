@@ -104,7 +104,7 @@ test_that("proto_point", {
 
 
 ## proto_origin -----
-po_mt   <- ggtour(mt  , dat       ) + proto_origin()
+po_mt   <- ggtour(mt, dat         ) + proto_origin()
 po_gt   <- ggtour(gt,   angle = 1L) + proto_origin()
 po_gt1d <- ggtour(gt1d, angle = 1L) + proto_origin1d()
 test_that("proto_basis", {
@@ -118,7 +118,7 @@ test_that("proto_basis", {
 })
 
 ## proto_text -----
-pt_mt <- ggtour(mt            ) + proto_text()
+pt_mt <- ggtour(mt, dat       ) + proto_text()
 pt_gt <- ggtour(gt, angle = 1L) + proto_text()
 test_that("proto_basis", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_text())

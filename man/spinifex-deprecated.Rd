@@ -33,14 +33,14 @@ For \code{scale_axes}, use \code{\link{map_relative}}.
 For \code{pan_zoom}, use \code{\link{map_absolute}}.
 }
 
-\section{\code{view_basis}}{
+\section{\code{ggtour}}{
 
 For \code{view_basis}, use \code{\link{view_frame}}.
 }
 
 \section{\code{oblique_basis}}{
 
-For \code{oblique_basis}, use \code{\link{view_frame}}.
+For \code{oblique_basis}, please use the new api with \code{\link{ggtour}}.
 }
 
 \keyword{internal}

@@ -71,8 +71,7 @@ rphi   <- runif(1, 0, 2 * pi)
 view_frame(basis = bas, data = dat_std, manip_var = mv,
            theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
            aes_args = list(color = clas, shape = clas),
-           identity_args = list(size = 1.5, alpha = .7),
-           ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+           identity_args = list(size = 1.5, alpha = .7))
 }
 }
 \seealso{

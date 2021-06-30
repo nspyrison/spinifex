@@ -40,6 +40,7 @@ Proto objects (or lists of them) can be assigned to a variable without `ggplot()
 
 ```{r}
 library("ggplot2")
+library("magrittr")
 
 ## A ggproto:
 gp <- geom_point()
@@ -65,13 +66,13 @@ gghead +
 In the `ggproto` API we use this feature to create `proto_*()` functions, the counter-parts of `geom_*()` functions. These proto functions are used in composition with `ggtour()`, which replaces `ggplot()`, to create animated tours. In adopting this additive, composition approach we aim to maximize the flexibility for the end-users to customize tours while keeping the door open for extension of the development of further `proto` functions.
 
 ```{r, echo = FALSE}
-tbl <- data.frame(
+data.frame(
   object = c("head", "body", "render"),
   ggplot2 = c("ggplot()", "geom_*()", "NA"),
   `ggproto api` = c("ggtour()", "proto_*()", "animate_*()"),
   `previous api` = c("play_manual_tour()", "play_manual_tour()", "play_manual_tour(render_*())")
-)
-  knitr::kable(tbl)
+) %>%
+  knitr::kable()
 ```
 
 `play_manual_tour()` abstracted away complexity, but it was becoming too big, and consuming workflow which a function should venue too far into. This made it too bloated to allow for some flexibility, but hard to understand all of the arguments. By paring back to `proto_*` can keep details where they are more relevant without becoming overbearing in one monster function.

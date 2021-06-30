@@ -371,7 +371,7 @@ proto_basis <- function(position = c("left", "center", "right",
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  if(is.null(.df_basis$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   ## Assumptions
   position = match.arg(position)
   if(position == "off") return()
@@ -531,9 +531,8 @@ proto_point <- function(aes_args = list(),
   ## Initialize
   eval(.init4proto)
   if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
-  if(is.null(.df_data)) message("Data missing. Did you callDid you call ggtour() on a manual tour without passing data?");return()
+  if(is.null(.df_data) == TRUE) return()
   ## Assumptions
-  if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Data assumed center.
   ## Replicate arg lists.
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
@@ -578,10 +577,9 @@ proto_point <- function(aes_args = list(),
 proto_origin <- function(fraction = .05){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data)) message("Data missing. Did you callggtour() on a manual tour without passing data?");return()
-  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  if(is.null(.df_basis$y)) stop("Basis y not found. Did you apply to a 1D tour?")
+  if(is.null(.df_data) == TRUE) return()
   ## Assumptions
-  if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Assumes data is in the center.
   
   #### Setup origin, zero mark, 5% on each side.
@@ -685,6 +683,9 @@ proto_density <- function(aes_args = list(),
   .nms <- names(aes_args)
   if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
     warning("aes_args: color used without fill in, did you mean to use 'fill' with density?")
+  ## Replicate arg lists
+  aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
+  identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
@@ -740,8 +741,9 @@ proto_text <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data)) message("Data missing. Did you callggtour() on a manual tour without passing data?");return()
   if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  if(is.null(.df_data) == TRUE) return()
+  ## Assumptions
   if(is.null(label)) label <- 1L:.n
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()

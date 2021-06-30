@@ -78,20 +78,16 @@ render_ <- function(frames,
   
   ## If data exists; fix arg length and plot MUST COME BEFORE AXES
   data_frames <- frames$data_frames ## May be null.
-  .map_to <- data.frame(
-    c(min(data_frames[, 1L]), max(data_frames[, 1L])),
-    c(min(data_frames[, 2L]), max(data_frames[, 2L]))
-  )
   
   ## Axes setup
   angle <- seq(0L, 2L * pi, length = 360L)
   circ  <- data.frame(x = cos(angle), y = sin(angle))
   ## Scale basis axes/circle
   if(axes != "off"){
-    center <- map_relative(data.frame(x = 0L, y = 0L), axes, to = .map_to)
-    circ <- map_relative(circ, axes, to = .map_to)
+    center <- map_relative(data.frame(x = 0L, y = 0L), axes, to = data_frames)
+    circ <- map_relative(circ, axes, to = data_frames)
     ## Rejoin frame number to the scaled bases frames
-    basis_frames <- map_relative(basis_frames, axes, to = .map_to)
+    basis_frames <- map_relative(basis_frames, axes, to = data_frames)
   }
   ## Manip var axes aesthetics
   axes_col <- "grey50"
