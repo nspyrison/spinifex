@@ -48,7 +48,7 @@ class(gp)
 ## A list of ggplot elements, a 'head-less' ggplot call
 gg_ls <- list(
   gp,
-  geom_smooth(),
+  geom_smooth(method = "loess", formula = y ~ x),
   ggtitle("proto_* functions return lists of geoms_* functions.", "These lists can be stored, extended, and added to ggplot(). \n We use this to include the animation of ggplots."),
   facet_grid(cols = vars(Tree))
 )
@@ -65,13 +65,13 @@ gghead +
 In the `ggproto` API we use this feature to create `proto_*()` functions, the counter-parts of `geom_*()` functions. These proto functions are used in composition with `ggtour()`, which replaces `ggplot()`, to create animated tours. In adopting this additive, composition approach we aim to maximize the flexibility for the end-users to customize tours while keeping the door open for extension of the development of further `proto` functions.
 
 ```{r, echo = FALSE}
-data.frame(
+tbl <- data.frame(
   object = c("head", "body", "render"),
   ggplot2 = c("ggplot()", "geom_*()", "NA"),
   `ggproto api` = c("ggtour()", "proto_*()", "animate_*()"),
   `previous api` = c("play_manual_tour()", "play_manual_tour()", "play_manual_tour(render_*())")
-) |>
-  knitr::kable()
+)
+  knitr::kable(tbl)
 ```
 
 `play_manual_tour()` abstracted away complexity, but it was becoming too big, and consuming workflow which a function should venue too far into. This made it too bloated to allow for some flexibility, but hard to understand all of the arguments. By paring back to `proto_*` can keep details where they are more relevant without becoming overbearing in one monster function.
@@ -169,6 +169,6 @@ data.frame(
     c("ggplot", "geom_point", "geom_text", "geom_hex", "NA", "geom- _density & _rect", "geom- _segment & _text", "several protos", "NA", "NA"),
   detail =
     c("Also perfroms setup for the tour.", "-", "-", "Heatmap hexegons, for high observation density", "Line segments for the origin, the space where 0 values project to", "1D density with run hash marks underneath, `position = 'stack'` not working with {plotly}.", ".html widget, row numbers added as tooltip on hover. {plotly} doesn't presicly map all {ggplot2} settings; legends, point size and opacity may vary.", "Direction and magnetude of variables to the projection disp~", "Default protos for 2/1D tours", ".gif animation. {gganimate} consumes native ggplots, aestheics should be consistant.")
-) |>
+) %>%
   knitr::kable()
 ```

@@ -56,8 +56,8 @@ tabRadial <- tabPanel(
                column(6L, uiOutput("input__pch_var_nm")))
     ),
     mainPanel(width = 9L,
-              plotly::plotlyOutput("plotly_anim", height = "600px") |> 
-                shinycssloaders::withSpinner(type = 8L)
+              shinycssloaders::withSpinner(
+                plotly::plotlyOutput("plotly_anim", height = "600px"), type = 8L)
     )
   )
 ) ## Assign tab

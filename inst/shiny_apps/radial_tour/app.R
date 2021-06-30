@@ -57,7 +57,7 @@ server <- function(input, output, session) {
     cluster_vars_idx <- sapply(dat, function(x) {
       (is.character(x) | is.factor(x)) & all(complete.cases(x))
     })
-    return(names(dat)[cluster_vars_idx] |> c("<none>"))
+    return(names(dat)[cluster_vars_idx] %>% c("<none>"))
   })
   ## Selected color, the number of the column of the selected column name
   sel_col <- reactive({
@@ -130,11 +130,11 @@ server <- function(input, output, session) {
   ## Output ----
   output$raw_dat_summary <- renderPrint({
     req(raw_dat())
-    raw_dat() |> as.data.frame() |> summary()
+    raw_dat() %>% as.data.frame() %>% summary()
   })
   output$sel_dat_summary <- renderPrint({
     req(sel_dat())
-    sel_dat() |> as.data.frame() |> summary()
+    sel_dat() %>% as.data.frame() %>% summary()
   })
   output$plotly_anim <- plotly::renderPlotly({
     req(manip_var_num())

@@ -166,7 +166,7 @@ test_that("other basis_* class, orth, ", {
 ## scale functions ----
 s1 <- scale_sd(mtcars)
 s2 <- scale_01(dat)
-s3 <- mtcars |> as.matrix() |> scale_01()
+s3 <- mtcars %>% as.matrix() %>% scale_01()
 
 test_that("scale, class, bounds, dim", {
   expect_is(s1, "matrix") ## coerced to matrix.

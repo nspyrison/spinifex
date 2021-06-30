@@ -20,18 +20,21 @@ Typically a single numeric for point size, alpha, or similar.}
 horizontal directions. Defaults to 30.}
 }
 \description{
-Adds \code{geom_hex()} of the projected data.
+Adds \code{geom_hex()} of the projected data. Does not display hexagons in plotly
+animations; will not work with \code{animate_plotly()}.
 }
 \examples{
-diam_sub <- diamonds[sample(nrow(diamonds), 1000), ]
-dat <- scale_sd(diam_sub[, c(1, 5:6, 8:10)])
+raw <- ggplot2::diamonds
+dat <- scale_sd(raw[1:10000, c(1, 5:6, 8:10)])
 gt_path <- save_history(dat, grand_tour(), max = 3)
 
+## 10000 rows is quite heavy to animate.
+## Improve performance with aggregation similar to proto_hex()!
 ggp <- ggtour(gt_path, dat) +
   proto_basis() +
   proto_hex(bins = 20)
 
-## Doesn't work with animate_plotly()
+## Hexagons don't show up in plotly animation.
 animate_gganimate(ggp)
 }
 \seealso{

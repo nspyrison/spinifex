@@ -59,9 +59,9 @@ ggtour <- function(basis_array,
   } ## Note: to be basis dim agnostic need to calculate density height in basis_1d for example.
   
   ## Assign hidden prepared dataframes
-  assign(x = ".spinifex_df_basis", value = df_basis)
-  assign(x = ".spinifex_df_data",  value = df_data )
-  assign(x = ".spinifex_map_to",   value = map_to  )
+  assign(x = ".spinifex_df_basis", value = df_basis, envir = globalenv())
+  assign(x = ".spinifex_df_data",  value = df_data , envir = globalenv())
+  assign(x = ".spinifex_map_to",   value = map_to  , envir = globalenv())
   
   ## Return ggplot head with theme, 3x .spinifex_* obj assign globally above.
   ggplot2::ggplot() + spinifex::theme_spinifex()
@@ -256,15 +256,15 @@ animate_plotly <- function(ggtour,
   #### https://github.com/plotly/plotly.js/issues/53
   return(
     suppressWarnings(
-      plotly::ggplotly(p = ggtour, tooltip = "rownum") |>
+      plotly::ggplotly(p = ggtour, tooltip = "rownum") %>%
         plotly::animation_opts(frame = 1L / fps * 1000L,
-                               transition = 0L, redraw = FALSE) |>
+                               transition = 0L, redraw = FALSE) %>%
         plotly::layout(showlegend = FALSE,
                        #, fixedrange = TRUE ## is a curse, do not use.
                        yaxis = list(showgrid = FALSE, showline = FALSE),
                        xaxis = list(showgrid = FALSE, showline = FALSE,
                                     scaleanchor = "y", scalaratio = 1L),
-                       ...) |>
+                       ...) %>%
         plotly::config(displayModeBar = FALSE)
     )
   )
@@ -775,7 +775,8 @@ proto_text <- function(aes_args = list(),
 
 #' Tour proto for data, hexagonal heatmap
 #'
-#' Adds `geom_hex()` of the projected data.
+#' Adds `geom_hex()` of the projected data. Does not display hexagons in plotly
+#' animations; will not work with `animate_plotly()`.
 #'
 #' @param bins Numeric vector giving number of bins in both vertical and 
 #' horizontal directions. Defaults to 30.
@@ -789,15 +790,17 @@ proto_text <- function(aes_args = list(),
 #' @export
 #' @family ggtour proto
 #' @examples
-#' diam_sub <- diamonds[sample(nrow(diamonds), 1000), ]
-#' dat <- scale_sd(diam_sub[, c(1, 5:6, 8:10)])
+#' raw <- ggplot2::diamonds
+#' dat <- scale_sd(raw[1:10000, c(1, 5:6, 8:10)])
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
+#' ## 10000 rows is quite heavy to animate.
+#' ## Improve performance with aggregation similar to proto_hex()!
 #' ggp <- ggtour(gt_path, dat) +
 #'   proto_basis() +
 #'   proto_hex(bins = 20)
 #' 
-#' ## Doesn't work with animate_plotly()
+#' ## Hexagons don't show up in plotly animation.
 #' animate_gganimate(ggp)
 proto_hex <- function(aes_args = list(),
                       identity_args = list(),

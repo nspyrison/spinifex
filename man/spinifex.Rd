@@ -6,30 +6,26 @@
 \alias{spinifex-package}
 \title{spinifex}
 \description{
-spinifex is a package that extends the package \code{tourr}.
+\code{spinifex} is a package that extends the package \code{tourr}.
 It builds the functionality for manual tours and allows other
 tours to be rendered by \code{plotly} or \code{gganimate}. Tours are a class of
 dynamic linear (orthogonal) projections of numeric multivariate data from
 \code{p} down to \code{d} dimensions that are viewed as an animation as \code{p}-space is
 rotated. Manual tours manipulate a selected variable, exploring how they
 contribute to the sensitivity of the structure in the projection. This is
-particularly useful after finding an interesting tour, perhaps via a
-guided tour.
+particularly useful after finding an interesting basis, perhaps via a
+guided tour optimizing the projection for some objective function.
 }
 \details{
-Its main functions are:
-\itemize{
-\item \code{\link[=run_app]{run_app()}}, running \code{run_app("radial_tour")} will open a \code{shiny} app demonstrating radial, manual tours.
-\item \code{\link[=play_manual_tour]{play_manual_tour()}}, performs a manual tour, returning a \code{plotly} animate by default.
-\item \code{\link[=play_tour_path]{play_tour_path()}}, turns a tour path into an animation, returning a \code{plotly} object by default.
-\item \code{\link[=view_frame]{view_frame()}}, plot a basis set on a reference axis.
-\item \code{\link[=view_manip_space]{view_manip_space()}}, plot a manipulation space highlighting the manip var.
-}
-
 GitHub: \url{https://github.com/nspyrison/spinifex}
 }
 \seealso{
-tourr (package)
+Useful links:
+\itemize{
+  \item \url{https://github.com/nspyrison/spinifex/}
+  \item Report bugs at \url{https://github.com/nspyrison/spinifex/issues}
+}
+
 }
 \author{
 \strong{Maintainer}: Nicholas Spyrison \email{spyrison@gmail.com}
