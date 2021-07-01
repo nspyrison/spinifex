@@ -10,10 +10,13 @@
 #' particularly useful after finding an interesting basis, perhaps via a 
 #' guided tour optimizing the projection for some objective function.
 #' 
+#' 
 #' GitHub: \url{https://github.com/nspyrison/spinifex}
+#' 
 #' @name spinifex
 #' @docType package
-"_PACKAGE"
+#' @seealso [basis_*()] [manual_tour()] [ggtour()] [proto_default()]
+NULL
 
 .onAttach <- function(...){
   ## Print on Screen

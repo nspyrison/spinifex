@@ -53,19 +53,17 @@ ggtour <- function(basis_array,
   
   ## map_to condition handling: 
   #### NULL data == unit box, >2d basis == data, 1d data == density and data.
-  if(is.null(data)){
-    map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
-  }else{
+  map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L)) ## init when data is NULL
+  if(is.null(data) == FALSE){
     d <- ncol(df_basis) - 2L
     map_to <- df_data
-  } ## Note: to be basis dim agnostic need to calculate density height in basis_1d for example.
+  }
   
-  ## Assign hidden prepared dataframes
-  assign(x = ".spinifex_df_basis", value = df_basis, envir = globalenv())
-  assign(x = ".spinifex_df_data",  value = df_data , envir = globalenv())
-  assign(x = ".spinifex_map_to",   value = map_to  , envir = globalenv())
+  ## Assign list to a hidden environment, .store
+  list(df_basis = df_basis, df_data = df_data, map_to = map_to) %>%
+    set_last_ggtour()
   
-  ## Return ggplot head with theme, 3x .spinifex_* obj assign globally above.
+  ## Return ggplot head with theme, 3x ggtour obj assigned to evrin with set_/last_ggtour().
   ggplot2::ggplot() + spinifex::theme_spinifex()
 }
 # ## Print method ->> proto_default()
@@ -78,6 +76,22 @@ ggtour <- function(basis_array,
 #     proto_origin(gridline_probs = FALSE) +
 #     proto_point()
 # }
+
+
+
+
+.store <- new.env(parent = emptyenv())
+#' Retrieve/set the last `ggtour()`
+#'
+#' @seealso [ggtour()]
+#' @export
+#' @keywords internal
+last_ggtour <- function(){.store$ggtour_ls}
+#' @rdname last_ggtour
+#' @export
+set_last_ggtour <- function(value) .store$ggtour_ls <- value
+
+
 
 
 #' Replicate all vector elements of a list
@@ -122,14 +136,14 @@ lapply_rep_len <- function(list,
 #' ## This expression. is not meant for external use.
 ### .init4proto expression -----
 .init4proto <- expression({ ## expression, not function
-  ## Assumption
-  if(exists(".spinifex_df_basis") == FALSE) 
-    stop("`.spinifex_df_basis` does not exsist, have you run `ggtour()` yet?")
+  ggt_ls <- last_ggtour()
+  if(is.null(".spinifex_df_basis")) 
+    stop("last_ggtour() is NULL, have you run `ggtour()` yet?")
   
-  ## Initialization, littering hidden objects 1 level up, not in global.
-  .df_basis <- .spinifex_df_basis ## Give alterable local copies of _basis and _data
-  .df_data  <- .spinifex_df_data
-  .map_to   <- .spinifex_map_to
+  ## Assign hidden objects within the scope of a ggproto func.
+  .df_basis <- ggt_ls$df_basis ## Give operable local copies
+  .df_data  <- ggt_ls$df_data
+  .map_to   <- ggt_ls$map_to
   .n_frames <- length(unique(.df_basis$frame))
   .nrow_df_data <- nrow(.df_data)
   .p <- nrow(.df_basis) / .n_frames
@@ -192,7 +206,7 @@ animate_gganimate <- function(
   requireNamespace("png")
   ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
-  n_frames <- length(unique(.spinifex_df_basis$frame))
+  n_frames <- length(unique(last_ggtour()$df_basis$frame))
   if(n_frames == 1L){
     warning("ggtour df_basis only has 1 frame, printing ggtour ggplot2 object instead.")
     return(print(ggtour))
@@ -251,7 +265,7 @@ animate_plotly <- function(ggtour,
 ){
   ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
-  n_frames <- length(unique(.spinifex_df_basis$frame))
+  n_frames <- length(unique(last_ggtour()$df_basis$frame))
   if(n_frames == 1L){
     warning("ggtour df_basis only has 1 frame, applying just plotly::ggplotly instead.")
     return(plotly::ggplotly(p = ggtour, tooltip = "rownum"))
@@ -317,7 +331,7 @@ animate_plotly <- function(ggtour,
 #                                        ... ## Passed gganimate::knit_print.gganim
 # ){
 #   ## Assumptions
-#   n_frames <- length(unique(.spinifex_df_basis$frame))
+#   n_frames <- length(unique(last_ggtour()$df_basis$frame))
 #   if(n_frames == 1L) stop("df_basis only has 1 frame, stopping animation.")
 #   
 #   ## Discrete jump between frames, no linear interpolation.
@@ -622,15 +636,13 @@ proto_origin1d <- function(){
   ## Initialize
   eval(.init4proto)
   ## Assumptions
-  if(is.null(.spinifex_df_data) == TRUE) return()
+  if(is.null(last_ggtour()$df_data) == TRUE) return()
   position <- "center" ## Assumes data is in the center.
-
   
   #### Setup origin, zero mark, 5% along y axis.
   .den <- stats::density(.df_data[, 1L])
   .map_to1d <- data.frame(x = stats::quantile(.df_data[, 1L], probs = c(.01, .99)),
                           y = 1.8 * range(.den[[2L]]))
-  
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to1d)
   
   ## Return
@@ -749,7 +761,6 @@ proto_text <- function(aes_args = list(),
   ## Assumptions
   if(is.null(label)) label <- 1L:.n
   ## Assumptions
-  if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Data assumed center.
   ## Replicate arg lists
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
@@ -810,7 +821,6 @@ proto_hex <- function(aes_args = list(),
   if(is.null(.df_basis$y)) stop("Basis `y` not found. Did you apply to a 1D tour?")
   if(is.null(.df_data)) message("Data missing. Did you callggtour() on a manual tour without passing data?");return()
   ## Assumptions
-  if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Data assumed center.
   ## Replicate arg lists.
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
@@ -835,7 +845,6 @@ proto_hex <- function(aes_args = list(),
 #' An easier way to get to default 2D tour settings.
 #' Returns a list of proto_origin(), proto_point(...), proto_basis() for 2D.
 #' Returns a list of proto_origin1d(), proto_density(...), proto_basis1d() for 1D.
-
 #'
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,

@@ -3,7 +3,6 @@
 \docType{package}
 \name{spinifex}
 \alias{spinifex}
-\alias{spinifex-package}
 \title{spinifex}
 \description{
 \code{spinifex} is a package that extends the package \code{tourr}.
@@ -20,19 +19,5 @@ guided tour optimizing the projection for some objective function.
 GitHub: \url{https://github.com/nspyrison/spinifex}
 }
 \seealso{
-Useful links:
-\itemize{
-  \item \url{https://github.com/nspyrison/spinifex/}
-  \item Report bugs at \url{https://github.com/nspyrison/spinifex/issues}
-}
-
-}
-\author{
-\strong{Maintainer}: Nicholas Spyrison \email{spyrison@gmail.com}
-
-Authors:
-\itemize{
-  \item Dianne Cook [thesis advisor]
-}
-
+\code{\link[=basis_*]{basis_*()}} \code{\link[=manual_tour]{manual_tour()}} \code{\link[=ggtour]{ggtour()}} \code{\link[=proto_default]{proto_default()}}
 }
