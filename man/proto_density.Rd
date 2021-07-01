@@ -37,8 +37,9 @@ gt_path <- save_history(dat, grand_tour(), max = 3)
 ggt <- ggtour(gt_path, dat) +
   proto_density(aes_args = list(color = clas, fill = clas)) +
   proto_basis1d()
-
+\dontrun{
 animate_plotly(ggt)
+}
 }
 \seealso{
 Other ggtour proto: 

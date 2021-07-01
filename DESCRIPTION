@@ -33,6 +33,8 @@ Suggests:
     transformr,
     hexbin,
     htmlwidgets,
+    gfiski,
+    png,
     dplyr,
     GGally,
     rmarkdown,

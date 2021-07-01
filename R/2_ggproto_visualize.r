@@ -188,6 +188,8 @@ animate_gganimate <- function(
   end_pause = 1,
   ... ## Passed to gganimate::animate or gganimate::knit_print.gganim
 ){
+  requireNamespace("gifski")
+  requireNamespace("png")
   ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(.spinifex_df_basis$frame))
@@ -371,7 +373,7 @@ proto_basis <- function(position = c("left", "center", "right",
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_basis$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  if(is.null(.df_basis$y)) stop("Basis `y` not found. Did you apply to a 1D tour?")
   ## Assumptions
   position = match.arg(position)
   if(position == "off") return()
@@ -577,7 +579,7 @@ proto_point <- function(aes_args = list(),
 proto_origin <- function(fraction = .05){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_basis$y)) stop("Basis y not found. Did you apply to a 1D tour?")
+  if(is.null(.df_basis$y)) stop("Basis `y` not found. Did you apply to a 1D tour?")
   if(is.null(.df_data) == TRUE) return()
   ## Assumptions
   position <- "center" ## Assumes data is in the center.
@@ -666,8 +668,9 @@ proto_origin1d <- function(){
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_density(aes_args = list(color = clas, fill = clas)) +
 #'   proto_basis1d()
-#' 
+#' \dontrun{
 #' animate_plotly(ggt)
+#' }
 proto_density <- function(aes_args = list(),
                           identity_args = list(),
                           density_position = c("identity", "stack")
@@ -804,8 +807,8 @@ proto_hex <- function(aes_args = list(),
   ## Initialize
   requireNamespace("hexbin")
   eval(.init4proto)
+  if(is.null(.df_basis$y)) stop("Basis `y` not found. Did you apply to a 1D tour?")
   if(is.null(.df_data)) message("Data missing. Did you callggtour() on a manual tour without passing data?");return()
-  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
   ## Assumptions
   if(is.null(.spinifex_df_data) == TRUE) return()
   position <- "center" ## Data assumed center.
