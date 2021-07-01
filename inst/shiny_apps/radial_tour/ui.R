@@ -9,9 +9,9 @@ require("plotly")
 .wd <- getwd()
 .regex <- regexpr("\\/[^\\/]*$", .wd)
 .local_path <- substr(.wd, .regex + 1L, nchar(.wd))
-contextLine <- paste0("Spinifex app, '", .local_path,
-                      "' --- (spinifex v", packageVersion("spinifex"),
-                      ") --- ", Sys.Date())
+contextLine <- paste0(.local_path, " app, ",
+                      " --- {spinifex} ver. ", packageVersion("spinifex"),
+                      " --- ", Sys.Date())
 
 ### tabData -----
 tabData <- tabPanel(
@@ -70,9 +70,10 @@ ui <- fluidPage(
   tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
   #### Content:
   navbarPage(
-    paste0("Spinifex app -- ", .local_path, ""),
+    paste0("{spinifex} app --- ", .local_path),
     tabData,
     tabRadial
   ),
+  h5(contextLine, style = "color: #A9A9A9")
 )
 

@@ -41,13 +41,17 @@ server <- function(input, output, session) {
     }
     stop("Unexpected data selection.")
   })
-  
+  idx_complete_rows <- reactive({
+    req(raw_dat())
+    req(input$proj_vars)
+    complete.cases(raw_dat()[, input$proj_vars])
+  })
   ## Selected data
   sel_dat <- reactive({
     req(raw_dat())
     req(input$proj_vars)
     dat <- raw_dat()
-    ret <- dat[complete.cases(dat[, input$proj_vars]), which(colnames(dat) %in% input$proj_vars)]
+    ret <- dat[idx_complete_rows(), which(colnames(dat) %in% input$proj_vars)]
     if(input$rescale_data) ret <- scale_sd(ret)
     if(!is.matrix(ret)) ret <- as.matrix(ret)
     return(ret)
@@ -69,7 +73,7 @@ server <- function(input, output, session) {
       vect <- rep("a", n())
     } else {
       dat <- raw_dat()
-      vect <- dat[complete.cases(dat), which(colnames(dat) == var_nm)]
+      vect <- dat[idx_complete_rows(), which(colnames(dat) == var_nm)]
     }
     return(vect)
   })
@@ -81,7 +85,7 @@ server <- function(input, output, session) {
       vect <- rep("a", n())
     } else {
       dat <- raw_dat()
-      vect <- dat[complete.cases(dat), which(colnames(dat) == var_nm)]
+      vect <- dat[idx_complete_rows(), which(colnames(dat) == var_nm)]
     }
     return(vect)
   })
@@ -94,8 +98,7 @@ server <- function(input, output, session) {
   output$ui__na_msg <- renderUI({
     req(raw_dat())
     msg <- "No rows were identified as NA."
-    .idx_is_na <- !complete.cases(raw_dat()[, input$proj_vars])
-    .n_na <- sum(.idx_is_na, na.rm = TRUE)
+    .n_na <- sum(!idx_complete_rows(), na.rm = TRUE)
     if(.n_na > 0L)
       msg <- paste0(.n_na, " rows contained NA values and were excluded.")
     p(msg)
