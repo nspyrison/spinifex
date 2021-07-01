@@ -11,7 +11,7 @@ Description: Data visualization tours animates linear projection
   a single variable at a time Cook & Buja (1997) <doi:10.2307/1390747>. 
   Other types of tours, such as grand (random walk) and guided (optimizing some
   objective function) are available in the `tourr` package 
-  Wickham et al. <doi:10.18637/jss.v040.i02>]. 
+  Wickham et al. <doi:10.18637/jss.v040.i02>. 
   'spinifex' builds on 'tourr' and can render tours with 'gganimate' and 
   'plotly' graphics, and allows for exporting as an .html widget and as an .gif, 
   respectively. This work is fully discussed in Spyrison & Cook (2020) 
@@ -33,7 +33,7 @@ Suggests:
     transformr,
     hexbin,
     htmlwidgets,
-    gfiski,
+    gifski,
     png,
     dplyr,
     GGally,

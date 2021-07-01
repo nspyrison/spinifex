@@ -1,15 +1,14 @@
 ---
 title: "ggproto API"
 author: "Nicholas Spyrison"
-date: "2021-06-27"
-output: 
+date: '`r format(Sys.Date())`'
+output:
   rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ggproto API}
-  %\VignetteEncoding{UTF-8}{inputenc}
-  \usepackage[utf8]{inputenc}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
+  %\VignetteEncoding{UTF-8}
+editor_options:
   chunk_output_type: console
 ---
 <!-- #Example vignette: 

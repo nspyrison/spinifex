@@ -15,25 +15,25 @@ contextLine <- paste0("Spinifex app, '", .local_path,
 
 ### tabData -----
 tabData <- tabPanel(
-  "Process projection data", 
+  "Process projection data",
   fluidPage(
     sidebarPanel(
       width = 3L,
       ## Select data
       selectInput("dat", "Dataset",
-                  c("flea", "Upload file", "olive", "weather", "wine",
+                  c("Upload file", "flea", "olive", "weather", "wine",
                     "breast cancer", "diabetes, long", "diabetes, wide"),
                   "flea"),
       conditionalPanel("input.dat == 'Upload file'",
                        fileInput("data_file", "Data file",
-                                 placeholder = "<Select a .csv or .rda file>",
-                                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")
+                                 placeholder = "<Select a .csv, .rda, or .rds file>",
+                                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv", ".rda", ".rds")
                        ),
                        verbatimTextOutput("data_msg")),
       ## Select the projection variables
       uiOutput("input__proj_vars"),
-      p("Rows with NA values excluded if present."),
-      checkboxInput("rescale_data", "Standardize values to by Std.Dev.", value = TRUE)
+      uiOutput("ui__na_msg"),
+      checkboxInput("rescale_data", "Standardize values to by standard deviation?", value = TRUE)
     ),
     mainPanel(width = 9L,
               h4("Input data summary"),

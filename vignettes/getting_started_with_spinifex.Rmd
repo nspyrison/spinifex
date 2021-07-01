@@ -1,15 +1,14 @@
 ---
 title: "getting started with spinifex"
 author: "Nicholas Spyrison"
-date: "`r Sys.Date()`"
-output: 
+date: '`r format(Sys.Date())`'
+output:
   rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{getting started with spinifex}
-  %\VignetteEncoding{UTF-8}{inputenc}
-  \usepackage[utf8]{inputenc}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
+  %\VignetteEncoding{UTF-8}
+editor_options:
   chunk_output_type: console
 ---
 <!-- #Example vignette: 

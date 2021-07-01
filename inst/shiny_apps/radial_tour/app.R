@@ -29,12 +29,14 @@ server <- function(input, output, session) {
       req(input$data_file)
       path <- input$data_file$datapath
       ext <- tolower(substr(path, nchar(path) - 4L + 1L, nchar(path)))
-      ## assumptions
+      ## Assumptions
       if((is.null(path) | length(path) == 0L)) stop("Error in filepath length.")
       if(!(ext %in% c(".csv", ".rda"))) stop("unexpected filepath extension.")
       if(ext == ".csv")
         return(read.csv(path, stringsAsFactors = TRUE, sep = ","))
       if(ext == ".rda")
+        return(load(file = path))
+      if(ext == ".rds")
         return(load(file = path))
     }
     stop("Unexpected data selection.")
@@ -45,7 +47,7 @@ server <- function(input, output, session) {
     req(raw_dat())
     req(input$proj_vars)
     dat <- raw_dat()
-    ret <- dat[complete.cases(dat), which(colnames(dat) %in% input$proj_vars)]
+    ret <- dat[complete.cases(dat[, input$proj_vars]), which(colnames(dat) %in% input$proj_vars)]
     if(input$rescale_data) ret <- scale_sd(ret)
     if(!is.matrix(ret)) ret <- as.matrix(ret)
     return(ret)
@@ -89,6 +91,15 @@ server <- function(input, output, session) {
   
   ## Observes & inputs -----
   ## Create input for "proj_vars" based on the numeric columns in the data.
+  output$ui__na_msg <- renderUI({
+    req(raw_dat())
+    msg <- "No rows were identified as NA."
+    .idx_is_na <- !complete.cases(raw_dat()[, input$proj_vars])
+    .n_na <- sum(.idx_is_na, na.rm = TRUE)
+    if(.n_na > 0L)
+      msg <- paste0(.n_na, " rows contained NA values and were excluded.")
+    p(msg)
+  })
   output$input__proj_vars <- renderUI({
     req(raw_dat())
     dat <- raw_dat()

@@ -21,3 +21,4 @@
 
 ^R/b1_stepwise_history\.r
 ^R/0_basis_rf\.r$
+^doc$

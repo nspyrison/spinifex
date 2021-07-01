@@ -10,13 +10,13 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' run_app(app_nm = "radial_tour")
+#' run_app("radial_tour")
 #' run_app(app_nm = "radial_tour", display.mode = "showcase")
 #' }
 # For adjusting or adding more apps it may be useful to read: 
 # https://deanattali.com/2015/04/21/r-package-shiny-app/
 run_app <- function(app_nm = 'radial_tour', ...) {
-  ### Additional dependancies for shiny app.
+  ### Additional dependencies for shiny app.
   shiny_depends <-  c("shinythemes", "shinycssloaders", "plotly")
   pkgs_needed <- !sapply(shiny_depends, requireNamespace)
   if(max(pkgs_needed) == TRUE) { ## Needs at least 1 package.

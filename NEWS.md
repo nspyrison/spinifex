@@ -1,11 +1,14 @@
-# spinifex v0.2.8.9000  ##v0.5?
 
+# spinifex v0.3
+
+- New ggproto api for visuals, see `?ggplot_tour()` to get started!!
+-- 10x new `ggproto_*` functions
+-- 2x animation funcs; `animate_plotly()` and `aniamte_gganimate()`.
+-- 2x internal utility functions
+- New vignette demonstrating this api `vignette("ggproto_api", "spinifex")`
+- Shiny app now imports .csv & .rds,  code improved, uses new ggproto api
+-- `run
 - Fixed a format issue with the `BeastCancer` dataset
-##TODO:
-- New api for visuals, see `ggplot_tour()` and `ggproto_*` functions
-- New vignette demonstrating this api
-- Added `basis_cheem()`
-
 
 # spinifex v0.2.8
 
