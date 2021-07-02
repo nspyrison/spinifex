@@ -15,7 +15,7 @@
 #' 
 #' @name spinifex
 #' @docType package
-#' @seealso [basis_*()] [manual_tour()] [ggtour()] [proto_default()]
+#' @seealso [manual_tour()] [ggtour()] [proto_default()]
 NULL
 
 .onAttach <- function(...){

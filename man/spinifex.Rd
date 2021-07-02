@@ -19,5 +19,5 @@ guided tour optimizing the projection for some objective function.
 GitHub: \url{https://github.com/nspyrison/spinifex}
 }
 \seealso{
-\code{\link[=basis_*]{basis_*()}} \code{\link[=manual_tour]{manual_tour()}} \code{\link[=ggtour]{ggtour()}} \code{\link[=proto_default]{proto_default()}}
+\code{\link[=manual_tour]{manual_tour()}} \code{\link[=ggtour]{ggtour()}} \code{\link[=proto_default]{proto_default()}}
 }

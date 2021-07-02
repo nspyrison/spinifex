@@ -584,7 +584,7 @@ scale_01 <- function(data){
 #'   .mute <- capture.output(
 #'     ret <- for (i in seq_len(...length())) {
 #'       out <- withVisible(...elt(i))
-#'       if (out$visible) 
+#'       if (out$visible)
 #'         print(out$value)
 #'     }
 #'   )
