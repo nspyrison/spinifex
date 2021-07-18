@@ -268,14 +268,14 @@ animate_plotly <- function(ggtour,
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
   if(n_frames == 1L){
     warning("ggtour df_basis only has 1 frame, applying just plotly::ggplotly instead.")
-    return(plotly::ggplotly(p = ggtour, tooltip = "rownum"))
+    return(plotly::ggplotly(p = ggtour, tooltip = "tooltip"))
   }
   
   ## Block plotly.js warning: lack of support for horizontal legend;
   #### https://github.com/plotly/plotly.js/issues/53
   return(
     suppressWarnings(
-      plotly::ggplotly(p = ggtour, tooltip = "rownum") %>%
+      plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
         plotly::animation_opts(frame = 1L / fps * 1000L,
                                transition = 0L, redraw = FALSE) %>%
         plotly::layout(showlegend = FALSE,
@@ -553,11 +553,10 @@ proto_point <- function(aes_args = list(),
   ## Replicate arg lists.
   aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
-  .df_data$rownum <- rep_len(1L:.n, .nrow_df_data)
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
-    ggplot2::aes(x = x, y = y, frame = frame, rownum = rownum, ...) ## rownum for tooltip
+    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tooltip for plotly on hover tip
   .aes_call <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(

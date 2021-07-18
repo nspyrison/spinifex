@@ -59,6 +59,6 @@ if(getRversion() >= "2.15.1"){
                            "x_end",
                            "y_end",
                            "label",
-                           "frame",   ## Animation frame
-                           "rownum")) ## plotly tooltip
+                           "frame",    ## Animation frame
+                           "tooltip")) ## plotly tooltip
 }
