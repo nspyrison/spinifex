@@ -2,7 +2,7 @@
 % Please edit documentation in R/3_visualize.r
 \name{view_manip_space}
 \alias{view_manip_space}
-\title{Plot projection frame and return the axes table.}
+\title{Plot 2D projection frame and return the axes table.}
 \usage{
 view_manip_space(
   basis,
@@ -50,7 +50,8 @@ ggplot object of the basis.
 }
 \description{
 Uses base graphics to plot the circle with axes representing
-the projection frame. Returns the corresponding table.
+the projection frame. Returns the corresponding table. Only works for 2d
+manual tours.
 }
 \examples{
 dat_std <- scale_sd(wine[, 2:6])

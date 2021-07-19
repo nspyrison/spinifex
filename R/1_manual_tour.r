@@ -2,11 +2,12 @@
 ## MANUAL TOUR WORK HORSES -----
 ##
 
-#' Create a manipulation space to rotate the manip variable in.
+
+#' Create a manipulation space to rotate the manipulation variable in.
 #'
 #' Typically called by `manual_tour()`. Creates a (p, d) orthonormal matrix,
 #' the manipulation space from the given basis right concatenated with a zero 
-#' vector, with manip_var set to 1.
+#' vector, with `manip_var` set to 1.
 #'
 #' @param basis A (p, d) orthonormal numeric matrix,
 #' the linear combination the original variables contribute to projection frame.
@@ -31,9 +32,9 @@ create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
     warning("Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
     basis <- tourr::orthonormalise(basis)
   }
-  if(ncol(basis) >= 3){
+  if(ncol(basis) > 2L){
     warning(paste0("Basis of d = ", ncol(basis),
-                   " used. Spinifex is only implemented for d = 2 at the momment. The basis as been truncated to 2 dimensions."))
+                   " used. Spinifex is only implemented for d = 1 | 2 at the momment. The basis as been truncated to 2 dimensions."))
     basis <- basis[, 1L:2L]
   }
   
@@ -54,7 +55,6 @@ create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
   
   return(manip_space)
 }
-
 
 
 #' Performs a rotation on the manipulation space of the given manip var.
@@ -91,24 +91,37 @@ rotate_manip_space <- function(manip_space, theta, phi) {
     manip_space <- tourr::orthonormalise(manip_space)
   }
   
-  ## Initalize
-  s_theta <- sin(theta)
-  c_theta <- cos(theta)
-  s_phi   <- sin(phi)
-  c_phi   <- cos(phi)
-  
-  ## 3D rotation matrix, as a function of theta and phi.
-  R3 <- matrix(c(c_theta^2L * c_phi + s_theta^2L,
-                 -c_theta * s_theta * (1L - c_phi),
-                 -c_theta * s_phi,                  # 3 of 9
-                 -c_theta * s_theta * (1 - c_phi),
-                 s_theta^2L * c_phi + c_theta^2L,
-                 -s_theta * s_phi,                  # 6 of 9
-                 c_theta * s_phi,
-                 s_theta * s_phi,
-                 c_phi),                            # 9 of 9
-               nrow = 3L, ncol = 3L, byrow = TRUE)
-  rotated_space <- manip_space %*% R3
+  ### d = 2 case ###
+  if(ncol(manip_space) == 3L){
+    ## Initialize
+    s_theta <- sin(theta)
+    c_theta <- cos(theta)
+    s_phi   <- sin(phi)
+    c_phi   <- cos(phi)
+    ## 3D rotation matrix, as a function of theta and phi.
+    R3 <- matrix(c(c_theta^2L * c_phi + s_theta^2L,
+                   -c_theta * s_theta * (1L - c_phi),
+                   -c_theta * s_phi,                  # 3 of 9
+                   -c_theta * s_theta * (1 - c_phi),
+                   s_theta^2L * c_phi + c_theta^2L,
+                   -s_theta * s_phi,                  # 6 of 9
+                   c_theta * s_phi,
+                   s_theta * s_phi,
+                   c_phi),                            # 9 of 9
+                 nrow = 3L, ncol = 3L, byrow = TRUE)
+    rotated_space <- manip_space %*% R3
+  }
+  ### d = 1 case ###
+  if(ncol(manip_space) == 2L){
+    ## Initialize
+    s_phi   <- sin(phi)
+    c_phi   <- cos(phi)
+    ## 3D rotation matrix, as a function of theta and phi.
+    R2 <- matrix(c(c_phi, -s_phi,
+                   s_phi, c_phi),
+                 nrow = 2L, ncol = 2L, byrow = TRUE)
+    rotated_space <- manip_space %*% R2
+  }
   
   ## Conserve colnames (rownames already the same)
   cn <- colnames(manip_space)
@@ -180,14 +193,24 @@ manual_tour <- function(basis,
   }
   
   ## Initialize
-  phi_start <- acos(sqrt(basis[manip_var, 1L]^2L + basis[manip_var, 2L]^2L))
+  ### d = 2 case
+  if(d == 2){
+    if(is.null(theta))
+      theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
+    phi_start <- acos(sqrt(basis[manip_var, 1L]^2L + basis[manip_var, 2L]^2L))
+  }
+  ### d = 1 case
+  if(d == 1){
+    phi_start <- acos(basis[manip_var, 1L])
+    theta <- NA
+  }
+  ###
   if((phi_min < phi_start) == FALSE)
     stop("Phi is currently less than phi_min, please set phi_min below ", phi_start)
   if((phi_max > phi_start) == FALSE)
     stop("Phi is currently greather than phi_max, please set phi_max above ", phi_start)
   xArgs <- list(...) ## Terminate args meant for `render_()` also passed in `play_manual_tour()`.
-  if(is.null(theta))
-    theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
+
   
   ## Find the values of phi for each 'leg'/walk (direction of motion)
   phi_segment  <- function(start, end){

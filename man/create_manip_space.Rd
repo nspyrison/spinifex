@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_manual_tour.r
 \name{create_manip_space}
 \alias{create_manip_space}
-\title{Create a manipulation space to rotate the manip variable in.}
+\title{Create a manipulation space to rotate the manipulation variable in.}
 \usage{
 create_manip_space(basis, manip_var = manip_var_of(basis))
 }
@@ -21,7 +21,7 @@ manipulate the projection in.
 \description{
 Typically called by \code{manual_tour()}. Creates a (p, d) orthonormal matrix,
 the manipulation space from the given basis right concatenated with a zero
-vector, with manip_var set to 1.
+vector, with \code{manip_var} set to 1.
 }
 \examples{
 ## Setup

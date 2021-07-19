@@ -64,7 +64,7 @@ play_tour_path <- function(tour_path,
   
   ## Initialization
   data <- as.matrix(data)
-
+  
   ## Tour array to tour df
   .mute <- utils::capture.output(
     tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
@@ -273,10 +273,11 @@ oblique_basis <- function(...) {
 }
 
 
-#' Plot projection frame and return the axes table.
+#' Plot 2D projection frame and return the axes table.
 #' 
 #' Uses base graphics to plot the circle with axes representing
-#' the projection frame. Returns the corresponding table.
+#' the projection frame. Returns the corresponding table. Only works for 2d 
+#' manual tours.
 #' 
 #' @param basis A (p, d) orthonormal numeric matrix.
 #' The linear combination the original variables contribute to projection space.

@@ -313,9 +313,10 @@ theme_spinifex <- function(...){
 #' dat_std <- scale_sd(wine[, 2:6])
 #' basis_pca(data = dat_std)
 basis_pca <- function(data, d = 2){
-  ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
-  rownames(ret) <- colnames(data)
-  colnames(ret) <- paste0("PC", 1:d)
+  ret <- prcomp(dat_std)$rotation[, 1L:d]
+  # ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
+  # rownames(ret) <- colnames(data)
+  # colnames(ret) <- paste0("PC", 1:d)
   return(ret)
 }
 
@@ -342,11 +343,14 @@ basis_pca <- function(data, d = 2){
 #' clas <- wine$Type
 #' basis_olda(data = dat_std, class = clas)
 basis_olda <- function(data, class, d = 2){
-  ret <- Rdimtools::do.olda(X = as.matrix(data),
-                            label = as.factor(class),
-                            ndim = d)$projection
-  rownames(ret) <- colnames(data)
+  lda <- MASS::lda(class ~ ., data = data.frame(data, class))$scaling
+  ret <- tourr::orthonormalise(lda)[, 1L:d]
   colnames(ret) <- paste0("OLD", 1:d)
+  # ret <- Rdimtools::do.olda(X = as.matrix(data),
+  #                           label = as.factor(class),
+  #                            ndim = d)$projection
+  # rownames(ret) <- colnames(data)
+  # colnames(ret) <- paste0("OLD", 1:d)
   return(ret)
 }
 
