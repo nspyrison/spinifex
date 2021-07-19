@@ -61,17 +61,36 @@ ggtour <- function(basis_array,
   
   ## map_to condition handling: 
   #### NULL data == unit box, >2d basis == data, 1d data == density and data.
-  map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L)) ## init when data is NULL
+  map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L)) ## init & if data is NULL
   if(is.null(data) == FALSE){
-    d <- ncol(df_basis) - 2L
-    map_to <- df_data
+    d <- ncol(basis_array[,,1])
+    if(d == 2){ ## 2D non-NULL basis
+      map_to <- df_data
+    }
+    if(d == 1){ ## 2D non-NULL basis
+      #### Setup origin, zero mark, 5% along y axis.
+      .den <- stats::density(df_data[, 1L])
+      map_to <- data.frame(x = stats::quantile(df_data[, 1L], probs = c(.01, .99)),
+                           y = 1.8 * range(.den[[2L]]))
+    }
   }
-  
+  n_frames <- length(unique(df_basis$frame))
+  nrow_df_data <- nrow(df_data)
+  p <- nrow(df_basis) / n_frames
+  n <- nrow_df_data   / n_frames
+  manip_var <- attr(df_basis, "manip_var") ## NULL if not a manual tour
   ## Assign list to a hidden environment, .store
-  set_last_ggtour(list(df_basis = df_basis, df_data = df_data, map_to = map_to))
+  set_last_ggtour(list(df_basis = df_basis, 
+                       df_data = df_data, 
+                       map_to = map_to,
+                       n_frames = n_frames,
+                       nrow_df_data = nrow_df_data,
+                       n = n,
+                       p = p,
+                       manip_var = manip_var))
   
   ## Return ggplot head with theme, 3x ggtour obj assigned to evrin with set_/last_ggtour().
-  ggplot2::ggplot() + spinifex::theme_spinifex()
+  return(ggplot2::ggplot() + spinifex::theme_spinifex())
 }
 # ## Print method ->> proto_default()
 # #### Was a good idea, but ggplot stops working when you change the first class, 
@@ -148,14 +167,15 @@ lapply_rep_len <- function(list,
     stop("last_ggtour() is NULL, have you run `ggtour()` yet?")
   
   ## Assign hidden objects within the scope of a ggproto func.
-  .df_basis <- ggt_ls$df_basis ## Give operable local copies
-  .df_data  <- ggt_ls$df_data
-  .map_to   <- ggt_ls$map_to
-  .n_frames <- length(unique(.df_basis$frame))
-  .nrow_df_data <- nrow(.df_data)
-  .p <- nrow(.df_basis) / .n_frames
-  .n <- .nrow_df_data   / .n_frames
-  .manip_var <- attr(.df_basis, "manip_var") ## NULL if not a manual tour
+  .df_basis     <- ggt_ls$df_basis ## Give operable local copies
+  .df_data      <- ggt_ls$df_data
+  .map_to       <- ggt_ls$map_to
+  .map_to       <- ggt_ls$map_to
+  .n_frames     <- ggt_ls$n_frames
+  .nrow_df_data <- ggt_ls$nrow_df_data
+  .n            <- ggt_ls$n
+  .p            <- ggt_ls$p
+  .manip_var    <- ggt_ls$manip_var
 })
 
 ### ANIMATE_* ------
@@ -191,9 +211,9 @@ lapply_rep_len <- function(list,
 #'               identity_args = list(size = 1.5, alpha = .7))
 #' 
 #' \dontrun{
-#' animate_gganimate(ggtour)
+#' animate_gganimate(ggt)
 #' 
-#' (anim <- animate_gganimate(ggtour, fps = 10, rewind = TRUE,
+#' (anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
 #'                            start_pause = 1, end_pause = 2))
 #' 
 #' if(F) ## Example saving gganime to a .gif, may require additional setup.
@@ -471,11 +491,6 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
   position = match.arg(position)
   if(position == "off") return()
   
-  ## Find the height of density to map_to
-  .den <- stats::density(.df_data[, 1L])
-  .map_to1d <- data.frame(x = stats::quantile(.df_data[, 1L], probs = c(.01, .99)),
-                          y = 1.8 * range(.den[[2L]]))
-  
   ## Aesthetics for the axes segments
   .axes_col <- .text_col <- "grey50"
   .axes_siz <- segment_size
@@ -499,11 +514,11 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5))
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5))
   ## Scale them
-  .df_zero <- map_relative(.df_zero, position, .map_to1d)
-  .df_seg  <- map_relative(.df_seg,  position, .map_to1d)
-  .df_txt  <- map_relative(.df_txt,  position, .map_to1d)
-  .df_rect <- map_relative(.df_rect, position, .map_to1d)
-  .df_seg0 <- map_relative(.df_seg0, position, .map_to1d)
+  .df_zero <- map_relative(.df_zero, position, .map_to)
+  .df_seg  <- map_relative(.df_seg,  position, .map_to)
+  .df_txt  <- map_relative(.df_txt,  position, .map_to)
+  .df_rect <- map_relative(.df_rect, position, .map_to)
+  .df_seg0 <- map_relative(.df_seg0, position, .map_to)
   
   ## Return proto
   return(list(
@@ -650,12 +665,7 @@ proto_origin1d <- function(){
   ## Assumptions
   if(is.null(last_ggtour()$df_data) == TRUE) return()
   position <- "center" ## Assumes data is in the center.
-  
-  #### Setup origin, zero mark, 5% along y axis.
-  .den <- stats::density(.df_data[, 1L])
-  .map_to1d <- data.frame(x = stats::quantile(.df_data[, 1L], probs = c(.01, .99)),
-                          y = 1.8 * range(.den[[2L]]))
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to1d)
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
   
   ## Return
   return(

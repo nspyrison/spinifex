@@ -48,9 +48,9 @@ ggt <- ggtour(mt_path, dat) +
               identity_args = list(size = 1.5, alpha = .7))
 
 \dontrun{
-animate_gganimate(ggtour)
+animate_gganimate(ggt)
 
-(anim <- animate_gganimate(ggtour, fps = 10, rewind = TRUE,
+(anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
                            start_pause = 1, end_pause = 2))
 
 if(F) ## Example saving gganime to a .gif, may require additional setup.

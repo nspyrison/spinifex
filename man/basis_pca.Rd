@@ -25,8 +25,6 @@ basis_pca(data = dat_std)
 Other basis identifiers: 
 \code{\link{basis_guided}()},
 \code{\link{basis_half_circle}()},
-\code{\link{basis_odp}()},
-\code{\link{basis_olda}()},
-\code{\link{basis_onpp}()}
+\code{\link{basis_olda}()}
 }
 \concept{basis identifiers}

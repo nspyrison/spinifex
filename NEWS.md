@@ -1,8 +1,12 @@
 # spinifex v0.3.1 /dev: v0.3.9000
 
-- `manual_tour()` and related functions now handle 1D projections.
-- `proto_highlight/1d()` for highlighting specific points in ggtours.
-- added argument `rownum_index` to `proto_text`, for labeling subsets.
+- `manual_tour()` and related functions now handle 1D projections
+- `proto_highlight/1d()` for highlighting specific points in ggtours
+- Added argument `rownum_index` to `proto_text`, for labeling subsets
+- Removed `basis_odp`, `basis_onpp` & `basis_olpp` while dependency 
+issues remain seemingly with `Rdimtools`, and `Rcpp`.
+- Reverted `basis_pca` and `basis_olda` to `prcomp` and `MASS::lda` variants 
+for the same reason
 - TODO: Maybe an hdrcde-like proto, with use of `rownum_index`??
 
 
@@ -10,7 +14,7 @@
 
 - New ggproto api for visuals, see `?ggplot_tour()` to get started!!
 -- 10x new `ggproto_*` functions
--- 2x animation funcs; `animate_plotly()` and `aniamte_gganimate()`.
+-- 2x animation funcs; `animate_plotly()` and `aniamte_gganimate()`
 -- 2x internal utility functions
 - New vignette demonstrating this api `vignette("ggproto_api", "spinifex")`
 - Shiny app now imports .csv & .rds,  code improved, uses new ggproto api
@@ -25,8 +29,8 @@
 Basis_* functions to find features of interest, powered by `{Rdimtools}`.
 - `basis_olda()`
 - `basis_odp()`
-- `basis_odp()`
-- `basis_odp()`
+- `basis_onpp()`
+- `basis_olpp()`
 
 New util functions:
 - `scale_sd()` center and scale each variable by it's standard deviation
