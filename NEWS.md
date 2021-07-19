@@ -1,5 +1,12 @@
+# spinifex v0.3.1 /dev: v0.3.9000
 
-# spinifex v0.3
+- `manual_tour()` and related functions now handle 1D projections.
+- `proto_highlight/1d()` for highlighting specific points in ggtours.
+- added argument `rownum_index` to `proto_text`, for labeling subsets.
+- TODO: Maybe an hdrcde-like proto, with use of `rownum_index`??
+
+
+# spinifex v0.3.0!
 
 - New ggproto api for visuals, see `?ggplot_tour()` to get started!!
 -- 10x new `ggproto_*` functions
@@ -65,7 +72,7 @@ New util functions:
 - Clarified and more consistent documentation
 
 
-# spinifex v0.2.0
+# spinifex v0.2.0!
 
 ## Demo shiny app
 

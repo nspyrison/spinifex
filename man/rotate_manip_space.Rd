@@ -33,7 +33,12 @@ dat_std <- scale_sd(wine[, 2:6])
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 msp <- create_manip_space(basis = bas, manip_var = mv)
-
 rotate_manip_space(msp, theta = runif(1, max = 2 * pi),
                    phi = runif(1, max = 2 * pi))
+
+## d = 1 case 
+bas1d <- basis_pca(dat_std, d = 1)
+mv <- manip_var_of(bas1d)
+msp <- create_manip_space(bas1d, mv)
+rotate_manip_space(msp, phi = runif(1, max = 2 * pi))
 }

@@ -28,6 +28,10 @@ vector, with \code{manip_var} set to 1.
 dat_std <- scale_sd(wine[, 2:6])
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
-
 create_manip_space(basis = bas, manip_var = mv)
+
+## d = 1 case 
+bas1d <- basis_pca(dat_std, d = 1)
+mv <- manip_var_of(bas1d)
+create_manip_space(bas1d, mv)
 }

@@ -33,9 +33,9 @@
 #' 
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat, d = 1)
-#' mt <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+#' mt <- manual_tour(basis = bas1d, manip_var = mv, angle = .2, phi_max = pi)
 #' ggt <- ggtour(mt, dat, angle = .2) + proto_default1d()
-#' #' \dontrun{
+#' \dontrun{
 #' animate_plotly(ggt)
 #' }
 ggtour <- function(basis_array,
@@ -49,7 +49,7 @@ ggtour <- function(basis_array,
     basis_array <- array(as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   
   ## Interpolate if needed and apply array2df
-  if(is.null(manip_var)){ ## AND if not 1 basis
+  if(is.null(manip_var)){ ## if manip_var is null AND if not 1 basis
     if(dim(basis_array)[3L] != 1L)
       .mute <- utils::capture.output(
         basis_array <- tourr::interpolate(basis_array, angle = angle))
@@ -68,8 +68,7 @@ ggtour <- function(basis_array,
   }
   
   ## Assign list to a hidden environment, .store
-  list(df_basis = df_basis, df_data = df_data, map_to = map_to) %>%
-    set_last_ggtour()
+  set_last_ggtour(list(df_basis = df_basis, df_data = df_data, map_to = map_to))
   
   ## Return ggplot head with theme, 3x ggtour obj assigned to evrin with set_/last_ggtour().
   ggplot2::ggplot() + spinifex::theme_spinifex()
@@ -145,7 +144,7 @@ lapply_rep_len <- function(list,
 ### .init4proto expression -----
 .init4proto <- expression({ ## expression, not function
   ggt_ls <- last_ggtour()
-  if(is.null(".spinifex_df_basis")) 
+  if(is.null(ggt_ls)) 
     stop("last_ggtour() is NULL, have you run `ggtour()` yet?")
   
   ## Assign hidden objects within the scope of a ggproto func.
@@ -222,6 +221,8 @@ animate_gganimate <- function(
   
   ## Discrete jump between frames, no linear interpolation.
   gga <- ggtour + gganimate::transition_states(frame, transition_length = 0L)
+  set_last_ggtour(NULL) ## Clears last tour
+  ## this should prevent some errors from not running ggtour() right before animating it.
   
   ## Normal animation, with applied options, knit_pdf_anim == FALSE
   return(
@@ -278,6 +279,9 @@ animate_plotly <- function(ggtour,
     warning("ggtour df_basis only has 1 frame, applying just plotly::ggplotly instead.")
     return(plotly::ggplotly(p = ggtour, tooltip = "tooltip"))
   }
+
+  set_last_ggtour(NULL) ## Clears last tour
+  ## this should prevent some errors from not running ggtour() right before animating it.
   
   ## Block plotly.js warning: lack of support for horizontal legend;
   #### https://github.com/plotly/plotly.js/issues/53
@@ -470,14 +474,15 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
   ## Find the height of density to map_to
   .den <- stats::density(.df_data[, 1L])
   .map_to1d <- data.frame(x = stats::quantile(.df_data[, 1L], probs = c(.01, .99)),
-                        y = 1.8 * range(.den[[2L]]))
+                          y = 1.8 * range(.den[[2L]]))
   
   ## Aesthetics for the axes segments
-  .axes_col <- "grey50"
+  .axes_col <- .text_col <- "grey50"
   .axes_siz <- segment_size
   if(is.null(.manip_var) == FALSE) {
     .axes_col <- rep("grey50", .p)
     .axes_col[.manip_var] <- manip_col
+    .text_col <- .axes_col
     .axes_col <- rep(.axes_col, .n_frames)
     .axes_siz <- rep(segment_size, .p)
     .axes_siz[.manip_var] <- 1.5 * segment_size
@@ -509,7 +514,7 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
       ggplot2::aes(xmin = min(x), xmax = max(x), ymin = min(y), ymax = max(y)),
       .df_rect, fill = NA, color = "grey60"),
     ggplot2::geom_text(
-      ggplot2::aes(x, y, label = label), .df_txt, size = text_size, color = .axes_col),
+      ggplot2::aes(x, y, label = label), .df_txt, size = text_size, color = .text_col),
     suppressWarnings(ggplot2::geom_segment(
       ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
       .df_seg, color = .axes_col, size = .axes_siz))
@@ -706,7 +711,7 @@ proto_density <- function(aes_args = list(),
   if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
     warning("aes_args: color used without fill in, did you mean to use 'fill' with density?")
   ## Replicate arg lists
-  aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
+  aes_args      <- lapply_rep_len(aes_args,      .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## do.call aes() over the aes_args
@@ -716,13 +721,11 @@ proto_density <- function(aes_args = list(),
   ## do.call geom over identity_args
   .geom_func1 <- function(...) suppressWarnings(
     ggplot2::geom_density(mapping = .aes_call, data = .df_data, ...,
-                          position = density_position, color = "black")
-  )
+                          position = density_position, color = "black"))
   .geom_call1 <- do.call(.geom_func1, identity_args)
   ## do.call geom over identity_args #2:
   .geom_func2 <- function(...) suppressWarnings(
-    ggplot2::geom_rug(mapping = .aes_call, data = .df_data, ...)
-  )
+    ggplot2::geom_rug(mapping = .aes_call, data = .df_data, ...))
   .geom_call2 <- do.call(.geom_func2, identity_args)
   
   ## Return proto
