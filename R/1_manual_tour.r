@@ -2,7 +2,6 @@
 ## MANUAL TOUR WORK HORSES -----
 ##
 
-
 #' Create a manipulation space to rotate the manipulation variable in.
 #'
 #' Typically called by `manual_tour()`. Creates a (p, d) orthonormal matrix,
@@ -23,8 +22,12 @@
 #' dat_std <- scale_sd(wine[, 2:6])
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
-#' 
 #' create_manip_space(basis = bas, manip_var = mv)
+#' 
+#' ## d = 1 case 
+#' bas1d <- basis_pca(dat_std, d = 1)
+#' mv <- manip_var_of(bas1d)
+#' create_manip_space(bas1d, mv)
 create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
   ## Assumptions
   basis <- as.matrix(basis)
@@ -32,9 +35,9 @@ create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
     warning("Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
     basis <- tourr::orthonormalise(basis)
   }
-  if(ncol(basis) > 2L){
-    warning(paste0("Basis of d = ", ncol(basis),
-                   " used. Spinifex is only implemented for d = 1 | 2 at the momment. The basis as been truncated to 2 dimensions."))
+  if(ncol(basis) > 2L){ warning(paste0(
+    "Basis of d = ", ncol(basis),
+    " used. Spinifex is only implemented for d = 1 | 2 at the momment. The basis as been truncated to 2 dimensions."))
     basis <- basis[, 1L:2L]
   }
   
@@ -80,9 +83,14 @@ create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' msp <- create_manip_space(basis = bas, manip_var = mv)
-#' 
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi),
 #'                    phi = runif(1, max = 2 * pi))
+#' 
+#' ## d = 1 case 
+#' bas1d <- basis_pca(dat_std, d = 1)
+#' mv <- manip_var_of(bas1d)
+#' msp <- create_manip_space(bas1d, mv)
+#' rotate_manip_space(msp, phi = runif(1, max = 2 * pi))
 rotate_manip_space <- function(manip_space, theta, phi) {
   ## Assumptions
   manip_space <- as.matrix(manip_space)
@@ -173,7 +181,13 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' 
 #' ## All arguments
 #' manual_tour(basis = bas, manip_var = mv,
-#'             theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .8)
+#'             theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .2)
+#' 
+#' 
+#' ## d = 1 case
+#' bas1d <- basis_pca(dat_std, d = 1)
+#' mv <- manip_var_of(bas1d)
+#' manual_tour(basis = bas1d, manip_var = mv, angle = .2)
 manual_tour <- function(basis,
                         manip_var,
                         theta   = NULL,
@@ -194,13 +208,13 @@ manual_tour <- function(basis,
   
   ## Initialize
   ### d = 2 case
-  if(d == 2){
+  if(d == 2L){
     if(is.null(theta))
       theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
     phi_start <- acos(sqrt(basis[manip_var, 1L]^2L + basis[manip_var, 2L]^2L))
   }
   ### d = 1 case
-  if(d == 1){
+  if(d == 1L){
     phi_start <- acos(basis[manip_var, 1L])
     theta <- NA
   }
@@ -237,11 +251,13 @@ manual_tour <- function(basis,
   ## Make projected basis array
   n_frames <- length(phi_path)
   m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
-  tour_array <- array(NA, dim = c(p, d, n_frames))
+  tour_array <- array(
+    NA, dim = c(p, d, n_frames),
+    dimnames = c(dimnames(basis), list(paste0("frame", 1L:n_frames))))
   .mute <- sapply(1L:n_frames, function(i){
     thisProj <-
       rotate_manip_space(manip_space = m_sp, theta = theta, phi = -phi_path[i])
-    tour_array[,, i] <<- thisProj[, 1L:2L]
+    tour_array[,, i] <<- thisProj[, 1L:d]
   })
   attr(tour_array, "manip_var") <- manip_var
   
