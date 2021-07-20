@@ -4,7 +4,12 @@
 \alias{proto_text}
 \title{Tour proto for data, text labels}
 \usage{
-proto_text(aes_args = list(), identity_args = list(), label = NULL)
+proto_text(
+  aes_args = list(),
+  identity_args = list(),
+  label = NULL,
+  rownum_index = NULL
+)
 }
 \arguments{
 \item{aes_args}{A list of aesthetic arguments to passed to
@@ -13,11 +18,16 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{aes_args = list(color = myCol, shape = myCol)}.}
 
 \item{identity_args}{A list of static, identity arguments passed into
-\code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
-Typically a single numeric for point size, alpha, or similar.}
+\code{geom_point()}, but outside of \code{aes()}, for instance
+\code{geom_point(aes(...), size = 2, alpha = .7)} becomes
+\code{identity_args = list(size = 2, alpha = .7)}.}
 
 \item{label}{A character vector, the texts that should be in the location of
 the data. Default is NULL, which goes to the rownumber.}
+
+\item{rownumber_index}{One or more integers, the row numbers of the to
+subset to. Should be within 1:n, the rows of the original data. Defaults to
+NULL, labeling all rows.}
 }
 \description{
 Adds \code{geom_text()} of the projected data.
@@ -42,6 +52,7 @@ Other ggtour proto:
 \code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
+\code{\link{proto_highlight}()},
 \code{\link{proto_origin}()},
 \code{\link{proto_point}()}
 }

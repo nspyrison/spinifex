@@ -14,8 +14,9 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{aes_args = list(color = myCol, shape = myCol)}.}
 
 \item{identity_args}{A list of static, identity arguments passed into
-\code{geom_point()}, but outside of \code{aes()}; \code{geom_point(aes(), X)}.
-Typically a single numeric for point size, alpha, or similar.}
+\code{geom_point()}, but outside of \code{aes()}, for instance
+\code{geom_point(aes(...), size = 2, alpha = .7)} becomes
+\code{identity_args = list(size = 2, alpha = .7)}.}
 }
 \description{
 Adds \code{geom_point()} of the projected data.
@@ -45,6 +46,7 @@ Other ggtour proto:
 \code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
+\code{\link{proto_highlight}()},
 \code{\link{proto_origin}()},
 \code{\link{proto_text}()}
 }

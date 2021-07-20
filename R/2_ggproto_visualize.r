@@ -63,11 +63,11 @@ ggtour <- function(basis_array,
   #### NULL data == unit box, >2d basis == data, 1d data == density and data.
   map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L)) ## init & if data is NULL
   if(is.null(data) == FALSE){
-    d <- ncol(basis_array[,,1])
-    if(d == 2){ ## 2D non-NULL basis
+    d <- dim(basis_array)[2L] ## ncol of basis
+    if(d == 2L){ ## 2D non-NULL basis
       map_to <- df_data
     }
-    if(d == 1){ ## 2D non-NULL basis
+    if(d == 1L){ ## 2D non-NULL basis
       #### Setup origin, zero mark, 5% along y axis.
       .den <- stats::density(df_data[, 1L])
       map_to <- data.frame(x = stats::quantile(df_data[, 1L], probs = c(.01, .99)),
@@ -143,7 +143,7 @@ lapply_rep_len <- function(list,
     .this_vector <- list[[i]]
     if(length(.this_vector) != 1L){
       if(length(.this_vector) != nrow_data)
-        warning(paste0("aes_arg '", .nms[i], "' not of length 1 or data."))
+        warning(paste0("lapply_rep_len: `", .nms[i], "` not of length 1 or data."))
       .replicated_vector <- rep_len(.this_vector, nrow_frames)
       list[[i]] <<- .replicated_vector ## Replace the value with the string of the original
     }
@@ -229,9 +229,9 @@ animate_gganimate <- function(
   end_pause = 1,
   ... ## Passed to gganimate::animate or gganimate::knit_print.gganim
 ){
+  ## Assumptions
   requireNamespace("gifski")
   requireNamespace("png")
-  ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
   if(n_frames == 1L){
@@ -362,7 +362,6 @@ animate_plotly <- function(ggtour,
 # animate_gganimate_knit2pdf <- function(ggtour,
 #                                        ... ## Passed gganimate::knit_print.gganim
 # ){
-#   ## Assumptions
 #   n_frames <- length(unique(last_ggtour()$df_basis$frame))
 #   if(n_frames == 1L) stop("df_basis only has 1 frame, stopping animation.")
 #   
@@ -419,8 +418,7 @@ proto_basis <- function(position = c("left", "center", "right",
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_basis$y)) stop("Basis `y` not found. Did you apply to a 1D tour?")
-  ## Assumptions
+  if(is.null(.df_basis$y)) stop("Basis `y` not found. `proto_basis` expects a 2D tour. Did you mean to call `proto_basis1d`?")
   position = match.arg(position)
   if(position == "off") return()
   
@@ -487,7 +485,6 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
 ){
   ## Initialize
   eval(.init4proto)
-  ## Assumptions
   position = match.arg(position)
   if(position == "off") return()
   
@@ -547,8 +544,9 @@ proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
 #' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
 #' `aes_args = list(color = myCol, shape = myCol)`.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
-#' Typically a single numeric for point size, alpha, or similar.
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
 #' @export
 #' @aliases proto_points
 #' @family ggtour proto
@@ -574,18 +572,17 @@ proto_point <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  if(is.null(.df_data$y)) stop("Projection y not found. `proto_point` expects a 2D tour.")
   if(is.null(.df_data) == TRUE) return()
-  ## Assumptions
-  position <- "center" ## Data assumed center.
+  position <- "center"
   ## Replicate arg lists.
-  aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
+  aes_args      <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## do.call aes() over the aes_args
-  .aes_func <- function(...)
+  .aes_func  <- function(...)
     ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tooltip for plotly on hover tip
-  .aes_call <- do.call(.aes_func, aes_args)
+  .aes_call  <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
@@ -599,8 +596,8 @@ proto_point <- function(aes_args = list(),
 #'
 #' Adds a zero mark showing the location of the origin for the central data area.
 #'
-#' @param fraction (2D case only) how long the origin mark should extend ]
-#' relative to the observations. Defaults to .05, 5% of the data space.
+#' @param size_frac How long the origin mark should extended
+#' relative to the observations. Defaults to .05, 5% of the projection space.
 #' @export
 #' @aliases proto_origin2d
 #' @family ggtour proto
@@ -617,19 +614,18 @@ proto_point <- function(aes_args = list(),
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_origin <- function(fraction = .05){
+proto_origin <- function(size_frac = .05){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_basis$y)) stop("Basis `y` not found. Did you apply to a 1D tour?")
+  if(is.null(.df_basis$y)) stop("Basis `y` not found. `proto_origin` expects a 2D tour. Did you mean to call `proto_origin1d`?")
   if(is.null(.df_data) == TRUE) return()
-  ## Assumptions
-  position <- "center" ## Assumes data is in the center.
+  position <- "center"
   
   #### Setup origin, zero mark, 5% on each side.
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
-  .min <- min(min(.map_to[, 1L]), min(.map_to[, 2L]))
-  .max <- max(max(.map_to[, 1L]), max(.map_to[, 2L]))
-  .tail <- fraction / 2L  * (.max - .min)
+  .min    <- min(min(.map_to[, 1L]), min(.map_to[, 2L]))
+  .max    <- max(max(.map_to[, 1L]), max(.map_to[, 2L]))
+  .tail   <- fraction / 2L * (.max - .min)
   
   .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
                            x_end = c(.center[, 1L] + .tail, .center[, 1L]),
@@ -662,10 +658,9 @@ proto_origin <- function(fraction = .05){
 proto_origin1d <- function(){
   ## Initialize
   eval(.init4proto)
-  ## Assumptions
   if(is.null(last_ggtour()$df_data) == TRUE) return()
-  position <- "center" ## Assumes data is in the center.
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
+  position <- "center"
+  .center  <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
   
   ## Return
   return(
@@ -686,8 +681,9 @@ proto_origin1d <- function(){
 #' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
 #' `aes_args = list(color = myCol, shape = myCol)`.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
-#' Typically a single numeric for point size, alpha, or similar.
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
 #' @param density_position The `ggplot2` position of `geom_density()`. Either 
 #' c("identity", "stack"), defaults to "identity". Warning: "stack" does not 
 #' work with `animate_plotly()` at the moment.
@@ -712,22 +708,21 @@ proto_density <- function(aes_args = list(),
   ## Initialize
   requireNamespace("transformr")
   eval(.init4proto)
-  ## Assumptions
-  position <- "center" ## Data assumed center.
+  position <- "center"
   density_position <- match.arg(density_position)
   ## "identity" is the only position working in plotly right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
   .nms <- names(aes_args)
   if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
-    warning("aes_args: color used without fill in, did you mean to use 'fill' with density?")
+    warning("proto_density, aes_args: color used without fill, did you mean to use fill to color below the curve?")
   ## Replicate arg lists
   aes_args      <- lapply_rep_len(aes_args,      .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## do.call aes() over the aes_args
-  .aes_func <- function(...)
+  .aes_func   <- function(...)
     ggplot2::aes(x = x, frame = frame, ...)
-  .aes_call <- do.call(.aes_func, aes_args)
+  .aes_call   <- do.call(.aes_func, aes_args)
   ## do.call geom over identity_args
   .geom_func1 <- function(...) suppressWarnings(
     ggplot2::geom_density(mapping = .aes_call, data = .df_data, ...,
@@ -747,15 +742,19 @@ proto_density <- function(aes_args = list(),
 #'
 #' Adds `geom_text()` of the projected data.
 #'
-#' @param label A character vector, the texts that should be in the location of
-#' the data. Default is NULL, which goes to the rownumber.
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
 #' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
 #' `aes_args = list(color = myCol, shape = myCol)`.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
-#' Typically a single numeric for point size, alpha, or similar.
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' @param label A character vector, the texts that should be in the location of
+#' the data. Default is NULL, which goes to the rownumber.
+#' @param rownumber_index One or more integers, the row numbers of the to 
+#' subset to. Should be within 1:n, the rows of the original data. Defaults to
+#' NULL, labeling all rows.
 #' @export
 #' @family ggtour proto
 #' @examples
@@ -772,25 +771,31 @@ proto_density <- function(aes_args = list(),
 #' }
 proto_text <- function(aes_args = list(),
                        identity_args = list(),
-                       label = NULL
+                       label = NULL,
+                       rownum_index = NULL
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data$y)) stop("Projection y not found. Did you apply to a 1D tour?")
+  if(is.null(.df_data$y)) stop("Projection y not found.`proto_text` expects a 2D tour.")
   if(is.null(.df_data) == TRUE) return()
-  ## Assumptions
   if(is.null(label)) label <- 1L:.n
-  ## Assumptions
-  position <- "center" ## Data assumed center.
+  position <- "center"
+  
+  if(is.null(rownum_index) == FALSE){
+    ## Index for all frames & subset
+    .idx     <- which(.df_data$label %in% rownumber_index)
+    .df_data <- .df_data[.idx, ]
+  }
+  
   ## Replicate arg lists
-  aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
+  aes_args      <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## do.call aes() over the aes_args
-  .aes_func <- function(...)
+  .aes_func  <- function(...)
     ggplot2::aes(x = x, y = y, frame = frame, ...,
                  label = rep_len(label, .nrow_df_data))
-  .aes_call <- do.call(.aes_func, aes_args)
+  .aes_call  <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args 
   .geom_func <- function(...)suppressWarnings(
     ggplot2::geom_text(mapping = .aes_call, data = .df_data, ...)
@@ -812,8 +817,9 @@ proto_text <- function(aes_args = list(),
 #' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
 #' `aes_args = list(color = myCol, shape = myCol)`.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
-#' Typically a single numeric for point size, alpha, or similar.
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
 #' @export
 #' @family ggtour proto
 #' @examples
@@ -838,18 +844,18 @@ proto_hex <- function(aes_args = list(),
   ## Initialize
   requireNamespace("hexbin")
   eval(.init4proto)
-  if(is.null(.df_basis$y)) stop("Basis `y` not found. Did you apply to a 1D tour?")
-  if(is.null(.df_data)) message("Data missing. Did you callggtour() on a manual tour without passing data?");return()
-  ## Assumptions
-  position <- "center" ## Data assumed center.
+  if(is.null(.df_basis$y)) stop("Basis `y` not found. `proto_hex` expects a 2D tour.?")
+  if(is.null(.df_data)) message("Data missing. Did you call ggtour() on a manual tour without passing data?");return()
+  position <- "center"
+  
   ## Replicate arg lists.
-  aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
+  aes_args      <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## do.call aes() over the aes_args
-  .aes_func <- function(...)
+  .aes_func  <- function(...)
     ggplot2::aes(x = x, y = y, frame = frame, group = frame, ...)
-  .aes_call <- do.call(.aes_func, aes_args)
+  .aes_call  <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_hex(mapping = .aes_call, data = .df_data, bins = bins, ...)
@@ -871,8 +877,9 @@ proto_hex <- function(aes_args = list(),
 #' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
 #' `aes_args = list(color = myCol, shape = myCol)`.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`; `geom_point(aes(), X)`.
-#' Typically a single numeric for point size, alpha, or similar.
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
 #' @export
 #' @aliases proto_default2d, proto_def, proto_def2d
 #' @family ggtour proto
@@ -922,4 +929,201 @@ proto_default1d <- function(aes_args = list(),
     proto_density(aes_args, identity_args),
     proto_basis1d()
   ))
+}
+
+
+
+
+## ggproto api extension 1 -----
+### should move into spinifex v0.3.1
+#' Tour proto highlighing specified points, will be in front or behind
+#' `ggproto_point`.
+#'
+#' A `grom_point` call to draw attention to a subset of points.
+#' Subset the projected data frames to the specified `rownum_index` of the 
+#' original data.frame with specified highlighting aesthetics. Layering is 
+#' important for use with `proto_point`.
+#'
+#' @param rownumber_index One or more integers, the row numbers of the to 
+#' highlight. Should be within 1:n, the rows of the original data.
+#' @param aes_args A list of aesthetic arguments to passed to 
+#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
+#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
+#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' Typically a single numeric for point size, alpha, or similar.
+#' @param mark_initial Logical, whether or not to leave a fainter mark at the 
+#' subset's initial position. By default: TRUE if single row number given else 
+#' FALSE.
+#' @export
+#' @aliases proto_highlight_2d
+#' @family ggtour proto
+#' @examples
+#' dat <- scale_sd(tourr::flea[, 1:6])
+#' clas <- tourr::flea$species
+#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+#' 
+#' ggt <- ggtour(gt_path, dat) +
+#'   proto_highlight(rownumber_index = 5) +
+#'   proto_point()
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+#' 
+#' ggt2 <- ggtour(gt_path, dat) +
+#'   proto_highlight(rownumber_index = c( 2, 6, 19),
+#'                   identity_args = list(color = "blue", size = 4, shape = 2)) +
+#'   proto_point(list(color = clas, shape = clas),
+#'               list(size = 2, alpha = .7))
+#' \dontrun{
+#' animate_plotly(ggt2)
+#' }
+proto_highlight <- function(
+  rownumber_index,
+  aes_args = list(),
+  identity_args = list(color = "red", size = 5, shape = 8),
+  mark_initial = if(length(rownumber_index) == 1) TRUE else FALSE
+){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(.df_data$y)) stop("Projection y not found. `proto_highlight` expects a 2D tour. Did you mean to call `proto_highlight1d`?")
+  if(is.null(.df_data) == TRUE) return()
+  position <- "center"
+  
+  ## Index for all frames & subset
+  .idx     <- which(.df_data$label %in% rownumber_index)
+  .df_data <- .df_data[.idx, ]
+  
+  ## Replicate arg lists.
+  aes_args      <- lapply_rep_len(aes_args,      .nrow_df_data, .n)
+  identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
+  
+  ## do.call aes() over the aes_args
+  .aes_func <- function(...)
+    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## rownum for tooltip
+  .aes_call <- do.call(.aes_func, aes_args)
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...) suppressWarnings(
+    ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
+  ret <- do.call(.geom_func, identity_args)
+  
+  ## Initial mark, if needed, hard-coded some aes, no frame.
+  if(mark_initial == TRUE){
+    .aes_func   <- function(...)
+      ggplot2::aes(x = x, y = y, ...)
+    .aes_call   <- do.call(.aes_func, aes_args)
+    ## do.call geom_vline over highlight obs
+    .geom_func  <- function(...) suppressWarnings(geom_point(
+      mapping = .aes_call, .df_data[1L, ], ## only the first row, should be frame 1.
+      ..., alpha = .5)) ## hard coded alpha & linetype
+    inital_mark <- do.call(.geom_func, identity_args)
+    
+    ret <- list(inital_mark, ret)
+  }
+  
+  ## Return proto
+  return(ret)
+}
+
+
+#' @rdname proto_highlight
+#' @export
+#' @family ggtour proto
+#' @examples
+#' ## 1D case:
+#' gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+#' 
+#' ggt <- ggtour(gt_path, dat) +
+#'   proto_highlight1d(rownumber_index = 7) +
+#'   proto_density(list(fill = clas))
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+#' 
+#' ggt2 <- ggtour(gt_path, dat) +
+#'   proto_highlight1d(rownumber_index = c(2, 6, 7)) +
+#'   proto_density(list(fill = clas))
+#' \dontrun{
+#' animate_plotly(ggt2)
+#' }
+proto_highlight1d <- function(
+  rownumber_index,
+  aes_args = list(),
+  identity_args = list(list(color = "red", size = 1.5, linetype = 2L, length = unit(1, "npc"), alpha = .5)),
+  mark_initial = if(length(rownumber_index) == 1) TRUE else FALSE
+){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(last_ggtour()$df_data) == TRUE) return()
+  position <- "center"
+  
+  ## Index for all frames & subset
+  .idx <- which(.df_data$label %in% rownumber_index)
+  .df_data <- .df_data[.idx, ]
+  
+  ## do.call aes() over the aes_args
+  .aes_func <- function(...)
+    ggplot2::aes(xintercept = x, frame = frame, tooltip = label, ...) ## rownum for tooltip
+  .aes_call <- do.call(.aes_func, aes_args)
+  ## do.call geom_vline over highlight obs
+  .vline_func <- function(...) suppressWarnings(geom_vline(
+    mapping = .aes_call, .df_data, ...))
+  ret <- do.call(.vline_func, identity_args)
+  
+  ## Initial mark, if needed, hard-coded some aes, no frame.
+  if(mark_initial == TRUE){
+    .aes_func <- function(...)
+      ggplot2::aes(xintercept = x, ...)
+    .aes_call <- do.call(.aes_func, aes_args)
+    ## do.call geom_vline over highlight obs
+    .vline_func <- function(...) suppressWarnings(geom_vline(
+      mapping = .aes_call, .df_data[1, ], ## only the first row, should be frame 1.
+      ..., alpha = .5, linetype = 2L)) ## hard coded alpha & linetype
+    inital_mark <- do.call(.vline_func, identity_args)
+    
+    ret <- list(inital_mark, ret)
+  }
+  
+  ## Return
+  return(ret)
+}
+
+
+if(FALSE){ ## DONT RUN
+  proto_hdr <- function(levels = c(1, 50, 99),
+                        aes_args = list(),
+                        identity_args = list(list(color = "red", size = 1.5, linetype = 2L, length = unit(1, "npc"), alpha = .5)),
+                        kde.package = c("ash", "ks"),
+                        noutliers = NULL,
+                        label = NULL
+  ){
+    ## Initialize
+    eval(.init4proto)
+    if(is.null(.df_data$y)) stop("Projection y not found. `proto_hdr` expects a 2D tour.")
+    if(is.null(.df_data) == TRUE) return()
+    position <- "center"
+    
+    ##TODO: DENSITY WORK & SEGMENT.
+    #### each segment will need it's own .aes and .geom do.calls.
+    #### All but the lowest density regions will want to go to geom_density or geom_hexbin.
+    if(F)
+      hdrcde::hdrscatterplot
+    
+    ## Replicate arg lists.
+    aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
+    identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
+    ## do.call aes() over the aes_args
+    .aes_func <- function(...)
+      ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tooltip for plotly on hover tip
+    .aes_call <- do.call(.aes_func, aes_args)
+    ## do.call geom_point() over the identity_args
+    .geom_func <- function(...) suppressWarnings(
+      ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
+    
+    ## Return proto
+    return(do.call(.geom_func, identity_args))
+  }
 }

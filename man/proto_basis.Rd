@@ -75,6 +75,7 @@ Other ggtour proto:
 \code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
+\code{\link{proto_highlight}()},
 \code{\link{proto_origin}()},
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
@@ -84,6 +85,7 @@ Other ggtour proto:
 \code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
+\code{\link{proto_highlight}()},
 \code{\link{proto_origin}()},
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}

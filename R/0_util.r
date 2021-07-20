@@ -63,7 +63,7 @@ array2df <- function(
   array,
   data = NULL,
   basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3L) else paste0("x", 1:dim(array)[1]),
-  data_label = if(is.null(data) == FALSE) rownames(data) else NULL
+  data_label  = if(is.null(data) == FALSE) rownames(data) else NULL
 ){
   if("history_array" %in% class(array)) class(array) <- "array"
   ## Initialize

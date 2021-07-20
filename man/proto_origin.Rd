@@ -6,13 +6,13 @@
 \alias{proto_origin1d}
 \title{Tour proto for data origin zero mark}
 \usage{
-proto_origin(fraction = 0.05)
+proto_origin(size_frac = 0.05)
 
 proto_origin1d()
 }
 \arguments{
-\item{fraction}{(2D case only) how long the origin mark should extend ]
-relative to the observations. Defaults to .05, 5\% of the data space.}
+\item{size_frac}{How long the origin mark should extended
+relative to the observations. Defaults to .05, 5\% of the projection space.}
 }
 \description{
 Adds a zero mark showing the location of the origin for the central data area.
@@ -47,6 +47,7 @@ Other ggtour proto:
 \code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
+\code{\link{proto_highlight}()},
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 
@@ -56,6 +57,7 @@ Other ggtour proto:
 \code{\link{proto_default}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
+\code{\link{proto_highlight}()},
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 }
