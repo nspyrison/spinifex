@@ -33,8 +33,8 @@
 #' 
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat, d = 1)
-#' mt <- manual_tour(basis = bas1d, manip_var = mv, angle = .2, phi_max = pi)
-#' ggt <- ggtour(mt, dat, angle = .2) + proto_default1d()
+#' mt <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+#' ggt <- ggtour(mt, dat, angle = .2) + proto_default1d(list(fill = clas))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -70,8 +70,8 @@ ggtour <- function(basis_array,
     if(d == 1L){ ## 2D non-NULL basis
       #### Setup origin, zero mark, 5% along y axis.
       .den <- stats::density(df_data[, 1L])
-      map_to <- data.frame(x = stats::quantile(df_data[, 1L], probs = c(.01, .99)),
-                           y = 1.8 * range(.den[[2L]]))
+      map_to <- data.frame(x = stats::quantile(df_data[, 1L], probs = c(.1, .9)),
+                           y = 1.3 * range(.den[[2L]]))
     }
   }
   n_frames <- length(unique(df_basis$frame))
@@ -169,7 +169,6 @@ lapply_rep_len <- function(list,
   ## Assign hidden objects within the scope of a ggproto func.
   .df_basis     <- ggt_ls$df_basis ## Give operable local copies
   .df_data      <- ggt_ls$df_data
-  .map_to       <- ggt_ls$map_to
   .map_to       <- ggt_ls$map_to
   .n_frames     <- ggt_ls$n_frames
   .nrow_df_data <- ggt_ls$nrow_df_data

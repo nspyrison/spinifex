@@ -172,7 +172,6 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @examples
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:6])
-#' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' 
@@ -218,16 +217,19 @@ manual_tour <- function(basis,
     phi_start <- acos(basis[manip_var, 1L])
     theta <- NA
   }
-  ###
+  ### shift phi start in be in-phase between [0, pi / 2]
+  while(phi_start > pi / 2L) phi_start <- phi_start - pi / 2L
+  while(phi_start < 0L)      phi_start <- phi_start + pi / 2L
   if((phi_min < phi_start) == FALSE)
-    stop("Phi is currently less than phi_min, please set phi_min below ", phi_start)
+    stop("Phi is less than phi_min, please set phi_min below ", round(phi_start, 2L))
   if((phi_max > phi_start) == FALSE)
-    stop("Phi is currently greather than phi_max, please set phi_max above ", phi_start)
-  xArgs <- list(...) ## Terminate args meant for `render_()` also passed in `play_manual_tour()`.
-
+    stop("Phi is greather than phi_max, please set phi_max above ", round(phi_start, 2L))
+  ## Terminate args meant for render_*/animate_* passed through play_manual_tour().
+  .xArgs <- list(...)
   
-  ## Find the values of phi for each 'leg'/walk (direction of motion)
-  phi_segment  <- function(start, end){
+  ### Phi interpolation step -----
+  ## Find the values of phi for each 'segment/leg/direction' of the walk
+  phi_interpolate <- function(start, end){
     ## Initialize
     mvar_xsign <- ifelse(basis[manip_var, 1L] < 0L, -1L, 1L)
     start      <- mvar_xsign * (start - phi_start)
@@ -240,13 +242,14 @@ manual_tour <- function(basis,
     ## Add remaining partial step to the end if needed.
     if(remainder != 0L) segment <- c(segment, end)
     ## Return
-    segment
+    return(segment)
   }
-  
   ## Find the phi values for the animation frames
-  phi_path <- c(phi_segment(start = phi_start, end = phi_min),
-                phi_segment(start = phi_min,   end = phi_max),
-                phi_segment(start = phi_max,   end = phi_start))
+  phi_path <- c(phi_interpolate(start = phi_start, end = phi_min),
+                phi_interpolate(start = phi_min,   end = phi_max),
+                phi_interpolate(start = phi_max,   end = phi_start))
+  
+  
   
   ## Make projected basis array
   n_frames <- length(phi_path)
@@ -254,10 +257,10 @@ manual_tour <- function(basis,
   tour_array <- array(
     NA, dim = c(p, d, n_frames),
     dimnames = c(dimnames(basis), list(paste0("frame", 1L:n_frames))))
-  .mute <- sapply(1L:n_frames, function(i){
-    thisProj <-
-      rotate_manip_space(manip_space = m_sp, theta = theta, phi = -phi_path[i])
-    tour_array[,, i] <<- thisProj[, 1L:d]
+  .m <- sapply(1L:n_frames, function(i){
+    this_sign <- -1 * sign(diff(phi_path)[1])
+    this_proj <- rotate_manip_space(m_sp, theta, this_sign * phi_path[i])
+    tour_array[,, i] <<- this_proj[, 1L:d]
   })
   attr(tour_array, "manip_var") <- manip_var
   

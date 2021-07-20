@@ -39,8 +39,8 @@ animate_plotly(ggt)
 
 ## d = 1 case
 bas1d <- basis_pca(dat, d = 1)
-mt <- manual_tour(basis = bas1d, manip_var = mv, angle = .2, phi_max = pi)
-ggt <- ggtour(mt, dat, angle = .2) + proto_default1d()
+mt <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+ggt <- ggtour(mt, dat, angle = .2) + proto_default1d(list(fill = clas))
 \dontrun{
 animate_plotly(ggt)
 }
