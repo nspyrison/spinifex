@@ -5,23 +5,7 @@
 \alias{wine}
 \title{The wine dataset from the UCI Machine Learning Repository.}
 \format{
-Data frame of 178 observations of 13 variables, target
-class \code{Type} and 12 numeric variables.
-}
-\usage{
-wine
-}
-\description{
-The wine dataset contains the results of a chemical analysis of wines grown
-in a specific area of Italy. Three types of wine are represented in the 178
-samples, with the results of 13 chemical analyses recorded for each sample.
-The Type variable has been transformed into a categorical variable.
-}
-\details{
-The data contains no missing values and consist of only numeric data, with a
-three class target variable (Type) for classification.
-
-Data frame of 178 observations of 13 variables, target
+A data frame of 178 observations of target
 class \code{Type} and 12 numeric variables:
 \itemize{
 \item Type, The type of wine, the target factor, 1 (59 obs),
@@ -40,21 +24,44 @@ class \code{Type} and 12 numeric variables:
 \item Dilution, D280/OD315 of diluted wines
 \item Proline, Proline
 }
+}
+\source{
+{rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
 
-Reproducing this dataset:\preformatted{requireNamespace("rattle.data")
+{PARVUS. M. Forina. et al. 1988. Elsevier, Amsterdam, PARVUS: An extendable package of programs for data exploration, classification and correlation. ISBN 0‐444‐430121‐
+}
+\usage{
 wine
+}
+\description{
+The wine dataset contains the results of a chemical analysis of wines grown
+in a specific area of Italy. Three types of wine are represented in the 178
+samples, with the results of 13 chemical analyses recorded for each sample.
+The Type variable has been transformed into a categorical variable.
+}
+\details{
+The data contains no missing values and consist of only numeric data, with a
+three class target variable (Type) for classification.
+
+Replicating this dataset:\preformatted{require("rattle")
+str(rattle::wine)
+## save(wine, file = "./data/wine.rda")
 }
 }
 \examples{
+library("spinifex")
 str(wine)
-\dontrun{
 dat <- scale_sd(wine[, 2:6])
 clas <- wine$Type
-bas <- prcomp(dat)$rotation[, 1:2]
-mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
 
-play_manual_tour(basis = bas, data = dat, manip_var = mvar,
-                 render_type = render_gganimate, color = clas, shape = clas)
+bas <- basis_pca(dat)
+mv <- manip_var_of(bas)
+mt <- manual_tour(bas, mv)
+
+ggt <- ggtour(mt, dat, angle = .2) +
+  proto_default(list(color = clas, shape = clas))
+\dontrun{
+animate_plotly(ggt)
 }
 }
 \keyword{datasets}

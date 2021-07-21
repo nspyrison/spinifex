@@ -5,50 +5,15 @@
 \alias{weather}
 \title{Sample dataset of daily weather observations from Canberra airport in Australia.}
 \format{
-Data frame of 366 observations of 20 variables. One year of
+A data frame of 354 observations of 20 variables. One year of
 daily observations of weather variables at Canberra airport in Australia
 between November 1, 2007 and October 31, 2008.
-}
-\source{
-The daily observations are available from http://www.bom.gov.au/climate/data.
-Copyright Commonwealth of Australia 2010,
-Bureau of Meteorology.
-
-Definitions adapted from http://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml
-}
-\usage{
-weather
-}
-\description{
-A subset from \code{rattle.data::weather}, instructions to reproduce below.
-}
-\details{
-One year of daily weather observations collected from the Canberra airport
-in Australia was obtained from the Australian Commonwealth Bureau of
-Meteorology and processed to create this sample dataset for illustrating
-data mining using R and Rattle.
-
-The data has been processed to provide a target variable RainTomorrow
-(whether there is rain on the following day - No/Yes) and a risk variable
-\code{RISK_MM} (how much rain recorded in millimeters). Various transformations
-were performed on the source data. The dataset is quite small and is useful
-only for repeatable demonstration of various data science operations.
-
-The source dataset is Copyright by the Australian Commonwealth Bureau of
-Meteorology and is provided as part of the rattle package with permission.
-
-Data frame of 366 observations of 20 variables. One year of
-daily observations of weather variables at Canberra airport in Australia
-starting November 2007:
 \itemize{
 \item Date, The date of observation (Date class).
 \item MinTemp, The minimum temperature in degrees Celsius.
 \item MaxTemp, The maximum temperature in degrees Celsius.
 \item Rainfall, The amount of rainfall recorded for the day in mm.
 \item Evaporation, The "Class A pan evaporation" (mm) in the 24 hours to 9am.
-\item Sunshine, The number of hours of bright sunshine in the day.
-\item WindGustSpeed, The speed (km/h) of the strongest wind gust in the 24 hours to midnight.
-\item WindSpeed9am, Wind speed (km/hr) averaged over 10 minutes prior to 9am.
 \item WindSpeed3pm, Wind speed (km/hr) averaged over 10 minutes prior to 3pm.
 \item Humid9am, Relative humidity (percent) at 9am.
 \item Humid3pm, Relative humidity (percent) at 3pm.
@@ -62,26 +27,57 @@ starting November 2007:
 \item RainToday, Factor: "yes" if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0.
 \item RainTomorrow, Factor: "yes" if it rained the following day, the target variable.
 }
+}
+\source{
+{Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data
 
-Reproducing this dataset:\preformatted{require("rattle.data")
-weather <- weather[, c(1, 3:7, 9, 12:21, 23, 22, 24)]
+{rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
+
+Copyright Commonwealth of Australia 2010,
+Bureau of Meteorology.
+
+Definitions adapted from http://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml
+}
+\usage{
+weather
+}
+\description{
+One year of daily weather observations collected from the Canberra airport
+in Australia was obtained from the Australian Commonwealth Bureau of
+Meteorology and processed to create this sample dataset for illustrating
+data mining using R and Rattle.
+}
+\details{
+The data has been processed to provide a target variable RainTomorrow
+(whether there is rain on the following day - No/Yes) and a risk variable
+\code{RISK_MM} (how much rain recorded in millimeters). Various transformations
+were performed on the source data. The dataset is quite small and is useful
+only for repeatable demonstration of various data science operations.
+
+This is a cleaned subset of \code{rattle::weather}.
+
+Replicating this dataset:\preformatted{require("rattle")
+d <- rattle::weather[, c(1, 3:7, 9, 12:21, 23, 22, 24)]
+d <- d[complete.cases(d), ] ## Remove ~12 row-wise incomplete rows
+d <- as.data.frame(d)  ## Remove tibble dependency
+weather <- d
 ## save(weather, file = "./data/weather.rda")
 }
 }
 \examples{
-str(weather)
-\dontrun{
-dat <- scale_sd(weather[, 2:18])
-clas_x <- weather$RainToday
-clas_y <- weather$RainTomorrow
-bas <- prcomp(dat)$rotation[, 1:2]
-mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
+library("spinifex")
+str(spinifex::weather)
+dat <- scale_sd(spinifex::weather[, 2:18])
+clas <- spinifex::weather$RainTomorrow
 
-play_manual_tour(basis = bas, data = dat, manip_var = mvar,
-                 render_type = render_gganimate, color = clas_y, shape = clas_x)
+bas <- basis_pca(dat)
+mv <- manip_var_of(bas)
+mt <- manual_tour(bas, mv)
+
+ggt <- ggtour(mt, dat, angle = .2) +
+  proto_default(list(color = clas, shape = clas))
+\dontrun{
+animate_plotly(ggt)
 }
-}
-\references{
-Data source: http://www.bom.gov.au/climate/dwo/ and http://www.bom.gov.au/climate/data.
 }
 \keyword{datasets}

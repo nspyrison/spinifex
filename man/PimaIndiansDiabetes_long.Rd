@@ -3,28 +3,10 @@
 \docType{data}
 \name{PimaIndiansDiabetes_long}
 \alias{PimaIndiansDiabetes_long}
-\title{Pima Indians Diabetes Database}
+\title{Pima Indians Diabetes Dataset, long}
 \format{
-Data frame with 724 observations of 7 variables:
-6 numeric variables, and target factor diabetes.
-}
-\usage{
-PimaIndiansDiabetes_long
-}
-\description{
-Formatted subset of \verb{mlbench's} \code{PimaIndiansDiabetes2} (not explicitly exported).
-See \code{help(PimaIndiansDiabetes2, package = "mlbench")} for the original documentation.
-}
-\details{
-The data set PimaIndiansDiabetes2 contains a corrected version of the
-original data set. While the UCI repository index claims that there are no
-missing values, closer inspection of the data shows several physical
-impossibilities, e.g., blood pressure or body mass index of 0. In
-PimaIndiansDiabetes2, all zero values of glucose, pressure, triceps, insulin
-and mass have been set to NA, see also Wahba et al (1995) and Ripley (1996).
-
-Data frame with 724 observations of 7 variables:
-6 numeric variables, and target factor diabetes.
+A data frame with 724 observations of
+6 numeric variables, and target factor \code{diabetes}.
 \itemize{
 \item pregnant, Number of times pregnant
 \item glucose, Plasma glucose concentration (glucose tolerance test)
@@ -34,8 +16,28 @@ Data frame with 724 observations of 7 variables:
 \item age, Age (years)
 \item diabetes, Class variable (test for diabetes), either "pos" or "neg"
 }
+}
+\source{
+{J.W. Smith., el al. 1988. Using the ADAP learning algorithm to forecast the onset of diabetes mellitus. In Proceedings of the Symposium on Computer Applications and Medical Care (pp. 261--265). IEEE Computer Society Press.}
 
-Reproducing this dataset:\preformatted{require("mlbench")
+{mlbench, R package. F. Leisch & E. Dimitriadou, 2021. mlbench: Machine Learning Benchmark Problems} \url{https://CRAN.R-project.org/package=mlbench}
+}
+\usage{
+PimaIndiansDiabetes_long
+}
+\description{
+The data set PimaIndiansDiabetes2 contains a corrected version of the
+original data set. While the UCI repository index claims that there are no
+missing values, closer inspection of the data shows several physical
+impossibilities, e.g., blood pressure or body mass index of 0. In
+PimaIndiansDiabetes2, all zero values of glucose, pressure, triceps, insulin
+and mass have been set to NA, see also Wahba et al (1995) and Ripley (1996).
+}
+\details{
+This is a cleaned subset of \verb{mlbench's} \code{PimaIndiansDiabetes2}.
+See \code{help(PimaIndiansDiabetes2, package = "mlbench")}.
+
+Replicating this dataset:\preformatted{require("mlbench")
 data(PimaIndiansDiabetes2)
 
 d <- PimaIndiansDiabetes2
@@ -46,15 +48,19 @@ PimaIndiansDiabetes_long <- d
 }
 }
 \examples{
+library("spinifex")
 str(PimaIndiansDiabetes_long)
-\dontrun{
 dat <- scale_sd(PimaIndiansDiabetes_long[, 1:6])
 clas <- PimaIndiansDiabetes_long$diabetes
-bas <- prcomp(dat)$rotation[, 1:2]
-mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
 
-play_manual_tour(basis = bas, data = dat, manip_var = mvar,
-                 render_type = render_gganimate, color = clas, shape = clas)
+bas <- basis_pca(dat)
+mv <- manip_var_of(bas)
+mt <- manual_tour(bas, mv)
+
+ggt <- ggtour(mt, dat, angle = .2) +
+  proto_default(list(color = clas, shape = clas))
+\dontrun{
+animate_plotly(ggt)
 }
 }
 \keyword{datasets}

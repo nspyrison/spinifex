@@ -5,27 +5,8 @@
 \alias{BreastCancer}
 \title{Wisconsin Breast Cancer Database}
 \format{
-Data frame with 675 observations of 11 variables: factor Id,
-9 integer variables, and target factor Class.
-}
-\usage{
-BreastCancer
-}
-\description{
-Formatted subset of \verb{mlbench's} \code{BreastCancer} (not explicitly exported).
-See \code{help(BreastCancer, package = "mlbench")} for the original documentation.
-}
-\details{
-The objective is to identify each of a number of benign or malignant classes.
-Samples arrive periodically as Dr. Wolberg reports his clinical cases. The
-database therefore reflects this chronological grouping of the data. This
-grouping information appears immediately below, having been removed from
-the data itself. Each variable except for the first was converted into 11
-primitive numerical attributes with values ranging from 0 through 10. Rows
-with missing attribute values and duplicate rows removed.
-
-Data frame with 675 observations of 11 variables: factor Id,
-9 numeric variables, and target factor Class.
+A data frame with 675 observations of 8 numeric variables and
+target factor \code{Class}.
 \itemize{
 \item Id, Sample code number
 \item Cl.thickness, Clump thickness
@@ -39,30 +20,55 @@ Data frame with 675 observations of 11 variables: factor Id,
 \item Mitoses, Mitoses
 \item Class, Class of cancer, either "benign" or "malignant"
 }
+}
+\source{
+{J.W. Smith., el al. 1988. Using the ADAP learning algorithm to forecast the onset of diabetes mellitus. In Proceedings of the Symposium on Computer Applications and Medical Care (pp. 261--265). IEEE Computer Society Press.}
 
-Reproducing this dataset:\preformatted{require("mlbench")
+{mlbench, R package. F. Leisch & E. Dimitriadou, 2021. mlbench: Machine Learning Benchmark Problems} \url{https://CRAN.R-project.org/package=mlbench}
+}
+\usage{
+BreastCancer
+}
+\description{
+The objective is to identify each of a number of benign or malignant classes.
+Samples arrive periodically as Dr. Wolberg reports his clinical cases. The
+database therefore reflects this chronological grouping of the data. This
+grouping information appears immediately below, having been removed from
+the data itself. Each variable except for the first was converted into 11
+primitive numerical attributes with values ranging from 0 through 10. Rows
+with missing attribute values and duplicate rows removed.
+}
+\details{
+This is a cleaned subset of \code{mlbench}'s \code{BreastCancer}.
+See \code{help(BreastCancer, package = "mlbench")} for the original.
+
+Replicating this dataset:\preformatted{require("mlbench")
 data(BreastCancer)
 
-d <- BreastCancer
-d <- d[!duplicated(d), ] ## Remove 8 duplicate rows
-d <- d[complete.cases(d), ] ## Remove 16 row-wise incomplete rows
-sub <- d[ , 2:10]
-sub <- apply(sub,2L, as.integer)
-BreastCancer <-
-  data.frame(Id = as.factor(d$Id), sun, Class = as.factor(d$Class))
+raw <- BreastCancer
+## rownumber index of 8 duplicate 16 incomplete rows
+idx <- !duplicated(raw) & complete.cases(raw) 
+d <- raw[idx, 3:10]
+d <- apply(d, 2L, as.integer)
+d <- data.frame(d, Class = as.factor(raw$Class[idx]))
+BreastCancer <- d
 ## save(BreastCancer, file = "./data/BreastCancer.rda")
 }
 }
 \examples{
-str(BreastCancer)
-\dontrun{
-dat <- scale_sd(BreastCancer[, 2:10])
-clas <- BreastCancer$Class
-bas <- prcomp(dat)$rotation[, 1:2]
-mvar <- which(abs(bas[, 1]) == max(abs(bas[, 1])))
+library("spinifex")
+str(spinifex::BreastCancer)
+dat <- scale_sd(spinifex::BreastCancer[, 2:10])
+clas <- spinifex::BreastCancer$Class
 
-play_manual_tour(basis = bas, data = dat, manip_var = mvar,
-                 render_type = render_gganimate, color = clas, shape = clas)
+bas <- basis_pca(dat)
+mv <- manip_var_of(bas)
+mt <- manual_tour(bas, mv)
+
+ggt <- ggtour(mt, dat, angle = .2) +
+  proto_default(list(color = clas, shape = clas))
+\dontrun{
+animate_plotly(ggt)
 }
 }
 \keyword{datasets}
