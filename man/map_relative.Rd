@@ -6,7 +6,7 @@
 \usage{
 map_relative(
   x,
-  position = c("center", "left", "right", "bottomleft", "topright", "off"),
+  position = c("center", "left", "right", "bottomleft", "topright", "top", "off"),
   to = NULL
 )
 }

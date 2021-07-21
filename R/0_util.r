@@ -169,7 +169,7 @@ as_history_array <- function(basis_array, data = NULL){
 #' map_relative(x = rb, position = "right", to = wine[, 2:3])
 map_relative <- function(x,
                          position = c("center", "left", "right", "bottomleft",
-                                      "topright", "off"),
+                                      "topright", "top", "off"),
                          to = NULL
 ){
   ## Assumptions
@@ -191,8 +191,20 @@ map_relative <- function(x,
   
   ## Condition handling of position
   if(position == "center"){
-    scale <- .3 * ydiff
+    scale <- .5 * ydiff
     xoff  <- xcenter
+    yoff  <- ycenter
+  } else if(position == "left"){
+    scale <- .5 * ydiff
+    xoff  <- -.7 * xdiff + xcenter
+    yoff  <- ycenter
+  } else if(position == "top"){
+    scale <- .5 * ydiff
+    xoff  <- xcenter
+    yoff  <- .7 * ydiff + ycenter
+  } else if(position == "right"){
+    scale <- .3 * ydiff
+    xoff  <- .7 * xdiff + xcenter
     yoff  <- ycenter
   } else if(position == "bottomleft"){
     scale <- .25 * ydiff
@@ -202,19 +214,12 @@ map_relative <- function(x,
     scale <- .25 * ydiff
     xoff  <- .25 * xdiff + xcenter
     yoff  <- .5 * ydiff + ycenter
-  } else if(position == "left"){
-    scale <- .3 * ydiff
-    xoff  <- -.7 * xdiff + xcenter
-    yoff  <- ycenter
-  } else if(position == "right"){
-    scale <- .3 * ydiff
-    xoff  <- .7 * xdiff + xcenter
-    yoff  <- ycenter
-  }
+  } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
   x[, 1L] <- scale * x[, 1L] + xoff
   x[, 2L] <- scale * x[, 2L] + yoff
+  
   return(x)
 }
 

@@ -193,7 +193,7 @@ manual_tour <- function(basis,
                         phi_min = 0L,
                         phi_max = .5 * pi,
                         angle   = .05,
-                        ...) {
+                        ...){
   ## Assumptions
   basis <- as.matrix(basis)
   p <- nrow(basis)

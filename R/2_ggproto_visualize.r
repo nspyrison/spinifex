@@ -68,10 +68,9 @@ ggtour <- function(basis_array,
       map_to <- df_data
     }
     if(d == 1L){ ## 2D non-NULL basis
-      #### Setup origin, zero mark, 5% along y axis.
-      .den <- stats::density(df_data[, 1L])
+      ## using geom_density(aes(y=..scaled..)), so y is always [0,1]
       map_to <- data.frame(x = stats::quantile(df_data[, 1L], probs = c(.1, .9)),
-                           y = 1.3 * range(.den[[2L]]))
+                           y = c(0, 1))
     }
   }
   n_frames <- length(unique(df_basis$frame))
@@ -476,8 +475,7 @@ proto_basis <- function(position = c("left", "center", "right",
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_basis1d <- function(position = c("left", "center", "right", "bottomleft",
-                                       "topright", "off"),
+proto_basis1d <- function(position = c("top", "left", "center", "right", "off"),
                           manip_col = "blue",
                           segment_size = 2,
                           text_size = 5
@@ -573,7 +571,6 @@ proto_point <- function(aes_args = list(),
   eval(.init4proto)
   if(is.null(.df_data$y)) stop("Projection y not found. `proto_point` expects a 2D tour.")
   if(is.null(.df_data) == TRUE) return()
-  position <- "center"
   ## Replicate arg lists.
   aes_args      <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
@@ -634,7 +631,7 @@ proto_origin <- function(size_frac = .05){
   ## Return
   return(
     ggplot2::geom_segment(
-      data = .df_origin, color = "grey60", size = 1L, alpha = .7,
+      data = .df_origin, color = "grey60", size = 1L, alpha = .5,
       mapping = ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end)
     )
   )
@@ -650,7 +647,7 @@ proto_origin <- function(size_frac = .05){
 #' 
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_origin1d() +
-#'   proto_density()
+#'   proto_density(list(fill = clas, color = clas))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -659,15 +656,11 @@ proto_origin1d <- function(){
   eval(.init4proto)
   if(is.null(last_ggtour()$df_data) == TRUE) return()
   position <- "center"
-  .center  <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
-  
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
   ## Return
-  return(
-    ggplot2::geom_vline(
-      xintercept = .center[, 1L],
-      color = "grey60", size = 1L, alpha = .7
-    )
-  )
+  return(ggplot2::geom_segment(
+    ggplot2::aes(x = x, xend = x, y = y - .6, yend = y + .7),
+    data = .center, color = "grey60", size = .75, alpha = .5))
 }
 
 #' Tour proto for data, 1D density, with rug marks
@@ -707,7 +700,6 @@ proto_density <- function(aes_args = list(),
   ## Initialize
   requireNamespace("transformr")
   eval(.init4proto)
-  position <- "center"
   density_position <- match.arg(density_position)
   ## "identity" is the only position working in plotly right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
@@ -718,22 +710,24 @@ proto_density <- function(aes_args = list(),
   aes_args      <- lapply_rep_len(aes_args,      .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
-  ## do.call aes() over the aes_args
+  ## geom_density do.call
+  .aes_func   <- function(...)
+    ggplot2::aes(x = x, y = ..scaled.., frame = frame, ...)
+  .aes_call   <- do.call(.aes_func, aes_args)
+  .geom_func <- function(...) suppressWarnings(
+    ggplot2::geom_density(mapping = .aes_call, data = .df_data, ...,
+                          position = density_position, color = "black", n = 256))
+  .geom_call_den <- do.call(.geom_func, identity_args)
+  ## geom_rug do.call
   .aes_func   <- function(...)
     ggplot2::aes(x = x, frame = frame, ...)
   .aes_call   <- do.call(.aes_func, aes_args)
-  ## do.call geom over identity_args
-  .geom_func1 <- function(...) suppressWarnings(
-    ggplot2::geom_density(mapping = .aes_call, data = .df_data, ...,
-                          position = density_position, color = "black"))
-  .geom_call1 <- do.call(.geom_func1, identity_args)
-  ## do.call geom over identity_args #2:
-  .geom_func2 <- function(...) suppressWarnings(
+  .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_rug(mapping = .aes_call, data = .df_data, ...))
-  .geom_call2 <- do.call(.geom_func2, identity_args)
+  .geom_call_rug <- do.call(.geom_func, identity_args)
   
   ## Return proto
-  return(list(.geom_call1, .geom_call2))
+  return(list(.geom_call_den, .geom_call_rug))
 }
 
 
@@ -916,7 +910,7 @@ proto_default <- function(aes_args = list(),
 #' gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
-#'   proto_default1d(list(fill = clas))
+#'   proto_default1d(list(fill = clas, color = clas))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -991,9 +985,8 @@ proto_highlight <- function(
   if(is.null(.df_data$y)) stop("Projection y not found. `proto_highlight` expects a 2D tour. Did you mean to call `proto_highlight1d`?")
   if(is.null(.df_data) == TRUE) return()
   position <- "center"
-  
-  ## Index for all frames & subset
-  .idx     <- which(.df_data$label %in% rownumber_index)
+  ## subset, specified rownumbers over all frames
+  .idx <- which(.df_data$label %in% rownumber_index)
   .df_data <- .df_data[.idx, ]
   
   ## Replicate arg lists.
@@ -1017,7 +1010,7 @@ proto_highlight <- function(
     ## do.call geom_vline over highlight obs
     .geom_func  <- function(...) suppressWarnings(geom_point(
       mapping = .aes_call, .df_data[1L, ], ## only the first row, should be frame 1.
-      ..., alpha = .5)) ## hard coded alpha & linetype
+      ..., color = "grey60", alpha = .5))  ## hard coded alpha & linetype
     inital_mark <- do.call(.geom_func, identity_args)
     
     ret <- list(inital_mark, ret)
@@ -1036,53 +1029,54 @@ proto_highlight <- function(
 #' gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
-#'   proto_highlight1d(rownumber_index = 7) +
-#'   proto_density(list(fill = clas))
+#'   proto_density(list(fill = clas, color = clas)) +
+#'   proto_highlight1d(rownumber_index = 7)
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ggt2 <- ggtour(gt_path, dat) +
-#'   proto_highlight1d(rownumber_index = c(2, 6, 7)) +
-#'   proto_density(list(fill = clas))
+#'   proto_density(list(fill = clas, color = clas)) +
+#'   proto_highlight1d(rownumber_index = c(2, 6, 7))
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
 proto_highlight1d <- function(
   rownumber_index,
   aes_args = list(),
-  identity_args = list(list(color = "red", size = 1.5, linetype = 2L, length = unit(1, "npc"), alpha = .5)),
+  identity_args = list(color = "red", linetype = 2, alpha = .7),
   mark_initial = if(length(rownumber_index) == 1) TRUE else FALSE
 ){
   ## Initialize
   eval(.init4proto)
   if(is.null(last_ggtour()$df_data) == TRUE) return()
   position <- "center"
-  
-  ## Index for all frames & subset
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
+  ## subset, specified rownumbers over all frames
   .idx <- which(.df_data$label %in% rownumber_index)
   .df_data <- .df_data[.idx, ]
   
-  ## do.call aes() over the aes_args
+  ## geom_segment do.calls
   .aes_func <- function(...)
-    ggplot2::aes(xintercept = x, frame = frame, tooltip = label, ...) ## rownum for tooltip
+    ggplot2::aes(
+      x = x, xend = x, y = .center[, 1L] - .1, yend = .center[, 2L] + .7,
+      frame = frame, tooltip = label, ...) ## rownum for tooltip
   .aes_call <- do.call(.aes_func, aes_args)
-  ## do.call geom_vline over highlight obs
-  .vline_func <- function(...) suppressWarnings(geom_vline(
+  .geom_func <- function(...) suppressWarnings(ggplot2::geom_segment(
     mapping = .aes_call, .df_data, ...))
-  ret <- do.call(.vline_func, identity_args)
+  ret <- do.call(.geom_func, identity_args)
   
-  ## Initial mark, if needed, hard-coded some aes, no frame.
+  ## Initial mark, if needed, no frame, some hard-coded aes.
   if(mark_initial == TRUE){
     .aes_func <- function(...)
-      ggplot2::aes(xintercept = x, ...)
+      ggplot2::aes(x = x, xend = x, y = .center[, 1L] - .1, 
+                   yend = .center[, 2L] + .7, ...)
     .aes_call <- do.call(.aes_func, aes_args)
     ## do.call geom_vline over highlight obs
-    .vline_func <- function(...) suppressWarnings(geom_vline(
-      mapping = .aes_call, .df_data[1, ], ## only the first row, should be frame 1.
-      ..., alpha = .5, linetype = 2L)) ## hard coded alpha & linetype
-    inital_mark <- do.call(.vline_func, identity_args)
-    
+    .geom_func <- function(...) suppressWarnings(ggplot2::geom_segment(
+      mapping = .aes_call, .df_data[1L, ], ## Only the first row, should be frame 1.
+      color = "grey60", alpha = .5, linetype = 3L, ...)) ## Hard coded alpha & linetype
+    inital_mark <- do.call(.geom_func, identity_args)
     ret <- list(inital_mark, ret)
   }
   
@@ -1092,12 +1086,13 @@ proto_highlight1d <- function(
 
 
 if(FALSE){ ## DONT RUN
-  proto_hdr <- function(levels = c(1, 50, 99),
-                        aes_args = list(),
-                        identity_args = list(list(color = "red", size = 1.5, linetype = 2L, length = unit(1, "npc"), alpha = .5)),
-                        kde.package = c("ash", "ks"),
-                        noutliers = NULL,
-                        label = NULL
+  proto_hdr <- function(
+    levels = c(1, 50, 99),
+    aes_args = list(),
+    identity_args = list(),
+    kde.package = c("ash", "ks"),
+    noutliers = NULL,
+    label = NULL
   ){
     ## Initialize
     eval(.init4proto)
