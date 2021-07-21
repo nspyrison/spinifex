@@ -68,9 +68,8 @@ ggtour <- function(basis_array,
       map_to <- df_data
     }
     if(d == 1L){ ## 2D non-NULL basis
-      ## using geom_density(aes(y=..scaled..)), so y is always [0,1]
-      map_to <- data.frame(x = stats::quantile(df_data[, 1L], probs = c(.1, .9)),
-                           y = c(0, 1))
+      ## y is always [0,1], as geom_density(aes(y=..scaled..))
+      map_to <- data.frame(x = range(df_data[, 1L]), y = c(0, 1))
     }
   }
   n_frames <- length(unique(df_basis$frame))
@@ -101,8 +100,6 @@ ggtour <- function(basis_array,
 #     proto_origin(gridline_probs = FALSE) +
 #     proto_point()
 # }
-
-
 
 
 .store <- new.env(parent = emptyenv())
@@ -504,7 +501,7 @@ proto_basis1d <- function(position = c("top", "left", "center", "right", "off"),
                          y = rep_len(.p:1L, length.out = nrow(.df_basis)),
                          frame = .df_basis$frame,
                          label = .df_basis$label)
-  .df_txt  <- data.frame(x = -1.33, y = .p:1L, label = .frame1$label)
+  .df_txt  <- data.frame(x = -1L, y = .p:1L, label = .frame1$label)
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5))
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5))
   ## Scale them
@@ -519,11 +516,12 @@ proto_basis1d <- function(position = c("top", "left", "center", "right", "off"),
     ggplot2::geom_segment(
       ggplot2::aes(x = min(x), y = min(y), xend = max(x), yend = max(y)),
       .df_seg0, color = "grey80", linetype = 2L),
-    ggplot2::geom_rect(
-      ggplot2::aes(xmin = min(x), xmax = max(x), ymin = min(y), ymax = max(y)),
+    ggplot2::geom_rect(ggplot2::aes(
+      xmin = min(x), xmax = max(x), ymin = min(y), ymax = max(y)),
       .df_rect, fill = NA, color = "grey60"),
-    ggplot2::geom_text(
-      ggplot2::aes(x, y, label = label), .df_txt, size = text_size, color = .text_col),
+    ggplot2::geom_text(ggplot2::aes(x, y, label = label), .df_txt,
+                       hjust = 1L, size = text_size, color = .text_col,
+                       nudge_x = -.08* max(nchar(.frame1$label))),
     suppressWarnings(ggplot2::geom_segment(
       ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
       .df_seg, color = .axes_col, size = .axes_siz))
@@ -763,7 +761,7 @@ proto_density <- function(aes_args = list(),
 #' animate_plotly(ggt)
 #' }
 proto_text <- function(aes_args = list(),
-                       identity_args = list(),
+                       identity_args = list(nudge_x = 0.05),
                        label = NULL,
                        rownum_index = NULL
 ){

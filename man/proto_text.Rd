@@ -6,7 +6,7 @@
 \usage{
 proto_text(
   aes_args = list(),
-  identity_args = list(),
+  identity_args = list(nudge_x = 0.05),
   label = NULL,
   rownum_index = NULL
 )

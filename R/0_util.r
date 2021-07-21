@@ -199,7 +199,7 @@ map_relative <- function(x,
     xoff  <- -.7 * xdiff + xcenter
     yoff  <- ycenter
   } else if(position == "top"){
-    scale <- .5 * ydiff
+    scale <- .3 * ydiff
     xoff  <- xcenter
     yoff  <- .7 * ydiff + ycenter
   } else if(position == "right"){
@@ -217,8 +217,10 @@ map_relative <- function(x,
   } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
-  x[, 1L] <- scale * x[, 1L] + xoff
   x[, 2L] <- scale * x[, 2L] + yoff
+  if(position == "top"){ ## Triple wide for proto_basis1d.
+    x[, 1L] <- 3 * scale * x[, 1L] + xoff
+  }else x[, 1L] <- scale * x[, 1L] + xoff
   
   return(x)
 }
