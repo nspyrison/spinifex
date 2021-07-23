@@ -28,7 +28,7 @@ class \code{Type} and 12 numeric variables:
 \source{
 {rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
 
-{PARVUS. M. Forina. et al. 1988. Elsevier, Amsterdam, PARVUS: An extendable package of programs for data exploration, classification and correlation. ISBN 0‐444‐430121‐
+{PARVUS. M. Forina. et al. 1988. Elsevier, Amsterdam, PARVUS: An extendable package of programs for data exploration, classification and correlation. ISBN 0‐444‐430121z}
 }
 \usage{
 wine

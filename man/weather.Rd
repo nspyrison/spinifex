@@ -27,16 +27,14 @@ between November 1, 2007 and October 31, 2008.
 \item RainToday, Factor: "yes" if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0.
 \item RainTomorrow, Factor: "yes" if it rained the following day, the target variable.
 }
-}
-\source{
-{Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data
-
-{rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
-
 Copyright Commonwealth of Australia 2010,
 Bureau of Meteorology.
-
 Definitions adapted from http://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml
+}
+\source{
+{Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data}
+
+{rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
 }
 \usage{
 weather

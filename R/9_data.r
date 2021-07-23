@@ -144,7 +144,7 @@
 #'   \item age, Age (years)
 #'   \item diabetes, Class variable (test for diabetes), either "pos" or "neg"
 #' }
-#' @details 
+#' @details
 #' Replicating this dataset:
 #' ```
 #' require("mlbench")
@@ -215,6 +215,9 @@
 #'   \item RainToday, Factor: "yes" if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0.
 #'   \item RainTomorrow, Factor: "yes" if it rained the following day, the target variable.
 #' }
+#' Copyright Commonwealth of Australia 2010,
+#' Bureau of Meteorology.
+#' Definitions adapted from http://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml
 #' @details 
 #' Replicating this dataset:
 #' ```
@@ -227,13 +230,8 @@
 #' ```
 #' @name weather
 #' @docType data
-#' @source {Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data
+#' @source {Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data}
 #' @source {rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
-#' 
-#' Copyright Commonwealth of Australia 2010,
-#' Bureau of Meteorology.
-#'
-#' Definitions adapted from http://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml
 #' @examples
 #' library("spinifex")
 #' str(spinifex::weather)
@@ -282,8 +280,8 @@
 #'   \item Proline, Proline
 #' }
 #' @source {rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
-#' @source {PARVUS. M. Forina. et al. 1988. Elsevier, Amsterdam, PARVUS: An extendable package of programs for data exploration, classification and correlation. ISBN 0‐444‐430121‐
-#' @details 
+#' @source {PARVUS. M. Forina. et al. 1988. Elsevier, Amsterdam, PARVUS: An extendable package of programs for data exploration, classification and correlation. ISBN 0‐444‐430121z}
+#' @details
 #' Replicating this dataset:
 #' ```
 #' require("rattle")
