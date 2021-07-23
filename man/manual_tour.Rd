@@ -12,6 +12,7 @@ manual_tour(
   phi_min = 0L,
   phi_max = 0.5 * pi,
   angle = 0.05,
+  data = NULL,
   ...
 )
 }
@@ -35,6 +36,8 @@ the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
 
 \item{angle}{Target angle (in radians) interpolation steps. Defaults to .05.}
+
+\item{data}{Optionally attach data to the basis path.}
 
 \item{...}{Terminate unused arguments that are being also being passed from
 \code{play_manual_tour()} to \code{render_()}.}

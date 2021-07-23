@@ -320,7 +320,7 @@ theme_spinifex <- function(...){
 #' dat_std <- scale_sd(wine[, 2:6])
 #' basis_pca(data = dat_std)
 basis_pca <- function(data, d = 2){
-  ret <- prcomp(data)$rotation[, 1L:d, drop = FALSE]
+  ret <- stats::prcomp(data)$rotation[, 1L:d, drop = FALSE]
   # ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
   # rownames(ret) <- colnames(data)
   # colnames(ret) <- paste0("PC", 1:d)

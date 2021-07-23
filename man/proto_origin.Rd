@@ -6,12 +6,12 @@
 \alias{proto_origin1d}
 \title{Tour proto for data origin zero mark}
 \usage{
-proto_origin(size_frac = 0.05)
+proto_origin(tail_size = 0.05)
 
 proto_origin1d()
 }
 \arguments{
-\item{size_frac}{How long the origin mark should extended
+\item{tail_size}{How long the origin mark should extended
 relative to the observations. Defaults to .05, 5\% of the projection space.}
 }
 \description{

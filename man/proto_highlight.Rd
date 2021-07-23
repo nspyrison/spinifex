@@ -8,21 +8,21 @@
 \code{ggproto_point}.}
 \usage{
 proto_highlight(
-  rownumber_index,
+  rownum_index,
   aes_args = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  mark_initial = if (length(rownumber_index) == 1) TRUE else FALSE
+  mark_initial = if (length(rownum_index) == 1) TRUE else FALSE
 )
 
 proto_highlight1d(
-  rownumber_index,
+  rownum_index,
   aes_args = list(),
   identity_args = list(color = "red", linetype = 2, alpha = 0.7),
-  mark_initial = if (length(rownumber_index) == 1) TRUE else FALSE
+  mark_initial = if (length(rownum_index) == 1) TRUE else FALSE
 )
 }
 \arguments{
-\item{rownumber_index}{One or more integers, the row numbers of the to
+\item{rownum_index}{One or more integers, the row numbers of the to
 highlight. Should be within 1:n, the rows of the original data.}
 
 \item{aes_args}{A list of aesthetic arguments to passed to
@@ -52,14 +52,14 @@ clas <- tourr::flea$species
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat) +
-  proto_highlight(rownumber_index = 5) +
+  proto_highlight(rownum_index = 5) +
   proto_point()
 \dontrun{
 animate_plotly(ggt)
 }
 
 ggt2 <- ggtour(gt_path, dat) +
-  proto_highlight(rownumber_index = c( 2, 6, 19),
+  proto_highlight(rownum_index = c( 2, 6, 19),
                   identity_args = list(color = "blue", size = 4, shape = 2)) +
   proto_point(list(color = clas, shape = clas),
               list(size = 2, alpha = .7))
@@ -71,14 +71,14 @@ gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 
 ggt <- ggtour(gt_path, dat) +
   proto_density(list(fill = clas, color = clas)) +
-  proto_highlight1d(rownumber_index = 7)
+  proto_highlight1d(rownum_index = 7)
 \dontrun{
 animate_plotly(ggt)
 }
 
 ggt2 <- ggtour(gt_path, dat) +
   proto_density(list(fill = clas, color = clas)) +
-  proto_highlight1d(rownumber_index = c(2, 6, 7))
+  proto_highlight1d(rownum_index = c(2, 6, 7))
 \dontrun{
 animate_plotly(ggt2)
 }

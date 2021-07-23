@@ -19,7 +19,7 @@ mt1d   <- manual_tour(bas[, 1L], mv, angle = 1L)
 ## ggtourr -----
 gg_mt   <- ggtour(mt  , dat       ) + proto_default()
 gg_gt   <- ggtour(gt  , angle = 1L) + proto_default()
-gg_mt1d <- ggtour(mt1d, angle = 1L) + proto_default1d()
+gg_mt1d <- ggtour(mt1d, dat, angle = 1L) + proto_default1d()
 gg_gt1d <- ggtour(gt1d, angle = 1L) + proto_default1d()
 test_that("ggtourr", {
   expect_error(ggtour(mt) + proto_default())
@@ -87,7 +87,7 @@ test_that("proto_basis", {
 ## proto_point & density-----
 pp_mt   <- ggtour(mt  , dat       ) + proto_point()
 pp_gt   <- ggtour(gt  , angle = 1L) + proto_point()
-pd_mt1d <- ggtour(mt1d, angle = 1L) + proto_density()
+pd_mt1d <- ggtour(mt1d, dat, angle = 1L) + proto_density()
 pd_gt1d <- ggtour(gt1d, angle = 1L) + proto_density()
 test_that("proto_:point/density", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_point())
@@ -144,7 +144,7 @@ test_that("proto_hex", {
 ## proto_default -----
 pd_mt   <- ggtour(mt  , dat       ) + proto_default()
 pd_gt   <- ggtour(gt  , angle = 1L) + proto_default()
-pd_mt1d <- ggtour(mt1d, angle = 1L) + proto_default1d()
+pd_mt1d <- ggtour(mt1d, dat, angle = 1L) + proto_default1d()
 pd_gt1d <- ggtour(gt1d, angle = 1L) + proto_default1d()
 test_that("proto_default", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_default())
@@ -159,10 +159,10 @@ test_that("proto_default", {
 })
 
 ## proto_highlight -----
-ph_mt   <- ggtour(mt  , dat       ) + proto_highlight()
-ph_gt   <- ggtour(gt  , angle = 1L) + proto_highlight()
-ph_mt1d <- ggtour(mt1d, angle = 1L) + proto_highlight1d()
-ph_gt1d <- ggtour(gt1d, angle = 1L) + proto_highlight1d()
+ph_mt   <- ggtour(mt  , dat       ) + proto_highlight(1)
+ph_gt   <- ggtour(gt  , angle = 1L) + proto_highlight(1:2)
+ph_mt1d <- ggtour(mt1d, dat, angle = 1L) + proto_highlight1d(1:2)
+ph_gt1d <- ggtour(gt1d, angle = 1L) + proto_highlight1d(1)
 test_that("proto_highlight", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_default())
   expect_is(ph_mt  , c("gg", "ggplot"))

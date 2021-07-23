@@ -590,7 +590,7 @@ proto_point <- function(aes_args = list(),
 #'
 #' Adds a zero mark showing the location of the origin for the central data area.
 #'
-#' @param size_frac How long the origin mark should extended
+#' @param tail_size How long the origin mark should extended
 #' relative to the observations. Defaults to .05, 5% of the projection space.
 #' @export
 #' @aliases proto_origin2d
@@ -608,7 +608,7 @@ proto_point <- function(aes_args = list(),
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_origin <- function(size_frac = .05){
+proto_origin <- function(tail_size = .05){
   ## Initialize
   eval(.init4proto)
   if(is.null(.df_basis$y)) stop("Basis `y` not found. `proto_origin` expects a 2D tour. Did you mean to call `proto_origin1d`?")
@@ -619,7 +619,7 @@ proto_origin <- function(size_frac = .05){
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
   .min    <- min(min(.map_to[, 1L]), min(.map_to[, 2L]))
   .max    <- max(max(.map_to[, 1L]), max(.map_to[, 2L]))
-  .tail   <- fraction / 2L * (.max - .min)
+  .tail   <- tail_size / 2L * (.max - .min)
   
   .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
                            x_end = c(.center[, 1L] + .tail, .center[, 1L]),
@@ -698,6 +698,7 @@ proto_density <- function(aes_args = list(),
   ## Initialize
   requireNamespace("transformr")
   eval(.init4proto)
+  if(is.null(.df_data)) warning("proto_density: data missing. Did you call ggtour() on a manual tour without passing data?");return()
   density_position <- match.arg(density_position)
   ## "identity" is the only position working in plotly right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
@@ -743,7 +744,7 @@ proto_density <- function(aes_args = list(),
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' @param label A character vector, the texts that should be in the location of
 #' the data. Default is NULL, which goes to the rownumber.
-#' @param rownumber_index One or more integers, the row numbers of the to 
+#' @param rownum_index One or more integers, the row numbers of the to 
 #' subset to. Should be within 1:n, the rows of the original data. Defaults to
 #' NULL, labeling all rows.
 #' @export
@@ -774,7 +775,7 @@ proto_text <- function(aes_args = list(),
   
   if(is.null(rownum_index) == FALSE){
     ## Index for all frames & subset
-    .idx     <- which(.df_data$label %in% rownumber_index)
+    .idx     <- which(.df_data$label %in% rownum_index)
     .df_data <- .df_data[.idx, ]
   }
   
@@ -935,7 +936,7 @@ proto_default1d <- function(aes_args = list(),
 #' original data.frame with specified highlighting aesthetics. Layering is 
 #' important for use with `proto_point`.
 #'
-#' @param rownumber_index One or more integers, the row numbers of the to 
+#' @param rownum_index One or more integers, the row numbers of the to 
 #' highlight. Should be within 1:n, the rows of the original data.
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
@@ -958,14 +959,14 @@ proto_default1d <- function(aes_args = list(),
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
-#'   proto_highlight(rownumber_index = 5) +
+#'   proto_highlight(rownum_index = 5) +
 #'   proto_point()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ggt2 <- ggtour(gt_path, dat) +
-#'   proto_highlight(rownumber_index = c( 2, 6, 19),
+#'   proto_highlight(rownum_index = c( 2, 6, 19),
 #'                   identity_args = list(color = "blue", size = 4, shape = 2)) +
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 2, alpha = .7))
@@ -973,10 +974,10 @@ proto_default1d <- function(aes_args = list(),
 #' animate_plotly(ggt2)
 #' }
 proto_highlight <- function(
-  rownumber_index,
+  rownum_index,
   aes_args = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  mark_initial = if(length(rownumber_index) == 1) TRUE else FALSE
+  mark_initial = if(length(rownum_index) == 1) TRUE else FALSE
 ){
   ## Initialize
   eval(.init4proto)
@@ -984,7 +985,7 @@ proto_highlight <- function(
   if(is.null(.df_data) == TRUE) return()
   position <- "center"
   ## subset, specified rownumbers over all frames
-  .idx <- which(.df_data$label %in% rownumber_index)
+  .idx <- which(.df_data$label %in% rownum_index)
   .df_data <- .df_data[.idx, ]
   
   ## Replicate arg lists.
@@ -1006,7 +1007,7 @@ proto_highlight <- function(
       ggplot2::aes(x = x, y = y, ...)
     .aes_call   <- do.call(.aes_func, aes_args)
     ## do.call geom_vline over highlight obs
-    .geom_func  <- function(...) suppressWarnings(geom_point(
+    .geom_func  <- function(...) suppressWarnings(ggplot2::geom_point(
       mapping = .aes_call, .df_data[1L, ], ## only the first row, should be frame 1.
       ..., color = "grey60", alpha = .5))  ## hard coded alpha & linetype
     inital_mark <- do.call(.geom_func, identity_args)
@@ -1028,22 +1029,22 @@ proto_highlight <- function(
 #' 
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_density(list(fill = clas, color = clas)) +
-#'   proto_highlight1d(rownumber_index = 7)
+#'   proto_highlight1d(rownum_index = 7)
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_density(list(fill = clas, color = clas)) +
-#'   proto_highlight1d(rownumber_index = c(2, 6, 7))
+#'   proto_highlight1d(rownum_index = c(2, 6, 7))
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
 proto_highlight1d <- function(
-  rownumber_index,
+  rownum_index,
   aes_args = list(),
   identity_args = list(color = "red", linetype = 2, alpha = .7),
-  mark_initial = if(length(rownumber_index) == 1) TRUE else FALSE
+  mark_initial = if(length(rownum_index) == 1) TRUE else FALSE
 ){
   ## Initialize
   eval(.init4proto)
@@ -1051,7 +1052,7 @@ proto_highlight1d <- function(
   position <- "center"
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
   ## subset, specified rownumbers over all frames
-  .idx <- which(.df_data$label %in% rownumber_index)
+  .idx <- which(.df_data$label %in% rownum_index)
   .df_data <- .df_data[.idx, ]
   
   ## geom_segment do.calls
@@ -1070,7 +1071,7 @@ proto_highlight1d <- function(
       ggplot2::aes(x = x, xend = x, y = .center[, 1L] - .1, 
                    yend = .center[, 2L] + .7, ...)
     .aes_call <- do.call(.aes_func, aes_args)
-    ## do.call geom_vline over highlight obs
+    ## do.call geom_segment for highlight obs
     .geom_func <- function(...) suppressWarnings(ggplot2::geom_segment(
       mapping = .aes_call, .df_data[1L, ], ## Only the first row, should be frame 1.
       color = "grey60", alpha = .5, linetype = 3L, ...)) ## Hard coded alpha & linetype

@@ -164,6 +164,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' the "out-of-plane" rotation, the z-axis of the reference frame. 
 #' Required, defaults to pi/2.
 #' @param angle Target angle (in radians) interpolation steps. Defaults to .05.
+#' @param data Optionally attach data to the basis path.
 #' @param ... Terminate unused arguments that are being also being passed from 
 #' `play_manual_tour()` to `render_()`.
 #' @return A (p, d, 4) history_array of the radial tour. The bases set for
@@ -193,6 +194,7 @@ manual_tour <- function(basis,
                         phi_min = 0L,
                         phi_max = .5 * pi,
                         angle   = .05,
+                        data = NULL,
                         ...){
   ## Assumptions
   basis <- as.matrix(basis)
@@ -263,6 +265,7 @@ manual_tour <- function(basis,
     tour_array[,, i] <<- this_proj[, 1L:d]
   })
   attr(tour_array, "manip_var") <- manip_var
+  attr(tour_array, "data") <- data ## Can be Null
   
   return(tour_array)
 }

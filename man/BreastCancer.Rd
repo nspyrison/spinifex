@@ -58,7 +58,7 @@ BreastCancer <- d
 \examples{
 library("spinifex")
 str(spinifex::BreastCancer)
-dat <- scale_sd(spinifex::BreastCancer[, 2:10])
+dat <- scale_sd(spinifex::BreastCancer[, 1:8])
 clas <- spinifex::BreastCancer$Class
 
 bas <- basis_pca(dat)

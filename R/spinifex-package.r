@@ -39,17 +39,15 @@ if(getRversion() >= "2.15.1"){
                            "theta",
                            "angle"))
   ## ggproto globals:
-  utils::globalVariables(c(".spinifex_df_basis",
-                           ".spinifex_df_data",
-                           ".spinifex_map_to",
-                           ".df_data",
+  utils::globalVariables(c(".df_data",
                            ".df_basis",
                            ".map_to",
                            ".n_frames",
                            ".nrow_df_data",
                            ".n",
                            ".p",
-                           ".manip_var"))
+                           ".manip_var",
+                           "rownum_index"))
   ## ggplot aes globals:
   utils::globalVariables(c("x",
                            "y",
@@ -59,6 +57,7 @@ if(getRversion() >= "2.15.1"){
                            "x_end",
                            "y_end",
                            "label",
+                           "..scaled..",
                            "frame",    ## Animation frame
                            "tooltip")) ## plotly tooltip
 }
