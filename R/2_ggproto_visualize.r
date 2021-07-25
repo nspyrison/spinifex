@@ -159,8 +159,7 @@ lapply_rep_len <- function(list,
 ### .init4proto expression -----
 .init4proto <- expression({ ## expression, not function
   ggt_ls <- last_ggtour()
-  if(is.null(ggt_ls)) 
-    stop("last_ggtour() is NULL, have you run `ggtour()` yet?")
+  if(is.null(ggt_ls)) stop("last_ggtour() is NULL, have you run `ggtour()` yet?")
   
   ## Assign hidden objects within the scope of a ggproto func.
   .df_basis     <- ggt_ls$df_basis ## Give operable local copies
@@ -698,13 +697,13 @@ proto_density <- function(aes_args = list(),
   ## Initialize
   requireNamespace("transformr")
   eval(.init4proto)
-  if(is.null(.df_data)) warning("proto_density: data missing. Did you call ggtour() on a manual tour without passing data?");return()
+  if(is.null(.df_data))stop("proto_density: data missing. Did you call ggtour() on a manual tour without passing data?")
   density_position <- match.arg(density_position)
   ## "identity" is the only position working in plotly right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
   .nms <- names(aes_args)
   if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
-    warning("proto_density, aes_args: color used without fill, did you mean to use fill to color below the curve?")
+    warning("proto_density: aes_args contains color without fill, did you mean to use fill to color below the curve?")
   ## Replicate arg lists
   aes_args      <- lapply_rep_len(aes_args,      .nrow_df_data, .n)
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
@@ -837,7 +836,7 @@ proto_hex <- function(aes_args = list(),
   requireNamespace("hexbin")
   eval(.init4proto)
   if(is.null(.df_basis$y)) stop("Basis `y` not found. `proto_hex` expects a 2D tour.?")
-  if(is.null(.df_data)) message("Data missing. Did you call ggtour() on a manual tour without passing data?");return()
+  if(is.null(.df_data)) stop("proto_hex: data is missing. Did you call ggtour() on a manual tour without passing data?")
   position <- "center"
   
   ## Replicate arg lists.
@@ -981,7 +980,7 @@ proto_highlight <- function(
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data$y)) stop("Projection y not found. `proto_highlight` expects a 2D tour. Did you mean to call `proto_highlight1d`?")
+  if(is.null(.df_data$y)) stop("proto_highlight: projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
   if(is.null(.df_data) == TRUE) return()
   position <- "center"
   ## subset, specified rownumbers over all frames
@@ -1095,7 +1094,7 @@ if(FALSE){ ## DONT RUN
   ){
     ## Initialize
     eval(.init4proto)
-    if(is.null(.df_data$y)) stop("Projection y not found. `proto_hdr` expects a 2D tour.")
+    if(is.null(.df_data$y)) stop("proto_hdr: projection y not found, expects a 2D tour.")
     if(is.null(.df_data) == TRUE) return()
     position <- "center"
     
