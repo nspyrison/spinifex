@@ -7,7 +7,7 @@
 \usage{
 proto_density(
   aes_args = list(),
-  identity_args = list(),
+  identity_args = list(alpha = 0.7),
   density_position = c("identity", "stack")
 )
 }

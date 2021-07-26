@@ -10,7 +10,7 @@ manual_tour(
   manip_var,
   theta = NULL,
   phi_min = 0L,
-  phi_max = 0.5 * pi,
+  phi_max = pi/2L,
   angle = 0.05,
   data = NULL,
   ...
@@ -54,6 +54,7 @@ position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 \examples{
 ## Setup
 dat_std <- scale_sd(wine[, 2:6])
+clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 

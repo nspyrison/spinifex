@@ -691,7 +691,7 @@ proto_origin1d <- function(){
 #' animate_plotly(ggt)
 #' }
 proto_density <- function(aes_args = list(),
-                          identity_args = list(),
+                          identity_args = list(alpha = .7),
                           density_position = c("identity", "stack")
 ){
   ## Initialize
@@ -709,19 +709,20 @@ proto_density <- function(aes_args = list(),
   identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## geom_density do.call
-  .aes_func   <- function(...)
+  .aes_func <- function(...)
     ggplot2::aes(x = x, y = ..scaled.., frame = frame, ...)
-  .aes_call   <- do.call(.aes_func, aes_args)
+  .aes_call <- do.call(.aes_func, aes_args)
   .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_density(mapping = .aes_call, data = .df_data, ...,
                           position = density_position, color = "black", n = 256))
   .geom_call_den <- do.call(.geom_func, identity_args)
   ## geom_rug do.call
-  .aes_func   <- function(...)
+  .aes_func <- function(...)
     ggplot2::aes(x = x, frame = frame, ...)
-  .aes_call   <- do.call(.aes_func, aes_args)
+  .aes_call <- do.call(.aes_func, aes_args)
   .geom_func <- function(...) suppressWarnings(
-    ggplot2::geom_rug(mapping = .aes_call, data = .df_data, ...))
+    ggplot2::geom_rug(mapping = .aes_call, data = .df_data,
+                      length = ggplot2::unit(0.08, "npc"), ...))
   .geom_call_rug <- do.call(.geom_func, identity_args)
   
   ## Return proto
@@ -1054,11 +1055,14 @@ proto_highlight1d <- function(
   .idx <- which(.df_data$label %in% rownum_index)
   .df_data <- .df_data[.idx, ]
   
-  ## geom_segment do.calls
+  ## geom_segment do.calls, moving with frame
+  .ymin <- min(.map_to[, 2L])
+  .ymax <- max(.map_to[, 2L])
+  .segment_tail <- diff(c(.ymin, .ymax)) * .06
   .aes_func <- function(...)
-    ggplot2::aes(
-      x = x, xend = x, y = .center[, 1L] - .1, yend = .center[, 2L] + .7,
-      frame = frame, tooltip = label, ...) ## rownum for tooltip
+    ggplot2::aes(x = x, xend = x,  y = .ymin - .segment_tail,
+                 yend = .ymax + .segment_tail,
+                 frame = frame, tooltip = label, ...) ## rownum for tooltip
   .aes_call <- do.call(.aes_func, aes_args)
   .geom_func <- function(...) suppressWarnings(ggplot2::geom_segment(
     mapping = .aes_call, .df_data, ...))
@@ -1067,13 +1071,13 @@ proto_highlight1d <- function(
   ## Initial mark, if needed, no frame, some hard-coded aes.
   if(mark_initial == TRUE){
     .aes_func <- function(...)
-      ggplot2::aes(x = x, xend = x, y = .center[, 1L] - .1, 
-                   yend = .center[, 2L] + .7, ...)
+      ggplot2::aes(x = x, xend = x, y = .ymin - .segment_tail,
+                   yend = .ymax + .segment_tail, ...)
     .aes_call <- do.call(.aes_func, aes_args)
     ## do.call geom_segment for highlight obs
     .geom_func <- function(...) suppressWarnings(ggplot2::geom_segment(
       mapping = .aes_call, .df_data[1L, ], ## Only the first row, should be frame 1.
-      color = "grey60", alpha = .5, linetype = 3L, ...)) ## Hard coded alpha & linetype
+      color = "grey60", alpha = .7, linetype = 3L, ...)) ## Hard coded alpha & linetype
     inital_mark <- do.call(.geom_func, identity_args)
     ret <- list(inital_mark, ret)
   }

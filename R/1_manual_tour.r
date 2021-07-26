@@ -173,6 +173,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @examples
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:6])
+#' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' 
@@ -188,11 +189,19 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' bas1d <- basis_pca(dat_std, d = 1)
 #' mv <- manip_var_of(bas1d)
 #' manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+####### ggt causes Error in FUN(X[[i]], ...) : object 'label' not found
+# ## Animating with ggtour() & proto_*
+# mt <- manual_tour(basis = bas, manip_var = mv)
+# (ggt <- ggtour(mt, dat_std) +
+#   proto_default(list(color = clas, shape = clas)))
+# \dontrun{
+# animate_plotly(ggt)
+# }
 manual_tour <- function(basis,
                         manip_var,
                         theta   = NULL,
                         phi_min = 0L,
-                        phi_max = .5 * pi,
+                        phi_max = pi / 2L,
                         angle   = .05,
                         data = NULL,
                         ...){
@@ -220,11 +229,14 @@ manual_tour <- function(basis,
     theta <- NA
   }
   ### shift phi start in be in-phase between [0, pi / 2]
-  while(phi_start > pi / 2L) phi_start <- phi_start - pi / 2L
-  while(phi_start < 0L)      phi_start <- phi_start + pi / 2L
-  if((phi_min < phi_start) == FALSE)
+  while(phi_start > pi / 2L){
+    phi_start <- -phi_start + pi
+    phi_max <- -phi_max
+  }
+  while(phi_start < -pi / 2L) phi_start <- phi_start + pi
+  if((abs(phi_min) < abs(phi_start)) == FALSE)
     stop("Phi is less than phi_min, please set phi_min below ", round(phi_start, 2L))
-  if((phi_max > phi_start) == FALSE)
+  if((abs(phi_max) > abs(phi_start)) == FALSE)
     stop("Phi is greather than phi_max, please set phi_max above ", round(phi_start, 2L))
   ## Terminate args meant for render_*/animate_* passed through play_manual_tour().
   .xArgs <- list(...)
@@ -233,9 +245,8 @@ manual_tour <- function(basis,
   ## Find the values of phi for each 'segment/leg/direction' of the walk
   phi_interpolate <- function(start, end){
     ## Initialize
-    mvar_xsign <- ifelse(basis[manip_var, 1L] < 0L, -1L, 1L)
-    start      <- mvar_xsign * (start - phi_start)
-    end        <- mvar_xsign * (end   - phi_start)
+    start      <- start - phi_start
+    end        <- end   - phi_start
     dist       <- abs(end - start)
     remainder  <- dist %% angle
     direction  <- ifelse(end > start, 1L, -1L)
@@ -251,8 +262,6 @@ manual_tour <- function(basis,
                 phi_interpolate(start = phi_min,   end = phi_max),
                 phi_interpolate(start = phi_max,   end = phi_start))
   
-  
-  
   ## Make projected basis array
   n_frames <- length(phi_path)
   m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
@@ -260,8 +269,7 @@ manual_tour <- function(basis,
     NA, dim = c(p, d, n_frames),
     dimnames = c(dimnames(basis), list(paste0("frame", 1L:n_frames))))
   .m <- sapply(1L:n_frames, function(i){
-    this_sign <- -1 * sign(diff(phi_path)[1])
-    this_proj <- rotate_manip_space(m_sp, theta, this_sign * phi_path[i])
+    this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])
     tour_array[,, i] <<- this_proj[, 1L:d]
   })
   attr(tour_array, "manip_var") <- manip_var
