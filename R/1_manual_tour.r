@@ -189,14 +189,6 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' bas1d <- basis_pca(dat_std, d = 1)
 #' mv <- manip_var_of(bas1d)
 #' manual_tour(basis = bas1d, manip_var = mv, angle = .2)
-####### ggt causes Error in FUN(X[[i]], ...) : object 'label' not found
-# ## Animating with ggtour() & proto_*
-# mt <- manual_tour(basis = bas, manip_var = mv)
-# (ggt <- ggtour(mt, dat_std) +
-#   proto_default(list(color = clas, shape = clas)))
-# \dontrun{
-# animate_plotly(ggt)
-# }
 manual_tour <- function(basis,
                         manip_var,
                         theta   = NULL,
@@ -233,7 +225,9 @@ manual_tour <- function(basis,
     phi_start <- -phi_start + pi
     phi_max <- -phi_max
   }
-  while(phi_start < -pi / 2L) phi_start <- phi_start + pi
+  while(phi_start < -pi / 2L) 
+    phi_start <- phi_start + pi
+  ## Ensure correct order of phi_min, phi_start, phi_max
   if((abs(phi_min) < abs(phi_start)) == FALSE)
     stop("Phi is less than phi_min, please set phi_min below ", round(phi_start, 2L))
   if((abs(phi_max) > abs(phi_start)) == FALSE)
@@ -276,4 +270,20 @@ manual_tour <- function(basis,
   attr(tour_array, "data") <- data ## Can be Null
   
   return(tour_array)
+}
+####### ggt causes Error in FUN(X[[i]], ...) : object 'label' not found
+if(F){ ## NOT RUN:
+  dat_std <- scale_sd(wine[, 2:6])
+  clas <- wine$Type
+  bas <- basis_pca(dat_std)
+  mv <- manip_var_of(bas)
+  ## Animating with ggtour() & proto_*
+  mt <- manual_tour(basis = bas, manip_var = mv)
+  (ggt <- ggtour(mt, dat_std) +
+      proto_origin() +
+      proto_point(list(color = clas, shape = clas)) +
+      proto_basis())
+  # proto_default(list(color = clas, shape = clas)))
+  ##\dontrun{
+  animate_plotly(ggt)
 }

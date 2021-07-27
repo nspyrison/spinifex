@@ -7,9 +7,9 @@
 array2df(
   array,
   data = NULL,
-  basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3L) else
-    paste0("x", 1:dim(array)[1]),
-  data_label = if (is.null(data) == FALSE) rownames(data) else NULL
+  basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3) else
+    paste0("x", 1:nrow(array)),
+  data_label = row.names(data)
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ vector of the number of variables.
 Defaults to the 3 character abbreviation of the original variables names.}
 
 \item{data_label}{Optional, labels for plotly tooltip and return object.
-Defaults to the rownames of the data, if available.}
+Defaults to the rownames of the data, if available, then the row number.}
 }
 \value{
 A list containing an array of basis frames (p, d, n_frames) and

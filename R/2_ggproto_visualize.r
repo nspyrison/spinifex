@@ -48,7 +48,7 @@ ggtour <- function(basis_array,
   if(any(class(basis_array) %in% c("matrix", "data.frame"))) ## Format for array2df (_list)
     basis_array <- array(as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   
-  ## Interpolate if needed and apply array2df
+  ## Interpolate if a tour_array from tourr.
   if(is.null(manip_var)){ ## if manip_var is null AND if not 1 basis
     if(dim(basis_array)[3L] != 1L)
       .mute <- utils::capture.output(
@@ -69,7 +69,7 @@ ggtour <- function(basis_array,
     }
     if(d == 1L){ ## 2D non-NULL basis
       ## y is always [0,1], as geom_density(aes(y=..scaled..))
-      map_to <- data.frame(x = range(df_data[, 1L]), y = c(0, 1))
+      map_to <- data.frame(x = range(df_data[, 1L]), y = c(0L, 1L))
     }
   }
   n_frames <- length(unique(df_basis$frame))
@@ -158,18 +158,22 @@ lapply_rep_len <- function(list,
 #' ## This expression. is not meant for external use.
 ### .init4proto expression -----
 .init4proto <- expression({ ## expression, not function
-  ggt_ls <- last_ggtour()
-  if(is.null(ggt_ls)) stop("last_ggtour() is NULL, have you run `ggtour()` yet?")
-  
-  ## Assign hidden objects within the scope of a ggproto func.
-  .df_basis     <- ggt_ls$df_basis ## Give operable local copies
-  .df_data      <- ggt_ls$df_data
-  .map_to       <- ggt_ls$map_to
-  .n_frames     <- ggt_ls$n_frames
-  .nrow_df_data <- ggt_ls$nrow_df_data
-  .n            <- ggt_ls$n
-  .p            <- ggt_ls$p
-  .manip_var    <- ggt_ls$manip_var
+  .ggt <- last_ggtour()
+  if(is.null(.ggt)) stop("last_ggtour() is NULL, have you run ggtour() yet?")
+  ## Assign elements of last_ggtour() into the scope of a ggproto func.
+  .df_basis     <- .ggt$df_basis ## Give operable local copies
+  .df_data      <- .ggt$df_data
+  .map_to       <- .ggt$map_to
+  .n_frames     <- .ggt$n_frames
+  .nrow_df_data <- .ggt$nrow_df_data
+  .n            <- .ggt$n
+  .p            <- .ggt$p
+  .manip_var    <- .ggt$manip_var
+  ## Replicate arg lists if they exist
+  if(exists("aes_args"))
+    aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
+  if(exists("identity_args"))
+    identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
 })
 
 ### ANIMATE_* ------
@@ -215,13 +219,12 @@ lapply_rep_len <- function(list,
 #'                        animation = anim,
 #'                        path = "./figures")
 #' }
-animate_gganimate <- function(
-  ggtour,
-  fps = 8,
-  rewind = FALSE,
-  start_pause = 1,
-  end_pause = 1,
-  ... ## Passed to gganimate::animate or gganimate::knit_print.gganim
+animate_gganimate <- function(ggtour,
+                              fps = 8,
+                              rewind = FALSE,
+                              start_pause = 1,
+                              end_pause = 1,
+                              ... ## Passed to gganimate::animate
 ){
   ## Assumptions
   requireNamespace("gifski")
@@ -305,7 +308,7 @@ animate_plotly <- function(ggtour,
         plotly::animation_opts(frame = 1L / fps * 1000L,
                                transition = 0L, redraw = FALSE) %>%
         plotly::layout(showlegend = FALSE,
-                       #, fixedrange = TRUE ## is a curse, do not use.
+                       #, fixedrange = TRUE ## This is a curse, do not use.
                        yaxis = list(showgrid = FALSE, showline = FALSE),
                        xaxis = list(showgrid = FALSE, showline = FALSE,
                                     scaleanchor = "y", scalaratio = 1L),
@@ -404,15 +407,16 @@ animate_plotly <- function(ggtour,
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
-proto_basis <- function(position = c("left", "center", "right",
-                                     "bottomleft", "topright", "off"),
-                        manip_col = "blue",
-                        line_size = 1,
-                        text_size = 5
+proto_basis <- function(
+  position = c("left", "center", "right", "bottomleft", "topright", "off"),
+  manip_col = "blue",
+  line_size = 1,
+  text_size = 5
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_basis$y)) stop("Basis `y` not found. `proto_basis` expects a 2D tour. Did you mean to call `proto_basis1d`?")
+  if(is.null(.df_basis$y))
+    stop("proto_basis: Basis `y` not found, expected a 2D tour. Did you mean to call `proto_basis1d`?")
   position = match.arg(position)
   if(position == "off") return()
   
@@ -425,7 +429,7 @@ proto_basis <- function(position = c("left", "center", "right",
   ## Aesthetics for the axes segments.
   .axes_col <- "grey50"
   .axes_siz <- line_size
-  if (is.null(.manip_var) == FALSE) {
+  if(is.null(.manip_var) == FALSE) {
     .axes_col <- rep("grey50", .p)
     .axes_col[.manip_var] <- manip_col
     .axes_col <- rep(.axes_col, .n_frames)
@@ -471,10 +475,11 @@ proto_basis <- function(position = c("left", "center", "right",
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_basis1d <- function(position = c("top", "left", "center", "right", "off"),
-                          manip_col = "blue",
-                          segment_size = 2,
-                          text_size = 5
+proto_basis1d <- function(
+  position = c("top", "left", "center", "right", "off"),
+  manip_col = "blue",
+  segment_size = 2,
+  text_size = 5
 ){
   ## Initialize
   eval(.init4proto)
@@ -520,7 +525,7 @@ proto_basis1d <- function(position = c("top", "left", "center", "right", "off"),
       .df_rect, fill = NA, color = "grey60"),
     ggplot2::geom_text(ggplot2::aes(x, y, label = label), .df_txt,
                        hjust = 1L, size = text_size, color = .text_col,
-                       nudge_x = -.08* max(nchar(.frame1$label))),
+                       nudge_x = -.08 * max(nchar(.frame1$label))),
     suppressWarnings(ggplot2::geom_segment(
       ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
       .df_seg, color = .axes_col, size = .axes_siz))
@@ -566,11 +571,13 @@ proto_point <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data$y)) stop("Projection y not found. `proto_point` expects a 2D tour.")
-  if(is.null(.df_data) == TRUE) return()
-  ## Replicate arg lists.
-  aes_args      <- lapply_rep_len(aes_args, .nrow_df_data, .n)
-  identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
+    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data$y))
+    stop("proto_point: Projection y not found, expected a 2D tour.")
+  
+  browser()
+  .df_data
+  if(is.null(label)) label <- 1L:.n
   
   ## do.call aes() over the aes_args
   .aes_func  <- function(...)
@@ -610,9 +617,9 @@ proto_point <- function(aes_args = list(),
 proto_origin <- function(tail_size = .05){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_basis$y)) stop("Basis `y` not found. `proto_origin` expects a 2D tour. Did you mean to call `proto_origin1d`?")
-  if(is.null(.df_data) == TRUE) return()
-  position <- "center"
+    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_basis$y))
+    warning("proto_origin: Basis y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
   
   #### Setup origin, zero mark, 5% on each side.
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
@@ -642,7 +649,7 @@ proto_origin <- function(tail_size = .05){
 #' ## 1D case:
 #' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 5)
 #' 
-#' ggt <- ggtour(gt_path, dat) +
+#' ggt <- ggtour(gt_path1d, dat) +
 #'   proto_origin1d() +
 #'   proto_density(list(fill = clas, color = clas))
 #' \dontrun{
@@ -652,11 +659,14 @@ proto_origin1d <- function(){
   ## Initialize
   eval(.init4proto)
   if(is.null(last_ggtour()$df_data) == TRUE) return()
-  position <- "center"
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
+  
+  .ymin <- min(.map_to[, 2L])
+  .ymax <- max(.map_to[, 2L])
+  .segment_tail <- diff(c(.ymin, .ymax)) * .06
   ## Return
   return(ggplot2::geom_segment(
-    ggplot2::aes(x = x, xend = x, y = y - .6, yend = y + .7),
+    ggplot2::aes(x = x, xend = x, y = y - .segment_tail, yend = y + .segment_tail),
     data = .center, color = "grey60", size = .75, alpha = .5))
 }
 
@@ -697,16 +707,15 @@ proto_density <- function(aes_args = list(),
   ## Initialize
   requireNamespace("transformr")
   eval(.init4proto)
-  if(is.null(.df_data))stop("proto_density: data missing. Did you call ggtour() on a manual tour without passing data?")
+  if(is.null(.df_data))
+    stop("proto_density: data missing. Did you call ggtour() on a manual tour without passing data?")
   density_position <- match.arg(density_position)
-  ## "identity" is the only position working in plotly right now.
+  
+  ## "identity" is the only position working in {plotly} right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
   .nms <- names(aes_args)
   if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
     warning("proto_density: aes_args contains color without fill, did you mean to use fill to color below the curve?")
-  ## Replicate arg lists
-  aes_args      <- lapply_rep_len(aes_args,      .nrow_df_data, .n)
-  identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## geom_density do.call
   .aes_func <- function(...)
@@ -714,7 +723,7 @@ proto_density <- function(aes_args = list(),
   .aes_call <- do.call(.aes_func, aes_args)
   .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_density(mapping = .aes_call, data = .df_data, ...,
-                          position = density_position, color = "black", n = 256))
+                          position = density_position, color = "black", n = 256L))
   .geom_call_den <- do.call(.geom_func, identity_args)
   ## geom_rug do.call
   .aes_func <- function(...)
@@ -768,20 +777,15 @@ proto_text <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data$y)) stop("Projection y not found.`proto_text` expects a 2D tour.")
-  if(is.null(.df_data) == TRUE) return()
+    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data$y))
+    stop("proto_text: Projection y not found, expected a 2D tour.")
   if(is.null(label)) label <- 1L:.n
-  position <- "center"
-  
+  ## Index for all frames & subset, if needed
   if(is.null(rownum_index) == FALSE){
-    ## Index for all frames & subset
     .idx     <- which(.df_data$label %in% rownum_index)
     .df_data <- .df_data[.idx, ]
   }
-  
-  ## Replicate arg lists
-  aes_args      <- lapply_rep_len(aes_args, .nrow_df_data, .n)
-  identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## do.call aes() over the aes_args
   .aes_func  <- function(...)
@@ -836,13 +840,10 @@ proto_hex <- function(aes_args = list(),
   ## Initialize
   requireNamespace("hexbin")
   eval(.init4proto)
-  if(is.null(.df_basis$y)) stop("Basis `y` not found. `proto_hex` expects a 2D tour.?")
-  if(is.null(.df_data)) stop("proto_hex: data is missing. Did you call ggtour() on a manual tour without passing data?")
-  position <- "center"
-  
-  ## Replicate arg lists.
-  aes_args      <- lapply_rep_len(aes_args, .nrow_df_data, .n)
-  identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
+  if(is.null(.df_data)) 
+    stop("proto_hex: Data is missing. Did you call ggtour() on a manual tour without passing data?")
+  if(is.null(.df_basis$y)) 
+    stop("proto_hex: Basis `y` not found, expected a 2D tour.")
   
   ## do.call aes() over the aes_args
   .aes_func  <- function(...)
@@ -981,16 +982,12 @@ proto_highlight <- function(
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data$y)) stop("proto_highlight: projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
-  if(is.null(.df_data) == TRUE) return()
-  position <- "center"
+    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data$y))
+    stop("proto_highlight: Projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
   ## subset, specified rownumbers over all frames
   .idx <- which(.df_data$label %in% rownum_index)
   .df_data <- .df_data[.idx, ]
-  
-  ## Replicate arg lists.
-  aes_args      <- lapply_rep_len(aes_args,      .nrow_df_data, .n)
-  identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
@@ -1049,7 +1046,6 @@ proto_highlight1d <- function(
   ## Initialize
   eval(.init4proto)
   if(is.null(last_ggtour()$df_data) == TRUE) return()
-  position <- "center"
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
   ## subset, specified rownumbers over all frames
   .idx <- which(.df_data$label %in% rownum_index)
@@ -1098,19 +1094,15 @@ if(FALSE){ ## DONT RUN
   ){
     ## Initialize
     eval(.init4proto)
-    if(is.null(.df_data$y)) stop("proto_hdr: projection y not found, expects a 2D tour.")
-    if(is.null(.df_data) == TRUE) return()
-    position <- "center"
+      if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+    if(is.null(.df_data$y)) stop("proto_hdr: Projection y not found, expects a 2D tour.")
     
     ##TODO: DENSITY WORK & SEGMENT.
     #### each segment will need it's own .aes and .geom do.calls.
     #### All but the lowest density regions will want to go to geom_density or geom_hexbin.
     if(F)
-      hdrcde::hdrscatterplot
+      ?hdrcde::hdrscatterplot
     
-    ## Replicate arg lists.
-    aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
-    identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
     ## do.call aes() over the aes_args
     .aes_func <- function(...)
       ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tooltip for plotly on hover tip

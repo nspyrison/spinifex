@@ -38,7 +38,7 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' vector of the number of variables.
 #' Defaults to the 3 character abbreviation of the original variables names.
 #' @param data_label Optional, labels for plotly tooltip and return object. 
-#' Defaults to the rownames of the data, if available.
+#' Defaults to the rownames of the data, if available, then the row number.
 #' @return A list containing an array of basis frames (p, d, n_frames) and 
 #' an array of data frames (n, d, n_frames) if data is present.
 #' @export
@@ -62,8 +62,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 array2df <- function(
   array,
   data = NULL,
-  basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3L) else paste0("x", 1:dim(array)[1]),
-  data_label  = if(is.null(data) == FALSE) rownames(data) else NULL
+  basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("x", 1:nrow(array)),
+  data_label = row.names(data)
 ){
   if("history_array" %in% class(array)) class(array) <- "array"
   ## Initialize
@@ -79,13 +79,12 @@ array2df <- function(
   })
   basis_frames <- as.data.frame(basis_frames)
   .nms <- c("x", "y", "z", "w")
-  colnames(basis_frames) <- c(.nms[1:(ncol(basis_frames) - 1L)], "frame")
-
+  colnames(basis_frames) <- c(.nms[1L:(ncol(basis_frames) - 1L)], "frame")
   
-  ## Data; if exists, array to long df
+  ## Data; if exists
   if(is.null(data) == FALSE){
-    data <- as.matrix(data)
     data_frames <- NULL
+    data <- as.matrix(data)
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% matrix(array[,, i], nrow(array), ncol(array))
       ## Center the new frame
@@ -97,19 +96,25 @@ array2df <- function(
     })
     data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c(.nms[1:(ncol(data_frames) - 1L)], "frame")
+    ## Data label rep if applicable
+    browser()
+    if(is.null(data_label) == TRUE)
+      data_label <- 1:nrow(data)
+
+    data_frames$label <- rep_len(data_label, nrow(data_frames))
   }
   
   ## Basis label and manip_var attribute.
+  data_frames$label <- rep_len(data_label, nrow(basis_frames))
   basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
   attr(basis_frames, "manip_var") <- manip_var
   
   ## Return obj, add data if it exists.
-  ret <- list(basis_frames = basis_frames) ## Init
-  if(is.null(data) == FALSE){
-    ## Data label rep if applicable
-    if(is.null(data_label) == FALSE)
-      data_frames$label <- rep_len(data_label, nrow(data_frames))
-    ret <- c(ret, list(data_frames = data_frames))
+  if(exists("data_frames")){
+    ret <- list(basis_frames = basis_frames,
+                data_frames = data_frames)
+  } else {
+    ret <- list(basis_frames = basis_frames) ## Init
   }
   
   return(ret)
@@ -320,10 +325,10 @@ theme_spinifex <- function(...){
 #' dat_std <- scale_sd(wine[, 2:6])
 #' basis_pca(data = dat_std)
 basis_pca <- function(data, d = 2){
-  ret <- stats::prcomp(data)$rotation[, 1L:d, drop = FALSE]
-  # ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
-  # rownames(ret) <- colnames(data)
-  # colnames(ret) <- paste0("PC", 1:d)
+  #ret <- stats::prcomp(data)$rotation[, 1L:d, drop = FALSE]
+  ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
+  rownames(ret) <- colnames(data)
+  colnames(ret) <- paste0("PC", 1:d)
   return(ret)
 }
 
@@ -350,131 +355,93 @@ basis_pca <- function(data, d = 2){
 #' clas <- wine$Type
 #' basis_olda(data = dat_std, class = clas)
 basis_olda <- function(data, class, d = 2){
-  lda <- MASS::lda(class ~ ., data = data.frame(data, class))$scaling
-  ret <- tourr::orthonormalise(lda)[, 1L:d, drop = FALSE]
+  #lda <- MASS::lda(class ~ ., data = data.frame(data, class))$scaling
+  #ret <- tourr::orthonormalise(lda)[, 1L:d, drop = FALSE]
+  #colnames(ret) <- paste0("OLD", 1:d)
+  ret <- Rdimtools::do.olda(X = as.matrix(data),
+                            label = as.factor(class),
+                             ndim = d)$projection
+  rownames(ret) <- colnames(data)
   colnames(ret) <- paste0("OLD", 1:d)
-  # ret <- Rdimtools::do.olda(X = as.matrix(data),
-  #                           label = as.factor(class),
-  #                            ndim = d)$projection
-  # rownames(ret) <- colnames(data)
-  # colnames(ret) <- paste0("OLD", 1:d)
   return(ret)
 }
 
-# #' The basis of Orthogonal Discriminant Projection (ODP)
-# #' 
-# #' Orthogonal Discriminant Projection (ODP) is a linear dimension reduction 
-# #' method with class supervision. It maximizes weighted difference between local
-# #' and non-local scatter while local information is also preserved by 
-# #' constructing a neighborhood graph. 
-# #' 
-# #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
-# #' @param class The class for each observation, coerced to a factor.
-# #' @param d Number of dimensions in the projection space.
-# #' of `class`.
-# #' @param type A vector specifying the neighborhood graph construction. 
-# #' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
-# #' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
-# #' square root of observations.
-# #' @param ... Optional, other arguments to pass to \code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}}.
-# #' @seealso \code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}} for locality
-# #' preservation arguments.
-# #' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
-# #' details on `type`.
-# #' @references
-# #' Li B, Wang C, Huang D (2009). "Supervised feature extraction based on 
-# #' orthogonal discriminant projection." Neurocomputing, 73(1-3), 191-196.
-# #' @export
-# #' @family basis identifiers
-# #' @examples 
-# #' dat_std <- scale_sd(wine[, 2:6])
-# #' clas <- wine$Type
-# #' basis_odp(data = dat_std, class = clas)
-# basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
-#   ret <- Rdimtools::do.odp(X = as.matrix(data),
-#                            label = as.factor(class),
-#                            ndim = d,
-#                            type = type,
-#                            ...)$projection
-#   rownames(ret) <- colnames(data)
-#   colnames(ret) <- paste0("ODP", 1L:d)
-#   return(ret)
-# }
-# 
-# # ### not Orthogonal... bug logged 6/28/2021, https://github.com/kisungyou/Rdimtools/issues/10
-# # #' The basis of Orthogonal Locality Preserving Projection (OLPP)
-# # #' 
-# # #' Orthogonal Locality Preserving Projection (OLPP) is the orthogonal variant of
-# # #' LPP, a linear approximation to Laplacian Eigenmaps. It finds a linear 
-# # #' approximation to the eigenfunctions of the Laplace-Beltrami operator on the 
-# # #' graph-approximated data manifold.
-# # #' 
-# # #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
-# # #' @param d Number of dimensions in the projection space.
-# # #' @param type A vector specifying the neighborhood graph construction. 
-# # #' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
-# # #' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
-# # #' square root of observations.
-# # #' @param ... Optional, other arguments to pass to \code{\link[Rdimtools]{do.olpp}}.
-# # #' @return Orthogonal matrix basis
-# # #' @seealso \code{\link[Rdimtools:do.olpp]{Rdimtools::do.olpp}} for locality
-# # #' preservation parameters.
-# # #' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
-# # #' details on `type`.
-# # #' @references
-# # #' He X (2005). Locality Preserving Projections. PhD Thesis, 
-# # #' University of Chicago, Chicago, IL, USA.
-# # #' @export
-# # #' @family basis identifiers
-# # #' @examples
-# # #' dat_std <- scale_sd(wine[, 2:6])
-# # #' basis_olpp(data = dat_std)
-# # basis_olpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data))), ...){
-# #   ret <- Rdimtools::do.olpp(X = as.matrix(data),
-# #                             ndim = d,
-# #                             type = type,
-# #                             ...)$projection
-# #   rownames(ret) <- colnames(data)
-# #   colnames(ret) <- paste0("OLPP", 1L:d)
-# #   return(ret)
-# # }
- 
-# #' The basis of Orthogonal Neighborhood Preserving Projection (OLPP)
-# #' 
-# #' Orthogonal Neighborhood Preserving Projection (ONPP) is an unsupervised 
-# #' linear dimension reduction method. It constructs a weighted data graph from 
-# #' LLE method. Also, it develops LPP method by preserving the structure of local 
-# #' neighborhoods. For the more details on `type` see 
-# #' \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd()}}.
-# #' 
-# #' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
-# #' @param d Number of dimensions in the projection space.
-# #' @param type A vector specifying the neighborhood graph construction. 
-# #' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
-# #' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
-# #' square root of observations.
-# #' @return Orthogonal matrix basis that distinguishes the levels of `class` 
-# #' based on local and non-local variation as weighted against the neighborhood 
-# #' graph.
-# #' @seealso \code{\link[Rdimtools:do.onpp]{Rdimtools::do.onpp}}
-# #' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
-# #' details on `type`.
-# #' @references
-# #' He X (2005). Locality Preserving Projections. PhD Thesis, 
-# #' University of Chicago, Chicago, IL, USA.
-# #' @export
-# #' @family basis identifiers
-# #' @examples
-# #' dat_std <- scale_sd(wine[, 2:6])
-# #' basis_onpp(data = dat_std)
-# basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
-#   ret <- Rdimtools::do.onpp(X = as.matrix(data),
-#                             ndim = d,
-#                             type = type)$projection
-#   rownames(ret) <- colnames(data)
-#   colnames(ret) <- paste0("ONPP", 1L:d)
-#   return(ret)
-# }
+#' The basis of Orthogonal Discriminant Projection (ODP)
+#' 
+#' Orthogonal Discriminant Projection (ODP) is a linear dimension reduction 
+#' method with class supervision. It maximizes weighted difference between local
+#' and non-local scatter while local information is also preserved by 
+#' constructing a neighborhood graph.
+#' 
+#' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
+#' @param class The class for each observation, coerced to a factor.
+#' @param d Number of dimensions in the projection space.
+#' of `class`.
+#' @param type A vector specifying the neighborhood graph construction. 
+#' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
+#' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
+#' square root of observations.
+#' @param ... Optional, other arguments to pass to \code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}}.
+#' @seealso \code{\link[Rdimtools:do.odp]{Rdimtools::do.odp}} for locality
+#' preservation arguments.
+#' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
+#' details on `type`.
+#' @references
+#' Li B, Wang C, Huang D (2009). "Supervised feature extraction based on 
+#' orthogonal discriminant projection." Neurocomputing, 73(1-3), 191-196.
+#' @export
+#' @family basis identifiers
+#' @examples 
+#' dat_std <- scale_sd(wine[, 2:6])
+#' clas <- wine$Type
+#' basis_odp(data = dat_std, class = clas)
+basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
+  ret <- Rdimtools::do.odp(X = as.matrix(data),
+                           label = as.factor(class),
+                           ndim = d,
+                           type = type,
+                           ...)$projection
+  rownames(ret) <- colnames(data)
+  colnames(ret) <- paste0("ODP", 1L:d)
+  return(ret)
+}
+
+#' The basis of Orthogonal Neighborhood Preserving Projection (OLPP)
+#' 
+#' Orthogonal Neighborhood Preserving Projection (ONPP) is an unsupervised 
+#' linear dimension reduction method. It constructs a weighted data graph from 
+#' LLE method. Also, it develops LPP method by preserving the structure of local 
+#' neighborhoods. For the more details on `type` see 
+#' \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd()}}.
+#' 
+#' @param data Numeric matrix or data.frame of the observations, coerced to matrix.
+#' @param d Number of dimensions in the projection space.
+#' @param type A vector specifying the neighborhood graph construction. 
+#' Expects; `c("knn", k)`, `c("enn", radius)`, or `c("proportion",ratio)`. 
+#' Defaults to `c("knn", sqrt(nrow(data)))`, nearest neighbors equal to the 
+#' square root of observations.
+#' @return Orthogonal matrix basis that distinguishes the levels of `class` 
+#' based on local and non-local variation as weighted against the neighborhood 
+#' graph.
+#' @seealso \code{\link[Rdimtools:do.onpp]{Rdimtools::do.onpp}}
+#' @seealso \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for 
+#' details on `type`.
+#' @references
+#' He X (2005). Locality Preserving Projections. PhD Thesis, 
+#' University of Chicago, Chicago, IL, USA.
+#' @export
+#' @family basis identifiers
+#' @examples
+#' dat_std <- scale_sd(wine[, 2:6])
+#' basis_onpp(data = dat_std)
+basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
+  ret <- Rdimtools::do.onpp(X = as.matrix(data),
+                            ndim = d,
+                            type = type)$projection
+  rownames(ret) <- colnames(data)
+  colnames(ret) <- paste0("ONPP", 1L:d)
+  return(ret)
+}
 
 
 #' Solve for the last basis of a guided tour.
@@ -559,7 +526,7 @@ basis_half_circle <- function(data){
 manip_var_of <- function(basis, rank = 1){
   if(spinifex::is_orthonormal(basis) == FALSE)
     warning("Supplied basis isn't orthonormal.")
-  row_norm <- sqrt(apply(basis, 1, function(c) {sum(c^2)}))
+  row_norm <- sqrt(apply(basis, 1L, function(c) {sum(c^2L)}))
   ret <- order(abs(row_norm), decreasing = TRUE)[rank]
   names(ret) <- rownames(basis)[rank]
   return(ret)
