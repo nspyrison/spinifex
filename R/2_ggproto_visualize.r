@@ -57,6 +57,7 @@ ggtour <- function(basis_array,
   df_ls <- array2df(basis_array, data)
   df_basis <- df_ls$basis_frames
   df_data  <- df_ls$data_frames
+  
   attr(df_basis, "manip_var") <- manip_var ## NULL if not a manual tour
   
   ## map_to condition handling: 
@@ -78,8 +79,8 @@ ggtour <- function(basis_array,
   n <- nrow_df_data   / n_frames
   manip_var <- attr(df_basis, "manip_var") ## NULL if not a manual tour
   ## Assign list to a hidden environment, .store
-  set_last_ggtour(list(df_basis = df_basis, 
-                       df_data = df_data, 
+  set_last_ggtour(list(df_basis = df_basis,
+                       df_data = df_data,
                        map_to = map_to,
                        n_frames = n_frames,
                        nrow_df_data = nrow_df_data,
@@ -87,7 +88,8 @@ ggtour <- function(basis_array,
                        p = p,
                        manip_var = manip_var))
   
-  ## Return ggplot head with theme, 3x ggtour obj assigned to evrin with set_/last_ggtour().
+  ## Return ggplot head with spinifex theme
+  ## by product: give last_ggtour() a list of objects to be consumed in proto_*()
   return(ggplot2::ggplot() + spinifex::theme_spinifex())
 }
 # ## Print method ->> proto_default()
@@ -160,6 +162,7 @@ lapply_rep_len <- function(list,
 .init4proto <- expression({ ## expression, not function
   .ggt <- last_ggtour()
   if(is.null(.ggt)) stop("last_ggtour() is NULL, have you run ggtour() yet?")
+  
   ## Assign elements of last_ggtour() into the scope of a ggproto func.
   .df_basis     <- .ggt$df_basis ## Give operable local copies
   .df_data      <- .ggt$df_data
@@ -169,8 +172,23 @@ lapply_rep_len <- function(list,
   .n            <- .ggt$n
   .p            <- .ggt$p
   .manip_var    <- .ggt$manip_var
+  
+  ## subset, if rownum_index exists
+  if(exists("rownum_index")){
+    .idx <- which(.df_data$label %in% rownum_index)
+    .df_data <- .df_data[.idx, ]
+    aes_args <- lapply(aes_args, function(arg){
+      arg[.idx]
+    })
+    
+    identity_args <- lapply(identity_args, function(arg){
+      if(length(arg) == .n) arg[.idx] else arg
+    })
+  }
+  
   ## Replicate arg lists if they exist
   if(exists("aes_args"))
+    if(exists("rownum_index")) ## Subset if needed
     aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   if(exists("identity_args"))
     identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
@@ -575,10 +593,6 @@ proto_point <- function(aes_args = list(),
   if(is.null(.df_data$y))
     stop("proto_point: Projection y not found, expected a 2D tour.")
   
-  browser()
-  .df_data
-  if(is.null(label)) label <- 1L:.n
-  
   ## do.call aes() over the aes_args
   .aes_func  <- function(...)
     ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tooltip for plotly on hover tip
@@ -770,9 +784,18 @@ proto_density <- function(aes_args = list(),
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
+#' 
+#' ## Custom labels, subset of points
+#' ggt2 <- ggtour(gt_path, dat) +
+#'   proto_text(list(label = paste0("My rownum: ", 1:nrow(dat)),
+#'                   color = clas),
+#'              list(alpha = .7),
+#'              rownum_index = 1:15)
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
 proto_text <- function(aes_args = list(),
                        identity_args = list(nudge_x = 0.05),
-                       label = NULL,
                        rownum_index = NULL
 ){
   ## Initialize
@@ -780,21 +803,16 @@ proto_text <- function(aes_args = list(),
     if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_text: Projection y not found, expected a 2D tour.")
-  if(is.null(label)) label <- 1L:.n
-  ## Index for all frames & subset, if needed
-  if(is.null(rownum_index) == FALSE){
-    .idx     <- which(.df_data$label %in% rownum_index)
-    .df_data <- .df_data[.idx, ]
-  }
   
   ## do.call aes() over the aes_args
   .aes_func  <- function(...)
-    ggplot2::aes(x = x, y = y, frame = frame, ...,
-                 label = rep_len(label, .nrow_df_data))
+    ggplot2::aes(x = x, y = y, frame = frame, #...)
+                 ...[rep_len(.idx, nrow(.df_data))])
   .aes_call  <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args 
   .geom_func <- function(...)suppressWarnings(
-    ggplot2::geom_text(mapping = .aes_call, data = .df_data, ...)
+    ggplot2::geom_text(mapping = .aes_call, data = .df_data, #...)
+                       ...[rep_len(.idx, nrow(.df_data))])
   )
   
   ## Return proto
@@ -957,6 +975,8 @@ proto_default1d <- function(aes_args = list(),
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
+#' 
+#' ## d = 2 case
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
@@ -985,9 +1005,6 @@ proto_highlight <- function(
     if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_highlight: Projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
-  ## subset, specified rownumbers over all frames
-  .idx <- which(.df_data$label %in% rownum_index)
-  .df_data <- .df_data[.idx, ]
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
@@ -1047,9 +1064,6 @@ proto_highlight1d <- function(
   eval(.init4proto)
   if(is.null(last_ggtour()$df_data) == TRUE) return()
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
-  ## subset, specified rownumbers over all frames
-  .idx <- which(.df_data$label %in% rownum_index)
-  .df_data <- .df_data[.idx, ]
   
   ## geom_segment do.calls, moving with frame
   .ymin <- min(.map_to[, 2L])
@@ -1085,9 +1099,9 @@ proto_highlight1d <- function(
 
 if(FALSE){ ## DONT RUN
   proto_hdr <- function(
-    levels = c(1, 50, 99),
     aes_args = list(),
     identity_args = list(),
+    levels = c(1, 50, 99),
     kde.package = c("ash", "ks"),
     noutliers = NULL,
     label = NULL

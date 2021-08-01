@@ -184,11 +184,22 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' manual_tour(basis = bas, manip_var = mv,
 #'             theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .2)
 #' 
-#' 
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat_std, d = 1)
 #' mv <- manip_var_of(bas1d)
 #' manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+#' 
+#' 
+#' ## Animating with ggtour() & proto_*
+#' mt <- manual_tour(basis = bas, manip_var = mv)
+#' (ggt <- ggtour(mt, dat_std) +
+#'     proto_origin() +
+#'     proto_point(list(color = clas, shape = clas)) +
+#'     proto_basis())
+#' # proto_default(list(color = clas, shape = clas)))
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
 manual_tour <- function(basis,
                         manip_var,
                         theta   = NULL,
@@ -277,8 +288,8 @@ if(F){ ## NOT RUN:
   clas <- wine$Type
   bas <- basis_pca(dat_std)
   mv <- manip_var_of(bas)
-  ## Animating with ggtour() & proto_*
   mt <- manual_tour(basis = bas, manip_var = mv)
+  ## Animating with ggtour() & proto_*
   (ggt <- ggtour(mt, dat_std) +
       proto_origin() +
       proto_point(list(color = clas, shape = clas)) +

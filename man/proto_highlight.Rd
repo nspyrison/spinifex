@@ -49,6 +49,8 @@ important for use with \code{proto_point}.
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
+
+## d = 2 case
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat) +

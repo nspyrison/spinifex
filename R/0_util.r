@@ -95,29 +95,23 @@ array2df <- function(
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
     data_frames <- as.data.frame(data_frames)
-    colnames(data_frames) <- c(.nms[1:(ncol(data_frames) - 1L)], "frame")
+    colnames(data_frames) <- c(.nms[1L:(ncol(data_frames) - 1L)], "frame")
     ## Data label rep if applicable
-    browser()
     if(is.null(data_label) == TRUE)
-      data_label <- 1:nrow(data)
-
+      data_label <- 1L:nrow(data)
     data_frames$label <- rep_len(data_label, nrow(data_frames))
   }
   
   ## Basis label and manip_var attribute.
-  data_frames$label <- rep_len(data_label, nrow(basis_frames))
   basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
   attr(basis_frames, "manip_var") <- manip_var
   
-  ## Return obj, add data if it exists.
+  ## Return, include data if it exists.
   if(exists("data_frames")){
-    ret <- list(basis_frames = basis_frames,
-                data_frames = data_frames)
-  } else {
-    ret <- list(basis_frames = basis_frames) ## Init
-  }
-  
-  return(ret)
+    return(list(basis_frames = basis_frames,
+                data_frames = data_frames))
+  } else
+    return(list(basis_frames = basis_frames))
 }
 
 #' Changes an array of bases into a "history_array" class for use 
@@ -295,12 +289,13 @@ pan_zoom <- function(x, pan = c(0L, 0L), zoom = c(1L, 1L)) {
 theme_spinifex <- function(...){
   list(ggplot2::theme_void(),
        ggplot2::scale_color_brewer(palette = "Dark2"),
+       ggplot2::scale_fill_brewer(palette = "Dark2"),
        ggplot2::coord_fixed(),
        ggplot2::labs(x = "", y = ""),
        ggplot2::theme(legend.position = "bottom",
                       legend.direction = "horizontal", ## Levels within aesthetic
                       legend.box = "vertical",         ## Between aesthetic
-                      legend.margin = ggplot2::margin(-1,-1,-1,-1, "mm"), ## Tighter legend margin
+                      legend.margin = ggplot2::margin(-1L,-1L,-1L,-1L, "mm"), ## Tighter legend margin
                       axis.title = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
                       ...) ## ... args applied over  defaults.
   )

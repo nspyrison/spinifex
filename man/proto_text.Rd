@@ -7,7 +7,6 @@
 proto_text(
   aes_args = list(),
   identity_args = list(nudge_x = 0.05),
-  label = NULL,
   rownum_index = NULL
 )
 }
@@ -22,12 +21,12 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
 
-\item{label}{A character vector, the texts that should be in the location of
-the data. Default is NULL, which goes to the rownumber.}
-
 \item{rownum_index}{One or more integers, the row numbers of the to
 subset to. Should be within 1:n, the rows of the original data. Defaults to
 NULL, labeling all rows.}
+
+\item{label}{A character vector, the texts that should be in the location of
+the data. Default is NULL, which goes to the rownumber.}
 }
 \description{
 Adds \code{geom_text()} of the projected data.
@@ -41,6 +40,16 @@ gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat) +
   proto_text(list(color = clas))
+\dontrun{
+animate_plotly(ggt)
+}
+
+## Custom labels, subset of points
+ggt2 <- ggtour(gt_path, dat) +
+  proto_text(list(label = paste0("My rownum: ", 1:nrow(dat)),
+                  color = clas),
+             list(alpha = .7),
+             rownum_index = 1:15)
 \dontrun{
 animate_plotly(ggt)
 }
