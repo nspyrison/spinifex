@@ -28,10 +28,11 @@ Imports:
     plotly,
     shiny,
     Rdimtools,
+    transformr,
     magrittr
 Suggests:
     MASS,
-    transformr,
+    ggridges
     hexbin,
     htmlwidgets,
     gifski,

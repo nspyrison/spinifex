@@ -34,7 +34,7 @@ animate_plotly(ggt)
 
 ggt2 <- ggtour(gt_path, dat) +
   proto_point(list(color = clas, shape = clas),
-               list(size = 2, alpha = .7))
+              list(size = 2, alpha = .7))
 \dontrun{
 animate_plotly(ggt2)
 }
@@ -44,6 +44,7 @@ Other ggtour proto:
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
+\code{\link{proto_density_ridges}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},

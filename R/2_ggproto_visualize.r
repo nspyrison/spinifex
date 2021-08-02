@@ -57,7 +57,6 @@ ggtour <- function(basis_array,
   df_ls <- array2df(basis_array, data)
   df_basis <- df_ls$basis_frames
   df_data  <- df_ls$data_frames
-  
   attr(df_basis, "manip_var") <- manip_var ## NULL if not a manual tour
   
   ## map_to condition handling: 
@@ -131,22 +130,50 @@ set_last_ggtour <- function(value) .store$ggtour_ls <- value
 #' @family Internal utility
 #' @examples
 #' ## This function is not meant for external use
+#' 
 lapply_rep_len <- function(list,
-                           nrow_frames,
-                           nrow_data
+                           to_length,
+                           expected_length
 ){
   list <- as.list(list)
   .nms <- names(list)
-  .mute <- lapply(seq_along(list), function(i){
+  list <- lapply(seq_along(list), function(i){
     .this_vector <- list[[i]]
-    if(length(.this_vector) != 1L){
-      if(length(.this_vector) != nrow_data)
+    if(length(.this_vector) != 1L & typeof(.this_vector) != "environment"){
+      if(length(.this_vector) != expected_length)
         warning(paste0("lapply_rep_len: `", .nms[i], "` not of length 1 or data."))
-      .replicated_vector <- rep_len(.this_vector, nrow_frames)
-      list[[i]] <<- .replicated_vector ## Replace the value with the string of the original
-    }
+      .rep_vector <- rep_len(.this_vector, to_length)
+      .rep_vector ## Replace the value with the string of the original
+    }else .this_vector
   })
+  names(list) <- .nms
   return(list)
+}
+
+#' Binds replicated elements of aes_args list to df_data
+#' 
+#' Internal function. To be applied to `aes_args` 
+#' replicates elements to length data
+#'
+#' @param list A list of arguments such as those passed in `aes_args` and 
+#' `identity_args`.
+#' @param nrow_frames Scalar number of rows in the data frames to replicate to.
+#' @param nrow_data Scalar number of rows in the data to replicate.
+#' @export
+#' @family Internal utility
+#' @examples
+#' ## This function is not meant for external use
+.bind2data_df <- function(list){
+  ret <- mtcars
+  to_len <- nrow(ret)
+  ret_nms <- names(ret)
+  l_nms <- names(l)
+  .m <- lapply(seq_along(l), function(i){
+    rep_ele <- rep_len(l[[i]], to_len)
+    ret <<- cbind(ret, rep_ele)
+  })
+  names(ret) <- c(ret_nms, l_nms)
+  ret
 }
 
 #' Initialize common obj from .global `ggtour()` objects & test their existence
@@ -177,19 +204,19 @@ lapply_rep_len <- function(list,
   if(exists("rownum_index")){
     .idx <- which(.df_data$label %in% rownum_index)
     .df_data <- .df_data[.idx, ]
-    aes_args <- lapply(aes_args, function(arg){
-      arg[.idx]
-    })
-    
-    identity_args <- lapply(identity_args, function(arg){
-      if(length(arg) == .n) arg[.idx] else arg
-    })
+    ## subset arg_lists
+    if(exists("aes_args"))
+      aes_args <- lapply(aes_args, function(arg)arg[.idx])
+    if(exists("identity_args")){
+      identity_args <- lapply(identity_args, function(arg){
+        if(length(arg) == .n) arg[.idx] else arg
+      })
+    }
   }
   
-  ## Replicate arg lists if they exist
+  ## Replicate arg
   if(exists("aes_args"))
-    if(exists("rownum_index")) ## Subset if needed
-    aes_args <- lapply_rep_len(aes_args, .nrow_df_data, .n)
+    aes_args      <- lapply_rep_len(aes_args, .nrow_df_data, .n)
   if(exists("identity_args"))
     identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
 })
@@ -237,12 +264,13 @@ lapply_rep_len <- function(list,
 #'                        animation = anim,
 #'                        path = "./figures")
 #' }
-animate_gganimate <- function(ggtour,
-                              fps = 8,
-                              rewind = FALSE,
-                              start_pause = 1,
-                              end_pause = 1,
-                              ... ## Passed to gganimate::animate
+animate_gganimate <- function(
+  ggtour,
+  fps = 8,
+  rewind = FALSE,
+  start_pause = 1,
+  end_pause = 1,
+  ... ## Passed to gganimate::animate
 ){
   ## Assumptions
   requireNamespace("gifski")
@@ -303,9 +331,10 @@ animate_gganimate <- function(ggtour,
 #'   htmlwidgets::saveWidget(widget = anim, file = "./figures/my_tour.html",
 #'                           selfcontained = TRUE)
 #' }
-animate_plotly <- function(ggtour,
-                           fps = 8,
-                           ... ## Passed to plotly::layout().
+animate_plotly <- function(
+  ggtour,
+  fps = 8,
+  ... ## Passed to plotly::layout().
 ){
   ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
@@ -580,7 +609,7 @@ proto_basis1d <- function(
 #' 
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_point(list(color = clas, shape = clas),
-#'                list(size = 2, alpha = .7))
+#'               list(size = 2, alpha = .7))
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
@@ -589,7 +618,8 @@ proto_point <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
-    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data) == TRUE) 
+    stop("proto_point: Data is NULL. Did you call ggtour() on a manual tour without passing data?")
   if(is.null(.df_data$y))
     stop("proto_point: Projection y not found, expected a 2D tour.")
   
@@ -633,7 +663,7 @@ proto_origin <- function(tail_size = .05){
   eval(.init4proto)
     if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_basis$y))
-    warning("proto_origin: Basis y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
+    stop("proto_origin: Basis y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
   
   #### Setup origin, zero mark, 5% on each side.
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
@@ -716,7 +746,7 @@ proto_origin1d <- function(){
 #' }
 proto_density <- function(aes_args = list(),
                           identity_args = list(alpha = .7),
-                          density_position = c("identity", "stack")
+                          density_position = c("identity", "stack", "fill")
 ){
   ## Initialize
   requireNamespace("transformr")
@@ -752,6 +782,84 @@ proto_density <- function(aes_args = list(),
   return(list(.geom_call_den, .geom_call_rug))
 }
 
+
+
+#' Tour proto for data, 1D density_ridges, with rug marks
+#'
+#' Adds `ggridges::geom_density_ridges()` to a ggtour. Does not work with 
+#' `animate_plotly()`.
+#' 
+#' @param group_by A factor, discrete grouping clustering for the original data.
+#' Defaults to "", a single density ridge with no y axis text.
+#' @param aes_args A list of aesthetic arguments to passed to 
+#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
+#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
+#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' @export
+#' @aliases proto_density1d
+#' @family ggtour proto
+#' @examples
+#' dat <- scale_sd(tourr::flea[, 1:6])
+#' clas <- tourr::flea$species
+#' gt_path <- save_history(dat, grand_tour(), max = 3)
+#' 
+#' ## With a class grouping
+#' ggt <- ggtour(gt_path, dat) +
+#'   proto_density_ridges(group_by = clas)
+#' \dontrun{
+#' animate_gganimate(ggt) ## Doesn't work with animate_plotly().
+#' }
+#' 
+#' ## Without class grouping, basis is oversized.
+#' ggt2 <- ggtour(gt_path, dat) +
+#'   proto_density_ridges() +
+#'   proto_basis1d() ## .map_to is now quite large for this
+#' \dontrun{
+#' animate_gganimate(ggt2) ## Doesn't work with animate_plotly().
+#' }
+proto_density_ridges <- function(
+  group_by = "",
+  aes_args = list(),
+  identity_args = list(scale = .8)
+){
+  ## Initialize
+  requireNamespace("transformr")
+  aes_args <- c(list(y = group_by, fill = group_by, point_color = group_by, point_fill = group_by), aes_args)
+  
+  lapply(aes_args, length)
+  eval(.init4proto)
+  lapply(aes_args, length)
+  if(is.null(.df_data))
+    stop("proto_density_ridges: data missing. Did you call ggtour() on a manual tour without passing data?")
+  
+  ## "identity" is the only position working in {plotly} right now.
+  ## see: https://github.com/ropensci/plotly/issues/1544
+  .nms <- names(aes_args)
+  if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
+    warning("proto_density_ridges: aes_args contains color without fill, did you mean to use fill to color below the curve?")
+  
+  ## geom_density do.call
+  .aes_func <- function(...)
+    ggplot2::aes(x = x, frame = frame, ...)
+  .aes_call <- do.call(.aes_func, aes_args)
+  .geom_func <- function(...) suppressWarnings(
+    ggridges::geom_density_ridges(.aes_call, .df_data, na.rm = FALSE,
+                                  n = 256L, jittered_points = TRUE,
+                                  position = position_points_jitter(0L, 0L), ## No jitter
+                                  point_shape = 124L, point_size = 3L,
+                                  point_color = "black",
+                                  ..., color = "black"))
+  .geom_call_den_ridges <- do.call(.geom_func, identity_args)
+  
+  ## Return proto
+  return(list(.geom_call_den_ridges,
+              ggplot2::theme(axis.text.y = ggplot2::element_text(),
+                             legend.position = "off")))
+}
 
 #' Tour proto for data, text labels
 #'

@@ -56,6 +56,7 @@ animate_plotly(ggt)
 Other ggtour proto: 
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
+\code{\link{proto_density_ridges}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},
@@ -66,6 +67,7 @@ Other ggtour proto:
 Other ggtour proto: 
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
+\code{\link{proto_density_ridges}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},

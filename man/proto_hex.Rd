@@ -45,6 +45,7 @@ Other ggtour proto:
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
+\code{\link{proto_density_ridges}()},
 \code{\link{proto_density}()},
 \code{\link{proto_highlight}()},
 \code{\link{proto_origin}()},
