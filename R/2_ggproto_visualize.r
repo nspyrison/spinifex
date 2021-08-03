@@ -1,6 +1,4 @@
 ### UTIL -----
-
-
 #' Prepare a new ggtour
 #'
 #' `ggtour()` initializes a ggplot object for a tour, to be animated with 
@@ -21,8 +19,10 @@
 #' mv <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 #' 
-#' ggtour(mt_path, dat) ## Returns headless ggplot(), but required for other spinifex protos
+#' ## Returns headless ggplot(), but required for proto_* functions.
+#' ggtour(mt_path, dat)
 #' 
+#' ## d = 2 case
 #' ggt <- ggtour(mt_path, dat, angle = .1) +
 #'   proto_basis() +
 #'   proto_point(list(color = clas, shape = clas),
@@ -33,14 +33,33 @@
 #' 
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat, d = 1)
-#' mt <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
-#' ggt <- ggtour(mt, dat, angle = .2) + proto_default1d(list(fill = clas))
+#' mt_path2 <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+#' ggt <- ggtour(mt_path2, dat, angle = .2) +
+#'   proto_default1d(list(fill = clas))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
+#' 
+#' ## d = 2, with facet
+#' ggt <- ggtour(mt_path, dat, angle = .1, facet_by = clas) +
+#'   proto_basis() +
+#'   proto_point(list(color = clas, shape = clas),
+#'               list(size = 1.5))
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+#' 
+#' ## d = 1, with facet 
+#' ggt <- ggtour(mt_path2, dat, angle = .2, facet_by = clas) +
+#'   proto_default1d(list(color = clas, shape = clas, fill = clas))
+#'   #proto_density(list(color = clas, shape = clas, fill = clas))
+#' \dontrun{
+#' animate_gganimate(ggt) ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments
+#' }
 ggtour <- function(basis_array,
                    data = NULL,
-                   angle = .05
+                   angle = .05,
+                   facet_by = NULL
 ){
   if(is.null(data) == TRUE)
     data <- attr(basis_array, "data") ## Can be NULL
@@ -64,32 +83,46 @@ ggtour <- function(basis_array,
   map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L)) ## init & if data is NULL
   if(is.null(data) == FALSE){
     d <- dim(basis_array)[2L] ## ncol of basis
-    if(d == 2L){ ## 2D non-NULL basis
-      map_to <- df_data
-    }
-    if(d == 1L){ ## 2D non-NULL basis
+    if(d == 2L) ## 2D non-NULL basis
+      map_to <- data.frame(x = range(df_data[, 1L]), y = range(df_data[, 2L]))
+    if(d == 1L) ## 1D non-NULL basis
       ## y is always [0,1], as geom_density(aes(y=..scaled..))
       map_to <- data.frame(x = range(df_data[, 1L]), y = c(0L, 1L))
-    }
   }
   n_frames <- length(unique(df_basis$frame))
   nrow_df_data <- nrow(df_data)
   p <- nrow(df_basis) / n_frames
   n <- nrow_df_data   / n_frames
   manip_var <- attr(df_basis, "manip_var") ## NULL if not a manual tour
+  ## Append facet_by to df_basis and df_data if needed.
+  if(is.null(facet_by) == FALSE){
+    df_data <- .bind_elements2df(
+      list(facet_by = rep_len(facet_by, nrow(df_data))), df_data)
+    df_basis <- .bind_elements2df( ## basis facet always on first/top level
+      list(facet_by = rep_len("basis", nrow(df_basis))), df_basis)
+  }
   ## Assign list to a hidden environment, .store
-  set_last_ggtour(list(df_basis = df_basis,
-                       df_data = df_data,
-                       map_to = map_to,
-                       n_frames = n_frames,
-                       nrow_df_data = nrow_df_data,
-                       n = n,
-                       p = p,
-                       manip_var = manip_var))
+  .set_last_ggtour(list(df_basis = df_basis,
+                        df_data = df_data,
+                        map_to = map_to,
+                        n_frames = n_frames,
+                        nrow_df_data = nrow_df_data,
+                        n = n,
+                        p = p,
+                        manip_var = manip_var,
+                        facet_by = facet_by))
   
-  ## Return ggplot head with spinifex theme
-  ## by product: give last_ggtour() a list of objects to be consumed in proto_*()
-  return(ggplot2::ggplot() + spinifex::theme_spinifex())
+  ## Return ggplot head, theme, and facet if used
+  ## by product: last_ggtour() was set above.
+  ret <- ggplot2::ggplot(df_basis) + spinifex::theme_spinifex()
+  if(is.null(facet_by) == FALSE){
+    ret <- ret +
+      ggplot2::facet_grid(rows = ggplot2::vars(facet_by)) +
+      ggplot2::theme(strip.text = ggplot2::element_text(
+        margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
+        panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
+  }
+  return(ret)
 }
 # ## Print method ->> proto_default()
 # #### Was a good idea, but ggplot stops working when you change the first class, 
@@ -112,7 +145,7 @@ ggtour <- function(basis_array,
 last_ggtour <- function(){.store$ggtour_ls}
 #' @rdname last_ggtour
 #' @export
-set_last_ggtour <- function(value) .store$ggtour_ls <- value
+.set_last_ggtour <- function(value) .store$ggtour_ls <- value
 
 
 
@@ -130,10 +163,9 @@ set_last_ggtour <- function(value) .store$ggtour_ls <- value
 #' @family Internal utility
 #' @examples
 #' ## This function is not meant for external use
-#' 
-lapply_rep_len <- function(list,
-                           to_length,
-                           expected_length
+.lapply_rep_len <- function(list,
+                            to_length,
+                            expected_length
 ){
   list <- as.list(list)
   .nms <- names(list)
@@ -141,7 +173,7 @@ lapply_rep_len <- function(list,
     .this_vector <- list[[i]]
     if(length(.this_vector) != 1L & typeof(.this_vector) != "environment"){
       if(length(.this_vector) != expected_length)
-        warning(paste0("lapply_rep_len: `", .nms[i], "` not of length 1 or data."))
+        warning(paste0(".lapply_rep_len: `", .nms[i], "` not of length 1 or data."))
       .rep_vector <- rep_len(.this_vector, to_length)
       .rep_vector ## Replace the value with the string of the original
     }else .this_vector
@@ -150,7 +182,7 @@ lapply_rep_len <- function(list,
   return(list)
 }
 
-#' Binds replicated elements of aes_args list to df_data
+#' Binds replicated elements of a list as columns of a data frame.
 #' 
 #' Internal function. To be applied to `aes_args` 
 #' replicates elements to length data
@@ -163,17 +195,16 @@ lapply_rep_len <- function(list,
 #' @family Internal utility
 #' @examples
 #' ## This function is not meant for external use
-.bind2data_df <- function(list){
-  ret <- mtcars
-  to_len <- nrow(ret)
-  ret_nms <- names(ret)
-  l_nms <- names(l)
-  .m <- lapply(seq_along(l), function(i){
-    rep_ele <- rep_len(l[[i]], to_len)
-    ret <<- cbind(ret, rep_ele)
+.bind_elements2df <- function(list, df){
+  .list <- as.list(list)
+  ret <- as.data.frame(df)
+  .ret_nms <- names(ret)
+  .l_nms <- names(list)
+  .m <- lapply(seq_along(.list), function(i){
+    ret <<- cbind(ret, .list[[i]])
   })
-  names(ret) <- c(ret_nms, l_nms)
-  ret
+  names(ret) <- c(.ret_nms, .l_nms)
+  return(ret)
 }
 
 #' Initialize common obj from .global `ggtour()` objects & test their existence
@@ -185,7 +216,7 @@ lapply_rep_len <- function(list,
 #' @family Internal utility
 #' @examples
 #' ## This expression. is not meant for external use.
-### .init4proto expression -----
+## _.init4proto expression -----
 .init4proto <- expression({ ## expression, not function
   .ggt <- last_ggtour()
   if(is.null(.ggt)) stop("last_ggtour() is NULL, have you run ggtour() yet?")
@@ -198,7 +229,8 @@ lapply_rep_len <- function(list,
   .nrow_df_data <- .ggt$nrow_df_data
   .n            <- .ggt$n
   .p            <- .ggt$p
-  .manip_var    <- .ggt$manip_var
+  .manip_var    <- .ggt$manip_var ## Can be NULL; a tourr tour.
+  .facet_by     <- .ggt$facet_by  ## Usually NULL; no facet used.
   
   ## subset, if rownum_index exists
   if(exists("rownum_index")){
@@ -208,17 +240,21 @@ lapply_rep_len <- function(list,
     if(exists("aes_args"))
       aes_args <- lapply(aes_args, function(arg)arg[.idx])
     if(exists("identity_args")){
+      browser()
       identity_args <- lapply(identity_args, function(arg){
         if(length(arg) == .n) arg[.idx] else arg
       })
     }
   }
   
-  ## Replicate arg
-  if(exists("aes_args"))
-    aes_args      <- lapply_rep_len(aes_args, .nrow_df_data, .n)
+  ## Replicate arg, if they exist
+  if(exists("aes_args")){
+    aes_args <- .lapply_rep_len(aes_args, .nrow_df_data, .n)
+    # .df_data <- .bind_elements2df(aes_args, .df_data)
+    # aes_args <- ## TODO>>>>, go to aes_string("mpg") or aes_(quote(mpg))?
+  }
   if(exists("identity_args"))
-    identity_args <- lapply_rep_len(identity_args, .nrow_df_data, .n)
+    identity_args <- .lapply_rep_len(identity_args, .nrow_df_data, .n)
 })
 
 ### ANIMATE_* ------
@@ -284,7 +320,7 @@ animate_gganimate <- function(
   
   ## Discrete jump between frames, no linear interpolation.
   gga <- ggtour + gganimate::transition_states(frame, transition_length = 0L)
-  set_last_ggtour(NULL) ## Clears last tour
+  .set_last_ggtour(NULL) ## Clears last tour
   ## this should prevent some errors from not running ggtour() right before animating it.
   
   ## Normal animation, with applied options, knit_pdf_anim == FALSE
@@ -344,7 +380,7 @@ animate_plotly <- function(
     return(plotly::ggplotly(p = ggtour, tooltip = "tooltip"))
   }
 
-  set_last_ggtour(NULL) ## Clears last tour
+  .set_last_ggtour(NULL) ## Clears last tour
   ## this should prevent some errors from not running ggtour() right before animating it.
   
   ## Block plotly.js warning: lack of support for horizontal legend;
@@ -366,7 +402,7 @@ animate_plotly <- function(
 }
 
 
-### animate_gganimate_knit2pdf -----
+# ### animate_gganimate_knit2pdf -----#
 # #' Animate a `ggtour()` to be used in knit into a .pdf format.
 # #'
 # #' Animates the static `ggtour()` and added `proto_*()` functions as `{gganimate}`
@@ -473,6 +509,10 @@ proto_basis <- function(
   .center <- map_relative(data.frame(x = 0L, y = 0L), position, .map_to)
   .circle <- map_relative(.circle, position, .map_to)
   .df_basis <- map_relative(.df_basis, position, .map_to)
+  if(is.null(.facet_by) == FALSE)
+    .circle <- .bind_elements2df(
+      list(facet_by = rep_len("basis", nrow(.circle))), .circle)
+  
   ## Aesthetics for the axes segments.
   .axes_col <- "grey50"
   .axes_siz <- line_size
@@ -493,13 +533,13 @@ proto_basis <- function(
                          mapping = ggplot2::aes(x = x, y = y)),
       suppressWarnings(ggplot2::geom_segment( ## Suppress unused arg: frames
         data = .df_basis,
-        size = .axes_siz, colour = .axes_col,
+        size = .axes_siz, color = .axes_col,
         mapping = ggplot2::aes(x = x, y = y, frame = frame,
                                xend = .center[, 1L], yend = .center[, 2L])
       )),
       suppressWarnings(ggplot2::geom_text(
         data = .df_basis,
-        colour = .axes_col, size = text_size,
+        color = .axes_col, size = text_size,
         vjust = "outward", hjust = "outward",
         mapping = ggplot2::aes(x = x, y = y, frame = frame, label = label)
       ))
@@ -561,6 +601,19 @@ proto_basis1d <- function(
   .df_txt  <- map_relative(.df_txt,  position, .map_to)
   .df_rect <- map_relative(.df_rect, position, .map_to)
   .df_seg0 <- map_relative(.df_seg0, position, .map_to)
+  if(is.null(.facet_by) == FALSE){
+    .first_lvl <- "basis" #unique(.facet_by)[1L]
+    .df_zero <- .bind_elements2df(
+      list(facet_by = rep_len(.first_lvl, nrow(.df_zero))), .df_zero)
+    .df_seg  <- .bind_elements2df(
+      list(facet_by = rep_len(.first_lvl, nrow(.df_seg))), .df_seg)
+    .df_txt  <- .bind_elements2df(
+      list(facet_by = rep_len(.first_lvl, nrow(.df_txt))), .df_txt)
+    .df_rect <- .bind_elements2df(
+      list(facet_by = rep_len(.first_lvl, nrow(.df_rect))), .df_rect)
+    .df_seg0 <- .bind_elements2df(
+      list(facet_by = rep_len(.first_lvl, nrow(.df_seg0))), .df_seg0)
+  }
   
   ## Return proto
   return(list(
@@ -618,19 +671,18 @@ proto_point <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data) == TRUE) 
+  if(is.null(.df_data) == TRUE)
     stop("proto_point: Data is NULL. Did you call ggtour() on a manual tour without passing data?")
   if(is.null(.df_data$y))
     stop("proto_point: Projection y not found, expected a 2D tour.")
   
   ## do.call aes() over the aes_args
-  .aes_func  <- function(...)
+  .aes_func <- function(...)
     ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tooltip for plotly on hover tip
-  .aes_call  <- do.call(.aes_func, aes_args)
+  .aes_call <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
-  
   ## Return proto
   return(do.call(.geom_func, identity_args))
 }
@@ -707,7 +759,7 @@ proto_origin1d <- function(){
   
   .ymin <- min(.map_to[, 2L])
   .ymax <- max(.map_to[, 2L])
-  .segment_tail <- diff(c(.ymin, .ymax)) * .06
+  .segment_tail <- diff(c(.ymin, .ymax)) * .6
   ## Return
   return(ggplot2::geom_segment(
     ggplot2::aes(x = x, xend = x, y = y - .segment_tail, yend = y + .segment_tail),

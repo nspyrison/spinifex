@@ -19,8 +19,8 @@ spinifex proto_* functions.
 }
 \seealso{
 Other Internal utility: 
-\code{\link{.bind2data_df}()},
-\code{\link{lapply_rep_len}()}
+\code{\link{.bind_elements2df}()},
+\code{\link{.lapply_rep_len}()}
 }
 \concept{Internal utility}
 \keyword{datasets}

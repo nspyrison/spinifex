@@ -4,7 +4,7 @@
 \alias{ggtour}
 \title{Prepare a new ggtour}
 \usage{
-ggtour(basis_array, data = NULL, angle = 0.05)
+ggtour(basis_array, data = NULL, angle = 0.05, facet_by = NULL)
 }
 \arguments{
 \item{basis_array}{An array of projection bases for the tour, as produced
@@ -27,8 +27,10 @@ bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 
-ggtour(mt_path, dat) ## Returns headless ggplot(), but required for other spinifex protos
+## Returns headless ggplot(), but required for proto_* functions.
+ggtour(mt_path, dat)
 
+## d = 2 case
 ggt <- ggtour(mt_path, dat, angle = .1) +
   proto_basis() +
   proto_point(list(color = clas, shape = clas),
@@ -39,10 +41,28 @@ animate_plotly(ggt)
 
 ## d = 1 case
 bas1d <- basis_pca(dat, d = 1)
-mt <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
-ggt <- ggtour(mt, dat, angle = .2) + proto_default1d(list(fill = clas))
+mt_path2 <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+ggt <- ggtour(mt_path2, dat, angle = .2) +
+  proto_default1d(list(fill = clas))
 \dontrun{
 animate_plotly(ggt)
+}
+
+## d = 2, with facet
+ggt <- ggtour(mt_path, dat, angle = .1, facet_by = clas) +
+  proto_basis() +
+  proto_point(list(color = clas, shape = clas),
+              list(size = 1.5))
+\dontrun{
+animate_plotly(ggt)
+}
+
+## d = 1, with facet 
+ggt <- ggtour(mt_path2, dat, angle = .2, facet_by = clas) +
+  proto_default1d(list(color = clas, shape = clas, fill = clas))
+  #proto_density(list(color = clas, shape = clas, fill = clas))
+\dontrun{
+animate_gganimate(ggt) ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments
 }
 }
 \seealso{
