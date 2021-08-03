@@ -31,7 +31,7 @@ mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 ggtour(mt_path, dat)
 
 ## d = 2 case
-ggt <- ggtour(mt_path, dat, angle = .1) +
+ggt <- ggtour(mt_path, dat) +
   proto_basis() +
   proto_point(list(color = clas, shape = clas),
               list(size = 1.5))
@@ -41,28 +41,27 @@ animate_plotly(ggt)
 
 ## d = 1 case
 bas1d <- basis_pca(dat, d = 1)
-mt_path2 <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
-ggt <- ggtour(mt_path2, dat, angle = .2) +
+mt_path1d <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+ggt1d <- ggtour(mt_path1d, dat) +
   proto_default1d(list(fill = clas))
 \dontrun{
-animate_plotly(ggt)
+animate_plotly(ggt1d)
 }
 
 ## d = 2, with facet
-ggt <- ggtour(mt_path, dat, angle = .1, facet_by = clas) +
-  proto_basis() +
-  proto_point(list(color = clas, shape = clas),
-              list(size = 1.5))
+ggt <- ggtour(mt_path, dat, facet_by = clas) +
+  proto_default(list(color = clas, shape = clas), list(size = 1.5))
+  #proto_point(list(color = clas, shape = clas), list(size = 1.5))
 \dontrun{
 animate_plotly(ggt)
 }
 
-## d = 1, with facet 
-ggt <- ggtour(mt_path2, dat, angle = .2, facet_by = clas) +
-  proto_default1d(list(color = clas, shape = clas, fill = clas))
-  #proto_density(list(color = clas, shape = clas, fill = clas))
+## d = 1, with facet
+ggt1d <- ggtour(mt_path1d, dat, facet_by = clas) +
+  #proto_default1d(list(color = clas, shape = clas, fill = clas))
+  proto_density(list(color = clas, shape = clas, fill = clas))
 \dontrun{
-animate_gganimate(ggt) ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments
+animate_gganimate(ggt1d) ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments
 }
 }
 \seealso{

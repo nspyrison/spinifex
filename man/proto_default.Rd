@@ -9,9 +9,9 @@
 \alias{proto_def1d}
 \title{Wrapper function for default 2D/1D tours respectively.}
 \usage{
-proto_default(aes_args = list(), identity_args = list())
+proto_default(aes_args = list(), identity_args = list(alpha = 0.9))
 
-proto_default1d(aes_args = list(), identity_args = list())
+proto_default1d(aes_args = list(), identity_args = list(alpha = 0.7))
 }
 \arguments{
 \item{aes_args}{A list of aesthetic arguments to passed to

@@ -13,7 +13,7 @@ proto_basis(
 )
 
 proto_basis1d(
-  position = c("top", "left", "center", "right", "off"),
+  position = c("top1d", "floor1d", "off"),
   manip_col = "blue",
   segment_size = 2,
   text_size = 5

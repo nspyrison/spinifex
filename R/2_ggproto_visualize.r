@@ -2,7 +2,7 @@
 #' Prepare a new ggtour
 #'
 #' `ggtour()` initializes a ggplot object for a tour, to be animated with 
-#' `animate_plotly()` or `animate_ggtour()`. 
+#' `animate_plotly()` or `animate_ggtour()`.
 #'
 #' @param basis_array An array of projection bases for the tour, as produced
 #' with `manual_tour()` or `tour::save_history()`.
@@ -23,7 +23,7 @@
 #' ggtour(mt_path, dat)
 #' 
 #' ## d = 2 case
-#' ggt <- ggtour(mt_path, dat, angle = .1) +
+#' ggt <- ggtour(mt_path, dat) +
 #'   proto_basis() +
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 1.5))
@@ -33,28 +33,27 @@
 #' 
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat, d = 1)
-#' mt_path2 <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
-#' ggt <- ggtour(mt_path2, dat, angle = .2) +
+#' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+#' ggt1d <- ggtour(mt_path1d, dat) +
 #'   proto_default1d(list(fill = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
+#' animate_plotly(ggt1d)
 #' }
 #' 
 #' ## d = 2, with facet
-#' ggt <- ggtour(mt_path, dat, angle = .1, facet_by = clas) +
-#'   proto_basis() +
-#'   proto_point(list(color = clas, shape = clas),
-#'               list(size = 1.5))
+#' ggt <- ggtour(mt_path, dat, facet_by = clas) +
+#'   proto_default(list(color = clas, shape = clas), list(size = 1.5))
+#'   #proto_point(list(color = clas, shape = clas), list(size = 1.5))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
-#' ## d = 1, with facet 
-#' ggt <- ggtour(mt_path2, dat, angle = .2, facet_by = clas) +
-#'   proto_default1d(list(color = clas, shape = clas, fill = clas))
-#'   #proto_density(list(color = clas, shape = clas, fill = clas))
+#' ## d = 1, with facet
+#' ggt1d <- ggtour(mt_path1d, dat, facet_by = clas) +
+#'   #proto_default1d(list(color = clas, shape = clas, fill = clas))
+#'   proto_density(list(color = clas, shape = clas, fill = clas))
 #' \dontrun{
-#' animate_gganimate(ggt) ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments
+#' animate_gganimate(ggt1d) ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments
 #' }
 ggtour <- function(basis_array,
                    data = NULL,
@@ -99,7 +98,7 @@ ggtour <- function(basis_array,
     df_data <- .bind_elements2df(
       list(facet_by = rep_len(facet_by, nrow(df_data))), df_data)
     df_basis <- .bind_elements2df( ## basis facet always on first/top level
-      list(facet_by = rep_len("basis", nrow(df_basis))), df_basis)
+      list(facet_by = rep_len("_basis_", nrow(df_basis))), df_basis)
   }
   ## Assign list to a hidden environment, .store
   .set_last_ggtour(list(df_basis = df_basis,
@@ -240,7 +239,6 @@ last_ggtour <- function(){.store$ggtour_ls}
     if(exists("aes_args"))
       aes_args <- lapply(aes_args, function(arg)arg[.idx])
     if(exists("identity_args")){
-      browser()
       identity_args <- lapply(identity_args, function(arg){
         if(length(arg) == .n) arg[.idx] else arg
       })
@@ -379,7 +377,7 @@ animate_plotly <- function(
     warning("ggtour df_basis only has 1 frame, applying just plotly::ggplotly instead.")
     return(plotly::ggplotly(p = ggtour, tooltip = "tooltip"))
   }
-
+  
   .set_last_ggtour(NULL) ## Clears last tour
   ## this should prevent some errors from not running ggtour() right before animating it.
   
@@ -502,6 +500,7 @@ proto_basis <- function(
     stop("proto_basis: Basis `y` not found, expected a 2D tour. Did you mean to call `proto_basis1d`?")
   position = match.arg(position)
   if(position == "off") return()
+  if(is.null(.facet_by) == FALSE) position = "center"
   
   ## Setup and transform
   .angles <- seq(0L, 2L * pi, length = 360L)
@@ -511,7 +510,7 @@ proto_basis <- function(
   .df_basis <- map_relative(.df_basis, position, .map_to)
   if(is.null(.facet_by) == FALSE)
     .circle <- .bind_elements2df(
-      list(facet_by = rep_len("basis", nrow(.circle))), .circle)
+      list(facet_by = rep_len("_basis_", nrow(.circle))), .circle)
   
   ## Aesthetics for the axes segments.
   .axes_col <- "grey50"
@@ -563,7 +562,7 @@ proto_basis <- function(
 #' animate_plotly(ggt)
 #' }
 proto_basis1d <- function(
-  position = c("top", "left", "center", "right", "off"),
+  position = c("top1d", "floor1d", "off"),
   manip_col = "blue",
   segment_size = 2,
   text_size = 5
@@ -572,6 +571,7 @@ proto_basis1d <- function(
   eval(.init4proto)
   position = match.arg(position)
   if(position == "off") return()
+  if(is.null(.facet_by) == FALSE) position = "floor1d"
   
   ## Aesthetics for the axes segments
   .axes_col <- .text_col <- "grey50"
@@ -602,7 +602,7 @@ proto_basis1d <- function(
   .df_rect <- map_relative(.df_rect, position, .map_to)
   .df_seg0 <- map_relative(.df_seg0, position, .map_to)
   if(is.null(.facet_by) == FALSE){
-    .first_lvl <- "basis" #unique(.facet_by)[1L]
+    .first_lvl <- "_basis_"
     .df_zero <- .bind_elements2df(
       list(facet_by = rep_len(.first_lvl, nrow(.df_zero))), .df_zero)
     .df_seg  <- .bind_elements2df(
@@ -713,7 +713,7 @@ proto_point <- function(aes_args = list(),
 proto_origin <- function(tail_size = .05){
   ## Initialize
   eval(.init4proto)
-    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_basis$y))
     stop("proto_origin: Basis y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
   
@@ -731,7 +731,7 @@ proto_origin <- function(tail_size = .05){
   ## Return
   return(
     ggplot2::geom_segment(
-      data = .df_origin, color = "grey60", size = 1L, alpha = .5,
+      data = .df_origin, color = "grey60", size = 1L, alpha = .9,
       mapping = ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end)
     )
   )
@@ -763,7 +763,7 @@ proto_origin1d <- function(){
   ## Return
   return(ggplot2::geom_segment(
     ggplot2::aes(x = x, xend = x, y = y - .segment_tail, yend = y + .segment_tail),
-    data = .center, color = "grey60", size = .75, alpha = .5))
+    data = .center, color = "grey60", size = .75, alpha = .9))
 }
 
 #' Tour proto for data, 1D density, with rug marks
@@ -880,11 +880,9 @@ proto_density_ridges <- function(
 ){
   ## Initialize
   requireNamespace("transformr")
+  ## Special facet_by ggridges: 
   aes_args <- c(list(y = group_by, fill = group_by, point_color = group_by, point_fill = group_by), aes_args)
-  
-  lapply(aes_args, length)
   eval(.init4proto)
-  lapply(aes_args, length)
   if(is.null(.df_data))
     stop("proto_density_ridges: data missing. Did you call ggtour() on a manual tour without passing data?")
   
@@ -960,7 +958,7 @@ proto_text <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
-    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_text: Projection y not found, expected a 2D tour.")
   
@@ -1069,11 +1067,11 @@ proto_hex <- function(aes_args = list(),
 #' animate_plotly(ggt)
 #' }
 proto_default <- function(aes_args = list(),
-                          identity_args = list()
+                          identity_args = list(alpha = .9)
 ){
   return(list(
-    proto_origin(),
     proto_point(aes_args, identity_args),
+    proto_origin(),
     proto_basis()
   ))
 }
@@ -1093,11 +1091,11 @@ proto_default <- function(aes_args = list(),
 #' animate_plotly(ggt)
 #' }
 proto_default1d <- function(aes_args = list(),
-                            identity_args = list()
+                            identity_args = list(alpha = .7)
 ){
   return(list(
-    proto_origin1d(),
     proto_density(aes_args, identity_args),
+    proto_origin1d(),
     proto_basis1d()
   ))
 }
@@ -1107,13 +1105,12 @@ proto_default1d <- function(aes_args = list(),
 
 ## ggproto api extension 1 -----
 ### should move into spinifex v0.3.1
-#' Tour proto highlighing specified points, will be in front or behind
-#' `ggproto_point`.
+#' Tour proto highlighing specified points
 #'
-#' A `grom_point` call to draw attention to a subset of points.
-#' Subset the projected data frames to the specified `rownum_index` of the 
-#' original data.frame with specified highlighting aesthetics. Layering is 
-#' important for use with `proto_point`.
+#' A `geom_point` or `geom_segment`(*1d) call to draw attention to a subset of 
+#' points. Subset the projected data frames to the specified `rownum_index` of 
+#' the original data.frame with specified highlighting aesthetics. The order you
+#' apply highlighting is import when using with other `proto_*` functions.
 #'
 #' @param rownum_index One or more integers, the row numbers of the to 
 #' highlight. Should be within 1:n, the rows of the original data.
@@ -1136,7 +1133,7 @@ proto_default1d <- function(aes_args = list(),
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
 #' 
-#' ## d = 2 case
+#' ## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
@@ -1146,6 +1143,7 @@ proto_default1d <- function(aes_args = list(),
 #' animate_plotly(ggt)
 #' }
 #' 
+#' ## Custom aesthetics, highlighting multiple points defaults mark_initial to FALSE
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_highlight(rownum_index = c( 2, 6, 19),
 #'                   identity_args = list(color = "blue", size = 4, shape = 2)) +
@@ -1162,7 +1160,7 @@ proto_highlight <- function(
 ){
   ## Initialize
   eval(.init4proto)
-    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_highlight: Projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
   
@@ -1202,14 +1200,14 @@ proto_highlight <- function(
 #' gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
-#'   proto_density(list(fill = clas, color = clas)) +
+#'   proto_default1d(list(fill = clas, color = clas)) +
 #'   proto_highlight1d(rownum_index = 7)
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ggt2 <- ggtour(gt_path, dat) +
-#'   proto_density(list(fill = clas, color = clas)) +
+#'   proto_default1d(list(fill = clas, color = clas)) +
 #'   proto_highlight1d(rownum_index = c(2, 6, 7))
 #' \dontrun{
 #' animate_plotly(ggt2)
@@ -1217,7 +1215,7 @@ proto_highlight <- function(
 proto_highlight1d <- function(
   rownum_index,
   aes_args = list(),
-  identity_args = list(color = "red", linetype = 2, alpha = .7),
+  identity_args = list(color = "red", linetype = 2, alpha = .9),
   mark_initial = if(length(rownum_index) == 1) TRUE else FALSE
 ){
   ## Initialize
@@ -1228,7 +1226,7 @@ proto_highlight1d <- function(
   ## geom_segment do.calls, moving with frame
   .ymin <- min(.map_to[, 2L])
   .ymax <- max(.map_to[, 2L])
-  .segment_tail <- diff(c(.ymin, .ymax)) * .06
+  .segment_tail <- diff(c(.ymin, .ymax)) * .1
   .aes_func <- function(...)
     ggplot2::aes(x = x, xend = x,  y = .ymin - .segment_tail,
                  yend = .ymax + .segment_tail,
@@ -1268,7 +1266,7 @@ if(FALSE){ ## DONT RUN
   ){
     ## Initialize
     eval(.init4proto)
-      if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
     if(is.null(.df_data$y)) stop("proto_hdr: Projection y not found, expects a 2D tour.")
     
     ##TODO: DENSITY WORK & SEGMENT.

@@ -166,10 +166,11 @@ as_history_array <- function(basis_array, data = NULL){
 #' 
 #' map_relative(x = rb, position = "bottomleft")
 #' map_relative(x = rb, position = "right", to = wine[, 2:3])
-map_relative <- function(x,
-                         position = c("center", "left", "right", "bottomleft",
-                                      "topright", "top", "off"),
-                         to = NULL
+map_relative <- function(
+  x,
+  position = c("center", "left", "top1d", "floor1d",
+               "right", "bottomleft", "topright", "off"),
+  to = NULL
 ){
   ## Assumptions
   if(is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
@@ -197,10 +198,14 @@ map_relative <- function(x,
     scale <- .5 * ydiff
     xoff  <- -.7 * xdiff + xcenter
     yoff  <- ycenter
-  } else if(position == "top"){
+  } else if(position == "top1d"){
     scale <- .3 * ydiff
     xoff  <- xcenter
     yoff  <- .7 * ydiff + ycenter
+  } else if(position == "floor1d"){
+    scale <- .3 * ydiff
+    xoff  <- xcenter
+    yoff  <- -1 * max(yrange) + ycenter 
   } else if(position == "right"){
     scale <- .3 * ydiff
     xoff  <- .7 * xdiff + xcenter
@@ -217,8 +222,9 @@ map_relative <- function(x,
   
   ## Apply scale and return
   x[, 2L] <- scale * x[, 2L] + yoff
-  if(position == "top"){ ## Triple wide for proto_basis1d.
-    x[, 1L] <- 3 * scale * x[, 1L] + xoff
+  ## Quadruple wide for proto_basis1d.
+  if(position %in% c("top1d", "floor1d")){
+    x[, 1L] <- 4 * scale * x[, 1L] + xoff
   }else x[, 1L] <- scale * x[, 1L] + xoff
   
   return(x)
