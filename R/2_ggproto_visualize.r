@@ -233,16 +233,17 @@ last_ggtour <- function(){.store$ggtour_ls}
   
   ## subset, if rownum_index exists
   if(exists("rownum_index")){
-    .idx <- which(.df_data$label %in% rownum_index)
-    .df_data <- .df_data[.idx, ]
     ## subset arg_lists
     if(exists("aes_args"))
-      aes_args <- lapply(aes_args, function(arg)arg[.idx])
+      aes_args <- lapply(aes_args, function(arg)arg[rownum_index])
     if(exists("identity_args")){
       identity_args <- lapply(identity_args, function(arg){
-        if(length(arg) == .n) arg[.idx] else arg
+        if(length(arg) == .n) arg[rownum_index] else arg
       })
     }
+    ## subset .df_data
+    .idx <- which(.df_data$label %in% rownum_index)
+    .df_data <- .df_data[.idx, ]
   }
   
   ## Replicate arg, if they exist
@@ -1132,10 +1133,9 @@ proto_default1d <- function(aes_args = list(),
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
-#' 
-#' ## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
+#' #' ## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_highlight(rownum_index = 5) +
 #'   proto_point()
@@ -1147,6 +1147,16 @@ proto_default1d <- function(aes_args = list(),
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_highlight(rownum_index = c( 2, 6, 19),
 #'                   identity_args = list(color = "blue", size = 4, shape = 2)) +
+#'   proto_point(list(color = clas, shape = clas),
+#'               list(size = 2, alpha = .7))
+#' \dontrun{
+#' animate_plotly(ggt2)
+#' }
+#' 
+#' ## 
+#' ggt2 <- ggtour(gt_path, dat) +
+#'   proto_highlight(rownum_index = c( 2, 6, 19),
+#'                   aes_args = list(color = clas)) +
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 2, alpha = .7))
 #' \dontrun{

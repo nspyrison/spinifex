@@ -48,10 +48,9 @@ apply highlighting is import when using with other \verb{proto_*} functions.
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
-
-## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
+#' ## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
 ggt <- ggtour(gt_path, dat) +
   proto_highlight(rownum_index = 5) +
   proto_point()
@@ -63,6 +62,16 @@ animate_plotly(ggt)
 ggt2 <- ggtour(gt_path, dat) +
   proto_highlight(rownum_index = c( 2, 6, 19),
                   identity_args = list(color = "blue", size = 4, shape = 2)) +
+  proto_point(list(color = clas, shape = clas),
+              list(size = 2, alpha = .7))
+\dontrun{
+animate_plotly(ggt2)
+}
+
+## 
+ggt2 <- ggtour(gt_path, dat) +
+  proto_highlight(rownum_index = c( 2, 6, 19),
+                  aes_args = list(color = clas)) +
   proto_point(list(color = clas, shape = clas),
               list(size = 2, alpha = .7))
 \dontrun{
