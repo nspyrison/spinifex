@@ -41,11 +41,12 @@ contributions of the variables to the projection space inscribed in a unit
 circle for 2D or rectangle of unit width for 1D.
 }
 \examples{
-## 2D case:
 dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
 bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
+
+## 2D case:
 mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 
 ggt <- ggtour(mt_path, dat) +
@@ -60,6 +61,7 @@ ggt2 <- ggtour(mt_path, dat) +
 \dontrun{
 animate_plotly(ggt2)
 }
+
 ## 1D case:
 gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 

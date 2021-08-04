@@ -519,11 +519,12 @@ animate_plotly <- function(
 #' @aliases proto_basis
 #' @family ggtour proto
 #' @examples
-#' ## 2D case:
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
 #' bas <- basis_pca(dat)
 #' mv <- manip_var_of(bas)
+#' 
+#' ## 2D case:
 #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
@@ -537,6 +538,15 @@ animate_plotly <- function(
 #'               line_size = .8, text_size = 8)
 #' \dontrun{
 #' animate_plotly(ggt2)
+#' }
+#' 
+#' ## 1D case:
+#' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+#' 
+#' ggt <- ggtour(gt_path1d, dat) +
+#'   proto_basis1d()
+#' \dontrun{
+#' animate_plotly(ggt)
 #' }
 proto_basis <- function(
   position = c("left", "center", "right", "bottomleft", "topright", "off"),
@@ -602,15 +612,6 @@ proto_basis <- function(
 #' showing variable magnitude on the axes. Defaults to 2.
 #' @export
 #' @family ggtour proto
-#' @examples
-#' ## 1D case:
-#' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
-#' 
-#' ggt <- ggtour(gt_path1d, dat) +
-#'   proto_basis1d()
-#' \dontrun{
-#' animate_plotly(ggt)
-#' }
 proto_basis1d <- function(
   position = c("top1d", "floor1d", "off"),
   manip_col = "blue",
@@ -635,17 +636,17 @@ proto_basis1d <- function(
     .axes_siz[.manip_var] <- 1.5 * segment_size
     .axes_siz <- rep(.axes_siz, .n_frames)
   }
+  
   ## Initialize data.frames, before scaling
-  .pf <- nrow(.df_basis) ## p, # vars * f, # frames
-  .frame1_idx <- .df_basis$frame == 1L
   .df_zero <- data.frame(x = 0L, y = 0L)
   .df_seg  <- data.frame(x = .df_basis$x,
                          y = rep(.p:1L, .n_frames),
                          frame = .df_basis$frame,
                          label = .df_basis$label)
-  .df_txt  <- data.frame(x = rep(-1L, nrow(.df_basis)), y = rep(.p:1L, .n_frames),
-                         frame = .df_basis$frame,
-                         label = .df_basis$label)
+  ## Do note replicate across frames, it won't work any better with plotly
+  .df_txt  <- data.frame(x = -1L, 
+                         y = .p:1L,
+                         label = .df_basis[.df_basis$frame == 1L, "label"])
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5))
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5))
   ## Scale them
@@ -665,21 +666,20 @@ proto_basis1d <- function(
   
   ## Return proto
   return(list(
-    ## Grey, dashed middle line
+    ## Middle line, grey, dashed
     ggplot2::geom_segment(
       ggplot2::aes(x = min(x), y = min(y), xend = max(x), yend = max(y)),
       .df_seg0, color = "grey80", linetype = 2L),
-    ## Grey, outside unit-width rectangle, (height = p+1)
+    ## Outside rectangle, Grey, unit-width, (height = p+1)
     ggplot2::geom_rect(
       ggplot2::aes(xmin = min(x), xmax = max(x), ymin = min(y), ymax = max(y)),
       .df_rect, fill = NA, color = "grey60"),
-    ## Text of the variable labels
-    ##TODO:: EXPERIMENTAL does added non-changing frame effects downstream color error.
-    suppressWarnings(ggplot2::geom_text(
-      ggplot2::aes(x, y, label = label, frame = frame),
-      .df_txt, hjust = 1L, size = text_size, color = .axes_col,
-      nudge_x = -.08 * max(nchar(.df_txt$label)))),
-    ## Contribution bars of basis, changing with frame.
+    ## Variable abbreviation text
+    ggplot2::geom_text(
+      ggplot2::aes(x, y, label = label), .df_txt,
+      hjust = 1L, size = text_size, color = "grey60",
+      nudge_x = -.08 * max(nchar(.df_txt$label))),
+    ## Contribution segments of current basis, changing with frame
     suppressWarnings(ggplot2::geom_segment(
       ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
       .df_seg, color = .axes_col, size = .axes_siz))
