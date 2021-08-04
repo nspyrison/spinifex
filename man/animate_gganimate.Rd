@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{animate_gganimate}
 \alias{animate_gganimate}
-\title{Animate a \code{ggtour()} with the use of \code{{gganimate}}}
+\title{Animate a ggtour as a .gif via \code{{gganimate}}}
 \usage{
 animate_gganimate(
   ggtour,
@@ -28,11 +28,12 @@ animation. Defaults to 1 second.}
 \item{end_pause}{The duration in seconds to wait after ending the animation,
 before it restarts from the first frame. Defaults to 1 second.}
 
-\item{...}{other arguments to pass to \code{gganimate::animate()}.}
+\item{...}{Other arguments passed to
+\code{\link[gganimate:animate]{gganimate::animate}}.}
 }
 \description{
-Animates the static \code{ggtour()} and added \verb{proto_*()} functions as a
-\code{{gganimate}} animation, .gif without interaction.
+Animates the ggplot return of \code{ggtour()} and added \verb{proto_*()} functions as a
+.gif without interaction, through use of \code{{gganimate}}.
 }
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
@@ -60,6 +61,8 @@ if(F) ## Example saving gganime to a .gif, may require additional setup.
 }
 }
 \seealso{
+\code{\link[gganimate:animate]{gganimate::animate}}
+
 Other ggtour animator: 
 \code{\link{animate_plotly}()}
 }

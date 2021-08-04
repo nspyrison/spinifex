@@ -554,27 +554,29 @@ scale_01 <- function(data){
   return(apply(data, 2L, function(c) (c - min(c)) / diff(range(c))))
 }
 
-#' ## <<experimental>> Mutes verbose functions, without suppressing warnings or error,
-#' ## wrapper function for .mute <- capture.output(x <- value)
-#' #' @examples 
-#' #' ## mute assignment
-#' #' mute(gt <- tourr::save_history(mtcars, max_bases = 3))
-#' mute <- function(...){
-#'   .mute <- capture.output(
-#'     ret <- for (i in seq_len(...length())) {
-#'       out <- withVisible(...elt(i))
-#'       if (out$visible)
-#'         print(out$value)
-#'     }
-#'   )
-#' }
+# ## <<experimental>> Mutes verbose functions, without suppressing warnings or error,
+# ## wrapper function for .mute <- capture.output(x <- value)
+# #' @examples 
+# #' ## mute assignment
+# #' mute(gt <- tourr::save_history(mtcars, max_bases = 3))
+# mute <- function(...){
+#   .mute <- capture.output(
+#     ret <- for (i in seq_len(...length())) {
+#       out <- withVisible(...elt(i))
+#       if (out$visible)
+#         print(out$value)
+#     }
+#   )
+# }
 
 
-#' A wrapper muting the output from \code{\link[tourr]{save_history}}
+#' A wrapper muting the text byproduct of 
+#' \code{\link[tourr:save_history]{tourr::save_history}}
 #'
 #' @inheritParams tourr::save_history
 #' @param verbose Whether or not to suppress the text output byproduct from 
 #' `tourr::save_history()`. Defaults to FALSE.
+#' @seealso \code{\link[tourr:save_history]{tourr::save_history}}
 #' @export
 #' @examples 
 #' tour_path <- save_history(data = wine[, 2:6], grand_tour(), max_bases = 10)

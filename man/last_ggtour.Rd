@@ -3,14 +3,16 @@
 \name{last_ggtour}
 \alias{last_ggtour}
 \alias{.set_last_ggtour}
-\title{Retrieve/set the last \code{ggtour()}}
+\title{Retrieve/set a list from the last \code{ggtour()}, required for the use
+of \verb{proto_*} functions.}
 \usage{
 last_ggtour()
 
 .set_last_ggtour(value)
 }
 \description{
-Retrieve/set the last \code{ggtour()}
+Retrieve/set a list from the last \code{ggtour()}, required for the use
+of \verb{proto_*} functions.
 }
 \seealso{
 \code{\link[=ggtour]{ggtour()}}

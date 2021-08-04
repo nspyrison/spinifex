@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{animate_plotly}
 \alias{animate_plotly}
-\title{Animate a \code{ggtour()} via \code{{plotly}}}
+\title{Animate a ggtour as and HTML widget via \code{{plotly}}}
 \usage{
 animate_plotly(ggtour, fps = 8, ...)
 }
@@ -12,11 +12,12 @@ animate_plotly(ggtour, fps = 8, ...)
 \item{fps}{Scalar number of Frames Per Second, the speed the animation should
 play at.}
 
-\item{...}{other arguments to pass to \code{gganimate::animate()}.}
+\item{...}{Other arguments passed to
+\code{\link[plotly:ggplotly]{plotly::ggplotly}}.}
 }
 \description{
-Animates the static \code{ggtour()} and added \verb{proto_*()} functions as a \code{{plotly}}
-animation, an .html widget with slider and hover tooltip showing
+Animates the static \code{ggtour()} and added \verb{proto_*()} functions as a
+\code{{plotly}} animation, an .html widget with slider and hover tooltip showing
 the row number.
 }
 \examples{
@@ -43,6 +44,8 @@ if(F) ## Example saving ploty to a .html widget, may require additional setup.
 }
 }
 \seealso{
+\code{\link[plotly:ggplotly]{plotly::ggplotly}}
+
 Other ggtour animator: 
 \code{\link{animate_gganimate}()}
 }

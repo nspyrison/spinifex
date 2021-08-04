@@ -44,14 +44,15 @@ NULL
 ## @importFrom tourr save_history() ## don't import made a mute wraper for it.
 
 ## tourr data sets
-#' @importFrom tourr flea
-#' @importFrom tourr olive
-#' @importFrom tourr ozone
-#' @importFrom tourr places
-#' @importFrom tourr ratcns
-#' @importFrom tourr laser
-#' @importFrom tourr tao
-#' @importFrom tourr flea
+#### Error: object 'flea' is not exported by 'namespace:tourr'
+# #' @importFrom tourr flea
+# #' @importFrom tourr olive
+# #' @importFrom tourr ozone
+# #' @importFrom tourr places
+# #' @importFrom tourr ratcns
+# #' @importFrom tourr laser
+# #' @importFrom tourr tao
+# #' @importFrom tourr flea
 
 ## Manual tour globals:
 if(getRversion() >= "2.15.1"){

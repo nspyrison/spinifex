@@ -178,7 +178,8 @@ filmstrip <- function(ggtour){
 
 
 .store <- new.env(parent = emptyenv())
-#' Retrieve/set the last `ggtour()`
+#' Retrieve/set a list from the last `ggtour()`, required for the use 
+#' of `proto_*` functions.
 #'
 #' @seealso [ggtour()]
 #' @export
@@ -300,10 +301,10 @@ last_ggtour <- function(){.store$ggtour_ls}
 
 ### ANIMATE_* ------
 
-#' Animate a `ggtour()` with the use of `{gganimate}`
+#' Animate a ggtour as a .gif via `{gganimate}`
 #'
-#' Animates the static `ggtour()` and added `proto_*()` functions as a 
-#' `{gganimate}` animation, .gif without interaction.
+#' Animates the ggplot return of `ggtour()` and added `proto_*()` functions as a 
+#' .gif without interaction, through use of `{gganimate}`.
 #'
 #' @param ggtour The return of a `ggtour()`and added `proto_*()` functions.
 #' @param fps Scalar number of Frames Per Second, the speed the animation should 
@@ -314,7 +315,9 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' animation. Defaults to 1 second.
 #' @param end_pause The duration in seconds to wait after ending the animation,
 #' before it restarts from the first frame. Defaults to 1 second.
-#' @param ... other arguments to pass to `gganimate::animate()`.
+#' @param ... Other arguments passed to 
+#' \code{\link[gganimate:animate]{gganimate::animate}}.
+#' @seealso \code{\link[gganimate:animate]{gganimate::animate}}
 #' @export
 #' @family ggtour animator
 #' @examples
@@ -376,16 +379,18 @@ animate_gganimate <- function(
 }
 
 
-#' Animate a `ggtour()` via `{plotly}`
+#' Animate a ggtour as and HTML widget via `{plotly}`
 #'
-#' Animates the static `ggtour()` and added `proto_*()` functions as a `{plotly}`
-#' animation, an .html widget with slider and hover tooltip showing 
+#' Animates the static `ggtour()` and added `proto_*()` functions as a 
+#' `{plotly}` animation, an .html widget with slider and hover tooltip showing 
 #' the row number.
 #'
 #' @param ggtour The return of a `ggtour()`and added `proto_*()` functions.
 #' @param fps Scalar number of Frames Per Second, the speed the animation should 
 #' play at.
-#' @param ... other arguments to pass to `gganimate::animate()`.
+#' @param ... Other arguments passed to 
+#' \code{\link[plotly:ggplotly]{plotly::ggplotly}}.
+#' @seealso \code{\link[plotly:ggplotly]{plotly::ggplotly}}
 #' @export
 #' @family ggtour animator
 #' @examples
