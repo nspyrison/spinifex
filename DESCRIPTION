@@ -17,12 +17,12 @@ Description: Data visualization tours animates linear projection
   respectively. This work is fully discussed in Spyrison & Cook (2020) 
   <doi:10.32614/RJ-2020-027>.
 Depends: 
-    R (>= 3.5.0),
-    tourr
+    R (>= 3.5.0)
 License: CC BY-NC-SA 4.0
 URL: https://github.com/nspyrison/spinifex/
 BugReports: https://github.com/nspyrison/spinifex/issues
-Imports: 
+Imports:
+    tourr,
     ggplot2,
     gganimate,
     plotly,

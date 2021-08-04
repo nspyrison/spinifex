@@ -27,8 +27,31 @@ NULL
   packageStartupMessage("--------------------------------------------------------")
 }
 
-## Import pipe
+## Import pipe, and some tourr functions
 #' @importFrom magrittr %>%
+## tourr work functions
+#' @importFrom tourr grand_tour
+#' @importFrom tourr guided_tour
+#' @importFrom tourr holes
+#' @importFrom tourr cmass
+#' @importFrom tourr lda_pp
+#' @importFrom tourr local_tour
+#' @importFrom tourr little_tour
+#' @importFrom tourr dependence_tour
+#' @importFrom tourr basis_random
+#' @importFrom tourr basis_init
+#' @importFrom tourr sphere_data
+## @importFrom tourr save_history() ## don't import made a mute wraper for it.
+
+## tourr data sets
+#' @importFrom tourr flea
+#' @importFrom tourr olive
+#' @importFrom tourr ozone
+#' @importFrom tourr places
+#' @importFrom tourr ratcns
+#' @importFrom tourr laser
+#' @importFrom tourr tao
+#' @importFrom tourr flea
 
 ## Manual tour globals:
 if(getRversion() >= "2.15.1"){

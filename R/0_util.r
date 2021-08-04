@@ -569,3 +569,21 @@ scale_01 <- function(data){
 #'   )
 #' }
 
+
+#' A wrapper muting the output from \code{\link[tourr]{save_history}}
+#'
+#' @inheritParams tourr::save_history
+#' @param verbose Whether or not to suppress the text output byproduct from 
+#' `tourr::save_history()`. Defaults to FALSE.
+#' @export
+#' @examples 
+#' tour_path <- save_history(data = wine[, 2:6], grand_tour(), max_bases = 10)
+#' dim(tour_path)
+save_history <- function(..., verbose = FLASE){
+  if(verbose == FALSE){
+  .mute <- capture.output(
+    ret <- tourr::save_history(...))
+  } else ret <- tourr::save_history(...)
+  
+  return(ret)
+}
