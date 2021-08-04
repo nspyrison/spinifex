@@ -32,7 +32,6 @@ Imports:
     magrittr
 Suggests:
     MASS,
-    ggridges,
     hexbin,
     htmlwidgets,
     gifski,
