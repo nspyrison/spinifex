@@ -71,6 +71,7 @@ animate_plotly(ggt)
 }
 \seealso{
 Other ggtour proto: 
+\code{\link{filmstrip}()},
 \code{\link{ggtour}()},
 \code{\link{proto_default}()},
 \code{\link{proto_density_ridges}()},
@@ -82,6 +83,7 @@ Other ggtour proto:
 \code{\link{proto_text}()}
 
 Other ggtour proto: 
+\code{\link{filmstrip}()},
 \code{\link{ggtour}()},
 \code{\link{proto_default}()},
 \code{\link{proto_density_ridges}()},

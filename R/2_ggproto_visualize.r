@@ -43,15 +43,13 @@
 #' ## d = 2, with facet
 #' ggt <- ggtour(mt_path, dat, facet_by = clas) +
 #'   proto_default(list(color = clas, shape = clas), list(size = 1.5))
-#'   #proto_point(list(color = clas, shape = clas), list(size = 1.5))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ## d = 1, with facet
 #' ggt1d <- ggtour(mt_path1d, dat, facet_by = clas) +
-#'   #proto_default1d(list(color = clas, shape = clas, fill = clas))
-#'   proto_density(list(color = clas, shape = clas, fill = clas))
+#'   proto_default1d(list(color = clas, shape = clas, fill = clas))
 #' \dontrun{
 #' animate_gganimate(ggt1d) ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments
 #' }
@@ -133,6 +131,50 @@ ggtour <- function(basis_array,
 #     proto_origin(gridline_probs = FALSE) +
 #     proto_point()
 # }
+
+
+#' Create a "filmstrip" of the frames of a ggtour.
+#'
+#' Appends `facet_wrap(vars(frame_number))` & minor themes to the ggtour. 
+#' 
+#' @param ggtour A gramer of graphics tour object, a return from `ggtour()`.
+#' @export
+#' @family ggtour proto
+#' @examples
+#' dat <- scale_sd(tourr::flea[, 1:6])
+#' clas <- tourr::flea$species
+#' bas <- basis_pca(dat)
+#' mv <- manip_var_of(bas)
+#' 
+#' ## d = 2 case
+#' mt_path <- manual_tour(bas, manip_var = mv, angle = .25)
+#' ggt <- ggtour(mt_path, dat) +
+#'   proto_basis() +
+#'   proto_point(list(color = clas, shape = clas),
+#'               list(size = 1.5))
+#' filmstrip(ggt)
+#' 
+#' ## d = 1 case
+#' bas1d <- basis_pca(dat, d = 1)
+#' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv, angle = .3)
+#' ggt1d <- ggtour(mt_path1d, dat) +
+#'   proto_default1d(list(fill = clas))
+#' 
+#' ggt1d <- ggtour(mt_path1d, dat) +
+#'   proto_default1d(list(fill = clas))
+#' filmstrip(ggt1d)
+filmstrip <- function(ggtour){
+  ret <- ggtour +
+    ggplot2::facet_wrap(ggplot2::vars(frame)) + ## facet on frame
+    ggplot2::theme(strip.text = ggplot2::element_text(
+      margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
+      panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
+  
+  ## Remove last_ggtour?
+  #.set_last_ggtour(NULL) ## Clears last tour
+  .m <- capture.output(gc())
+  return(ret)
+}
 
 
 .store <- new.env(parent = emptyenv())
@@ -310,6 +352,7 @@ animate_gganimate <- function(
   ## Assumptions
   requireNamespace("gifski")
   requireNamespace("png")
+  ## Early out, print ggplot if oonly 1 frame. 
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
   if(n_frames == 1L){
@@ -318,7 +361,8 @@ animate_gganimate <- function(
   }
   
   ## Discrete jump between frames, no linear interpolation.
-  gga <- ggtour + gganimate::transition_states(frame, transition_length = 0L)
+  gga <- ggtour + gganimate::transition_states(
+    frame, transition_length = 0L)
   .set_last_ggtour(NULL) ## Clears last tour
   ## this should prevent some errors from not running ggtour() right before animating it.
   
@@ -587,13 +631,16 @@ proto_basis1d <- function(
     .axes_siz <- rep(.axes_siz, .n_frames)
   }
   ## Initialize data.frames, before scaling
-  .frame1  <- .df_basis[.df_basis$frame == 1L, ]
+  .pf <- nrow(.df_basis) ## p, # vars * f, # frames
+  .frame1_idx <- .df_basis$frame == 1L
   .df_zero <- data.frame(x = 0L, y = 0L)
   .df_seg  <- data.frame(x = .df_basis$x,
-                         y = rep_len(.p:1L, length.out = nrow(.df_basis)),
+                         y = rep(.p:1L, .n_frames),
                          frame = .df_basis$frame,
                          label = .df_basis$label)
-  .df_txt  <- data.frame(x = -1L, y = .p:1L, label = .frame1$label)
+  .df_txt  <- data.frame(x = rep(-1L, nrow(.df_basis)), y = rep(.p:1L, .n_frames),
+                         frame = .df_basis$frame,
+                         label = .df_basis$label)
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5))
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5))
   ## Scale them
@@ -603,35 +650,41 @@ proto_basis1d <- function(
   .df_rect <- map_relative(.df_rect, position, .map_to)
   .df_seg0 <- map_relative(.df_seg0, position, .map_to)
   if(is.null(.facet_by) == FALSE){
-    .first_lvl <- "_basis_"
-    .df_zero <- .bind_elements2df(
-      list(facet_by = rep_len(.first_lvl, nrow(.df_zero))), .df_zero)
-    .df_seg  <- .bind_elements2df(
-      list(facet_by = rep_len(.first_lvl, nrow(.df_seg))), .df_seg)
-    .df_txt  <- .bind_elements2df(
-      list(facet_by = rep_len(.first_lvl, nrow(.df_txt))), .df_txt)
-    .df_rect <- .bind_elements2df(
-      list(facet_by = rep_len(.first_lvl, nrow(.df_rect))), .df_rect)
-    .df_seg0 <- .bind_elements2df(
-      list(facet_by = rep_len(.first_lvl, nrow(.df_seg0))), .df_seg0)
+    .basis_ls <- list(facet_by = rep_len("_basis_", nrow(.df_zero)))
+    .df_zero <- .bind_elements2df(.basis_ls, .df_zero)
+    .df_seg  <- .bind_elements2df(.basis_ls, .df_seg)
+    .df_txt  <- .bind_elements2df(.basis_ls, .df_txt)
+    .df_rect <- .bind_elements2df(.basis_ls, .df_rect)
+    .df_seg0 <- .bind_elements2df(.basis_ls, .df_seg0)
   }
   
   ## Return proto
   return(list(
+    ## Grey, dashed middle line
     ggplot2::geom_segment(
       ggplot2::aes(x = min(x), y = min(y), xend = max(x), yend = max(y)),
       .df_seg0, color = "grey80", linetype = 2L),
-    ggplot2::geom_rect(ggplot2::aes(
-      xmin = min(x), xmax = max(x), ymin = min(y), ymax = max(y)),
+    ## Grey, outside unit-width rectangle, (height = p+1)
+    ggplot2::geom_rect(
+      ggplot2::aes(xmin = min(x), xmax = max(x), ymin = min(y), ymax = max(y)),
       .df_rect, fill = NA, color = "grey60"),
-    ggplot2::geom_text(ggplot2::aes(x, y, label = label), .df_txt,
-                       hjust = 1L, size = text_size, color = .text_col,
-                       nudge_x = -.08 * max(nchar(.frame1$label))),
+    ## Text of the variable labels
+    ##TODO:: EXPERIMENTAL does added non-changing frame effects downstream color error.
+    suppressWarnings(ggplot2::geom_text(
+      ggplot2::aes(x, y, label = label, frame = frame),
+      .df_txt, hjust = 1L, size = text_size, color = .axes_col,
+      nudge_x = -.08 * max(nchar(.df_txt$label)))),
+    ## Contribution bars of basis, changing with frame.
     suppressWarnings(ggplot2::geom_segment(
       ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
       .df_seg, color = .axes_col, size = .axes_siz))
   ))
 }
+
+
+
+
+
 
 
 ### PROTO_* for data obs ----
@@ -900,7 +953,7 @@ proto_density_ridges <- function(
   .geom_func <- function(...) suppressWarnings(
     ggridges::geom_density_ridges(.aes_call, .df_data, na.rm = FALSE,
                                   n = 256L, jittered_points = TRUE,
-                                  position = position_points_jitter(0L, 0L), ## No jitter
+                                  position = ggridges::position_points_jitter(0L, 0L), ## No jitter
                                   point_shape = 124L, point_size = 3L,
                                   point_color = "black",
                                   ..., color = "black"))

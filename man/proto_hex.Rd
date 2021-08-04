@@ -42,6 +42,7 @@ animate_gganimate(ggp)
 }
 \seealso{
 Other ggtour proto: 
+\code{\link{filmstrip}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},

@@ -51,6 +51,7 @@ animate_gganimate(ggt2) ## Doesn't work with animate_plotly().
 }
 \seealso{
 Other ggtour proto: 
+\code{\link{filmstrip}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},

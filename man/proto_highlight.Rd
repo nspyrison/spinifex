@@ -96,6 +96,7 @@ animate_plotly(ggt2)
 }
 \seealso{
 Other ggtour proto: 
+\code{\link{filmstrip}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
@@ -107,6 +108,7 @@ Other ggtour proto:
 \code{\link{proto_text}()}
 
 Other ggtour proto: 
+\code{\link{filmstrip}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},

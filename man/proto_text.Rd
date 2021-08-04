@@ -56,6 +56,7 @@ animate_plotly(ggt)
 }
 \seealso{
 Other ggtour proto: 
+\code{\link{filmstrip}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
