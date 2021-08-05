@@ -36,9 +36,9 @@ dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
 bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
-gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+gt_path <- save_history(dat, tourr::grand_tour(), max_bases = 5)
 
-ggt <- ggtour(gt_path, dat) +
+ggt <- ggtour(gt_path, dat, angle = .2) +
   proto_text(list(color = clas))
 \dontrun{
 animate_plotly(ggt)
@@ -46,12 +46,11 @@ animate_plotly(ggt)
 
 ## Custom labels, subset of points
 ggt2 <- ggtour(gt_path, dat) +
-  proto_text(list(label = paste0("My rownum: ", 1:nrow(dat)),
-                  color = clas),
+  proto_text(list(color = clas, size = as.integer(clas)),
              list(alpha = .7),
              rownum_index = 1:15)
 \dontrun{
-animate_plotly(ggt)
+animate_plotly(ggt2)
 }
 }
 \seealso{

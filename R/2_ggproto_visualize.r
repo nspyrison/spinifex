@@ -211,16 +211,15 @@ last_ggtour <- function(){.store$ggtour_ls}
 ){
   list <- as.list(list)
   .nms <- names(list)
-  list <- lapply(seq_along(list), function(i){
+  .m <- lapply(seq_along(list), function(i){
     .this_vector <- list[[i]]
     if(length(.this_vector) != 1L & typeof(.this_vector) != "environment"){
       if(length(.this_vector) != expected_length)
         warning(paste0(".lapply_rep_len: `", .nms[i], "` not of length 1 or data."))
-      .rep_vector <- rep_len(.this_vector, to_length)
-      .rep_vector ## Replace the value with the string of the original
-    }else .this_vector
+      ret_vect <- rep_len(.this_vector, to_length)
+    }else ret_vect <- .this_vector
+    list[[i]] <<- ret_vect
   })
-  names(list) <- .nms
   return(list)
 }
 
@@ -276,27 +275,35 @@ last_ggtour <- function(){.store$ggtour_ls}
   
   ## subset, if rownum_index exists
   if(exists("rownum_index")){
-    ## subset arg_lists
-    if(exists("aes_args"))
-      aes_args <- lapply(aes_args, function(arg)arg[rownum_index])
-    if(exists("identity_args")){
-      identity_args <- lapply(identity_args, function(arg){
-        if(length(arg) == .n) arg[rownum_index] else arg
-      })
+    if(is.null(rownum_index) == FALSE){
+      ## subset arg_lists
+      if(exists("aes_args"))
+        if(length(aes_args) > 0L)
+          aes_args <- lapply(aes_args, function(arg)arg[rownum_index])
+      if(exists("identity_args"))
+        if(length(aes_args) > 0L)
+          identity_args <- lapply(identity_args, function(arg)
+            if(length(arg) == .n) arg[rownum_index] else arg)
+      ## Subset .df_data
+      .idx <- which(.df_data$label %in% rownum_index)
+      .n <- length(rownum_index)
+      .df_data <- .df_data[.idx, ]
+      .nrow_df_data <- nrow(.df_data)
     }
-    ## subset .df_data
-    .idx <- which(.df_data$label %in% rownum_index)
-    .df_data <- .df_data[.idx, ]
   }
-  
   ## Replicate arg, if they exist
   if(exists("aes_args")){
-    aes_args <- .lapply_rep_len(aes_args, .nrow_df_data, .n)
-    # .df_data <- .bind_elements2df(aes_args, .df_data)
-    # aes_args <- ## TODO>>>>, go to aes_string("mpg") or aes_(quote(mpg))?
+    if(length(aes_args) > 0L){
+      aes_args <- .lapply_rep_len(aes_args, .nrow_df_data, .n)
+      ## binding aes_args to .df_data, but then need to find another method to replace do.call.
+      # .df_data <- .bind_elements2df(aes_args, .df_data)
+      # aes_args <- ## TODO>>>>, go to aes_string("mpg") or aes_(quote(mpg))?
+    }
   }
-  if(exists("identity_args"))
-    identity_args <- .lapply_rep_len(identity_args, .nrow_df_data, .n)
+  if(exists("identity_args")){
+    if(length(aes_args) > 0L)
+      identity_args <- .lapply_rep_len(identity_args, .nrow_df_data, .n)
+  }
 })
 
 ### ANIMATE_* ------
@@ -525,7 +532,7 @@ animate_plotly <- function(
 #' mv <- manip_var_of(bas)
 #' 
 #' ## 2D case:
-#' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
+#' mt_path <- manual_tour(bas, manip_var = mv, angle = .2)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
 #'   proto_basis()
@@ -533,6 +540,7 @@ animate_plotly <- function(
 #' animate_plotly(ggt)
 #' }
 #' 
+#' ## Customize basis
 #' ggt2 <- ggtour(mt_path, dat) +
 #'   proto_basis(position = "right", manip_col = "green",
 #'               line_size = .8, text_size = 8)
@@ -541,12 +549,14 @@ animate_plotly <- function(
 #' }
 #' 
 #' ## 1D case:
-#' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+#' bas1d <- basis_pca(dat, d = 1)
+#' mv <- manip_var_of(bas, 3)
+#' mt_path1d <- manual_tour(bas1d, manip_var = mv, angle = .2)
 #' 
-#' ggt <- ggtour(gt_path1d, dat) +
+#' ggt1d <- ggtour(mt_path1d, dat) +
 #'   proto_basis1d()
 #' \dontrun{
-#' animate_plotly(ggt)
+#' animate_plotly(ggt1d)
 #' }
 proto_basis <- function(
   position = c("left", "center", "right", "bottomleft", "topright", "off"),
@@ -918,9 +928,9 @@ proto_density <- function(aes_args = list(),
 #' clas <- tourr::flea$species
 #' bas <- basis_pca(dat)
 #' mv <- manip_var_of(bas)
-#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+#' gt_path <- save_history(dat, tourr::grand_tour(), max_bases = 5)
 #' 
-#' ggt <- ggtour(gt_path, dat) +
+#' ggt <- ggtour(gt_path, dat, angle = .2) +
 #'   proto_text(list(color = clas))
 #' \dontrun{
 #' animate_plotly(ggt)
@@ -928,12 +938,11 @@ proto_density <- function(aes_args = list(),
 #' 
 #' ## Custom labels, subset of points
 #' ggt2 <- ggtour(gt_path, dat) +
-#'   proto_text(list(label = paste0("My rownum: ", 1:nrow(dat)),
-#'                   color = clas),
+#'   proto_text(list(color = clas, size = as.integer(clas)),
 #'              list(alpha = .7),
 #'              rownum_index = 1:15)
 #' \dontrun{
-#' animate_plotly(ggt)
+#' animate_plotly(ggt2)
 #' }
 proto_text <- function(aes_args = list(),
                        identity_args = list(nudge_x = 0.05),
@@ -947,14 +956,11 @@ proto_text <- function(aes_args = list(),
   
   ## do.call aes() over the aes_args
   .aes_func  <- function(...)
-    ggplot2::aes(x = x, y = y, frame = frame, #...)
-                 ...[rep_len(.idx, nrow(.df_data))])
+    ggplot2::aes(x = x, y = y, frame = frame, label = label, ...)
   .aes_call  <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args 
   .geom_func <- function(...)suppressWarnings(
-    ggplot2::geom_text(mapping = .aes_call, data = .df_data, #...)
-                       ...[rep_len(.idx, nrow(.df_data))])
-  )
+    ggplot2::geom_text(mapping = .aes_call, data = .df_data, ...))
   
   ## Return proto
   return(do.call(.geom_func, identity_args))

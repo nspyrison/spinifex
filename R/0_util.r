@@ -581,7 +581,7 @@ scale_01 <- function(data){
 #' @examples 
 #' tour_path <- save_history(data = wine[, 2:6], grand_tour(), max_bases = 10)
 #' dim(tour_path)
-save_history <- function(..., verbose = FLASE){
+save_history <- function(..., verbose = FALSE){
   if(verbose == FALSE){
   .mute <- capture.output(
     ret <- tourr::save_history(...))

@@ -5,7 +5,7 @@
 \title{A wrapper muting the text byproduct of
 \code{\link[tourr:save_history]{tourr::save_history}}}
 \usage{
-save_history(..., verbose = FLASE)
+save_history(..., verbose = FALSE)
 }
 \arguments{
 \item{...}{additional arguments passed to tour path}
