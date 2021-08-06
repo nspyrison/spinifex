@@ -172,7 +172,8 @@ filmstrip <- function(ggtour){
   
   ## Remove last_ggtour?
   #.set_last_ggtour(NULL) ## Clears last tour
-  .m <- capture.output(gc())
+  .m <- capture.output(gc()) ## Mute garbage collection
+  
   return(ret)
 }
 
@@ -304,6 +305,9 @@ last_ggtour <- function(){.store$ggtour_ls}
     if(length(aes_args) > 0L)
       identity_args <- .lapply_rep_len(identity_args, .nrow_df_data, .n)
   }
+  
+  ## Clean up
+  .m <- capture.output(gc()) ## Mute garbage collection
 })
 
 ### ANIMATE_* ------
@@ -373,16 +377,18 @@ animate_gganimate <- function(
   ## Discrete jump between frames, no linear interpolation.
   gga <- ggtour + gganimate::transition_states(
     frame, transition_length = 0L)
+  ## Normal animation, with applied options, knit_pdf_anim == FALSE
+  anim <- gganimate::animate(
+    gga, fps = fps, rewind = rewind,
+    start_pause = fps * start_pause,
+    end_pause = fps * end_pause, ...)
+  
+  ## Clean up
   .set_last_ggtour(NULL) ## Clears last tour
   ## this should prevent some errors from not running ggtour() right before animating it.
+  .m <- capture.output(gc()) ## Mute garbage collection
   
-  ## Normal animation, with applied options, knit_pdf_anim == FALSE
-  return(
-    gganimate::animate(
-      gga, fps = fps, rewind = rewind,
-      start_pause = fps * start_pause,
-      end_pause = fps * end_pause, ...)
-  )
+  return(anim)
 }
 
 
@@ -435,25 +441,27 @@ animate_plotly <- function(
     return(plotly::ggplotly(p = ggtour, tooltip = "tooltip"))
   }
   
-  .set_last_ggtour(NULL) ## Clears last tour
-  ## this should prevent some errors from not running ggtour() right before animating it.
-  
   ## Block plotly.js warning: lack of support for horizontal legend;
   #### https://github.com/plotly/plotly.js/issues/53
-  return(
-    suppressWarnings(
-      plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
-        plotly::animation_opts(frame = 1L / fps * 1000L,
-                               transition = 0L, redraw = FALSE) %>%
-        plotly::layout(showlegend = FALSE,
-                       #, fixedrange = TRUE ## This is a curse, do not use.
-                       yaxis = list(showgrid = FALSE, showline = FALSE),
-                       xaxis = list(showgrid = FALSE, showline = FALSE,
-                                    scaleanchor = "y", scalaratio = 1L),
-                       ...) %>%
-        plotly::config(displayModeBar = FALSE)
-    )
-  )
+  anim <- suppressWarnings(
+    plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
+      plotly::animation_opts(frame = 1L / fps * 1000L,
+                             transition = 0L, redraw = FALSE) %>%
+      plotly::layout(showlegend = FALSE,
+                     #, fixedrange = TRUE ## This is a curse, do not use.
+                     yaxis = list(showgrid = FALSE, showline = FALSE),
+                     xaxis = list(showgrid = FALSE, showline = FALSE,
+                                  scaleanchor = "y", scalaratio = 1L),
+                     ...) %>%
+      plotly::config(displayModeBar = FALSE))
+  
+  
+  ## Clean up
+  .set_last_ggtour(NULL) ## Clears last tour
+  ## this should prevent some errors from not running ggtour() right before animating it.
+  .m <- capture.output(gc()) ## Mute garbage collection
+  
+  return(anim)
 }
 
 
@@ -779,7 +787,10 @@ proto_point <- function(aes_args = list(),
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_origin <- function(tail_size = .05){
+proto_origin <- function(
+  identity_args = list(color = "grey60", size = .5, alpha = .9),
+  tail_size = .05
+){
   ## Initialize
   eval(.init4proto)
   if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
@@ -791,19 +802,18 @@ proto_origin <- function(tail_size = .05){
   .min    <- min(min(.map_to[, 1L]), min(.map_to[, 2L]))
   .max    <- max(max(.map_to[, 1L]), max(.map_to[, 2L]))
   .tail   <- tail_size / 2L * (.max - .min)
-  
   .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
                            x_end = c(.center[, 1L] + .tail, .center[, 1L]),
                            y     = c(.center[, 2L], .center[, 2L] - .tail),
                            y_end = c(.center[, 2L], .center[, 2L] + .tail))
   
-  ## Return
-  return(
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...)
     ggplot2::geom_segment(
-      data = .df_origin, color = "grey60", size = 1L, alpha = .9,
-      mapping = ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end)
-    )
-  )
+      ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end),
+      data = .df_origin, ...)
+  ## Return
+  return(do.call(.geom_func, identity_args))
 }
 
 
@@ -820,19 +830,28 @@ proto_origin <- function(tail_size = .05){
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_origin1d <- function(){
+proto_origin1d <- function(
+  identity_args = list(color = "grey60", size = .5, alpha = .9)
+){
   ## Initialize
   eval(.init4proto)
   if(is.null(last_ggtour()$df_data) == TRUE) return()
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
-  
   .ymin <- min(.map_to[, 2L])
   .ymax <- max(.map_to[, 2L])
-  .segment_tail <- diff(c(.ymin, .ymax)) * .6
+  .tail <- diff(c(.ymin, .ymax)) * .6
+  .df_origin <- data.frame(x     = c(.center[, 1L], .center[, 1L]),
+                           x_end = c(.center[, 1L], .center[, 1L]),
+                           y     = c(.center[, 2L], .center[, 2L]),
+                           y_end = c(.center[, 2L] - .tail, .center[, 2L] + .tail))
+  
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...)
+    ggplot2::geom_segment(
+      ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end),
+      data = .df_origin, ...)
   ## Return
-  return(ggplot2::geom_segment(
-    ggplot2::aes(x = x, xend = x, y = y - .segment_tail, yend = y + .segment_tail),
-    data = .center, color = "grey60", size = .75, alpha = .9))
+  return(do.call(.geom_func, identity_args))
 }
 
 #' Tour proto for data, 1D density, with rug marks

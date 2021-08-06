@@ -6,9 +6,12 @@
 \alias{proto_origin1d}
 \title{Tour proto for data origin zero mark}
 \usage{
-proto_origin(tail_size = 0.05)
+proto_origin(
+  identity_args = list(color = "grey60", size = 0.5, alpha = 0.9),
+  tail_size = 0.05
+)
 
-proto_origin1d()
+proto_origin1d(identity_args = list(color = "grey60", size = 0.5, alpha = 0.9))
 }
 \arguments{
 \item{tail_size}{How long the origin mark should extended
