@@ -302,7 +302,7 @@ last_ggtour <- function(){.store$ggtour_ls}
     }
   }
   if(exists("identity_args")){
-    if(length(aes_args) > 0L)
+    if(length(identity_args) > 0L)
       identity_args <- .lapply_rep_len(identity_args, .nrow_df_data, .n)
   }
   
@@ -1198,9 +1198,8 @@ proto_highlight <- function(
     ## do.call geom_vline over highlight obs
     .geom_func  <- function(...) suppressWarnings(ggplot2::geom_point(
       mapping = .aes_call, .df_data[1L, ], ## only the first row, should be frame 1.
-      ..., color = "grey60", alpha = .5))  ## hard coded alpha & linetype
+      ..., alpha = .5))  ## hard coded alpha
     inital_mark <- do.call(.geom_func, identity_args)
-    
     ret <- list(inital_mark, ret)
   }
   
@@ -1262,7 +1261,7 @@ proto_highlight1d <- function(
     ## do.call geom_segment for highlight obs
     .geom_func <- function(...) suppressWarnings(ggplot2::geom_segment(
       mapping = .aes_call, .df_data[1L, ], ## Only the first row, should be frame 1.
-      color = "grey60", alpha = .7, linetype = 3L, ...)) ## Hard coded alpha & linetype
+      ..., alpha = .5)) ## Hard coded alpha
     inital_mark <- do.call(.geom_func, identity_args)
     ret <- list(inital_mark, ret)
   }
