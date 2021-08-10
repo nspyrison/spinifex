@@ -10,9 +10,11 @@
 \item{list}{A list of arguments such as those passed in \code{aes_args} and
 \code{identity_args}.}
 
-\item{nrow_frames}{Scalar number of rows in the data frames to replicate to.}
+\item{to_length}{Scalar number, length of the output vector;
+the number of rows in the data frames to replicate to.}
 
-\item{nrow_data}{Scalar number of rows in the data to replicate.}
+\item{expected_length}{Scalar number, the expected length of the each element
+of \code{list}.}
 }
 \description{
 Internal function. To be applied to \code{aes_args} and \code{identity_args},

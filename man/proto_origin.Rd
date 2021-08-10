@@ -14,6 +14,11 @@ proto_origin(
 proto_origin1d(identity_args = list(color = "grey60", size = 0.5, alpha = 0.9))
 }
 \arguments{
+\item{identity_args}{A list of static, identity arguments passed into
+\code{geom_point()}, but outside of \code{aes()}, for instance
+\code{geom_point(aes(...), size = 2, alpha = .7)} becomes
+\code{identity_args = list(size = 2, alpha = .7)}.}
+
 \item{tail_size}{How long the origin mark should extended
 relative to the observations. Defaults to .05, 5\% of the projection space.}
 }

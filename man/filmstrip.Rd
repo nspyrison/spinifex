@@ -7,10 +7,12 @@
 filmstrip(ggtour)
 }
 \arguments{
-\item{ggtour}{A gramer of graphics tour object, a return from \code{ggtour()}.}
+\item{ggtour}{A gramar of graphics tour object, a return from \code{ggtour()}.}
 }
 \description{
-Appends \code{facet_wrap(vars(frame_number))} & minor themes to the ggtour.
+Appends \code{facet_wrap(vars(frame_number))} & minor themes to the ggtour. If the
+number of frames is more than desired, try increasing the \code{angle} argument on
+the tour.
 }
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])

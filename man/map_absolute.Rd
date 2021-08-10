@@ -22,7 +22,7 @@ A manual variant of \code{map_relative()}. Can be used as the \code{axes} argume
 to manually set the size and locations of the axes.
 }
 \examples{
-bas <- basis_random(4, 2)
+bas <- tourr::basis_random(4, 2)
 
 map_absolute(bas, offset = c(-2, 0), scale = c(2/3, 2/3))
 }

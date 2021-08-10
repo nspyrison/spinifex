@@ -84,6 +84,7 @@ data.frame(
 
 ## Manual tour
 ```{r}
+library("tourr")
 library("spinifex")
 
 ## Scale our numeric data
@@ -111,7 +112,7 @@ animate_plotly(ggt, fps = 5) ## As a plotly .html widget.
 ## Tours from `{tourr}`
 ```{r}
 ## (Quietly create) a grand tour, projecting through randomly selected bases
-.mute <- capture.output(
+.mute <- utils::capture.output(
   gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 3)
 )
 
@@ -135,7 +136,7 @@ animate_gganimate(ggt)
 
 ## Static ggplot of all frames in the tour
 ggt <- ggtour(guided_path, dat, angle = .1) + ## Include geodesic interpolation angle between the selected bases.
-  proto_basis1d(position = "right") +
+  proto_basis1d() +
   proto_density(list(fill = clas), density_position = "stack")
 ## Note that proto_density(density_position = "stack") does not work with animate_plotly().
 ```

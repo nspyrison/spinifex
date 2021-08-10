@@ -10,9 +10,7 @@
 \item{list}{A list of arguments such as those passed in \code{aes_args} and
 \code{identity_args}.}
 
-\item{nrow_frames}{Scalar number of rows in the data frames to replicate to.}
-
-\item{nrow_data}{Scalar number of rows in the data to replicate.}
+\item{df}{A data.frame to column bind the elements of \code{list} to.}
 }
 \description{
 Internal function. To be applied to \code{aes_args}

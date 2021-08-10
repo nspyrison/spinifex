@@ -10,6 +10,8 @@
 #' stored as an attribute of the the `basis_array`.
 #' @param angle Target angle (in radians) for interpolation for
 #' `tour::save_history()` generated `basis_array`. Defaults to .05.
+#' @param facet_by Optionally, add a vector to facet the ggtour on. Similar to
+#' adding `facet_grid(rows = facet_by)` to the tour.
 #' @export
 #' @family ggtour proto
 #' @examples
@@ -51,7 +53,8 @@
 #' ggt1d <- ggtour(mt_path1d, dat, facet_by = clas) +
 #'   proto_default1d(list(color = clas, shape = clas, fill = clas))
 #' \dontrun{
-#' animate_gganimate(ggt1d) ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments
+#' ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments.
+#' animate_gganimate(ggt1d)
 #' }
 ggtour <- function(basis_array,
                    data = NULL,
@@ -135,9 +138,11 @@ ggtour <- function(basis_array,
 
 #' Create a "filmstrip" of the frames of a ggtour.
 #'
-#' Appends `facet_wrap(vars(frame_number))` & minor themes to the ggtour. 
+#' Appends `facet_wrap(vars(frame_number))` & minor themes to the ggtour. If the
+#' number of frames is more than desired, try increasing the `angle` argument on
+#' the tour.
 #' 
-#' @param ggtour A gramer of graphics tour object, a return from `ggtour()`.
+#' @param ggtour A gramar of graphics tour object, a return from `ggtour()`.
 #' @export
 #' @family ggtour proto
 #' @examples
@@ -172,7 +177,7 @@ filmstrip <- function(ggtour){
   
   ## Remove last_ggtour?
   #.set_last_ggtour(NULL) ## Clears last tour
-  .m <- capture.output(gc()) ## Mute garbage collection
+  .m <- utils::capture.output(gc()) ## Mute garbage collection
   
   return(ret)
 }
@@ -200,9 +205,10 @@ last_ggtour <- function(){.store$ggtour_ls}
 #'
 #' @param list A list of arguments such as those passed in `aes_args` and 
 #' `identity_args`.
-#' @param nrow_frames Scalar number of rows in the data frames to replicate to.
-#' @param nrow_data Scalar number of rows in the data to replicate.
-#' @export
+#' @param to_length Scalar number, length of the output vector;
+#' the number of rows in the data frames to replicate to.
+#' @param expected_length Scalar number, the expected length of the each element 
+#' of `list`.
 #' @family Internal utility
 #' @examples
 #' ## This function is not meant for external use
@@ -231,9 +237,7 @@ last_ggtour <- function(){.store$ggtour_ls}
 #'
 #' @param list A list of arguments such as those passed in `aes_args` and 
 #' `identity_args`.
-#' @param nrow_frames Scalar number of rows in the data frames to replicate to.
-#' @param nrow_data Scalar number of rows in the data to replicate.
-#' @export
+#' @param df A data.frame to column bind the elements of `list` to.
 #' @family Internal utility
 #' @examples
 #' ## This function is not meant for external use
@@ -307,7 +311,7 @@ last_ggtour <- function(){.store$ggtour_ls}
   }
   
   ## Clean up
-  .m <- capture.output(gc()) ## Mute garbage collection
+  .m <- utils::capture.output(gc()) ## Mute garbage collection
 })
 
 ### ANIMATE_* ------
@@ -386,7 +390,7 @@ animate_gganimate <- function(
   ## Clean up
   .set_last_ggtour(NULL) ## Clears last tour
   ## this should prevent some errors from not running ggtour() right before animating it.
-  .m <- capture.output(gc()) ## Mute garbage collection
+  .m <- utils::capture.output(gc()) ## Mute garbage collection
   
   return(anim)
 }
@@ -459,7 +463,7 @@ animate_plotly <- function(
   ## Clean up
   .set_last_ggtour(NULL) ## Clears last tour
   ## this should prevent some errors from not running ggtour() right before animating it.
-  .m <- capture.output(gc()) ## Mute garbage collection
+  .m <- utils::capture.output(gc()) ## Mute garbage collection
   
   return(anim)
 }
@@ -645,7 +649,7 @@ proto_basis1d <- function(
   ## Aesthetics for the axes segments
   .axes_col <- .text_col <- "grey50"
   .axes_siz <- segment_size
-  if(is.null(.manip_var) == FALSE) {
+  if(is.null(.manip_var) == FALSE){
     .axes_col <- rep("grey50", .p)
     .axes_col[.manip_var] <- manip_col
     .text_col <- .axes_col
@@ -662,7 +666,7 @@ proto_basis1d <- function(
                          frame = .df_basis$frame,
                          label = .df_basis$label)
   ## Do note replicate across frames, it won't work any better with plotly
-  .df_txt  <- data.frame(x = -1L, 
+  .df_txt  <- data.frame(x = -1L,
                          y = .p:1L,
                          label = .df_basis[.df_basis$frame == 1L, "label"])
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5))
@@ -771,6 +775,10 @@ proto_point <- function(aes_args = list(),
 #'
 #' @param tail_size How long the origin mark should extended
 #' relative to the observations. Defaults to .05, 5% of the projection space.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
 #' @export
 #' @aliases proto_origin2d
 #' @family ggtour proto
@@ -889,8 +897,9 @@ proto_density <- function(aes_args = list(),
                           density_position = c("identity", "stack", "fill")
 ){
   ## Initialize
-  requireNamespace("transformr")
   eval(.init4proto)
+  require("transformr")
+  stopifnot(exists("tween_polygon"))
   if(is.null(.df_data))
     stop("proto_density: data missing. Did you call ggtour() on a manual tour without passing data?")
   density_position <- match.arg(density_position)
@@ -935,8 +944,6 @@ proto_density <- function(aes_args = list(),
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
-#' @param label A character vector, the texts that should be in the location of
-#' the data. Default is NULL, which goes to the rownumber.
 #' @param rownum_index One or more integers, the row numbers of the to 
 #' subset to. Should be within 1:n, the rows of the original data. Defaults to
 #' NULL, labeling all rows.

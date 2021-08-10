@@ -15,6 +15,9 @@ stored as an attribute of the the \code{basis_array}.}
 
 \item{angle}{Target angle (in radians) for interpolation for
 \code{tour::save_history()} generated \code{basis_array}. Defaults to .05.}
+
+\item{facet_by}{Optionally, add a vector to facet the ggtour on. Similar to
+adding \code{facet_grid(rows = facet_by)} to the tour.}
 }
 \description{
 \code{ggtour()} initializes a ggplot object for a tour, to be animated with
@@ -59,7 +62,8 @@ animate_plotly(ggt)
 ggt1d <- ggtour(mt_path1d, dat, facet_by = clas) +
   proto_default1d(list(color = clas, shape = clas, fill = clas))
 \dontrun{
-animate_gganimate(ggt1d) ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments
+## faceted 1d doesn't work the best with plotly; esp rug, and basis segments.
+animate_gganimate(ggt1d)
 }
 }
 \seealso{

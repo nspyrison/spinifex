@@ -18,8 +18,9 @@
 #' @seealso [manual_tour()] [ggtour()] [proto_default()]
 NULL
 
+## Print message -----
+#### prints upon first attaching the package
 .onAttach <- function(...){
-  ## Print on Screen
   packageStartupMessage("--------------------------------------------------------")
   packageStartupMessage("spinifex --- version ", utils::packageVersion("spinifex"))
   packageStartupMessage("Please share bugs, suggestions, and feature requests at:")
@@ -27,34 +28,22 @@ NULL
   packageStartupMessage("--------------------------------------------------------")
 }
 
+## Exports ------
+#' @importFrom magrittr `%>%`
+#### as of v0.3.1: giving Warning upon devtools::document() and downstream:
+#### Warning message: In setup_ns_exports(path, export_all, export_imports) :
 ## Import pipe, and some tourr functions
-#' @importFrom magrittr %>%
-## tourr work functions
-#' @importFrom tourr grand_tour
-#' @importFrom tourr guided_tour
-#' @importFrom tourr holes
-#' @importFrom tourr cmass
-#' @importFrom tourr lda_pp
-#' @importFrom tourr local_tour
-#' @importFrom tourr little_tour
-#' @importFrom tourr dependence_tour
-#' @importFrom tourr basis_random
-#' @importFrom tourr basis_init
-#' @importFrom tourr sphere_data
-## @importFrom tourr save_history() ## don't import made a mute wraper for it.
+# #' @importFrom magrittr `%>%`
+# ## tourr work functions
+# #' @importFrom tourr grand_tour guided_tour holes cmass lda_pp local_tour
+# #' @importFrom tourr little_tour dependence_tour basis_random basis_init
+# #' @importFrom tourr sphere_data
+# ## @export tourr::save_history() ## don't import made a mute wraper for it.
+# ## tourr data sets
+# #### Error: object 'flea' is not exported by 'namespace:tourr'
+# #' @importFrom tourr flea olive ozone places ratcns laser tao flea
 
-## tourr data sets
-#### Error: object 'flea' is not exported by 'namespace:tourr'
-# #' @importFrom tourr flea
-# #' @importFrom tourr olive
-# #' @importFrom tourr ozone
-# #' @importFrom tourr places
-# #' @importFrom tourr ratcns
-# #' @importFrom tourr laser
-# #' @importFrom tourr tao
-# #' @importFrom tourr flea
-
-## Manual tour globals:
+## Manual tour globals ------
 if(getRversion() >= "2.15.1"){
   utils::globalVariables(c("phi_min",
                            "phi_max",
@@ -71,7 +60,8 @@ if(getRversion() >= "2.15.1"){
                            ".n",
                            ".p",
                            ".manip_var",
-                           "rownum_index"))
+                           "rownum_index",
+                           ".facet_by"))
   ## ggplot aes globals:
   utils::globalVariables(c("x",
                            "y",

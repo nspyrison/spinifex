@@ -254,7 +254,7 @@ scale_axes <- function(...) {
 #' @export
 #' @family Linear mapping
 #' @examples 
-#' bas <- basis_random(4, 2)
+#' bas <- tourr::basis_random(4, 2)
 #' 
 #' map_absolute(bas, offset = c(-2, 0), scale = c(2/3, 2/3))
 map_absolute <- function(x,
@@ -583,7 +583,7 @@ scale_01 <- function(data){
 #' dim(tour_path)
 save_history <- function(..., verbose = FALSE){
   if(verbose == FALSE){
-  .mute <- capture.output(
+  .mute <- utils::capture.output(
     ret <- tourr::save_history(...))
   } else ret <- tourr::save_history(...)
   

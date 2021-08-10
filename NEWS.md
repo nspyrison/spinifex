@@ -1,13 +1,11 @@
-# spinifex v0.3.1 /dev: v0.3.9000
+# spinifex v0.3.1
 
 - `manual_tour()` and related functions now handle 1D projections
-- `proto_highlight/1d()` for highlighting specific points in ggtours
+- new functions: `proto_highlight/1d()` for highlighting specific points in ggtours
+- new function: `filmstrip()`, creates a ggplot faceting the frames of a ggtour for a static output
 - Added argument `rownum_index` to `proto_text`, for labeling subsets
-- Removed `basis_odp`, `basis_onpp` & `basis_olpp` while dependency 
-issues remain seemingly with `Rdimtools`, and `Rcpp`.
-- Reverted `basis_pca` and `basis_olda` to `prcomp` and `MASS::lda` variants 
-for the same reason
-- TODO: Maybe an hdrcde-like proto, with use of `rownum_index`??
+- Experimental wrapper function `spinifex::save_history`, muting the noisy execution of `tourr::save_history`
+- New dataset: `penguins`, 
 
 
 # spinifex v0.3.0!
@@ -20,6 +18,7 @@ for the same reason
 - Shiny app now imports .csv & .rds,  code improved, uses new ggproto api
 -- `run
 - Fixed a format issue with the `BeastCancer` dataset
+
 
 # spinifex v0.2.8
 

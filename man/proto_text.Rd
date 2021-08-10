@@ -24,9 +24,6 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \item{rownum_index}{One or more integers, the row numbers of the to
 subset to. Should be within 1:n, the rows of the original data. Defaults to
 NULL, labeling all rows.}
-
-\item{label}{A character vector, the texts that should be in the location of
-the data. Default is NULL, which goes to the rownumber.}
 }
 \description{
 Adds \code{geom_text()} of the projected data.

@@ -60,8 +60,8 @@ We focus on the application of the *manual tours* in this document. In a manual 
 In the below examples we go through some use cases for manual tours. To get started we'll load a couple packages we use.
 
 ```{r pkgs}
-library("spinifex")
 library("tourr")
+library("spinifex")
 library("ggplot2")
 library("dplyr")
 ```
