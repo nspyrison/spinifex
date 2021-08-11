@@ -277,7 +277,8 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' .gif without interaction, through use of `{gganimate}`.
 #'
 #' @param ggtour A grammar of graphics tour with appended protos added. 
-#' A return from `ggtour() + proto_*()`.#' @param fps Scalar number of Frames Per Second, the speed the animation should 
+#' A return from `ggtour() + proto_*()`.
+#' #' @param fps Scalar number of Frames Per Second, the speed the animation should 
 #' play at.
 #' @param rewind Whether or not the animation should play backwards,
 #' in reverse order once reaching the end. Defaults to FALSE.

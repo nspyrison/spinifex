@@ -57,6 +57,7 @@ play_tour_path <- function(tour_path,
                            render_type = render_plotly,
                            ...) {
   lifecycle::deprecate_warn("0.3.0", "play_tour_path()", "spinifex::ggtour()")
+  .Deprecated("spinifex::ggtour")
   ## Data condition handling
   if(is.null(data) & !is.null(attributes(tour_path)$data)){
     data <- attributes(tour_path)$data
@@ -149,6 +150,8 @@ play_manual_tour <- function(basis = NULL,
                              render_type = render_plotly,
                              ...){
   lifecycle::deprecate_warn("0.3.0", "play_manual_tour()", "spinifex::ggtour()")
+  .Deprecated("spinifex::ggtour")
+  
   data <- as.matrix(data)
   ## Basis condition handling
   if(is.null(basis)){
@@ -228,6 +231,8 @@ view_frame <- function(basis = NULL,
                        rescale_data = FALSE,
                        ...){
   lifecycle::deprecate_warn("0.3.0", "view_frame()", "spinifex::ggtour()")
+  .Deprecated("spinifex::ggtour")
+  
   ## Assumptions
   if(is.null(data) == FALSE)
     data <- as.matrix(data)
@@ -259,7 +264,7 @@ view_frame <- function(basis = NULL,
 #' For \code{view_basis}, use \code{\link{view_frame}}.
 #' @export
 view_basis <- function(...) {
-  .Deprecated("ggtour")
+  .Deprecated("spinifex::ggtour")
   view_frame(...)
 }
 
@@ -268,7 +273,7 @@ view_basis <- function(...) {
 #' For \code{oblique_basis}, please use the new api with \code{\link{ggtour}}.
 #' @export
 oblique_basis <- function(...) {
-  .Deprecated("ggtour")
+  .Deprecated("spinifex::ggtour")
   view_frame(...)
 }
 
@@ -323,6 +328,8 @@ view_manip_space <- function(basis,
                                theme_spinifex()
                              )
 ){
+  ## NOT DEPRICATED, don't get this with the ggtour api.
+  
   #### Finds the angle between two vectors
   find_angle <- function(a, b)
     acos(sum(a * b) / (sqrt(sum(a * a)) * sqrt(sum(b * b))) )
