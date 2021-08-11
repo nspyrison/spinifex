@@ -245,7 +245,10 @@ last_ggtour <- function(){.store$ggtour_ls}
           identity_args <- lapply(identity_args, function(arg)
             if(length(arg) == .n) arg[rownum_index] else arg)
       ## Subset .df_data
-      .idx <- which(.df_data$label %in% rownum_index)
+      .idx <- NULL## NEED SOME MOD MATH:
+      .m <- sapply(1L:.n_frames - 1L, function(i){
+        .idx <<- c(.idx, rownum_index + i * .n)
+      })
       .n <- length(rownum_index)
       .df_data <- .df_data[.idx, ]
       .nrow_df_data <- nrow(.df_data)
@@ -264,9 +267,7 @@ last_ggtour <- function(){.store$ggtour_ls}
     if(length(identity_args) > 0L)
       identity_args <- .lapply_rep_len(identity_args, .nrow_df_data, .n)
   }
-  
-  ## Clean up
-  .m <- utils::capture.output(gc()) ## Mute garbage collection
+  .m <- gc() ## Mute garbage collection
 })
 
 ### ANIMATE_* ------
@@ -278,7 +279,7 @@ last_ggtour <- function(){.store$ggtour_ls}
 #'
 #' @param ggtour A grammar of graphics tour with appended protos added. 
 #' A return from `ggtour() + proto_*()`.
-#' #' @param fps Scalar number of Frames Per Second, the speed the animation should 
+#' @param fps Scalar number of Frames Per Second, the speed the animation should 
 #' play at.
 #' @param rewind Whether or not the animation should play backwards,
 #' in reverse order once reaching the end. Defaults to FALSE.
@@ -346,7 +347,7 @@ animate_gganimate <- function(
   ## Clean up
   .set_last_ggtour(NULL) ## Clears last tour
   ## this should prevent some errors from not running ggtour() right before animating it.
-  .m <- utils::capture.output(gc()) ## Mute garbage collection
+  .m <- gc() ## Mute garbage collection
   
   return(anim)
 }
@@ -420,7 +421,7 @@ animate_plotly <- function(
   ## Clean up
   .set_last_ggtour(NULL) ## Clears last tour
   ## this should prevent some errors from not running ggtour() right before animating it.
-  .m <- utils::capture.output(gc()) ## Mute garbage collection
+  .m <- gc() ## Mute garbage collection
   
   return(anim)
 }
@@ -519,7 +520,7 @@ filmstrip <- function(ggtour){
   
   ## Remove last_ggtour?
   #.set_last_ggtour(NULL) ## Clears last tour
-  .m <- utils::capture.output(gc()) ## Mute garbage collection
+  .m <- gc() ## Mute garbage collection
   
   return(ret)
 }
@@ -1211,7 +1212,7 @@ proto_highlight <- function(
     ## do.call geom_vline over highlight obs
     .geom_func  <- function(...) suppressWarnings(ggplot2::geom_point(
       mapping = .aes_call, .df_data[1L, ], ## only the first row, should be frame 1.
-      ..., alpha = .5))  ## hard coded alpha
+      ..., alpha = .5)) ## Hard-coded alpha
     inital_mark <- do.call(.geom_func, identity_args)
     ret <- list(inital_mark, ret)
   }

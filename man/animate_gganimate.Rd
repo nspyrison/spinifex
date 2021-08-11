@@ -15,8 +15,9 @@ animate_gganimate(
 }
 \arguments{
 \item{ggtour}{A grammar of graphics tour with appended protos added.
-A return from \verb{ggtour() + proto_*()}.
-#' @param fps Scalar number of Frames Per Second, the speed the animation should
+A return from \verb{ggtour() + proto_*()}.}
+
+\item{fps}{Scalar number of Frames Per Second, the speed the animation should
 play at.}
 
 \item{rewind}{Whether or not the animation should play backwards,
