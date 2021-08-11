@@ -7,7 +7,8 @@
 filmstrip(ggtour)
 }
 \arguments{
-\item{ggtour}{A gramar of graphics tour object, a return from \code{ggtour()}.}
+\item{ggtour}{A grammar of graphics tour with appended protos added.
+A return from \verb{ggtour() + proto_*()}.}
 }
 \description{
 Appends \code{facet_wrap(vars(frame_number))} & minor themes to the ggtour. If the

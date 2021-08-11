@@ -130,9 +130,7 @@ animate_gganimate(ggt)
 ## 1D tours
 ```{r}
 ## (Quietly create) a 1d guided tour, optimizing the projection space for the holes() function
-.mute <- capture.output(
-  guided_path <- tourr::save_history(dat, guided_tour(holes(), d = 1))
-)
+guided_path <- save_history(dat, guided_tour(holes(), d = 1))
 
 ## Static ggplot of all frames in the tour
 ggt <- ggtour(guided_path, dat, angle = .1) + ## Include geodesic interpolation angle between the selected bases.

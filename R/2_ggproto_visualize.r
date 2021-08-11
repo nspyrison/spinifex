@@ -1,8 +1,10 @@
 ### UTIL -----
-#' Prepare a new ggtour
+#' Prepare a new grammar of graphics tour
 #'
-#' `ggtour()` initializes a ggplot object for a tour, to be animated with 
-#' `animate_plotly()` or `animate_ggtour()`.
+#' `ggtour()` initializes a ggplot object for a tour. `proto_*` functions are
+#' added to the tour, analogous to `ggplot() + geom_*`. The final tour object is
+#' then animated with `animate_plotly()` or `animate_ggtour()`, or passed to
+#' `filmstrip()` for static plot faceting on frames.
 #'
 #' @param basis_array An array of projection bases for the tour, as produced
 #' with `manual_tour()` or `tour::save_history()`.
@@ -134,53 +136,6 @@ ggtour <- function(basis_array,
 #     proto_origin(gridline_probs = FALSE) +
 #     proto_point()
 # }
-
-
-#' Create a "filmstrip" of the frames of a ggtour.
-#'
-#' Appends `facet_wrap(vars(frame_number))` & minor themes to the ggtour. If the
-#' number of frames is more than desired, try increasing the `angle` argument on
-#' the tour.
-#' 
-#' @param ggtour A gramar of graphics tour object, a return from `ggtour()`.
-#' @export
-#' @family ggtour proto
-#' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
-#' 
-#' ## d = 2 case
-#' mt_path <- manual_tour(bas, manip_var = mv, angle = .25)
-#' ggt <- ggtour(mt_path, dat) +
-#'   proto_basis() +
-#'   proto_point(list(color = clas, shape = clas),
-#'               list(size = 1.5))
-#' filmstrip(ggt)
-#' 
-#' ## d = 1 case
-#' bas1d <- basis_pca(dat, d = 1)
-#' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv, angle = .3)
-#' ggt1d <- ggtour(mt_path1d, dat) +
-#'   proto_default1d(list(fill = clas))
-#' 
-#' ggt1d <- ggtour(mt_path1d, dat) +
-#'   proto_default1d(list(fill = clas))
-#' filmstrip(ggt1d)
-filmstrip <- function(ggtour){
-  ret <- ggtour +
-    ggplot2::facet_wrap(ggplot2::vars(frame)) + ## facet on frame
-    ggplot2::theme(strip.text = ggplot2::element_text(
-      margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
-      panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
-  
-  ## Remove last_ggtour?
-  #.set_last_ggtour(NULL) ## Clears last tour
-  .m <- utils::capture.output(gc()) ## Mute garbage collection
-  
-  return(ret)
-}
 
 
 .store <- new.env(parent = emptyenv())
@@ -321,8 +276,8 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' Animates the ggplot return of `ggtour()` and added `proto_*()` functions as a 
 #' .gif without interaction, through use of `{gganimate}`.
 #'
-#' @param ggtour The return of a `ggtour()`and added `proto_*()` functions.
-#' @param fps Scalar number of Frames Per Second, the speed the animation should 
+#' @param ggtour A grammar of graphics tour with appended protos added. 
+#' A return from `ggtour() + proto_*()`.#' @param fps Scalar number of Frames Per Second, the speed the animation should 
 #' play at.
 #' @param rewind Whether or not the animation should play backwards,
 #' in reverse order once reaching the end. Defaults to FALSE.
@@ -402,7 +357,8 @@ animate_gganimate <- function(
 #' `{plotly}` animation, an .html widget with slider and hover tooltip showing 
 #' the row number.
 #'
-#' @param ggtour The return of a `ggtour()`and added `proto_*()` functions.
+#' @param ggtour A grammar of graphics tour with appended protos added. 
+#' A return from `ggtour() + proto_*()`.
 #' @param fps Scalar number of Frames Per Second, the speed the animation should 
 #' play at.
 #' @param ... Other arguments passed to 
@@ -518,6 +474,55 @@ animate_plotly <- function(
 #   ## Return
 #   gganimate::knit_print.gganim(gga, ...)
 # }
+
+
+#' Create a "filmstrip" of the frames of a ggtour.
+#'
+#' Appends `facet_wrap(vars(frame_number))` & minor themes to the ggtour. If the
+#' number of frames is more than desired, try increasing the `angle` argument on
+#' the tour.
+#' 
+#' @param ggtour A grammar of graphics tour with appended protos added. 
+#' A return from `ggtour() + proto_*()`.
+#' @export
+#' @family ggtour proto
+#' @examples
+#' dat <- scale_sd(tourr::flea[, 1:6])
+#' clas <- tourr::flea$species
+#' bas <- basis_pca(dat)
+#' mv <- manip_var_of(bas)
+#' 
+#' ## d = 2 case
+#' mt_path <- manual_tour(bas, manip_var = mv, angle = .25)
+#' ggt <- ggtour(mt_path, dat) +
+#'   proto_basis() +
+#'   proto_point(list(color = clas, shape = clas),
+#'               list(size = 1.5))
+#' filmstrip(ggt)
+#' 
+#' ## d = 1 case
+#' bas1d <- basis_pca(dat, d = 1)
+#' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv, angle = .3)
+#' ggt1d <- ggtour(mt_path1d, dat) +
+#'   proto_default1d(list(fill = clas))
+#' 
+#' ggt1d <- ggtour(mt_path1d, dat) +
+#'   proto_default1d(list(fill = clas))
+#' filmstrip(ggt1d)
+filmstrip <- function(ggtour){
+  ret <- ggtour +
+    ggplot2::facet_wrap(ggplot2::vars(frame)) + ## facet on frame
+    ggplot2::theme(strip.text = ggplot2::element_text(
+      margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
+      panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
+  
+  ## Remove last_ggtour?
+  #.set_last_ggtour(NULL) ## Clears last tour
+  .m <- utils::capture.output(gc()) ## Mute garbage collection
+  
+  return(ret)
+}
+
 
 ### PRROTO_BASIS_* ------
 #' Tour proto for a 2D and 1D basis axes respectively
@@ -898,8 +903,8 @@ proto_density <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
-  require("transformr")
-  stopifnot(exists("tween_polygon"))
+  if(class(transformr::tween_polygon) != "function")
+    stop("proto_density requires {transformr}::tween_polygon")
   if(is.null(.df_data))
     stop("proto_density: data missing. Did you call ggtour() on a manual tour without passing data?")
   density_position <- match.arg(density_position)

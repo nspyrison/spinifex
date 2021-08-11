@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{ggtour}
 \alias{ggtour}
-\title{Prepare a new ggtour}
+\title{Prepare a new grammar of graphics tour}
 \usage{
 ggtour(basis_array, data = NULL, angle = 0.05, facet_by = NULL)
 }
@@ -20,8 +20,10 @@ stored as an attribute of the the \code{basis_array}.}
 adding \code{facet_grid(rows = facet_by)} to the tour.}
 }
 \description{
-\code{ggtour()} initializes a ggplot object for a tour, to be animated with
-\code{animate_plotly()} or \code{animate_ggtour()}.
+\code{ggtour()} initializes a ggplot object for a tour. \verb{proto_*} functions are
+added to the tour, analogous to \verb{ggplot() + geom_*}. The final tour object is
+then animated with \code{animate_plotly()} or \code{animate_ggtour()}, or passed to
+\code{filmstrip()} for static plot faceting on frames.
 }
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])

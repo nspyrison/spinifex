@@ -7,7 +7,8 @@
 animate_plotly(ggtour, fps = 8, ...)
 }
 \arguments{
-\item{ggtour}{The return of a \code{ggtour()}and added \verb{proto_*()} functions.}
+\item{ggtour}{A grammar of graphics tour with appended protos added.
+A return from \verb{ggtour() + proto_*()}.}
 
 \item{fps}{Scalar number of Frames Per Second, the speed the animation should
 play at.}
