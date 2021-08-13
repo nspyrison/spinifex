@@ -10,7 +10,7 @@ manual_tour(
   manip_var,
   theta = NULL,
   phi_min = 0L,
-  phi_max = pi/2L,
+  phi_max = pi/2,
   angle = 0.05,
   data = NULL,
   ...
@@ -68,16 +68,15 @@ manual_tour(basis = bas, manip_var = mv,
 ## d = 1 case
 bas1d <- basis_pca(dat_std, d = 1)
 mv <- manip_var_of(bas1d)
-manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+manual_tour(basis = bas1d, manip_var = mv)
 
 
 ## Animating with ggtour() & proto_*
-mt <- manual_tour(basis = bas, manip_var = mv)
-(ggt <- ggtour(mt, dat_std) +
+mt <- manual_tour(basis = bas, manip_var = mv, angle = .2)
+ggt <- ggtour(mt, dat_std) +
     proto_origin() +
     proto_point(list(color = clas, shape = clas)) +
-    proto_basis())
-# proto_default(list(color = clas, shape = clas)))
+    proto_basis()
 \dontrun{
 animate_plotly(ggt)
 }

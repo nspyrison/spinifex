@@ -187,16 +187,15 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat_std, d = 1)
 #' mv <- manip_var_of(bas1d)
-#' manual_tour(basis = bas1d, manip_var = mv, angle = .2)
+#' manual_tour(basis = bas1d, manip_var = mv)
 #' 
 #' 
 #' ## Animating with ggtour() & proto_*
-#' mt <- manual_tour(basis = bas, manip_var = mv)
-#' (ggt <- ggtour(mt, dat_std) +
+#' mt <- manual_tour(basis = bas, manip_var = mv, angle = .2)
+#' ggt <- ggtour(mt, dat_std) +
 #'     proto_origin() +
 #'     proto_point(list(color = clas, shape = clas)) +
-#'     proto_basis())
-#' # proto_default(list(color = clas, shape = clas)))
+#'     proto_basis()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -204,7 +203,7 @@ manual_tour <- function(basis,
                         manip_var,
                         theta   = NULL,
                         phi_min = 0L,
-                        phi_max = pi / 2L,
+                        phi_max = pi / 2,
                         angle   = .05,
                         data = NULL,
                         ...){
@@ -231,13 +230,20 @@ manual_tour <- function(basis,
     phi_start <- acos(basis[manip_var, 1L])
     theta <- NA
   }
-  ### shift phi start in be in-phase between [0, pi / 2]
+  r2 <- function(x)round(x, 2L)
+
+  
+  ### shift phi start in be in-phase between [-pi / 2, pi / 2]
   while(phi_start > pi / 2L){
-    phi_start <- -phi_start + pi
-    phi_max <- -phi_max
+    message("phi_start > pi; phi_start <- -phi_start + pi & phi_max <- -phi_max")
+    phi_start <- phi_start - pi
+    phi_max   <- phi_max - pi
   }
-  while(phi_start < -pi / 2L) 
+  while(phi_start < -pi / 2L){
+    message("phi_start < -pi / 2L; phi_start <- phi_start + pi")
     phi_start <- phi_start + pi
+    phi_max   <- phi_max + pi
+  }
   ## Ensure correct order of phi_min, phi_start, phi_max
   if((abs(phi_min) < abs(phi_start)) == FALSE)
     stop("Phi is less than phi_min, please set phi_min below ", round(phi_start, 2L))
@@ -247,32 +253,39 @@ manual_tour <- function(basis,
   .xArgs <- list(...)
   
   ### Phi interpolation step -----
-  ## Find the values of phi for each 'segment/leg/direction' of the walk
-  phi_interpolate <- function(start, end){
+  phi_delta <- function(start, end){ 
     ## Initialize
-    start      <- start - phi_start
-    end        <- end   - phi_start
-    dist       <- abs(end - start)
-    remainder  <- dist %% angle
-    direction  <- ifelse(end > start, 1L, -1L)
+    start <- -(start - phi_start)
+    end   <- (end - phi_start)
+    .dist <- abs(end - start)
+    .sign <- ifelse(end > start, 1L, -1L)
+    .int  <- .dist %/% (angle)
+    
     ## Define segments
-    segment <- seq(from = start, to = end - remainder, by = direction * angle)
-    ## Add remaining partial step to the end if needed.
-    if(remainder != 0L) segment <- c(segment, end)
+    segment <- seq(from = start, to = .sign * .dist, by = .sign * angle)
     ## Return
     return(segment)
   }
   ## Find the phi values for the animation frames
-  phi_path <- c(phi_interpolate(start = phi_start, end = phi_min),
-                phi_interpolate(start = phi_min,   end = phi_max),
-                phi_interpolate(start = phi_max,   end = phi_start))
+  seg1 <- phi_delta(start = phi_start, end = phi_min)
+  seg2 <- phi_delta(start = phi_min,   end = phi_max) ## Phi_max is the issue, seems too large.
+  seg3 <- phi_delta(start = phi_max,   end = phi_start)
+  phi_path <- c(seg1, seg2, seg3)
   
-  ## Make projected basis array
+  if(F){  ##TODO DEV DEBUGGING:
+    print(paste0("phi_start, phi_min, phi_max: ",
+                 r2(phi_start), ', ', r2(phi_min), ', ', r2(phi_max)))
+
+    print(paste0("phi_path: ", phi_path))
+  }
+  
   n_frames <- length(phi_path)
+  ## Make projected basis array
   m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
-  tour_array <- array(
-    NA, dim = c(p, d, n_frames),
-    dimnames = c(dimnames(basis), list(paste0("frame", 1L:n_frames))))
+  tour_array <- ## Init
+    array(NA, dim = c(p, d, n_frames),
+          dimnames = c(dimnames(basis), list(paste0("frame", 1L:n_frames))))
+  ## populate tour basis_array
   .m <- sapply(1L:n_frames, function(i){
     this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])
     tour_array[,, i] <<- this_proj[, 1L:d]
@@ -282,19 +295,70 @@ manual_tour <- function(basis,
   
   return(tour_array)
 }
-####### ggt causes Error in FUN(X[[i]], ...) : object 'label' not found
+
+#' ### OLD:
+#' @param start WAS PHI current
+#' @param end WAS Phi tgt
+#' @param angle IMPLICITE in the parent functuion; WAS phi angle, the step size in radians.
+#' ###NEW:
+#' @param basis_array array, of the target bases, the extrema of the walk/segments.
+#' @param manip_var The column number of the manipulation variable.
+#' @param angle The step size between interpolated frames, in radians.
+#' 
+#' ## However, now we have the bases at the ends of the walks.
+#' #### I think we want to calculate back to phi and apply similarly??
+### Phi interpolation step -----
+## Find the values of phi for each 'segment/leg/direction' of the walk
+#interpolate_phi <- function(start, end, angle){
+interpolate_manual <- function(basis_array, manip_var, angle){
+  ## Initialize
+  .dim <- dim(basis_array)
+  interpolated_array <- array(NA, dim = .dim + c(0L, 0L, 100L))
+  phi_of <- function(basis_mv_row)
+    return(acos(sqrt(sum(basis_mv_row^2L))))
+  sapply(1L:dim()[3L] - 1L, function(i){
+    phi_curr <- phi_of(basis_array[,manip_var, i])
+    phi_tgt  <- phi_of(basis_array[,manip_var, i + 1L])
+    dist     <- phi_tgt - phi_curr ##TODO abs wanted? may help phi issue.
+    remaind  <- dist %% angle
+    phi_vect <- seq(phi_curr, phi_tgt - remaind, by = sign(dist) * angle)
+    sapply(1L:length(phi_vect), function(j){
+      interpolated_array[,, j]
+    })
+  })
+ 
+  start     <- start - phi_start
+  end       <- end   - phi_start
+  dist      <- abs(end - start)
+  remainder <- dist %% angle
+  direction <- ifelse(end > start, 1L, -1L)
+  ## Define segments
+  segment <- seq(from = start, to = end - remainder, by = direction * angle)
+  ## Add remaining partial step to the end if needed.
+  # if(remainder != 0L) segment <- c(segment, end)
+
+  ## C+P, values of phi goin gto basis,
+  .m <- sapply(1L:n_frames, function(i){
+    this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])
+    tour_array[,, i] <<- this_proj[, 1L:d]
+  })
+
+  ## Return
+  return(segment)
+}
+
+
+## example of Phi issue -----
 if(F){ ## NOT RUN:
   dat_std <- scale_sd(wine[, 2:6])
   clas <- wine$Type
   bas <- basis_pca(dat_std)
   mv <- manip_var_of(bas)
   mt <- manual_tour(basis = bas, manip_var = mv)
-  ## Animating with ggtour() & proto_*
+  ## proto_* api:
   (ggt <- ggtour(mt, dat_std) +
       proto_origin() +
       proto_point(list(color = clas, shape = clas)) +
       proto_basis())
-  # proto_default(list(color = clas, shape = clas)))
-  ##\dontrun{
   animate_plotly(ggt)
 }

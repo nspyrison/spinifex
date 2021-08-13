@@ -69,18 +69,20 @@ ggtour <- function(basis_array,
   if(any(class(basis_array) %in% c("matrix", "data.frame"))) ## Format for array2df (_list)
     basis_array <- array(as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   
-  ## Interpolate if a tour_array from tourr.
-  if(is.null(manip_var)){ ## if manip_var is null AND if not 1 basis
-    if(dim(basis_array)[3L] != 1L)
-      .mute <- utils::capture.output(
+  ## Interpolate if from {tourr}.
+  if(is.null(manip_var) == TRUE) ## if manip_var is null 
+    if(dim(basis_array)[3L] != 1L) ## AND more than 1 basis.
+      .m <- utils::capture.output(
         basis_array <- tourr::interpolate(basis_array, angle = angle))
-  }
+  #### TODO SEE THE DEV FILES PARTIAL FUNCTIONS In ./buildignore
+  ### FOR CONVERTING TO INTERPOLATE_MANUAL.
+  
   df_ls <- array2df(basis_array, data)
   df_basis <- df_ls$basis_frames
   df_data  <- df_ls$data_frames
   attr(df_basis, "manip_var") <- manip_var ## NULL if not a manual tour
   
-  ## map_to condition handling: 
+  ## map_to condition handling:
   #### NULL data == unit box, >2d basis == data, 1d data == density and data.
   map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L)) ## init & if data is NULL
   if(is.null(data) == FALSE){
