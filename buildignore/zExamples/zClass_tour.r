@@ -4,16 +4,14 @@ library(spinifex)
 library(ggplot2)
 
 dat <- tourr::rescale(tourr::flea[, 1:6])
-if(F) 
-  verbose <- T
 
 
 #levels(tourr::flea$species) # Note: class names are odd.
-class_tour <- function(data = tourr::rescale(tourr::flea[, 1:6]), 
-                       basis = prcomp(data)$rotation[, 1:2], 
-                       class = tourr::flea$species, 
+class_tour <- function(data = tourr::rescale(tourr::flea[, 1:6]),
+                       basis = prcomp(data)$rotation[, 1:2],
+                       class = tourr::flea$species,
                        level_nums = c(1, 2),
-                       top_n_var = 3,
+                       top_n_var = 3
 ){
   stopifnot(is.matrix(data) & is.numeric(data))
   stopifnot(is.matrix(basis) & is.numeric(basis))
@@ -48,6 +46,7 @@ class_tour <- function(data = tourr::rescale(tourr::flea[, 1:6]),
     oblique_frame(basis, data, mod_nums)
   
   }
+}
   
 avg_lin_comb <- function(basis = prcomp(data)$rotation[, 1:2],
                          var_nums = 1:2){
