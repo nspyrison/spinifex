@@ -9,8 +9,8 @@ mv <- manip_var_of(bas)
 ## RENDERING -----
 ## ggplot2, gganimate, and plotly respectively
 ##
-array_manual <- manual_tour(basis = bas, manip_var = mv, angle = 1)
-df_manual <- array2df(array = array_manual, data = dat_std,
+mt_array <- manual_tour(basis = bas, manip_var = mv, angle = 1)
+df_manual <- array2df(basis_array = mt_array, data = dat_std,
                       basis_label = paste0("MyLabs", 1:nrow(bas)),
                       data_label = paste0("obs# ", 1:nrow(dat_std)))
 

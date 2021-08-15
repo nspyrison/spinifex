@@ -71,7 +71,7 @@ play_tour_path <- function(tour_path,
     tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
   )
   attr(tour_path, "class") <- "array"
-  tour_df <- array2df(array = tour_path, data = data)
+  tour_df <- array2df(basis_array = tour_path, data = data)
   
   ## Render
   return(render_type(frames = tour_df, ...))
@@ -161,7 +161,7 @@ play_manual_tour <- function(basis = NULL,
   
   tour_hist <- manual_tour(basis = basis, manip_var = manip_var, angle = angle,
                            theta = theta, phi_min = phi_min, phi_max = phi_max)
-  tour_df <- array2df(array = tour_hist, data = data)
+  tour_df <- array2df(basis_array = tour_hist, data = data)
   return(render_type(frames = tour_df, ...))
 }
 
@@ -249,8 +249,8 @@ view_frame <- function(basis = NULL,
   }
   
   ## The work
-  tour_array <- array(basis, dim = c(dim(basis), 1L))
-  df_frames <- array2df(array = tour_array, data = data, basis_label = basis_label)
+  basis_array <- array(basis, dim = c(dim(basis), 1L))
+  df_frames <- array2df(basis_array = basis_array, data = data, basis_label = basis_label)
   attr(df_frames$data_frames, "manip_var") <- manip_var
   
   ## Render

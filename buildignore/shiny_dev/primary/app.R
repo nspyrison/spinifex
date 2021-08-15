@@ -19,7 +19,7 @@ server <- function(input, output, session) {
   ##### Init reactiveValues
   rv                      <- reactiveValues()
   rv$curr_basis           <- tourr::basis_random(6)
-  rv$tour_array           <- NULL
+  rv$basis_array           <- NULL
   rv$anim_playing         <- FALSE
   rv$anim_slide           <- 1
   rv$png_save_cnt         <- 0
@@ -322,7 +322,7 @@ server <- function(input, output, session) {
   
   
   ##### Animation reactives -----
-  ### Set rv$tour_array when any param changes.
+  ### Set rv$basis_array when any param changes.
   observeEvent({
     selDat()
     input$anim_type
@@ -348,7 +348,7 @@ server <- function(input, output, session) {
         if(input$anim_type == "Radial")     {t_array <- app_manual_tour()} # default theta to radial
         if(input$anim_type == "Horizontal") {t_array <- app_manual_tour(theta = 0)}
         if(input$anim_type == "Vertical")   {t_array <- app_manual_tour(theta = pi/2)}
-        rv$tour_array <- t_array
+        rv$basis_array <- t_array
       } else {
         ### Projection pursuit
         # TODO: trouble shoot PP and tourr paths.
@@ -376,7 +376,7 @@ server <- function(input, output, session) {
           t_path <- tourr::save_history(selDat(), max_bases = 6,
                                         tour_path = local_tour(rv$curr_basis, pi/4))
         }
-        rv$tour_array <- tourr::interpolate(t_path, angle = input$anim_angle)
+        rv$basis_array <- tourr::interpolate(t_path, angle = input$anim_angle)
       }
       
     ### end processing message for .gif 
@@ -385,23 +385,23 @@ server <- function(input, output, session) {
   })
   
   ##### Animation observes -----
-  ### Update anim_slider when rv$tour_array changes.
-  observeEvent(rv$tour_array, {
+  ### Update anim_slider when rv$basis_array changes.
+  observeEvent(rv$basis_array, {
     rv$anim_playing <- FALSE
     updateSliderInput(session, "anim_slider", value = 1, 
-                      min = 1, max = dim(rv$tour_array)[3])
+                      min = 1, max = dim(rv$basis_array)[3])
   })
   
   ### Set curr basis when anim_slider changes.
   observeEvent(input$anim_slider, {
     ## TODO: causes play to stop every tick, dispite play being isolated.
     #rv$anim_playing <- FALSE
-    format_curr_basis()(matrix(rv$tour_array[,, input$anim_slider], ncol = 2))
+    format_curr_basis()(matrix(rv$basis_array[,, input$anim_slider], ncol = 2))
   })
   
   ### Change curr basis when slider changes
   observeEvent(input$anim_slider, {
-    format_curr_basis()(matrix(rv$tour_array[,, input$anim_slider],  ncol = 2 ))
+    format_curr_basis()(matrix(rv$basis_array[,, input$anim_slider],  ncol = 2 ))
   })
   
 
@@ -413,16 +413,16 @@ server <- function(input, output, session) {
     flea_std <- scale_sd(tourr::flea[,1:6])
     tpath <- tourr::save_history(flea_std, tour_path = tourr::grand_tour(), max = 3)
     str(tpath)
-    str(rv$tour_array)
+    str(rv$basis_array)
     debug(interpolate)
     #debug(geodesic_path)
     writeClipboard("debug(tour)")
     browser()
     str(tpath)
-    str(rv$tour_array)
+    str(rv$basis_array)
     cat("error in tourr::interpolate(tour(tour_path(geodesic_path(geodesic_info(is_orthonormal. it's functions all the way down...")
     cat("massive hair ball does a tumble")
-    play_tour_path(tour_path = rv$tour_array, data = selDat(),
+    play_tour_path(tour_path = rv$basis_array, data = selDat(),
                    render_type = render_gganimate)
     writeClipboard("debug(tour_path)")
     undebug(interpolate)
@@ -433,14 +433,14 @@ server <- function(input, output, session) {
     ex <- play_tour_path(tour_path = tpath, data = flea_std,
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex)
-    ex2 <- play_tour_path(tour_path = rv$tour_array, data = selDat(),
+    ex2 <- play_tour_path(tour_path = rv$basis_array, data = selDat(),
                          render_type = render_gganimate)
     # gganimate::anim_save("myGif.gif", ex2)
     ##TODO: END
     
     
     withProgress(message = 'Rendering animation ...', value = 0, {
-      anim <- play_tour_path(tour_path = rv$tour_array,
+      anim <- play_tour_path(tour_path = rv$basis_array,
                              data = selDat(),
                              col = sel_col(), 
                              pch = sel_pch(),
@@ -463,7 +463,7 @@ server <- function(input, output, session) {
       if(rv$anim_playing == TRUE) { # on play
         isolate(updateSliderInput(session, "anim_slider", 
                                    value = input$anim_slider + 1))
-        if(input$anim_slider == dim(rv$tour_array)[3]) { # pause on last slide 
+        if(input$anim_slider == dim(rv$basis_array)[3]) { # pause on last slide 
           rv$anim_playing <- !rv$anim_playing
         }
       }
@@ -479,7 +479,7 @@ server <- function(input, output, session) {
     }
   })
   observeEvent(input$anim_play, { # Button label switching and end of anim handling
-    if(input$anim_slider == dim(rv$tour_array)[3]) { # if at the last slide, start at slide 1
+    if(input$anim_slider == dim(rv$basis_array)[3]) { # if at the last slide, start at slide 1
       updateSliderInput(session, "anim_slider", value = 1)
     }
     rv$anim_playing <- !rv$anim_playing

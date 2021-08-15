@@ -258,18 +258,18 @@ manual_tour <- function(basis,
   
   ## Make projected basis array
   m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
-  tour_array <- ## Init
+  basis_array <- ## Init
     array(NA, dim = c(p, d, n_frames),
           dimnames = c(dimnames(basis), list(paste0("frame", 1L:n_frames))))
   ## populate tour basis_array
   .m <- sapply(1L:n_frames, function(i){
     this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])
-    tour_array[,, i] <<- this_proj[, 1L:d]
+    basis_array[,, i] <<- this_proj[, 1L:d]
   })
-  attr(tour_array, "manip_var") <- manip_var
-  attr(tour_array, "data") <- data ## Can be Null
+  attr(basis_array, "manip_var") <- manip_var
+  attr(basis_array, "data") <- data ## Can be Null
   
-  return(tour_array)
+  return(basis_array)
 }
 
 #' ### OLD:
@@ -319,7 +319,7 @@ interpolate_manual <- function(basis_array, manip_var, angle){
   ## C+P, values of phi goin gto basis,
   .m <- sapply(1L:n_frames, function(i){
     this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])
-    tour_array[,, i] <<- this_proj[, 1L:d]
+    basis_array[,, i] <<- this_proj[, 1L:d]
   })
 
   ## Return

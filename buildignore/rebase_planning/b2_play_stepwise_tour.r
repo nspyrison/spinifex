@@ -45,7 +45,7 @@ if(F){
     # class(interp_path)
     ## end
     
-    render_df <- array2df(array = interp_path, data = dat)
+    render_df <- array2df(basis_array = interp_path, data = dat)
     return(render_type(frames = render_df, ...))
   }
 }

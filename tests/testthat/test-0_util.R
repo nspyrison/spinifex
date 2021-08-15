@@ -38,39 +38,39 @@ test_that("is_orthonormal: returns are logical.", {
 ## Array with a single frame, as used in view_frame()
 array_single <- array(bas, dim = c(dim(bas), 1))
 attr(array_single, "manip_var") <- mv
-ret_single <- array2df(array = array_single)
+ret_single <- array2df(basis_array = array_single)
 
 ## Radial tour array to long df, as used in play_manual_tour()
-array_manual <- manual_tour(basis = bas, manip_var = mv)
-ret_manual <- array2df(array = array_manual, data = dat_std,
+mt_array <- manual_tour(basis = bas, manip_var = mv)
+ret_mt <- array2df(basis_array = mt_array, data = dat_std,
                        basis_label = paste0("MyLabs", 1:nrow(bas)),
                        data_label = paste0("obs# ", 1:nrow(dat_std)))
 
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
 .mute <- capture.output(
-  array_save_hist <- tourr::save_history(data = dat_std, max_bases = 10)
+  gt_array <- tourr::save_history(data = dat_std, max_bases = 10)
 )
-class(array_save_hist) <- "array"
-ret_save_hist <- array2df(array = array_save_hist, data = dat_std,
+class(gt_array) <- "array"
+ret_gt <- array2df(basis_array = gt_array, data = dat_std,
                           basis_label = paste0("MyLabs", 1:nrow(bas)),
                           data_label = paste0("obs# ", 1:nrow(dat_std)))
 
 test_that("array2df: class", {
   expect_is(ret_single,    "list")
-  expect_is(ret_manual,    "list")
-  expect_is(ret_save_hist, "list")
+  expect_is(ret_mt,    "list")
+  expect_is(ret_gt, "list")
 })
 test_that("array2df: length", {
   expect_true(length(ret_single) == 1)
-  expect_true(length(ret_manual) == 2)
-  expect_true(length(ret_save_hist) == 2)
+  expect_true(length(ret_mt) == 2)
+  expect_true(length(ret_gt) == 2)
 })
 test_that("array2df: dim", {
-  expect_true(nrow(ret_manual[[1]]) == 340)
-  expect_true(ncol(ret_manual[[1]]) == 4)
+  expect_true(nrow(ret_mt[[1]]) == 340)
+  expect_true(ncol(ret_mt[[1]]) == 4)
   expect_equal(dim(ret_single[[1]]),  c(5, 4))
-  expect_equal(dim(ret_save_hist[[1]]), c(50, 4))
+  expect_equal(dim(ret_gt[[1]]), c(50, 4))
 })
 
 

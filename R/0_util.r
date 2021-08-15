@@ -25,13 +25,12 @@ is_orthonormal <- function(x, tol = 0.001) {
 
 #' Turns a tour path array into a long data frame.
 #'
-#' Internal function, many end users will not need this. Typically called by a wrapper function, `play_manual_tour` 
-#' or `play_tour_path`. Takes the result of `tourr::save_history()` or 
-#' `manual_tour()` and restructures the data from an array to a long data frame 
-#' for use in ggplots.
+#' Internal function, many end users will not need this. Takes the result of 
+#' `manual_tour()` or `tourr::save_history()`. Restructures the array of 
+#' interpolated bases into a long data frame for use in ggplots.
 #'
-#' @param array A (p, d, n_frames) array of a tour, the output of 
-#' `manual_tour()`.
+#' @param basis_array A full (p, d, n_frames) interpolated basis array of a 
+#' tour, the output of `manual_tour` or `save_history(*_tour())`.
 #' @param data Optional, (n, p) dataset to project, consisting of numeric 
 #' variables.
 #' @param basis_label Optional, labels for the reference frame, a character 
@@ -39,8 +38,6 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' Defaults to the 3 character abbreviation of the original variables names.
 #' @param data_label Optional, labels for plotly tooltip and return object. 
 #' Defaults to the rownames of the data, if available, then the row number.
-#' @return A list containing an array of basis frames (p, d, n_frames) and 
-#' an array of data frames (n, d, n_frames) if data is present.
 #' @export
 #' @examples
 #' ## !!This function is not meant for external use!!
@@ -50,17 +47,17 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' mv <- manip_var_of(bas)
 #' 
 #' ## Radial tour array to long df, as used in play_manual_tour()
-#' tour_array <- manual_tour(basis = bas, manip_var = mv)
-#' ls_df_frames <- array2df(array = tour_array, data = dat_std,
+#' mt_array <- manual_tour(basis = bas, manip_var = mv)
+#' ls_df_frames <- array2df(basis_array = mt_array, data = dat_std,
 #'                          basis_label = paste0("MyLabs", 1:nrow(bas)))
 #' str(ls_df_frames)
 #' 
 #' ## tourr::save_history tour array to long df, as used in play_tour_path()
 #' hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
-#' ls_df_frames2 <- array2df(array = hist_array, data = dat_std)
+#' ls_df_frames2 <- array2df(basis_array = hist_array, data = dat_std)
 #' str(ls_df_frames2)
 array2df <- function(
-  array,
+  basis_array,
   data = NULL,
   basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("x", 1:nrow(array)),
   data_label = row.names(data)
@@ -283,7 +280,7 @@ pan_zoom <- function(x, pan = c(0L, 0L), zoom = c(1L, 1L)) {
 #' A ggplot2 theme suggested for linear projections with spinifex.
 #' The default value for ggproto arguments in spinifex functions.
 #' 
-#' @param ... Optionally pass arguments to `theme()`.
+#' @param ... Optionally pass arguments to `ggplot2::theme()`.
 #' @seealso \code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
 #' @export
 #' @examples 
@@ -303,7 +300,7 @@ theme_spinifex <- function(...){
                       legend.box = "vertical",         ## Between aesthetic
                       legend.margin = ggplot2::margin(-1L,-1L,-1L,-1L, "mm"), ## Tighter legend margin
                       axis.title = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
-                      ...) ## ... args applied over  defaults.
+                      ...) ## ... applied over defaults.
   )
 }
 

@@ -100,7 +100,7 @@ ggtour <- function(basis_array,
       ## C+P, values of phi goin gto basis,
       .m <- sapply(1L:n_frames, function(i){
         this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])
-        tour_array[,, i] <<- this_proj[, 1L:d]
+        basis_array[,, i] <<- this_proj[, 1L:d]
       })
       
       ## Return
