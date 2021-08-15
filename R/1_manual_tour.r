@@ -230,19 +230,17 @@ manual_tour <- function(basis,
     phi_start <- acos(basis[manip_var, 1L])
     theta <- NA
   }
-  r2 <- function(x)round(x, 2L)
-
   
-  ### shift phi start in be in-phase between [-pi / 2, pi / 2]
-  while(phi_start > pi / 2L){
+  ### shift phi start in be in-phase between [0, pi]
+  while(phi_start > pi){
     message("phi_start > pi; phi_start <- -phi_start + pi & phi_max <- -phi_max")
     phi_start <- phi_start - pi
-    phi_max   <- phi_max - pi
+   # phi_max   <- phi_max - pi
   }
-  while(phi_start < -pi / 2L){
+  while(phi_start < -pi){
     message("phi_start < -pi / 2L; phi_start <- phi_start + pi")
     phi_start <- phi_start + pi
-    phi_max   <- phi_max + pi
+    # phi_max   <- phi_max + pi
   }
   ## Ensure correct order of phi_min, phi_start, phi_max
   if((abs(phi_min) < abs(phi_start)) == FALSE)
@@ -253,31 +251,28 @@ manual_tour <- function(basis,
   .xArgs <- list(...)
   
   ### Phi interpolation step -----
-  phi_delta <- function(start, end){ 
+  ## if mv_x <0, phi_start <- pi/2 - phi_start
+  is_mv_x_neg <- basis[manip_var, 1L] <= 0L
+  if(is_mv_x_neg == TRUE)
+    phi_start <- pi/2L - phi_start
+  phi_delta <- function(start, end){
     ## Initialize
-    start <- -(start - phi_start)
-    end   <- (end - phi_start)
-    .dist <- abs(end - start)
-    .sign <- ifelse(end > start, 1L, -1L)
-    .int  <- .dist %/% (angle)
-    
-    ## Define segments
-    segment <- seq(from = start, to = .sign * .dist, by = .sign * angle)
+    .start <- -(start - phi_start)
+    .end   <- -(end - phi_start)
+    .by    <- ifelse(.end > .start, 1L, -1L) * angle
+    ## Sequence of phi values for this segment of the walk.
+    phi_vect <- seq(.start, .end, by = .by)
     ## Return
-    return(segment)
+    return(phi_vect)
   }
+  #debugonce(phi_delta)
   ## Find the phi values for the animation frames
-  seg1 <- phi_delta(start = phi_start, end = phi_min)
-  seg2 <- phi_delta(start = phi_min,   end = phi_max) ## Phi_max is the issue, seems too large.
-  seg3 <- phi_delta(start = phi_max,   end = phi_start)
-  phi_path <- c(seg1, seg2, seg3)
-  
-  if(F){  ##TODO DEV DEBUGGING:
-    print(paste0("phi_start, phi_min, phi_max: ",
-                 r2(phi_start), ', ', r2(phi_min), ', ', r2(phi_max)))
-
-    print(paste0("phi_path: ", phi_path))
-  }
+  phi_path <- c(phi_delta(start = phi_start, end = phi_min),
+                phi_delta(start = phi_min,   end = phi_max),
+                phi_delta(start = phi_max,   end = phi_start))
+  ## Reverse if x is negative.
+  if(is_mv_x_neg == TRUE)
+    phi_path <- rev(phi_path)
   
   n_frames <- length(phi_path)
   ## Make projected basis array
