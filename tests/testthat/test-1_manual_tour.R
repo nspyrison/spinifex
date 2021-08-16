@@ -35,14 +35,14 @@ test_that("rotate_manip_space, class and dim", {
 
 ### manual_tour -----
 
-ret_light <- manual_tour(basis = bas, manip_var = mv, angle = 1)
+ret_light <- manual_tour(basis = bas, manip_var = mv)
 ret_heavy <- manual_tour(basis = bas, manip_var = mv,
-                         theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = 1)
+                         theta = pi / 2, phi_min = pi / 16, phi_max = pi)
 
 
 test_that("manual_tour, class and dim", {
-  expect_is(ret_light, "array")
-  expect_is(ret_heavy, "array")
+  expect_is(ret_light, "matrix")
+  expect_is(ret_heavy, "matrix")
   expect_equal(dim(ret_light)[1:2], c(5, 2))
   expect_equal(dim(ret_heavy)[1:2], c(5, 2))
   expect_true(dim(ret_light)[3] > 0 & dim(ret_light)[3] < 200)

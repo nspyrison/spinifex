@@ -47,9 +47,9 @@ bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
 
 ## 2D case:
-mt_path <- manual_tour(bas, manip_var = mv, angle = .2)
+mt_path <- manual_tour(bas, manip_var = mv)
 
-ggt <- ggtour(mt_path, dat) +
+ggt <- ggtour(mt_path, dat, angle = .2) +
   proto_basis()
 \dontrun{
 animate_plotly(ggt)
@@ -66,9 +66,9 @@ animate_plotly(ggt2)
 ## 1D case:
 bas1d <- basis_pca(dat, d = 1)
 mv <- manip_var_of(bas, 3)
-mt_path1d <- manual_tour(bas1d, manip_var = mv, angle = .2)
+mt_path1d <- manual_tour(bas1d, manip_var = mv)
 
-ggt1d <- ggtour(mt_path1d, dat) +
+ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
   proto_basis1d()
 \dontrun{
 animate_plotly(ggt1d)

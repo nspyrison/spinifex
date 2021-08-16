@@ -6,8 +6,8 @@ dat <- scale_sd(wine[1L:10L, 2L:5L]) ## small chunk for speed.
 bas <- basis_pca(dat)
 mv  <- manip_var_of(bas)
 
-mt     <- manual_tour(bas      , mv, angle = 1L)
-mt1d   <- manual_tour(bas[, 1L], mv, angle = 1L)
+mt     <- manual_tour(bas      , mv, data = dat)
+mt1d   <- manual_tour(bas[, 1L], mv, angle = 1L, data = dat)
 .m <- capture.output(
   gt   <- tourr::save_history(dat, guided_tour(holes()), max_bases = 3L)
 )
@@ -17,9 +17,9 @@ mt1d   <- manual_tour(bas[, 1L], mv, angle = 1L)
 
 
 ## ggtourr -----
-gg_mt   <- ggtour(mt  , dat       ) + proto_default()
+gg_mt   <- ggtour(mt  , angle = 1L) + proto_default()
 gg_gt   <- ggtour(gt  , angle = 1L) + proto_default()
-gg_mt1d <- ggtour(mt1d, dat, angle = 1L) + proto_default1d()
+gg_mt1d <- ggtour(mt1d, angle = 1L) + proto_default1d()
 gg_gt1d <- ggtour(gt1d, angle = 1L) + proto_default1d()
 test_that("ggtourr", {
   expect_error(ggtour(mt) + proto_default())
@@ -69,7 +69,7 @@ test_that("animate_plotly", {
 })
 
 ## proto_basis -----
-pb_mt   <- ggtour(mt  , dat       ) + proto_basis()
+pb_mt   <- ggtour(mt  , angle = 1L) + proto_basis()
 pb_gt   <- ggtour(gt  , angle = 1L) + proto_basis()
 pb_mt1d <- ggtour(mt1d, angle = 1L) + proto_basis1d()
 pb_gt1d <- ggtour(gt1d, angle = 1L) + proto_basis1d()
@@ -85,9 +85,9 @@ test_that("proto_basis", {
 })
 
 ## proto_point & density-----
-pp_mt   <- ggtour(mt  , dat       ) + proto_point()
+pp_mt   <- ggtour(mt  , angle = 1L) + proto_point()
 pp_gt   <- ggtour(gt  , angle = 1L) + proto_point()
-pd_mt1d <- ggtour(mt1d, dat, angle = 1L) + proto_density()
+pd_mt1d <- ggtour(mt1d, angle = 1L) + proto_density()
 pd_gt1d <- ggtour(gt1d, angle = 1L) + proto_density()
 test_that("proto_:point/density", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_point())
@@ -103,12 +103,12 @@ test_that("proto_:point/density", {
 
 
 ## proto_origin -----
-po_mt   <- ggtour(mt, dat         ) + proto_origin()
+po_mt   <- ggtour(mt,   angle = 1L) + proto_origin()
 po_gt   <- ggtour(gt,   angle = 1L) + proto_origin()
 po_mt1d <- ggtour(mt1d, angle = 1L) + proto_origin1d()
 po_gt1d <- ggtour(gt1d, angle = 1L) + proto_origin1d()
 test_that("proto_origin", {
-  expect_error(ggtour(gt1d, angle=1) + proto_origin())
+  expect_error(ggtour(gt1d, angle = 1L) + proto_origin())
   expect_is(po_mt  , c("gg", "ggplot"))
   expect_is(po_gt  , c("gg", "ggplot"))
   expect_is(po_mt1d, c("gg", "ggplot"))
@@ -120,7 +120,7 @@ test_that("proto_origin", {
 })
 
 ## proto_text -----
-pt_mt <- ggtour(mt, dat       ) + proto_text()
+pt_mt <- ggtour(mt, angle = 1L) + proto_text()
 pt_gt <- ggtour(gt, angle = 1L) + proto_text()
 test_that("proto_text", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_text())
@@ -131,8 +131,8 @@ test_that("proto_text", {
 })
 
 ## proto_hex -----
-ph_mt <- ggtour(mt  , dat     ) + proto_hex()
-ph_gt <- ggtour(gt, angle = 1L) + proto_hex()
+ph_mt <- ggtour(mt, angle = 1L, data = dat) + proto_hex()
+ph_gt <- ggtour(gt, angle = 1L, data = dat) + proto_hex()
 test_that("proto_hex", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_hex())
   expect_is(ph_mt, c("gg", "ggplot"))
@@ -142,9 +142,9 @@ test_that("proto_hex", {
 })
 
 ## proto_default -----
-pd_mt   <- ggtour(mt  , dat       ) + proto_default()
+pd_mt   <- ggtour(mt  , angle = 1L) + proto_default()
 pd_gt   <- ggtour(gt  , angle = 1L) + proto_default()
-pd_mt1d <- ggtour(mt1d, dat, angle = 1L) + proto_default1d()
+pd_mt1d <- ggtour(mt1d, angle = 1L) + proto_default1d()
 pd_gt1d <- ggtour(gt1d, angle = 1L) + proto_default1d()
 test_that("proto_default", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_default())
@@ -159,9 +159,9 @@ test_that("proto_default", {
 })
 
 ## proto_highlight -----
-ph_mt   <- ggtour(mt  , dat       ) + proto_highlight(1)
+ph_mt   <- ggtour(mt  , angle = 1L) + proto_highlight(1)
 ph_gt   <- ggtour(gt  , angle = 1L) + proto_highlight(1:2)
-ph_mt1d <- ggtour(mt1d, dat, angle = 1L) + proto_highlight1d(1:2)
+ph_mt1d <- ggtour(mt1d, angle = 1L) + proto_highlight1d(1:2)
 ph_gt1d <- ggtour(gt1d, angle = 1L) + proto_highlight1d(1)
 test_that("proto_highlight", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_default())

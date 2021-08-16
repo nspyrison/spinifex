@@ -41,9 +41,9 @@ dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
 bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
-mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
+mt_path <- manual_tour(bas, manip_var = mv)
 
-ggt <- ggtour(mt_path, dat) +
+ggt <- ggtour(mt_path, dat, angle = .1) +
   proto_basis() +
   proto_origin() +
   proto_point(aes_args = list(color = clas, shape = clas),

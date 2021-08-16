@@ -58,7 +58,7 @@ message("Seems to produce many intermediate frames, `interval` may not be be str
 
 
 # {spinifex}, ggproto API 
-```{r spinifex, fig.show='animate', interval=.2,      eval = F}
+```{r spinifex, fig.show='animate', interval=.2, eval = F}
 ##TODO, still implementing spinifex ggproto api.
 
 library("spinifex")
@@ -68,9 +68,9 @@ dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea[, 7]
 bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
-mt <- manual_tour(bas, manip_var = mv, angle = .1)
+mt <- manual_tour(bas, manip_var = mv)
 
-ggtour <- ggplot_tour(mt_array, dat) +
+ggtour <- ggplot_tour(mt_array, dat, angle = .1) +
   ggproto_basis_axes() +
   ggproto_data_background() +
   ggproto_data_points(aes_args = list(color = clas, shape = clas),

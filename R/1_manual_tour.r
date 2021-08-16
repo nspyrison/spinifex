@@ -279,19 +279,18 @@ manual_tour <- function(basis,
 #' str(interp)
 interpolate_manual_tour <- function(basis_array, angle){
   ## Initialize and unpack attributes
-  manip_var <- attr(basis, "manip_var")
-  theta     <- attr(basis, "theta")
-  phi_start <- attr(basis, "phi_start")
-  phi_min   <- attr(basis, "phi_min")
-  phi_max   <- attr(basis, "phi_max")
-  data      <- attr(basis, "data")
+  manip_var <- attr(basis_array, "manip_var")
+  theta     <- attr(basis_array, "theta")
+  phi_start <- attr(basis_array, "phi_start")
+  phi_min   <- attr(basis_array, "phi_min")
+  phi_max   <- attr(basis_array, "phi_max")
   p <- nrow(basis_array)
   d <- ncol(basis_array)
   
   ## if mv_x <0, phi_start <- pi/2 - phi_start
-  is_mv_x_neg <- basis[manip_var, 1L] <= 0L
+  is_mv_x_neg <- basis_array[manip_var, 1L] <= 0L
   if(is_mv_x_neg == TRUE)
-    phi_start <- pi/2L - phi_start
+    phi_start <- pi / 2L - phi_start
   phi_delta <- function(start, end){
     .start <- -(start - phi_start)
     .end   <- -(end - phi_start)
@@ -319,6 +318,7 @@ interpolate_manual_tour <- function(basis_array, angle){
     interp_array[,, i] <<- this_proj[, 1L:d]
   })
   
+  attr(interp_array, "data") <- attr(basis_array, "data")
   ## Return
   return(interp_array)
 }

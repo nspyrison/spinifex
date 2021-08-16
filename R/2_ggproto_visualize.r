@@ -7,7 +7,7 @@
 #' `filmstrip()` for static plot faceting on frames.
 #'
 #' @param basis_array An array of projection bases for the tour, as produced
-#' with `manual_tour()` or `tour::save_history()`.
+#' with `manual_tour()` or `tour::save_history()`, or a single basis.
 #' @param data Numeric data to project. If left NULL, will check if it data is 
 #' stored as an attribute of the the `basis_array`.
 #' @param angle Target angle (in radians) for interpolation for
@@ -21,10 +21,10 @@
 #' clas <- tourr::flea$species
 #' bas <- basis_pca(dat)
 #' mv <- manip_var_of(bas)
-#' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
+#' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
 #' ## Returns headless ggplot(), but required for proto_* functions.
-#' ggtour(mt_path, dat)
+#' ggtour(mt_path, dat, angle = .1)
 #' 
 #' ## d = 2 case
 #' ggt <- ggtour(mt_path, dat) +
@@ -37,8 +37,8 @@
 #' 
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat, d = 1)
-#' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
-#' ggt1d <- ggtour(mt_path1d, dat) +
+#' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
+#' ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
 #'   proto_default1d(list(fill = clas))
 #' \dontrun{
 #' animate_plotly(ggt1d)
@@ -74,7 +74,8 @@ ggtour <- function(basis_array,
       .m <- utils::capture.output(
         basis_array <- tourr::interpolate(basis_array, angle))
   ## Interpolate manual tours
-  if(is.null(manip_var) == TRUE)
+  if(is.null(manip_var) == FALSE)
+    ## Basis_array from manual tours is only 1 basis.
     basis_array <- interpolate_manual_tour(basis_array, angle)
   
   df_ls <- array2df(basis_array, data)
@@ -85,7 +86,7 @@ ggtour <- function(basis_array,
   ## map_to handling cases::
   #### If data is NULL then map_to unit box
   map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
-  if(is.null(data) == FALSE){ 
+  if(is.null(data) == FALSE){
     d <- dim(basis_array)[2L]
     #### If data 2d then map_to data
     if(d == 2L)
@@ -96,7 +97,6 @@ ggtour <- function(basis_array,
   }
   
   nrow_df_data <- nrow(df_data)
-
   ## Append facet_by to df_basis and df_data if needed.
   if(is.null(facet_by) == FALSE){
     df_data <- .bind_elements2df(
@@ -301,9 +301,9 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' clas <- tourr::flea$species
 #' bas <- basis_pca(dat)
 #' mv <- manip_var_of(bas)
-#' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
+#' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
-#' ggt <- ggtour(mt_path, dat) +
+#' ggt <- ggtour(mt_path, dat, angle = .1) +
 #'   proto_basis() +
 #'   proto_origin() +
 #'   proto_point(aes_args = list(color = clas, shape = clas),
@@ -377,9 +377,9 @@ animate_gganimate <- function(
 #' clas <- tourr::flea$species
 #' bas <- basis_pca(dat)
 #' mv <- manip_var_of(bas)
-#' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
+#' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
-#' ggt <- ggtour(mt_path, dat) +
+#' ggt <- ggtour(mt_path, dat, angle = .1) +
 #'   proto_origin() +
 #'   proto_basis() +
 #'   proto_point(aes_args = list(color = clas, shape = clas),
@@ -457,9 +457,9 @@ animate_plotly <- function(
 # #' clas <- tourr::flea$species
 # #' bas <- basis_pca(dat)
 # #' mv <- manip_var_of(bas)
-# #' mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
+# #' mt_path <- manual_tour(bas, manip_var = mv)
 # #' 
-# #' ggt <- ggtour(mt_path, dat) +
+# #' ggt <- ggtour(mt_path, dat, angle = .1) +
 # #'   proto_basis() +
 # #'   proto_origin() +
 # #'   proto_point(aes_args = list(color = clas, shape = clas),
@@ -499,8 +499,8 @@ animate_plotly <- function(
 #' mv <- manip_var_of(bas)
 #' 
 #' ## d = 2 case
-#' mt_path <- manual_tour(bas, manip_var = mv, angle = .25)
-#' ggt <- ggtour(mt_path, dat) +
+#' mt_path <- manual_tour(bas, manip_var = mv)
+#' ggt <- ggtour(mt_path, dat, angle = .25) +
 #'   proto_basis() +
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 1.5))
@@ -508,8 +508,8 @@ animate_plotly <- function(
 #' 
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat, d = 1)
-#' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv, angle = .3)
-#' ggt1d <- ggtour(mt_path1d, dat) +
+#' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
+#' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
 #'   proto_default1d(list(fill = clas))
 #' 
 #' ggt1d <- ggtour(mt_path1d, dat) +
@@ -555,9 +555,9 @@ filmstrip <- function(ggtour){
 #' mv <- manip_var_of(bas)
 #' 
 #' ## 2D case:
-#' mt_path <- manual_tour(bas, manip_var = mv, angle = .2)
+#' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
-#' ggt <- ggtour(mt_path, dat) +
+#' ggt <- ggtour(mt_path, dat, angle = .2) +
 #'   proto_basis()
 #' \dontrun{
 #' animate_plotly(ggt)
@@ -574,9 +574,9 @@ filmstrip <- function(ggtour){
 #' ## 1D case:
 #' bas1d <- basis_pca(dat, d = 1)
 #' mv <- manip_var_of(bas, 3)
-#' mt_path1d <- manual_tour(bas1d, manip_var = mv, angle = .2)
+#' mt_path1d <- manual_tour(bas1d, manip_var = mv)
 #' 
-#' ggt1d <- ggtour(mt_path1d, dat) +
+#' ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
 #'   proto_basis1d()
 #' \dontrun{
 #' animate_plotly(ggt1d)

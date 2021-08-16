@@ -10,8 +10,8 @@ library(spinifex)
 # ## Animating with ggtour() & proto_*
 # if(F)
 #   debug(manual_tour)
-# mt <- manual_tour(basis = bas, manip_var = 5, angle = .1)
-# ggt <- ggtour(mt, dat_std) +
+# mt <- manual_tour(basis = bas, manip_var = 5)
+# ggt <- ggtour(mt, dat_std, angle = .1) +
 #     proto_origin() +
 #     proto_point(list(color = clas, shape = clas)) +
 #     proto_basis()
@@ -19,7 +19,6 @@ library(spinifex)
 
 
 ## Example from study: 
-
 
 ## Going back and looking for an example that in spinifex_study/www/images/
 examp_nm <- "EEE_p6_0_1_rep3.rda"
@@ -33,12 +32,13 @@ bas_fail <- basis_half_circle(dat_fail)
 str(bas_fail)
 
 ## Check x = 0, y = 1
-mt_path <- manual_tour(basis = bas_fail, manip_var = 1, angle = .2)
-ggt <- ggtour(mt_path, data = dat_fail) + proto_default()
+mt_path <- manual_tour(basis = bas_fail, manip_var = 1)
+ggt <- ggtour(mt_path, data = dat_fail, angle = .2) + proto_default()
 animate_plotly(ggt)
 
 ## check x = 0, y = -1
-mt_path <- manual_tour(basis = -bas_fail, manip_var = 1, angle = .2)
-ggt <- ggtour(mt_path, data = dat_fail) + proto_default()
+mt_path <- manual_tour(basis = -bas_fail, manip_var = 1)
+ggt <- ggtour(mt_path, data = dat_fail, angle = .2) + proto_default()
 animate_plotly(ggt)
 
+## Should (tm) be fixed as of spinifex v0.3.1

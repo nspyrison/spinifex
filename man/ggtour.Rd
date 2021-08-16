@@ -8,7 +8,7 @@ ggtour(basis_array, data = NULL, angle = 0.05, facet_by = NULL)
 }
 \arguments{
 \item{basis_array}{An array of projection bases for the tour, as produced
-with \code{manual_tour()} or \code{tour::save_history()}.}
+with \code{manual_tour()} or \code{tour::save_history()}, or a single basis.}
 
 \item{data}{Numeric data to project. If left NULL, will check if it data is
 stored as an attribute of the the \code{basis_array}.}
@@ -30,10 +30,10 @@ dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
 bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
-mt_path <- manual_tour(bas, manip_var = mv, angle = .1)
+mt_path <- manual_tour(bas, manip_var = mv)
 
 ## Returns headless ggplot(), but required for proto_* functions.
-ggtour(mt_path, dat)
+ggtour(mt_path, dat, angle = .1)
 
 ## d = 2 case
 ggt <- ggtour(mt_path, dat) +
@@ -46,8 +46,8 @@ animate_plotly(ggt)
 
 ## d = 1 case
 bas1d <- basis_pca(dat, d = 1)
-mt_path1d <- manual_tour(basis = bas1d, manip_var = mv, angle = .2)
-ggt1d <- ggtour(mt_path1d, dat) +
+mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
+ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
   proto_default1d(list(fill = clas))
 \dontrun{
 animate_plotly(ggt1d)

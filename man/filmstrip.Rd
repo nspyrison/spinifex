@@ -22,8 +22,8 @@ bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
 
 ## d = 2 case
-mt_path <- manual_tour(bas, manip_var = mv, angle = .25)
-ggt <- ggtour(mt_path, dat) +
+mt_path <- manual_tour(bas, manip_var = mv)
+ggt <- ggtour(mt_path, dat, angle = .25) +
   proto_basis() +
   proto_point(list(color = clas, shape = clas),
               list(size = 1.5))
@@ -31,8 +31,8 @@ filmstrip(ggt)
 
 ## d = 1 case
 bas1d <- basis_pca(dat, d = 1)
-mt_path1d <- manual_tour(basis = bas1d, manip_var = mv, angle = .3)
-ggt1d <- ggtour(mt_path1d, dat) +
+mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
+ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
   proto_default1d(list(fill = clas))
 
 ggt1d <- ggtour(mt_path1d, dat) +

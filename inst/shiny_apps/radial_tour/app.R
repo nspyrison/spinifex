@@ -152,8 +152,8 @@ server <- function(input, output, session) {
   })
   output$plotly_anim <- plotly::renderPlotly({
     req(manip_var_num())
-    mt <- manual_tour(basis(), manip_var_num(), angle = .08)
-    ggt <- ggtour(mt, sel_dat()) +
+    mt <- manual_tour(basis(), manip_var_num())
+    ggt <- ggtour(mt, sel_dat(), angle = .08) +
       proto_basis() +
       proto_point(list(color = sel_col(), shape = sel_pch()),
                   list(size = 2L))
