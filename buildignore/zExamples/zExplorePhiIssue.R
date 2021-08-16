@@ -32,12 +32,12 @@ clas_fail <- attr(dat_fail, "cluster")
 bas_fail <- basis_half_circle(dat_fail)
 str(bas_fail)
 
-## New api
+## Check x = 0, y = 1
 mt_path <- manual_tour(basis = bas_fail, manip_var = 1, angle = .2)
 ggt <- ggtour(mt_path, data = dat_fail) + proto_default()
 animate_plotly(ggt)
 
-## New api
+## check x = 0, y = -1
 mt_path <- manual_tour(basis = -bas_fail, manip_var = 1, angle = .2)
 ggt <- ggtour(mt_path, data = dat_fail) + proto_default()
 animate_plotly(ggt)

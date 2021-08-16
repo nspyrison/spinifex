@@ -26,6 +26,7 @@ replicates vectors of length data to length of data*frames for animation.
 \seealso{
 Other Internal utility: 
 \code{\link{.bind_elements2df}()},
-\code{\link{.init4proto}}
+\code{\link{.init4proto}},
+\code{\link{interpolate_manual_tour}()}
 }
 \concept{Internal utility}

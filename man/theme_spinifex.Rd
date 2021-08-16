@@ -8,7 +8,7 @@ The default value for ggproto arguments in spinifex functions.}
 theme_spinifex(...)
 }
 \arguments{
-\item{...}{Optionally pass arguments to \code{theme()}.}
+\item{...}{Optionally pass arguments to \code{ggplot2::theme()}.}
 }
 \description{
 A ggplot2 theme suggested for linear projections with spinifex.

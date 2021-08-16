@@ -163,7 +163,6 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @param phi_max Maximum value phi should move to. Phi is angle in radians of 
 #' the "out-of-plane" rotation, the z-axis of the reference frame. 
 #' Required, defaults to pi/2.
-#' @param angle Target angle (in radians) interpolation steps. Defaults to .05.
 #' @param data Optionally attach data to the basis path.
 #' @param ... Terminate unused arguments that are being also being passed from 
 #' `play_manual_tour()` to `render_()`.
@@ -176,23 +175,20 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
-#' 
-#' ## Required arguments
 #' manual_tour(basis = bas, manip_var = mv)
 #' 
 #' ## All arguments
 #' manual_tour(basis = bas, manip_var = mv,
-#'             theta = pi / 2, phi_min = pi / 16, phi_max = pi, angle = .2)
+#'             theta = pi / 2, phi_min = pi / 16, phi_max = pi)
 #' 
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat_std, d = 1)
 #' mv <- manip_var_of(bas1d)
 #' manual_tour(basis = bas1d, manip_var = mv)
 #' 
-#' 
 #' ## Animating with ggtour() & proto_*
-#' mt <- manual_tour(basis = bas, manip_var = mv, angle = .2)
-#' ggt <- ggtour(mt, dat_std) +
+#' mt <- manual_tour(basis = bas, manip_var = mv)
+#' ggt <- ggtour(mt, dat_std, angle = .2) +
 #'     proto_origin() +
 #'     proto_point(list(color = clas, shape = clas)) +
 #'     proto_basis()
@@ -204,7 +200,6 @@ manual_tour <- function(basis,
                         theta   = NULL,
                         phi_min = 0L,
                         phi_max = pi / 2,
-                        angle   = .05,
                         data = NULL,
                         ...){
   ## Assumptions
@@ -217,6 +212,8 @@ manual_tour <- function(basis,
     warning("Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
     basis <- tourr::orthonormalise(basis)
   }
+  ## Terminate args meant for render_*/animate_* passed through play_manual_tour().
+  .xArgs <- list(...)
   
   ## Initialize
   ### d = 2 case
@@ -231,7 +228,8 @@ manual_tour <- function(basis,
     theta <- NA
   }
   
-  ### shift phi start in be in-phase between [0, pi]
+  ### Shift phi start in be in-phase between [0, pi]
+  ## Are these needed still?? for precaution
   while(phi_start > pi){
     message("phi_start > pi; phi_start <- -phi_start + pi & phi_max <- -phi_max")
     phi_start <- phi_start - pi
@@ -247,113 +245,81 @@ manual_tour <- function(basis,
     stop("Phi is less than phi_min, please set phi_min below ", round(phi_start, 2L))
   if((abs(phi_max) > abs(phi_start)) == FALSE)
     stop("Phi is greather than phi_max, please set phi_max above ", round(phi_start, 2L))
-  ## Terminate args meant for render_*/animate_* passed through play_manual_tour().
-  .xArgs <- list(...)
   
-  ### Phi interpolation step -----
+  attr(basis, "manip_var") <- manip_var
+  attr(basis, "theta")     <- theta ## NULL if d=1
+  attr(basis, "phi_start") <- phi_start
+  attr(basis, "phi_min")   <- phi_min
+  attr(basis, "phi_max")   <- phi_max
+  attr(basis, "data")      <- data ## Can be NULL
+  return(basis) ## Not exactly a basis "a
+}
+
+
+#' Interpolates a manual tour
+#' 
+#' Internal function. Interpolates a manual tour over the stored theta, and phi 
+#' specifications. Returns an interpolated basis_array to be consumed by
+#' `array2df`. 
+#'
+#' @param basis_array array, of the target bases, the extrema of the walk/segments.
+#' @param manip_var The column number of the manipulation variable.
+#' @param angle The step size between interpolated frames, in radians.
+#' @family Internal utility
+#' @examples
+#' ## This function is not meant for external use
+#' dat_std <- scale_sd(wine[, 2:6])
+#' clas <- wine$Type
+#' bas <- basis_pca(dat_std)
+#' mv <- manip_var_of(bas)
+#' mt <- manual_tour(bas, mv)
+#' 
+#' interp <- interpolate_manual_tour(basis_array = mt, angle = .1)
+#' dim(interp)
+#' str(interp)
+interpolate_manual_tour <- function(basis_array, angle){
+  ## Initialize and unpack attributes
+  manip_var <- attr(basis, "manip_var")
+  theta     <- attr(basis, "theta")
+  phi_start <- attr(basis, "phi_start")
+  phi_min   <- attr(basis, "phi_min")
+  phi_max   <- attr(basis, "phi_max")
+  data      <- attr(basis, "data")
+  p <- nrow(basis_array)
+  d <- ncol(basis_array)
+  
   ## if mv_x <0, phi_start <- pi/2 - phi_start
   is_mv_x_neg <- basis[manip_var, 1L] <= 0L
   if(is_mv_x_neg == TRUE)
     phi_start <- pi/2L - phi_start
   phi_delta <- function(start, end){
-    ## Initialize
     .start <- -(start - phi_start)
     .end   <- -(end - phi_start)
     .by    <- ifelse(.end > .start, 1L, -1L) * angle
     ## Sequence of phi values for this segment of the walk.
-    phi_vect <- seq(.start, .end, by = .by)
-    ## Return
-    return(phi_vect)
+    seq(.start, .end, by = .by)
   }
-  #debugonce(phi_delta)
   ## Find the phi values for the animation frames
   phi_path <- c(phi_delta(start = phi_start, end = phi_min),
                 phi_delta(start = phi_min,   end = phi_max),
                 phi_delta(start = phi_max,   end = phi_start))
-  ## Reverse if x is negative.
+  ## Reverse if x is negative
   if(is_mv_x_neg == TRUE)
     phi_path <- rev(phi_path)
   
+  ## Convert phi path to basis array
   n_frames <- length(phi_path)
-  ## Make projected basis array
   m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
-  tour_array <- ## Init
+  interp_array <- ## Init
     array(NA, dim = c(p, d, n_frames),
           dimnames = c(dimnames(basis), list(paste0("frame", 1L:n_frames))))
-  ## populate tour basis_array
+  ## Populate tour basis_array
   .m <- sapply(1L:n_frames, function(i){
     this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])
-    tour_array[,, i] <<- this_proj[, 1L:d]
+    interp_array[,, i] <<- this_proj[, 1L:d]
   })
-  attr(tour_array, "manip_var") <- manip_var
-  attr(tour_array, "data") <- data ## Can be Null
   
-  return(tour_array)
-}
-
-#' ### OLD:
-#' @param start WAS PHI current
-#' @param end WAS Phi tgt
-#' @param angle IMPLICITE in the parent functuion; WAS phi angle, the step size in radians.
-#' ###NEW:
-#' @param basis_array array, of the target bases, the extrema of the walk/segments.
-#' @param manip_var The column number of the manipulation variable.
-#' @param angle The step size between interpolated frames, in radians.
-#' 
-#' ## However, now we have the bases at the ends of the walks.
-#' #### I think we want to calculate back to phi and apply similarly??
-### Phi interpolation step -----
-## Find the values of phi for each 'segment/leg/direction' of the walk
-#interpolate_phi <- function(start, end, angle){
-interpolate_manual <- function(basis_array, manip_var, angle){
-  ## Initialize
-  .dim <- dim(basis_array)
-  interpolated_array <- array(NA, dim = .dim + c(0L, 0L, 100L))
-  phi_of <- function(basis_mv_row)
-    return(acos(sqrt(sum(basis_mv_row^2L))))
-  sapply(1L:dim()[3L] - 1L, function(i){
-    phi_curr <- phi_of(basis_array[,manip_var, i])
-    phi_tgt  <- phi_of(basis_array[,manip_var, i + 1L])
-    dist     <- phi_tgt - phi_curr ##TODO abs wanted? may help phi issue.
-    remaind  <- dist %% angle
-    phi_vect <- seq(phi_curr, phi_tgt - remaind, by = sign(dist) * angle)
-    sapply(1L:length(phi_vect), function(j){
-      interpolated_array[,, j]
-    })
-  })
- 
-  start     <- start - phi_start
-  end       <- end   - phi_start
-  dist      <- abs(end - start)
-  remainder <- dist %% angle
-  direction <- ifelse(end > start, 1L, -1L)
-  ## Define segments
-  segment <- seq(from = start, to = end - remainder, by = direction * angle)
-  ## Add remaining partial step to the end if needed.
-  # if(remainder != 0L) segment <- c(segment, end)
-
-  ## C+P, values of phi goin gto basis,
-  .m <- sapply(1L:n_frames, function(i){
-    this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])
-    tour_array[,, i] <<- this_proj[, 1L:d]
-  })
-
   ## Return
-  return(segment)
+  return(interp_array)
 }
 
-
-## example of Phi issue -----
-if(F){ ## NOT RUN:
-  dat_std <- scale_sd(wine[, 2:6])
-  clas <- wine$Type
-  bas <- basis_pca(dat_std)
-  mv <- manip_var_of(bas)
-  mt <- manual_tour(basis = bas, manip_var = mv)
-  ## proto_* api:
-  (ggt <- ggtour(mt, dat_std) +
-      proto_origin() +
-      proto_point(list(color = clas, shape = clas)) +
-      proto_basis())
-  animate_plotly(ggt)
-}

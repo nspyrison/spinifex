@@ -53,8 +53,8 @@ dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
-manual_array <- manual_tour(basis = bas, manip_var = mv)
-manual_df <- array2df(array = manual_array, data = dat_std)
+mt_array <- manual_tour(basis = bas, manip_var = mv)
+manual_df <- array2df(basis_array = manual_array, data = dat_std)
 
 \dontrun{
 render_gganimate(frames = manual_df)

@@ -8,7 +8,7 @@ of \verb{proto_*} functions.}
 \usage{
 last_ggtour()
 
-.set_last_ggtour(value)
+.set_last_ggtour(ggtour_list)
 }
 \description{
 Retrieve/set a list from the last \code{ggtour()}, required for the use

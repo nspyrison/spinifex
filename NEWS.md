@@ -1,17 +1,21 @@
 # spinifex v0.3.1
 
+- Fixed 'phi issue' where manual tours were not consistent in their initial direction, now always move toward full contribution before 0 contribution.
+- Interpolation of manual tours now handled in `ggtour()` synchronizes `angle` usage with `{tourr}` tours
 - `manual_tour()` and related functions now handle 1D projections
-- new functions: `proto_highlight/1d()` for highlighting specific points in ggtours
-- new function: `filmstrip()`, creates a ggplot faceting the frames of a ggtour for a static output
+- New functions: `proto_highlight/1d()` for highlighting specific points in ggtours
+- New function: `filmstrip()`, creates a ggplot faceting the frames of a ggtour for a static output
+- New dataset: `penguins`, from `palmerpenguins::penguins`, removed NA
+rows & reordered columns
 - Added argument `rownum_index` to `proto_text`, for labeling subsets
 - Experimental wrapper function `spinifex::save_history`, muting the noisy execution of `tourr::save_history`
-- New dataset: `penguins`, 
 
 
 # spinifex v0.3.0!
 
 - New ggproto api for visuals, see `?ggplot_tour()` to get started!!
--- 10x new `ggproto_*` functions
+-- 10x new `proto_*` functions, essentially geoms for animated tours: 
+basis/1d, point, origin/1d, density, text, hex, default/1d.
 -- 2x animation funcs; `animate_plotly()` and `aniamte_gganimate()`
 -- 2x internal utility functions
 - New vignette demonstrating this api `vignette("ggproto_api", "spinifex")`

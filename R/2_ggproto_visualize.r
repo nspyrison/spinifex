@@ -63,49 +63,51 @@ ggtour <- function(basis_array,
                    angle = .05,
                    facet_by = NULL
 ){
-  if(is.null(data) == TRUE)
-    data <- attr(basis_array, "data") ## Can be NULL
+  if(is.null(data) == TRUE) data <- attr(basis_array, "data") ## Could be NULL
   manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
   if(any(class(basis_array) %in% c("matrix", "data.frame"))) ## Format for array2df (_list)
     basis_array <- array(as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   
-  ## Interpolate if from {tourr}.
-  if(is.null(manip_var) == TRUE) ## if manip_var is null 
+  ## Interpolate {tourr} tours
+  if(is.null(manip_var) == TRUE) ## if manip_var is null; IE. from tourr
     if(dim(basis_array)[3L] != 1L) ## AND more than 1 basis.
       .m <- utils::capture.output(
-        basis_array <- tourr::interpolate(basis_array, angle = angle))
-  #### TODO SEE THE DEV FILES PARTIAL FUNCTIONS In ./buildignore
-  ### FOR CONVERTING TO INTERPOLATE_MANUAL.
+        basis_array <- tourr::interpolate(basis_array, angle))
+  ## Interpolate manual tours
+  if(is.null(manip_var) == TRUE)
+    basis_array <- interpolate_manual_tour(basis_array, angle)
   
   df_ls <- array2df(basis_array, data)
   df_basis <- df_ls$basis_frames
   df_data  <- df_ls$data_frames
   attr(df_basis, "manip_var") <- manip_var ## NULL if not a manual tour
   
-  ## map_to condition handling:
-  #### NULL data == unit box, >2d basis == data, 1d data == density and data.
-  map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L)) ## init & if data is NULL
-  if(is.null(data) == FALSE){
-    d <- dim(basis_array)[2L] ## ncol of basis
-    if(d == 2L) ## 2D non-NULL basis
+  ## map_to handling cases::
+  #### If data is NULL then map_to unit box
+  map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+  if(is.null(data) == FALSE){ 
+    d <- dim(basis_array)[2L]
+    #### If data 2d then map_to data
+    if(d == 2L)
       map_to <- data.frame(x = range(df_data[, 1L]), y = range(df_data[, 2L]))
+    #### If data 1d then map_to X of data, and [01] (scaled density)
     if(d == 1L) ## 1D non-NULL basis
-      ## y is always [0,1], as geom_density(aes(y=..scaled..))
       map_to <- data.frame(x = range(df_data[, 1L]), y = c(0L, 1L))
   }
-  n_frames <- length(unique(df_basis$frame))
+  
   nrow_df_data <- nrow(df_data)
-  p <- nrow(df_basis) / n_frames
-  n <- nrow_df_data   / n_frames
-  manip_var <- attr(df_basis, "manip_var") ## NULL if not a manual tour
+
   ## Append facet_by to df_basis and df_data if needed.
   if(is.null(facet_by) == FALSE){
     df_data <- .bind_elements2df(
-      list(facet_by = rep_len(facet_by, nrow(df_data))), df_data)
+      list(facet_by = rep_len(facet_by, nrow_df_data)), df_data)
     df_basis <- .bind_elements2df( ## basis facet always on first/top level
       list(facet_by = rep_len("_basis_", nrow(df_basis))), df_basis)
   }
-  ## Assign list to a hidden environment, .store
+  ## Assign list to last_ggtour().
+  n_frames <- length(unique(df_basis$frame))
+  p <- nrow(df_basis) / n_frames
+  n <- nrow_df_data   / n_frames
   .set_last_ggtour(list(df_basis = df_basis,
                         df_data = df_data,
                         map_to = map_to,
@@ -150,7 +152,7 @@ ggtour <- function(basis_array,
 last_ggtour <- function(){.store$ggtour_ls}
 #' @rdname last_ggtour
 #' @export
-.set_last_ggtour <- function(value) .store$ggtour_ls <- value
+.set_last_ggtour <- function(ggtour_list) .store$ggtour_ls <- ggtour_list
 
 
 

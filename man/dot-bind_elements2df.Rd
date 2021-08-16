@@ -22,6 +22,7 @@ replicates elements to length data
 \seealso{
 Other Internal utility: 
 \code{\link{.init4proto}},
-\code{\link{.lapply_rep_len}()}
+\code{\link{.lapply_rep_len}()},
+\code{\link{interpolate_manual_tour}()}
 }
 \concept{Internal utility}

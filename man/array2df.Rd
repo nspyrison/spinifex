@@ -5,7 +5,7 @@
 \title{Turns a tour path array into a long data frame.}
 \usage{
 array2df(
-  array,
+  basis_array,
   data = NULL,
   basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3) else
     paste0("x", 1:nrow(array)),
@@ -13,8 +13,8 @@ array2df(
 )
 }
 \arguments{
-\item{array}{A (p, d, n_frames) array of a tour, the output of
-\code{manual_tour()}.}
+\item{basis_array}{A full (p, d, n_frames) interpolated basis array of a
+tour, the output of \code{manual_tour} or \verb{save_history(*_tour())}.}
 
 \item{data}{Optional, (n, p) dataset to project, consisting of numeric
 variables.}
@@ -26,15 +26,10 @@ Defaults to the 3 character abbreviation of the original variables names.}
 \item{data_label}{Optional, labels for plotly tooltip and return object.
 Defaults to the rownames of the data, if available, then the row number.}
 }
-\value{
-A list containing an array of basis frames (p, d, n_frames) and
-an array of data frames (n, d, n_frames) if data is present.
-}
 \description{
-Internal function, many end users will not need this. Typically called by a wrapper function, \code{play_manual_tour}
-or \code{play_tour_path}. Takes the result of \code{tourr::save_history()} or
-\code{manual_tour()} and restructures the data from an array to a long data frame
-for use in ggplots.
+Internal function, many end users will not need this. Takes the result of
+\code{manual_tour()} or \code{tourr::save_history()}. Restructures the array of
+interpolated bases into a long data frame for use in ggplots.
 }
 \examples{
 ## !!This function is not meant for external use!!
@@ -44,13 +39,13 @@ bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 
 ## Radial tour array to long df, as used in play_manual_tour()
-tour_array <- manual_tour(basis = bas, manip_var = mv)
-ls_df_frames <- array2df(array = tour_array, data = dat_std,
+mt_array <- manual_tour(basis = bas, manip_var = mv)
+ls_df_frames <- array2df(basis_array = mt_array, data = dat_std,
                          basis_label = paste0("MyLabs", 1:nrow(bas)))
 str(ls_df_frames)
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
 hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
-ls_df_frames2 <- array2df(array = hist_array, data = dat_std)
+ls_df_frames2 <- array2df(basis_array = hist_array, data = dat_std)
 str(ls_df_frames2)
 }
