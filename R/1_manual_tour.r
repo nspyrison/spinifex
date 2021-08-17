@@ -29,8 +29,10 @@
 #' mv <- manip_var_of(bas1d)
 #' create_manip_space(bas1d, mv)
 create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
+  cn <- colnames(basis)
+  rn <- rownames(basis)
   ## Assumptions
-  basis <- as.matrix(basis)
+  basis <- matrix(basis, nrow(basis), ncol(basis))
   if(spinifex::is_orthonormal(basis) == FALSE){
     warning("Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
     basis <- tourr::orthonormalise(basis)
@@ -47,15 +49,12 @@ create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
   manip_space <- tourr::orthonormalise(manip_space)
   
   ## Conserve col/row names
-  cn <- colnames(basis)
   if(is.null(cn) == TRUE)
     cn <- paste0("y", 1L:ncol(basis))
   colnames(manip_space) <- c(cn, "manip_sp")
-  rn <- rownames(basis)
-  if(is.null(cn) == TRUE)
-    rn <- paste0("x", 1L:nrow(basis))
+  if(is.null(rn) == TRUE)
+    rn <- 1L:nrow(basis)
   rownames(manip_space) <- rn
-  
   return(manip_space)
 }
 
@@ -164,8 +163,6 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' the "out-of-plane" rotation, the z-axis of the reference frame. 
 #' Required, defaults to pi/2.
 #' @param data Optionally attach data to the basis path.
-#' @param ... Terminate unused arguments that are being also being passed from 
-#' `play_manual_tour()` to `render_()`.
 #' @return A (p, d, 4) history_array of the radial tour. The bases set for
 #' phi_start, `phi_min`, `phi_max`, and back to phi_start.
 #' @export
@@ -200,8 +197,8 @@ manual_tour <- function(basis,
                         theta   = NULL,
                         phi_min = 0L,
                         phi_max = pi / 2,
-                        data = NULL,
-                        ...){
+                        data = NULL
+){
   ## Assumptions
   basis <- as.matrix(basis)
   p <- nrow(basis)
@@ -212,8 +209,6 @@ manual_tour <- function(basis,
     warning("Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
     basis <- tourr::orthonormalise(basis)
   }
-  ## Terminate args meant for render_*/animate_* passed through play_manual_tour().
-  .xArgs <- list(...)
   
   ## Initialize
   ### d = 2 case
@@ -228,17 +223,16 @@ manual_tour <- function(basis,
     theta <- NA
   }
   
-  ### Shift phi start in be in-phase between [0, pi]
+  ### Shift phi start in be in-phase between [-pi/2, pi/2]
   ## Are these needed still?? for precaution
-  while(phi_start > pi){
-    message("phi_start > pi; phi_start <- -phi_start + pi & phi_max <- -phi_max")
+  if(phi_start > pi / 2L){
+    message("phi_start > pi / 2; phi_start <- phi_start - pi & phi_max <- -phi_max")
     phi_start <- phi_start - pi
-   # phi_max   <- phi_max - pi
+    phi_max   <- phi_max - pi
   }
-  while(phi_start < -pi){
-    message("phi_start < -pi / 2L; phi_start <- phi_start + pi")
+  if(phi_start < -pi / 2L){
+    message("phi_start < -pi / 2; phi_start <- phi_start + pi")
     phi_start <- phi_start + pi
-    # phi_max   <- phi_max + pi
   }
   ## Ensure correct order of phi_min, phi_start, phi_max
   if((abs(phi_min) < abs(phi_start)) == FALSE)
@@ -246,13 +240,17 @@ manual_tour <- function(basis,
   if((abs(phi_max) > abs(phi_start)) == FALSE)
     stop("Phi is greather than phi_max, please set phi_max above ", round(phi_start, 2L))
   
-  attr(basis, "manip_var") <- manip_var
-  attr(basis, "theta")     <- theta ## NULL if d=1
-  attr(basis, "phi_start") <- phi_start
-  attr(basis, "phi_min")   <- phi_min
-  attr(basis, "phi_max")   <- phi_max
-  attr(basis, "data")      <- data ## Can be NULL
-  return(basis) ## Not exactly a basis "a
+  ## single basis array, desirable downstream
+  .dn <- dimnames(basis)
+  basis_array <- array(as.matrix(basis), dim = c(dim(basis), 1L))
+  dimnames(basis_array) <- .dn
+  attr(basis_array, "manip_var") <- manip_var
+  attr(basis_array, "theta")     <- theta ## NULL if d=1
+  attr(basis_array, "phi_start") <- phi_start
+  attr(basis_array, "phi_min")   <- phi_min
+  attr(basis_array, "phi_max")   <- phi_max
+  attr(basis_array, "data")      <- data ## Can be NULL
+  return(basis_array)
 }
 
 
@@ -263,7 +261,6 @@ manual_tour <- function(basis,
 #' `array2df`. 
 #'
 #' @param basis_array array, of the target bases, the extrema of the walk/segments.
-#' @param manip_var The column number of the manipulation variable.
 #' @param angle The step size between interpolated frames, in radians.
 #' @family Internal utility
 #' @examples
@@ -274,10 +271,10 @@ manual_tour <- function(basis,
 #' mv <- manip_var_of(bas)
 #' mt <- manual_tour(bas, mv)
 #' 
-#' interp <- interpolate_manual_tour(basis_array = mt, angle = .1)
+#' interp <- spinifex:::interpolate_manual_tour(basis_array = mt, angle = .1)
 #' dim(interp)
 #' str(interp)
-interpolate_manual_tour <- function(basis_array, angle){
+interpolate_manual_tour <- function(basis_array, angle = .05){
   ## Initialize and unpack attributes
   manip_var <- attr(basis_array, "manip_var")
   theta     <- attr(basis_array, "theta")
@@ -288,7 +285,7 @@ interpolate_manual_tour <- function(basis_array, angle){
   d <- ncol(basis_array)
   
   ## if mv_x <0, phi_start <- pi/2 - phi_start
-  is_mv_x_neg <- basis_array[manip_var, 1L] <= 0L
+  is_mv_x_neg <- basis_array[manip_var, 1L, 1L] <= 0L
   if(is_mv_x_neg == TRUE)
     phi_start <- pi / 2L - phi_start
   phi_delta <- function(start, end){
@@ -308,10 +305,10 @@ interpolate_manual_tour <- function(basis_array, angle){
   
   ## Convert phi path to basis array
   n_frames <- length(phi_path)
-  m_sp <- create_manip_space(basis = basis, manip_var = manip_var)
+  m_sp <- create_manip_space(basis_array, manip_var)
   interp_array <- ## Init
     array(NA, dim = c(p, d, n_frames),
-          dimnames = c(dimnames(basis), list(paste0("frame", 1L:n_frames))))
+          dimnames = c(dimnames(basis_array)[1:2], list(paste0("frame", 1L:n_frames))))
   ## Populate tour basis_array
   .m <- sapply(1L:n_frames, function(i){
     this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])

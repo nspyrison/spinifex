@@ -7,7 +7,7 @@ bas <- basis_pca(dat)
 mv  <- manip_var_of(bas)
 
 mt     <- manual_tour(bas      , mv, data = dat)
-mt1d   <- manual_tour(bas[, 1L], mv, angle = 1L, data = dat)
+mt1d   <- manual_tour(bas[, 1L], mv, data = dat)
 .m <- capture.output(
   gt   <- tourr::save_history(dat, guided_tour(holes()), max_bases = 3L)
 )
@@ -22,7 +22,6 @@ gg_gt   <- ggtour(gt  , angle = 1L) + proto_default()
 gg_mt1d <- ggtour(mt1d, angle = 1L) + proto_default1d()
 gg_gt1d <- ggtour(gt1d, angle = 1L) + proto_default1d()
 test_that("ggtourr", {
-  expect_error(ggtour(mt) + proto_default())
   expect_is(gg_mt  , c("gg", "ggplot"))
   expect_is(gg_gt  , c("gg", "ggplot"))
   expect_is(gg_mt1d, c("gg", "ggplot"))

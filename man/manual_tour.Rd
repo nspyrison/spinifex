@@ -11,8 +11,7 @@ manual_tour(
   theta = NULL,
   phi_min = 0L,
   phi_max = pi/2,
-  data = NULL,
-  ...
+  data = NULL
 )
 }
 \arguments{
@@ -35,9 +34,6 @@ the "out-of-plane" rotation, the z-axis of the reference frame.
 Required, defaults to pi/2.}
 
 \item{data}{Optionally attach data to the basis path.}
-
-\item{...}{Terminate unused arguments that are being also being passed from
-\code{play_manual_tour()} to \code{render_()}.}
 }
 \value{
 A (p, d, 4) history_array of the radial tour. The bases set for

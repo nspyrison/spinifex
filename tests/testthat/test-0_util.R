@@ -67,8 +67,7 @@ test_that("array2df: length", {
   expect_true(length(ret_gt) == 2)
 })
 test_that("array2df: dim", {
-  expect_true(nrow(ret_mt[[1]]) == 340)
-  expect_true(ncol(ret_mt[[1]]) == 4)
+  expect_equal(dim(ret_mt[[1]]), c(5, 4))
   expect_equal(dim(ret_single[[1]]),  c(5, 4))
   expect_equal(dim(ret_gt[[1]]), c(50, 4))
 })

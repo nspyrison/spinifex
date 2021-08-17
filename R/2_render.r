@@ -42,14 +42,14 @@
 #' mv <- manip_var_of(bas)
 #' 
 #' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' manual_df <- array2df(basis_array = manual_array, data = dat_std)
+#' mt_df_ls <- array2df(basis_array = mt_array, data = dat_std)
 #' 
 #' ## Required arguments
-#' render_(frames = manual_df)
+#' render_(frames = mt_df_ls)
 #' 
 #' ## Full arguments
 #' require("ggplot2")
-#' render_(frames = manual_df, axes = "left", manip_col = "purple",
+#' render_(frames = mt_df_ls, axes = "left", manip_col = "purple",
 #'         aes_args = list(color = clas, shape = clas),
 #'         identity_args = list(size = 1.5, alpha = .7),
 #'         ggproto = list(theme_minimal(),
@@ -209,35 +209,37 @@ render_ <- function(frames,
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' manual_df <- array2df(basis_array = manual_array, data = dat_std)
+#' mt_df_ls <- array2df(basis_array = mt_array, data = dat_std)
 #' 
 #' \dontrun{
-#' render_gganimate(frames = manual_df)
+#' render_gganimate(frames = mt_df_ls)
 #' 
 #' require("ggplot2")
-#' render_gganimate(frames = manual_df, axes = "bottomleft",
-#'                  fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
-#'                  aes_args = list(color = clas, shape = clas),
-#'                  identity_args = list(size = 2, alpha = .7),
-#'                  ggproto = list(theme_void(),
-#'                                 ggtitle("My title"),
-#'                                 scale_color_brewer(palette = "Set2")))
+#' render_gganimate(
+#'   frames = mt_df_ls, axes = "bottomleft",
+#'   fps = 10, rewind = TRUE, start_pause = 1, end_pause = 1.5,
+#'   aes_args = list(color = clas, shape = clas),
+#'   identity_args = list(size = 2, alpha = .7),
+#'   ggproto = list(theme_void(),
+#'                  ggtitle("My title"),
+#'                  scale_color_brewer(palette = "Set2")))
 #' 
 #' ## Saving a .gif(may require additional setup)
 #' if(F){ ## Don't run by mistake
-#'   render_gganimate(frames = manual_df, axes = "bottomleft",
+#'   render_gganimate(frames = mt_df_ls, axes = "bottomleft",
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
 #' }
 #' }
-render_gganimate <- function(fps = 8L,
-                             rewind = FALSE,
-                             start_pause = .5,
-                             end_pause = 1L,
-                             gif_filename = NULL,
-                             gif_path = NULL,
-                             gganimate_args = list(),
-                             ...){
-
+render_gganimate <- function(
+  fps = 8L,
+  rewind = FALSE,
+  start_pause = .5,
+  end_pause = 1L,
+  gif_filename = NULL,
+  gif_path = NULL,
+  gganimate_args = list(),
+  ...
+){
   requireNamespace("gganimate")
   ## Render and animate
   gg  <- render_(...)
@@ -251,7 +253,7 @@ render_gganimate <- function(fps = 8L,
                        end_pause = fps * end_pause,
                        ...)
   anim <- do.call(anim_func, args = gganimate_args)
-
+  
   ## Save condition handling
   if(is.null(gif_filename) == FALSE)
     gganimate::anim_save(gif_filename, anim, gif_path)
@@ -288,28 +290,30 @@ render_gganimate <- function(fps = 8L,
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
 #' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' manual_df <- array2df(basis_array = manual_array, data = dat_std)
+#' mt_df_ls <- array2df(basis_array = mt_array, data = dat_std)
 #' 
 #' \dontrun{
-#' render_plotly(frames = manual_df)
+#' render_plotly(frames = mt_df_ls)
 #' 
 #' require("ggplot2")
-#' render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
-#'               aes_args = list(color = clas, shape = clas),
-#'               identity_args = list(size = 1.5, alpha = .7),
-#'               ggproto = list(theme_bw(),
-#'                              scale_color_brewer(palette = "Set2")))
+#' render_plotly(
+#'   frames = mt_df_ls, axes = "bottomleft", fps = 10,
+#'   aes_args = list(color = clas, shape = clas),
+#'   identity_args = list(size = 1.5, alpha = .7),
+#'   ggproto = list(theme_bw(), scale_color_brewer(palette = "Set2")))
 #' 
 #' ## Saving a .gif, may require additional setup
 #' if(F){ ## Don't run by mistake
-#'   render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
-#'                 html_filename = "myRadialTour.html")
+#' render_plotly(frames = mt_df_ls, axes = "bottomleft", fps = 10,
+#'               html_filename = "myRadialTour.html")
 #' }
 #' }
-render_plotly <- function(fps = 8L,
-                          html_filename = NULL,
-                          save_widget_args = list(),
-                          ...){
+render_plotly <- function(
+  fps = 8L,
+  html_filename = NULL,
+  save_widget_args = list(),
+  ...
+){
   requireNamespace("plotly")
   ## Render
   gg  <- render_(...) +

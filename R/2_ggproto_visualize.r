@@ -65,9 +65,11 @@ ggtour <- function(basis_array,
 ){
   if(is.null(data) == TRUE) data <- attr(basis_array, "data") ## Could be NULL
   manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
-  if(any(class(basis_array) %in% c("matrix", "data.frame"))) ## Format for array2df (_list)
-    basis_array <- array(as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   
+  ## Single basis, no manip var
+  if(is.null(manip_var) == TRUE) ## if manip_var is null; IE. single basis, not tour
+    if(length(dim(basis_array)) == 2L) ## AND 1 basis.
+      basis_array <- array(as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   ## Interpolate {tourr} tours
   if(is.null(manip_var) == TRUE) ## if manip_var is null; IE. from tourr
     if(dim(basis_array)[3L] != 1L) ## AND more than 1 basis.
@@ -92,8 +94,7 @@ ggtour <- function(basis_array,
     if(d == 2L)
       map_to <- data.frame(x = range(df_data[, 1L]), y = range(df_data[, 2L]))
     #### If data 1d then map_to X of data, and [01] (scaled density)
-    if(d == 1L) ## 1D non-NULL basis
-      map_to <- data.frame(x = range(df_data[, 1L]), y = c(0L, 1L))
+    if(d == 1L) map_to <- data.frame(x = range(df_data[, 1L]), y = c(0L, 1L))
   }
   
   nrow_df_data <- nrow(df_data)
@@ -108,15 +109,10 @@ ggtour <- function(basis_array,
   n_frames <- length(unique(df_basis$frame))
   p <- nrow(df_basis) / n_frames
   n <- nrow_df_data   / n_frames
-  .set_last_ggtour(list(df_basis = df_basis,
-                        df_data = df_data,
-                        map_to = map_to,
-                        n_frames = n_frames,
-                        nrow_df_data = nrow_df_data,
-                        n = n,
-                        p = p,
-                        manip_var = manip_var,
-                        facet_by = facet_by))
+  .set_last_ggtour(list(
+    df_basis = df_basis, df_data = df_data, map_to = map_to,
+    n_frames = n_frames, nrow_df_data = nrow_df_data, n = n, p = p,
+    manip_var = manip_var, facet_by = facet_by))
   
   ## Return ggplot head, theme, and facet if used
   ## by product: last_ggtour() was set above.
@@ -130,9 +126,9 @@ ggtour <- function(basis_array,
   }
   return(ret)
 }
-# ## Print method ->> proto_default()
+# ## Print method for ggtours ?? using proto_default()
 # #### Was a good idea, but ggplot stops working when you change the first class, 
-# #### and doesn't effect if you append.
+# #### and doesn't effect if you change the last class.
 # print.ggtour <- function(x, ...){
 #   class(x) <- c("gg", "ggplot")
 #   x +
@@ -140,7 +136,6 @@ ggtour <- function(basis_array,
 #     proto_origin(gridline_probs = FALSE) +
 #     proto_point()
 # }
-
 
 .store <- new.env(parent = emptyenv())
 #' Retrieve/set a list from the last `ggtour()`, required for the use 
@@ -153,8 +148,6 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' @rdname last_ggtour
 #' @export
 .set_last_ggtour <- function(ggtour_list) .store$ggtour_ls <- ggtour_list
-
-
 
 
 #' Replicate all vector elements of a list
@@ -202,14 +195,14 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' ## This function is not meant for external use
 .bind_elements2df <- function(list, df){
   .list <- as.list(list)
-  ret <- as.data.frame(df)
-  .ret_nms <- names(ret)
+  .ret <- as.data.frame(df)
+  .ret_nms <- names(.ret)
   .l_nms <- names(list)
   .m <- lapply(seq_along(.list), function(i){
-    ret <<- cbind(ret, .list[[i]])
+    .ret <<- cbind(.ret, .list[[i]])
   })
-  names(ret) <- c(.ret_nms, .l_nms)
-  return(ret)
+  names(.ret) <- c(.ret_nms, .l_nms)
+  return(.ret)
 }
 
 #' Initialize common obj from .global `ggtour()` objects & test their existence
@@ -514,7 +507,9 @@ animate_plotly <- function(
 #' 
 #' ggt1d <- ggtour(mt_path1d, dat) +
 #'   proto_default1d(list(fill = clas))
+#' \dontrun{
 #' filmstrip(ggt1d)
+#' }
 filmstrip <- function(ggtour){
   ret <- ggtour +
     ggplot2::facet_wrap(ggplot2::vars(frame)) + ## facet on frame
@@ -995,7 +990,7 @@ proto_text <- function(aes_args = list(),
   .aes_func  <- function(...)
     ggplot2::aes(x = x, y = y, frame = frame, label = label, ...)
   .aes_call  <- do.call(.aes_func, aes_args)
-  ## do.call geom_point() over the identity_args 
+  ## do.call geom_point() over the identity_args
   .geom_func <- function(...)suppressWarnings(
     ggplot2::geom_text(mapping = .aes_call, data = .df_data, ...))
   
@@ -1026,7 +1021,8 @@ proto_text <- function(aes_args = list(),
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ## 10000 rows is quite heavy to animate.
-#' ## Improve performance with aggregation similar to proto_hex()!
+#' ## Decrease the points drawn in each frame by aggregating many points into
+#' #### a hexegon heatmap, using geom_hex!
 #' ggp <- ggtour(gt_path, dat) +
 #'   proto_basis() +
 #'   proto_hex(bins = 20)

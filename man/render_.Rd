@@ -60,14 +60,14 @@ bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 
 mt_array <- manual_tour(basis = bas, manip_var = mv)
-manual_df <- array2df(basis_array = manual_array, data = dat_std)
+mt_df_ls <- array2df(basis_array = mt_array, data = dat_std)
 
 ## Required arguments
-render_(frames = manual_df)
+render_(frames = mt_df_ls)
 
 ## Full arguments
 require("ggplot2")
-render_(frames = manual_df, axes = "left", manip_col = "purple",
+render_(frames = mt_df_ls, axes = "left", manip_col = "purple",
         aes_args = list(color = clas, shape = clas),
         identity_args = list(size = 1.5, alpha = .7),
         ggproto = list(theme_minimal(),

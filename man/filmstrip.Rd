@@ -37,7 +37,9 @@ ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
 
 ggt1d <- ggtour(mt_path1d, dat) +
   proto_default1d(list(fill = clas))
+\dontrun{
 filmstrip(ggt1d)
+}
 }
 \seealso{
 Other ggtour proto: 

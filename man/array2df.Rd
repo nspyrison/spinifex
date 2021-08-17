@@ -8,8 +8,9 @@ array2df(
   basis_array,
   data = NULL,
   basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3) else
-    paste0("x", 1:nrow(array)),
-  data_label = row.names(data)
+    1:nrow(basis_array),
+  data_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3) else
+    paste0("v", 1:ncol(basis_array))
 )
 }
 \arguments{
@@ -45,7 +46,7 @@ ls_df_frames <- array2df(basis_array = mt_array, data = dat_std,
 str(ls_df_frames)
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
-hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
-ls_df_frames2 <- array2df(basis_array = hist_array, data = dat_std)
+gt_array <- tourr::save_history(data = dat_std, max_bases = 10)
+ls_df_frames2 <- array2df(basis_array = gt_array, data = dat_std)
 str(ls_df_frames2)
 }

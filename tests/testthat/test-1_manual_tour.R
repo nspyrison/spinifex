@@ -41,8 +41,8 @@ ret_heavy <- manual_tour(basis = bas, manip_var = mv,
 
 
 test_that("manual_tour, class and dim", {
-  expect_is(ret_light, "matrix")
-  expect_is(ret_heavy, "matrix")
+  expect_is(ret_light, "array")
+  expect_is(ret_heavy, "array")
   expect_equal(dim(ret_light)[1:2], c(5, 2))
   expect_equal(dim(ret_heavy)[1:2], c(5, 2))
   expect_true(dim(ret_light)[3] > 0 & dim(ret_light)[3] < 200)

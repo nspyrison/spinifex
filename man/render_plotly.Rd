@@ -30,22 +30,22 @@ clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 mt_array <- manual_tour(basis = bas, manip_var = mv)
-manual_df <- array2df(basis_array = manual_array, data = dat_std)
+mt_df_ls <- array2df(basis_array = mt_array, data = dat_std)
 
 \dontrun{
-render_plotly(frames = manual_df)
+render_plotly(frames = mt_df_ls)
 
 require("ggplot2")
-render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
-              aes_args = list(color = clas, shape = clas),
-              identity_args = list(size = 1.5, alpha = .7),
-              ggproto = list(theme_bw(),
-                             scale_color_brewer(palette = "Set2")))
+render_plotly(
+  frames = mt_df_ls, axes = "bottomleft", fps = 10,
+  aes_args = list(color = clas, shape = clas),
+  identity_args = list(size = 1.5, alpha = .7),
+  ggproto = list(theme_bw(), scale_color_brewer(palette = "Set2")))
 
 ## Saving a .gif, may require additional setup
 if(F){ ## Don't run by mistake
-  render_plotly(frames = manual_df, axes = "bottomleft", fps = 10,
-                html_filename = "myRadialTour.html")
+render_plotly(frames = mt_df_ls, axes = "bottomleft", fps = 10,
+              html_filename = "myRadialTour.html")
 }
 }
 }

@@ -65,7 +65,6 @@ play_tour_path <- function(tour_path,
   
   ## Initialization
   data <- as.matrix(data)
-  
   ## Tour array to tour df
   .mute <- utils::capture.output(
     tour_path <- tourr::interpolate(basis_set = tour_path, angle = angle)
@@ -159,9 +158,10 @@ play_manual_tour <- function(basis = NULL,
     message("NULL basis passed. Set to PCA basis.")
   }
   
-  tour_hist <- manual_tour(basis = basis, manip_var = manip_var, angle = angle,
+  mt_array <- manual_tour(basis = basis, manip_var = manip_var,
                            theta = theta, phi_min = phi_min, phi_max = phi_max)
-  tour_df <- array2df(basis_array = tour_hist, data = data)
+  mt_array <- interpolate_manual_tour(mt_array, angle = angle)
+  tour_df <- array2df(basis_array = mt_array, data = data)
   return(render_type(frames = tour_df, ...))
 }
 

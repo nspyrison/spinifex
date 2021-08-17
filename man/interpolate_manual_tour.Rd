@@ -4,14 +4,12 @@
 \alias{interpolate_manual_tour}
 \title{Interpolates a manual tour}
 \usage{
-interpolate_manual_tour(basis_array, angle)
+interpolate_manual_tour(basis_array, angle = 0.05)
 }
 \arguments{
 \item{basis_array}{array, of the target bases, the extrema of the walk/segments.}
 
 \item{angle}{The step size between interpolated frames, in radians.}
-
-\item{manip_var}{The column number of the manipulation variable.}
 }
 \description{
 Internal function. Interpolates a manual tour over the stored theta, and phi
@@ -26,7 +24,7 @@ bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
 mt <- manual_tour(bas, mv)
 
-interp <- interpolate_manual_tour(basis_array = mt, angle = .1)
+interp <- spinifex:::interpolate_manual_tour(basis_array = mt, angle = .1)
 dim(interp)
 str(interp)
 }

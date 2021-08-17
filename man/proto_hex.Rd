@@ -30,7 +30,8 @@ dat <- scale_sd(raw[1:10000, c(1, 5:6, 8:10)])
 gt_path <- save_history(dat, grand_tour(), max = 3)
 
 ## 10000 rows is quite heavy to animate.
-## Improve performance with aggregation similar to proto_hex()!
+## Decrease the points drawn in each frame by aggregating many points into
+#### a hexegon heatmap, using geom_hex!
 ggp <- ggtour(gt_path, dat) +
   proto_basis() +
   proto_hex(bins = 20)

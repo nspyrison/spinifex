@@ -53,25 +53,26 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' str(ls_df_frames)
 #' 
 #' ## tourr::save_history tour array to long df, as used in play_tour_path()
-#' hist_array <- tourr::save_history(data = dat_std, max_bases = 10)
-#' ls_df_frames2 <- array2df(basis_array = hist_array, data = dat_std)
+#' gt_array <- tourr::save_history(data = dat_std, max_bases = 10)
+#' ls_df_frames2 <- array2df(basis_array = gt_array, data = dat_std)
 #' str(ls_df_frames2)
 array2df <- function(
   basis_array,
   data = NULL,
-  basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("x", 1:nrow(array)),
-  data_label = row.names(data)
+  basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else 1:nrow(basis_array),
+  data_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("v", 1:ncol(basis_array))
 ){
-  if("history_array" %in% class(array)) class(array) <- "array"
+  if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
+  
   ## Initialize
-  manip_var <- attributes(array)$manip_var
-  p <- dim(array)[1L]
-  n_frames <- dim(array)[3L]
+  manip_var <- attributes(basis_array)$manip_var
+  p <- dim(basis_array)[1L]
+  n_frames <- dim(basis_array)[3L]
   
   ## Basis condition handling
   basis_frames <- NULL
   .mute <- sapply(1L:n_frames, function(i){
-    basis_rows <- cbind(array[,, i], i)
+    basis_rows <- cbind(basis_array[,, i], i)
     basis_frames <<- rbind(basis_frames, basis_rows)
   })
   basis_frames <- as.data.frame(basis_frames)
@@ -83,7 +84,7 @@ array2df <- function(
     data_frames <- NULL
     data <- as.matrix(data)
     .mute <- sapply(1L:n_frames, function(i){
-      new_frame <- data %*% matrix(array[,, i], nrow(array), ncol(array))
+      new_frame <- data %*% matrix(basis_array[,, i], nrow(basis_array), ncol(basis_array))
       ## Center the new frame
       new_frame <- sapply(1L:ncol(new_frame), function(i)
         new_frame[, i] - mean(new_frame[, i])

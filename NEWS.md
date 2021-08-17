@@ -14,7 +14,7 @@ rows & reordered columns
 # spinifex v0.3.0!
 
 - New ggproto api for visuals, see `?ggplot_tour()` to get started!!
--- 10x new `proto_*` functions, essentially geoms for animated tours: 
+-- 10x new `proto_*` functions, essentially `geoms_*` for animated tours: 
 basis/1d, point, origin/1d, density, text, hex, default/1d.
 -- 2x animation funcs; `animate_plotly()` and `aniamte_gganimate()`
 -- 2x internal utility functions
