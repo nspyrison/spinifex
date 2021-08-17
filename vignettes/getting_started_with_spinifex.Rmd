@@ -1,11 +1,11 @@
 ---
-title: "getting started with spinifex"
+title: "Getting started with spinifex"
 author: "Nicholas Spyrison"
 date: '`r format(Sys.Date())`'
 output:
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{getting started with spinifex}
+  %\VignetteIndexEntry{Getting started with spinifex}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
