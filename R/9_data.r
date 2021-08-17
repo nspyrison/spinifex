@@ -230,7 +230,7 @@
 #' ```
 #' @name weather
 #' @docType data
-#' @source {Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data}
+#' @source {Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data/}
 #' @source {rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
 #' @examples
 #' library("spinifex")
@@ -326,9 +326,9 @@
 #'   \item{island}{a factor denoting island in Palmer Archipelago, Antarctica (Biscoe, Dream or Torgersen)}
 #' }
 #' @source {palmerpenguins R package. A. Horst, 2020. Palmer Archipelago (Antarctica) Penguin Data.} \url{https://CRAN.R-project.org/package=palmerpenguins}
-#' @source {Adélie penguins: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic signatures of foraging among adult male and female Adélie penguins (Pygoscelis adeliae) nesting along the Palmer Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative} \url{https://doi.org/10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f}
-#' @source {Gentoo penguins: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic signatures of foraging among adult male and female Gentoo penguin (Pygoscelis papua) nesting along the Palmer Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative} \url{https://doi.org/10.6073/pasta/7fca67fb28d56ee2ffa3d9370ebda689}
-#' @source {Chinstrap penguins: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic signatures of foraging among adult male and female Chinstrap penguin (Pygoscelis antarcticus) nesting along the Palmer Archipelago near Palmer Station, 2007-2009 ver 6. Environmental Data Initiative} \url{https://doi.org/10.6073/pasta/c14dfcfada8ea13a17536e73eb6fbe9e}
+#' @source {Adélie penguins: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic signatures of foraging among adult male and female Adélie penguins (Pygoscelis adeliae) nesting along the Palmer Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative} \doi{10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f}
+#' @source {Gentoo penguins: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic signatures of foraging among adult male and female Gentoo penguin (Pygoscelis papua) nesting along the Palmer Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative} \doi{10.6073/pasta/7fca67fb28d56ee2ffa3d9370ebda689}
+#' @source {Chinstrap penguins: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic signatures of foraging among adult male and female Chinstrap penguin (Pygoscelis antarcticus) nesting along the Palmer Archipelago near Palmer Station, 2007-2009 ver 6. Environmental Data Initiative} \doi{10.6073/pasta/c14dfcfada8ea13a17536e73eb6fbe9e}
 #' @source {Originally published in: Gorman KB, Williams TD, Fraser WR (2014) Ecological Sexual Dimorphism and Environmental Variability within a Community of Antarctic Penguins (Genus Pygoscelis). PLoS ONE 9(3): e90081. doi:10.1371/journal.pone.0090081}
 #' @details 
 #' Replicating this dataset:

@@ -11,7 +11,7 @@ vignette: >
 editor_options:
   chunk_output_type: console
 ---
-<!-- #Example vignette: 
+<!-- #Example vignette:
 https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -31,9 +31,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction
 
-We are moving to a new '`ggproto`' API for constructing animated tours from `{ggplot2}` objects. This interface should feel more comfortable to people already familiar with `{ggplot2}`. Ggproto is the parent class of geoms, layers, and some other plotting elements. 
+We are moving to a new '`ggproto`' API for constructing animated tours from `{ggplot2}` objects. This interface should feel more comfortable to people already familiar with `{ggplot2}`. Ggproto is the parent class of geoms, layers, and some other plotting elements.
 
 Proto objects (or lists of them) can be assigned to a variable without `ggplot()`, they store _unevaluated_ code that will be used to plot. Let's see what this looks like in ggplot2 before we delve into tour animations.
 
@@ -76,13 +75,13 @@ data.frame(
 
 `play_manual_tour()` abstracted away complexity, but it was becoming too big, and consuming workflow which a function should venue too far into. This made it too bloated to allow for some flexibility, but hard to understand all of the arguments. By paring back to `proto_*` can keep details where they are more relevant without becoming overbearing in one monster function.
 
-# Why 'proto_\*' instead of new 'geom_\*'
+## Why 'proto_\*' instead of new 'geom_\*'
 
 `{spinifex} proto_*` functions return a list of several `geom_*` functions, that were designed to facilitate animation across many projection bases. We abstract away of work and complexity that comes with creating and animating tours, but this comes at the price of flexibility. For instance, protos do not know how to deal with facets and hard-code the number and type of geoms which would otherwise become very burdensome to specify all the specifics of.
 
-# Application
+## Application
 
-## Manual tour
+### Manual tour
 ```{r}
 library("tourr")
 library("spinifex")
@@ -109,7 +108,7 @@ animate_plotly(ggt, fps = 5) ## As a plotly .html widget.
 #animate_gganimate(ggt, fps = 8, rewind = TRUE) ## As a gganimate .gif
 ```
 
-## Tours from `{tourr}`
+### Tours from `{tourr}`
 ```{r}
 ## (Quietly create) a grand tour, projecting through randomly selected bases
 .mute <- utils::capture.output(
@@ -127,7 +126,7 @@ animate_plotly(ggt)
 animate_gganimate(ggt)
 ```
 
-## 1D tours
+### 1D tours
 ```{r}
 ## (Quietly create) a 1d guided tour, optimizing the projection space for the holes() function
 guided_path <- save_history(dat, guided_tour(holes(), d = 1))
@@ -143,7 +142,7 @@ ggt <- ggtour(guided_path, dat, angle = .1) + ## Include geodesic interpolation 
 animate_gganimate(ggt)
 ```
 
-## interation with ggplot2 functions
+### interation with ggplot2 functions
 
 because the output of `ggtour() + proto_*` is a ggplot, users are encouraged to theme and setting functions as well.
 
@@ -158,7 +157,7 @@ animate_gganimate(ggt)
 ```
 
 
-# Proto functions
+## Proto functions
 
 ```{r, echo = FALSE}
 data.frame(

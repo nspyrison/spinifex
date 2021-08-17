@@ -41,7 +41,8 @@ remotes::install_github("nspyrison/spinifex")
 
 ```
 library("spinifiex") ## Load into session
-vignette("spinifex") ## View the example code vignette
+vignette("getting started with spinifex") ## Introduction to tours and spinifex
+vignette("ggproto_api") ## Introduction to the new ggproto api
 run_app("radial_tour") ## Run a local shiny app, demonstrating radial manual tours
 help(package = "spinifex") ## Review the package contents and documentation
 ```
