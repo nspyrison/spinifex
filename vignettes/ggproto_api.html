@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Nicholas Spyrison" />
+
+<meta name="date" content="2021-08-18" />
+
+<title>ggproto API</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">ggproto API</h1>
+<h4 class="author">Nicholas Spyrison</h4>
+<h4 class="date">2021-08-18</h4>
+
+
+
+<!-- #Example vignette:
+https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->
+<p>We are moving to a new ‘<code>ggproto</code>’ API for constructing animated tours from <code>{ggplot2}</code> objects. This interface should feel more comfortable to people already familiar with <code>{ggplot2}</code>. Ggproto is the parent class of geoms, layers, and some other plotting elements.</p>
+<p>Proto objects (or lists of them) can be assigned to a variable without <code>ggplot()</code>, they store <em>unevaluated</em> code that will be used to plot. Let’s see what this looks like in ggplot2 before we delve into tour animations.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;ggplot2&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;magrittr&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="do">## A ggproto:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>gp <span class="ot">&lt;-</span> <span class="fu">geom_point</span>()</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(gp)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;LayerInstance&quot; &quot;Layer&quot;         &quot;ggproto&quot;       &quot;gg&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="do">## A list of ggplot elements, a &#39;head-less&#39; ggplot call</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>gg_ls <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  gp,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;loess&quot;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;proto_* functions return lists of geoms_* functions.&quot;</span>, <span class="st">&quot;These lists can be stored, extended, and added to ggplot(). </span><span class="sc">\n</span><span class="st"> We use this to include the animation of ggplots.&quot;</span>),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="at">cols =</span> <span class="fu">vars</span>(Tree))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(gg_ls, class)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;LayerInstance&quot; &quot;Layer&quot;         &quot;ggproto&quot;       &quot;gg&quot;           </span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;LayerInstance&quot; &quot;Layer&quot;         &quot;ggproto&quot;       &quot;gg&quot;           </span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;labels&quot;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[4]]</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;FacetGrid&quot; &quot;Facet&quot;     &quot;ggproto&quot;   &quot;gg&quot;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="do">## ggplot call, without geoms, a &#39;body-less&#39; ggplot call</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>gghead <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(Orange, <span class="fu">aes</span>(age, circumference, <span class="at">color =</span> Tree))</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="do">## Evaluate together</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>gghead <span class="sc">+</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  gg_ls</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>In the <code>ggproto</code> API we use this feature to create <code>proto_*()</code> functions, the counter-parts of <code>geom_*()</code> functions. These proto functions are used in composition with <code>ggtour()</code>, which replaces <code>ggplot()</code>, to create animated tours. In adopting this additive, composition approach we aim to maximize the flexibility for the end-users to customize tours while keeping the door open for extension of the development of further <code>proto</code> functions.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">object</th>
+<th align="left">ggplot2</th>
+<th align="left">ggproto.api</th>
+<th align="left">previous.api</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">head</td>
+<td align="left">ggplot()</td>
+<td align="left">ggtour()</td>
+<td align="left">play_manual_tour()</td>
+</tr>
+<tr class="even">
+<td align="left">body</td>
+<td align="left">geom_*()</td>
+<td align="left">proto_*()</td>
+<td align="left">play_manual_tour()</td>
+</tr>
+<tr class="odd">
+<td align="left">render</td>
+<td align="left">NA</td>
+<td align="left">animate_*()</td>
+<td align="left">play_manual_tour(render_*())</td>
+</tr>
+</tbody>
+</table>
+<p><code>play_manual_tour()</code> abstracted away complexity, but it was becoming too big, and consuming workflow which a function should venue too far into. This made it too bloated to allow for some flexibility, but hard to understand all of the arguments. By paring back to <code>proto_*</code> can keep details where they are more relevant without becoming overbearing in one monster function.</p>
+<div id="why-proto_-instead-of-new-geom_" class="section level2">
+<h2>Why ‘proto_*’ instead of new ‘geom_*’</h2>
+<p><code>{spinifex} proto_*</code> functions return a list of several <code>geom_*</code> functions, that were designed to facilitate animation across many projection bases. We abstract away of work and complexity that comes with creating and animating tours, but this comes at the price of flexibility. For instance, protos do not know how to deal with facets and hard-code the number and type of geoms which would otherwise become very burdensome to specify all the specifics of.</p>
+</div>
+<div id="application" class="section level2">
+<h2>Application</h2>
+<div id="manual-tour" class="section level3">
+<h3>Manual tour</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;tourr&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;spinifex&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Scale our numeric data</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">scale_sd</span>(tourr<span class="sc">::</span>flea[, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Use species as a class to set color and shape with</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>clas <span class="ot">&lt;-</span> tourr<span class="sc">::</span>flea<span class="sc">$</span>species</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Manual tour, manipulating the contribution of a selected variable </span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>bas <span class="ot">&lt;-</span> <span class="fu">basis_pca</span>(dat) <span class="do">## Start basis</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>mv <span class="ot">&lt;-</span> <span class="fu">manip_var_of</span>(bas) <span class="do">## Number of the variable to manipulate</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>mt_path <span class="ot">&lt;-</span> <span class="fu">manual_tour</span>(bas, <span class="at">manip_var =</span> mv) <span class="do">## Tour path</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Create a static ggplot2 plot with all frames of the tour</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>ggt <span class="ot">&lt;-</span> <span class="fu">ggtour</span>(mt_path, dat, <span class="at">angle =</span> .<span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">proto_basis</span>() <span class="sc">+</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">proto_point</span>(<span class="at">aes_args =</span> <span class="fu">list</span>(<span class="at">color =</span> clas, <span class="at">shape =</span> clas),</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">identity_args =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="fl">1.5</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Animate the tour with an animate_* function.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">animate_plotly</span>(ggt, <span class="at">fps =</span> <span class="dv">5</span>) <span class="do">## As a plotly .html widget.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#animate_gganimate(ggt, fps = 8, rewind = TRUE) ## As a gganimate .gif</span></span></code></pre></div>
+</div>
+<div id="tours-from-tourr" class="section level3">
+<h3>Tours from <code>{tourr}</code></h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (Quietly create) a grand tour, projecting through randomly selected bases</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>.mute <span class="ot">&lt;-</span> utils<span class="sc">::</span><span class="fu">capture.output</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  gt_path <span class="ot">&lt;-</span> tourr<span class="sc">::</span><span class="fu">save_history</span>(dat, <span class="fu">grand_tour</span>(), <span class="at">max_bases =</span> <span class="dv">3</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Static ggplot of all frames in the tour</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>ggt <span class="ot">&lt;-</span> <span class="fu">ggtour</span>(gt_path, dat, <span class="at">angle =</span> .<span class="dv">1</span>) <span class="sc">+</span> <span class="do">## Include geodesic interpolation angle between the selected bases.</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">proto_basis</span>(<span class="at">position =</span> <span class="st">&quot;topright&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">proto_point</span>(<span class="fu">list</span>(<span class="at">color =</span> clas, <span class="at">shape =</span> clas))</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Animate</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">animate_plotly</span>(ggt)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">animate_gganimate</span>(ggt)</span></code></pre></div>
+</div>
+<div id="d-tours" class="section level3">
+<h3>1D tours</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (Quietly create) a 1d guided tour, optimizing the projection space for the holes() function</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>guided_path <span class="ot">&lt;-</span> <span class="fu">save_history</span>(dat, <span class="fu">guided_tour</span>(<span class="fu">holes</span>(), <span class="at">d =</span> <span class="dv">1</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Static ggplot of all frames in the tour</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>ggt <span class="ot">&lt;-</span> <span class="fu">ggtour</span>(guided_path, dat, <span class="at">angle =</span> .<span class="dv">1</span>) <span class="sc">+</span> <span class="do">## Include geodesic interpolation angle between the selected bases.</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">proto_basis1d</span>() <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">proto_density</span>(<span class="fu">list</span>(<span class="at">fill =</span> clas), <span class="at">density_position =</span> <span class="st">&quot;stack&quot;</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Note that proto_density(density_position = &quot;stack&quot;) does not work with animate_plotly().</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Animate</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">animate_gganimate</span>(ggt)</span></code></pre></div>
+</div>
+<div id="interation-with-ggplot2-functions" class="section level3">
+<h3>interation with ggplot2 functions</h3>
+<p>because the output of <code>ggtour() + proto_*</code> is a ggplot, users are encouraged to theme and setting functions as well.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ggt <span class="ot">&lt;-</span> ggt <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;My Tour animation&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Projection Y1&quot;</span>, <span class="at">y =</span> <span class="st">&quot;density&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">animate_gganimate</span>(ggt)</span></code></pre></div>
+</div>
+</div>
+<div id="proto-functions" class="section level2">
+<h2>Proto functions</h2>
+<table>
+<colgroup>
+<col width="8%" />
+<col width="16%" />
+<col width="74%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">proto functions</th>
+<th align="left">related ggplot2 function</th>
+<th align="left">detail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ggtour</td>
+<td align="left">ggplot</td>
+<td align="left">Also perfroms setup for the tour.</td>
+</tr>
+<tr class="even">
+<td align="left">proto_point</td>
+<td align="left">geom_point</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">proto_text</td>
+<td align="left">geom_text</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">proto_hex</td>
+<td align="left">geom_hex</td>
+<td align="left">Heatmap hexegons, for high observation density</td>
+</tr>
+<tr class="odd">
+<td align="left">proto_origin/1d</td>
+<td align="left">NA</td>
+<td align="left">Line segments for the origin, the space where 0 values project to</td>
+</tr>
+<tr class="even">
+<td align="left">proto_density</td>
+<td align="left">geom- _density &amp; _rect</td>
+<td align="left">1D density with run hash marks underneath, <code>position = &#39;stack&#39;</code> not working with {plotly}.</td>
+</tr>
+<tr class="odd">
+<td align="left">proto_basis/1d</td>
+<td align="left">geom- _segment &amp; _text</td>
+<td align="left">.html widget, row numbers added as tooltip on hover. {plotly} doesn’t presicly map all {ggplot2} settings; legends, point size and opacity may vary.</td>
+</tr>
+<tr class="even">
+<td align="left">proto_default/1d</td>
+<td align="left">several protos</td>
+<td align="left">Direction and magnetude of variables to the projection disp~</td>
+</tr>
+<tr class="odd">
+<td align="left">animate_plotly</td>
+<td align="left">plotly::ggplotly (with animation)</td>
+<td align="left">Default protos for 2/1D tours</td>
+</tr>
+<tr class="even">
+<td align="left">animate_gganimate</td>
+<td align="left">gganimate::animate</td>
+<td align="left">.gif animation. {gganimate} consumes native ggplots, aestheics should be consistant.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -361,7 +361,7 @@ animate_gganimate <- function(
 #' @param fps Scalar number of Frames Per Second, the speed the animation should 
 #' play at.
 #' @param ... Other arguments passed to 
-#' \code{\link[plotly:ggplotly]{plotly::ggplotly}}.
+#' \code{\link[plotly:layout]{plotly::layout}}.
 #' @seealso \code{\link[plotly:ggplotly]{plotly::ggplotly}}
 #' @export
 #' @family ggtour animator

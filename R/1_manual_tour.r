@@ -109,7 +109,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
     R3 <- matrix(c(c_theta^2L * c_phi + s_theta^2L,
                    -c_theta * s_theta * (1L - c_phi),
                    -c_theta * s_phi,                  # 3 of 9
-                   -c_theta * s_theta * (1 - c_phi),
+                   -c_theta * s_theta * (1L - c_phi),
                    s_theta^2L * c_phi + c_theta^2L,
                    -s_theta * s_phi,                  # 6 of 9
                    c_theta * s_phi,
@@ -298,7 +298,8 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
   ## Find the phi values for the animation frames
   phi_path <- c(phi_delta(start = phi_start, end = phi_min),
                 phi_delta(start = phi_min,   end = phi_max),
-                phi_delta(start = phi_max,   end = phi_start))
+                phi_delta(start = phi_max,   end = phi_start),
+                phi_start) ## ensure last frame is fully at phi_start
   ## Reverse if x is negative
   if(is_mv_x_neg == TRUE)
     phi_path <- rev(phi_path)
@@ -308,7 +309,7 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
   m_sp <- create_manip_space(basis_array, manip_var)
   interp_array <- ## Init
     array(NA, dim = c(p, d, n_frames),
-          dimnames = c(dimnames(basis_array)[1:2], list(paste0("frame", 1L:n_frames))))
+          dimnames = c(dimnames(basis_array)[1L:2L], list(paste0("frame", 1L:n_frames))))
   ## Populate tour basis_array
   .m <- sapply(1L:n_frames, function(i){
     this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])

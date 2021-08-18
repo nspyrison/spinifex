@@ -14,7 +14,7 @@ A return from \verb{ggtour() + proto_*()}.}
 play at.}
 
 \item{...}{Other arguments passed to
-\code{\link[plotly:ggplotly]{plotly::ggplotly}}.}
+\code{\link[plotly:layout]{plotly::layout}}.}
 }
 \description{
 Animates the static \code{ggtour()} and added \verb{proto_*()} functions as a
