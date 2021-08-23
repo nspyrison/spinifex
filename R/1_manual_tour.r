@@ -293,7 +293,7 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
     .end   <- -(end - phi_start)
     .by    <- ifelse(.end > .start, 1L, -1L) * angle
     ## Sequence of phi values for this segment of the walk.
-    seq(.start, .end, by = .by)
+    seq(from = .start, to = .end, by = .by)
   }
   ## Find the phi values for the animation frames
   phi_path <- c(phi_delta(start = phi_start, end = phi_min),
@@ -307,9 +307,12 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
   ## Convert phi path to basis array
   n_frames <- length(phi_path)
   m_sp <- create_manip_space(basis_array, manip_var)
+  dn <- dimnames(basis_array)[1L:2L]
+  if(is.null(dn[1L])) dn[1L] <- paste0("p", 1L:p)
+  if(is.null(dn[2L])) dn[2L] <- paste0("d", 1L:d)
   interp_array <- ## Init
     array(NA, dim = c(p, d, n_frames),
-          dimnames = c(dimnames(basis_array)[1L:2L], list(paste0("frame", 1L:n_frames))))
+          dimnames = c(dn, list(paste0("frame", 1L:n_frames))))
   ## Populate tour basis_array
   .m <- sapply(1L:n_frames, function(i){
     this_proj <- rotate_manip_space(m_sp, theta, phi_path[i])
