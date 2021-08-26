@@ -960,6 +960,7 @@ proto_text <- function(aes_args = list(),
                        rownum_index = NULL
 ){
   ## Initialize
+  if(length(rownum_index) == 0L) return() ## early out for NULL/length 0
   eval(.init4proto)
   if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
@@ -1154,6 +1155,7 @@ proto_highlight <- function(
   mark_initial = if(length(rownum_index) == 1) TRUE else FALSE
 ){
   ## Initialize
+  if(length(rownum_index) == 0L) return() ## early out for NULL/length 0
   eval(.init4proto)
   if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))

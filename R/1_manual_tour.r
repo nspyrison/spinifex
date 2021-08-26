@@ -291,14 +291,17 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
     .start <- -(start - phi_start)
     .end   <- -(end - phi_start)
     .by    <- ifelse(.end > .start, 1L, -1L) * angle
+    .seq <- seq(from = .start, to = .end, by = .by)
+    ## If remainder is >= 10% of a full step, add it
+    if(abs(.end - .seq[length(.seq)]) / .by >= .1)
+      .seq <- c(.seq, .end)
     ## Sequence of phi values for this segment of the walk.
-    seq(from = .start, to = .end, by = .by)
+    return(.seq)
   }
   ## Find the phi values for the animation frames
   phi_path <- c(phi_delta(start = phi_start, end = phi_min),
                 phi_delta(start = phi_min,   end = phi_max),
-                phi_delta(start = phi_max,   end = phi_start),
-                0L) ## Ensure last frame is fully at phi_start (a delta of 0L)
+                phi_delta(start = phi_max,   end = phi_start))
   ## Reverse if x is negative
   if(is_mv_x_neg == TRUE)
     phi_path <- rev(phi_path)
