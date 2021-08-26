@@ -29,8 +29,7 @@
 #' str(sw_path)
 #' 
 #' \dontrun{
-#'   play_tour_path(tour_path = sw_path, data = dat_std)
-#' }
+#' play_tour_path(tour_path = sw_path, data = dat_std)}
 stepwise_history <- function(basis = NULL,
                              data = NULL,
                              measure = stats::var,

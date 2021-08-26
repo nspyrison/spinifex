@@ -57,22 +57,17 @@ mv <- manip_var_of(bas)
 ## Minimal example
 \dontrun{
 view_frame(basis = bas)
-}
 
 ## Typical example
-\dontrun{
 view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
-}
 
 ## Full example
 rtheta <- runif(1, 0, 2 * pi)
 rphi   <- runif(1, 0, 2 * pi)
-\dontrun{
 view_frame(basis = bas, data = dat_std, manip_var = mv,
            theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
            aes_args = list(color = clas, shape = clas),
-           identity_args = list(size = 1.5, alpha = .7))
-}
+           identity_args = list(size = 1.5, alpha = .7))}
 }
 \seealso{
 \code{\link{proto_default}} For arguments to pass into \code{...}.

@@ -59,8 +59,7 @@
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(list(color = clas, shape = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 "BreastCancer"
 
 ##### PimaIndiansDiabetes_wide -----
@@ -116,8 +115,7 @@
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(list(color = clas, shape = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 "PimaIndiansDiabetes_wide"
 
 ##### PimaIndiansDiabetes_long -----
@@ -173,8 +171,7 @@
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(list(color = clas, shape = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 "PimaIndiansDiabetes_long"
 
 ##### weather -----
@@ -245,8 +242,7 @@
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(list(color = clas, shape = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 "weather"
 
 ##### wine -----
@@ -303,8 +299,7 @@
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(list(color = clas, shape = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 "wine"
 
 ##### penguins -----
@@ -354,6 +349,5 @@
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(list(color = clas1, shape = clas2))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 "penguins"

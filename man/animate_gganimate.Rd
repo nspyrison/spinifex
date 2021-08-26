@@ -52,14 +52,13 @@ ggt <- ggtour(mt_path, dat, angle = .1) +
 \dontrun{
 animate_gganimate(ggt)
 
-(anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
-                           start_pause = 1, end_pause = 2))
-
-if(F) ## Example saving gganime to a .gif, may require additional setup.
+## Example saving gganime to a .gif, may require additional setup.
+if(F){
+  anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
+                            start_pause = 1, end_pause = 2)
   gganimate::anim_save("my_tour.gif",
                        animation = anim,
-                       path = "./figures")
-}
+                       path = "./figures")}}
 }
 \seealso{
 \code{\link[gganimate:animate]{gganimate::animate}}

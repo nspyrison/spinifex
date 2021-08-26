@@ -80,8 +80,7 @@ if(F){ ## Don't run by mistake
   play_manual_tour(basis = bas, data = dat_std, manip_var = 1,
                    render_type = render_gganimate,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
-}
-}
+}}
 }
 \seealso{
 \code{\link{render_}} For arguments to pass into \code{...}.

@@ -53,8 +53,8 @@ dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 mv <- manip_var_of(bas)
-mt_array <- manual_tour(basis = bas, manip_var = mv)
-mt_df_ls <- array2df(basis_array = mt_array, data = dat_std)
+mt <- manual_tour(basis = bas, manip_var = mv)
+mt_df_ls <- array2df(basis_array = mt, data = dat_std)
 
 \dontrun{
 render_gganimate(frames = mt_df_ls)
@@ -70,11 +70,9 @@ render_gganimate(
                  scale_color_brewer(palette = "Set2")))
 
 ## Saving a .gif(may require additional setup)
-if(F){ ## Don't run by mistake
+if(F) ## Don't run by mistake
   render_gganimate(frames = mt_df_ls, axes = "bottomleft",
-                   gif_filename = "myRadialTour.gif", gif_path = "./output")
-}
-}
+                   gif_filename = "myRadialTour.gif", gif_path = "./output")}
 }
 \seealso{
 \code{\link{render_}} for \code{...} arguments.

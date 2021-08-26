@@ -24,10 +24,10 @@
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' 
-#' \dontrun{
 #' ## Tour history from tourr::save_history
 #' g_path <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 #' 
+#' \dontrun{
 #' play_tour_path(tour_path = g_path,  data = dat_std)
 #' 
 #' play_tour_path(tour_path = g_path, data = dat_std,
@@ -49,8 +49,7 @@
 #'   play_tour_path(tour_path = tpath, data = dat_std,
 #'                  render_type = render_gganimate,
 #'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
-#' }
-#' }
+#' }}
 play_tour_path <- function(tour_path,
                            data  = NULL,
                            angle = .05,
@@ -137,8 +136,7 @@ play_tour_path <- function(tour_path,
 #'   play_manual_tour(basis = bas, data = dat_std, manip_var = 1,
 #'                    render_type = render_gganimate,
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
-#' }
-#' }
+#' }}
 play_manual_tour <- function(basis = NULL,
                              data,
                              manip_var,
@@ -206,22 +204,17 @@ play_manual_tour <- function(basis = NULL,
 #' ## Minimal example
 #' \dontrun{
 #' view_frame(basis = bas)
-#' }
 #' 
 #' ## Typical example
-#' \dontrun{
 #' view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
-#' }
 #' 
 #' ## Full example
 #' rtheta <- runif(1, 0, 2 * pi)
 #' rphi   <- runif(1, 0, 2 * pi)
-#' \dontrun{
 #' view_frame(basis = bas, data = dat_std, manip_var = mv,
 #'            theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
 #'            aes_args = list(color = clas, shape = clas),
-#'            identity_args = list(size = 1.5, alpha = .7))
-#' }
+#'            identity_args = list(size = 1.5, alpha = .7))}
 view_frame <- function(basis = NULL,
                        data = NULL,
                        manip_var = NULL,

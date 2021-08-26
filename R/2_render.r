@@ -208,8 +208,8 @@ render_ <- function(frames,
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' mv <- manip_var_of(bas)
-#' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' mt_df_ls <- array2df(basis_array = mt_array, data = dat_std)
+#' mt <- manual_tour(basis = bas, manip_var = mv)
+#' mt_df_ls <- array2df(basis_array = mt, data = dat_std)
 #' 
 #' \dontrun{
 #' render_gganimate(frames = mt_df_ls)
@@ -225,11 +225,9 @@ render_ <- function(frames,
 #'                  scale_color_brewer(palette = "Set2")))
 #' 
 #' ## Saving a .gif(may require additional setup)
-#' if(F){ ## Don't run by mistake
+#' if(F) ## Don't run by mistake
 #'   render_gganimate(frames = mt_df_ls, axes = "bottomleft",
-#'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
-#' }
-#' }
+#'                    gif_filename = "myRadialTour.gif", gif_path = "./output")}
 render_gganimate <- function(
   fps = 8L,
   rewind = FALSE,
@@ -303,11 +301,9 @@ render_gganimate <- function(
 #'   ggproto = list(theme_bw(), scale_color_brewer(palette = "Set2")))
 #' 
 #' ## Saving a .gif, may require additional setup
-#' if(F){ ## Don't run by mistake
-#' render_plotly(frames = mt_df_ls, axes = "bottomleft", fps = 10,
-#'               html_filename = "myRadialTour.html")
-#' }
-#' }
+#' if(F) ## Don't run by mistake
+#'   render_plotly(frames = mt_df_ls, axes = "bottomleft", fps = 10,
+#'                 html_filename = "myRadialTour.html")}
 render_plotly <- function(
   fps = 8L,
   html_filename = NULL,

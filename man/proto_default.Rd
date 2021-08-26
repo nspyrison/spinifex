@@ -41,16 +41,14 @@ mt_path <- manual_tour(bas, mv)
 ggt <- ggtour(mt_path, dat) +
   proto_default(list(color = clas, shape = clas))
 \dontrun{
-animate_plotly(ggt)
-}
+animate_plotly(ggt)}
 ## 1D case:
 gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 
 ggt <- ggtour(gt_path, dat) +
   proto_default1d(list(fill = clas, color = clas))
 \dontrun{
-animate_plotly(ggt)
-}
+animate_plotly(ggt)}
 }
 \seealso{
 Other ggtour proto: 

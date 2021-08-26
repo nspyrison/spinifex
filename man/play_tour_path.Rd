@@ -35,10 +35,10 @@ dat_std <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 bas <- basis_pca(dat_std)
 
-\dontrun{
 ## Tour history from tourr::save_history
 g_path <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 
+\dontrun{
 play_tour_path(tour_path = g_path,  data = dat_std)
 
 play_tour_path(tour_path = g_path, data = dat_std,
@@ -60,8 +60,7 @@ if(F){ ## Don't run by mistake
   play_tour_path(tour_path = tpath, data = dat_std,
                  render_type = render_gganimate,
                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
-}
-}
+}}
 }
 \seealso{
 \code{\link{render_}} For arguments to pass into \code{...}.

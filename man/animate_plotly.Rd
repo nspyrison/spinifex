@@ -33,16 +33,14 @@ ggt <- ggtour(mt_path, dat, angle = .1) +
   proto_basis() +
   proto_point(aes_args = list(color = clas, shape = clas),
               identity_args = list(size = 1.5, alpha = .7))
-
 \dontrun{
 animate_plotly(ggtour)
 
-(anim <- animate_plotly(ggtour, fps = 10))
-
-if(F) ## Example saving ploty to a .html widget, may require additional setup.
+## Example saving ploty to a .html widget, may require additional setup.
+if(F){
+  anim <- animate_plotly(ggtour, fps = 10)
   htmlwidgets::saveWidget(widget = anim, file = "./figures/my_tour.html",
-                          selfcontained = TRUE)
-}
+                          selfcontained = TRUE)}}
 }
 \seealso{
 \code{\link[plotly:ggplotly]{plotly::ggplotly}}

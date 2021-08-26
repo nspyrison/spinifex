@@ -32,8 +32,7 @@
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 1.5))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 #' 
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat, d = 1)
@@ -41,23 +40,20 @@
 #' ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
 #'   proto_default1d(list(fill = clas))
 #' \dontrun{
-#' animate_plotly(ggt1d)
-#' }
+#' animate_plotly(ggt1d)}
 #' 
 #' ## d = 2, with facet
 #' ggt <- ggtour(mt_path, dat, facet_by = clas) +
 #'   proto_default(list(color = clas, shape = clas), list(size = 1.5))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 #' 
 #' ## d = 1, with facet
 #' ggt1d <- ggtour(mt_path1d, dat, facet_by = clas) +
 #'   proto_default1d(list(color = clas, shape = clas, fill = clas))
-#' \dontrun{
 #' ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments.
-#' animate_gganimate(ggt1d)
-#' }
+#' \dontrun{
+#' animate_gganimate(ggt1d)}
 ggtour <- function(basis_array,
                    data = NULL,
                    angle = .05,
@@ -305,14 +301,13 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' \dontrun{
 #' animate_gganimate(ggt)
 #' 
-#' (anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
-#'                            start_pause = 1, end_pause = 2))
-#' 
-#' if(F) ## Example saving gganime to a .gif, may require additional setup.
+#' ## Example saving gganime to a .gif, may require additional setup.
+#' if(F){
+#'   anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
+#'                             start_pause = 1, end_pause = 2)
 #'   gganimate::anim_save("my_tour.gif",
 #'                        animation = anim,
-#'                        path = "./figures")
-#' }
+#'                        path = "./figures")}}
 animate_gganimate <- function(
   ggtour,
   fps = 8,
@@ -377,16 +372,14 @@ animate_gganimate <- function(
 #'   proto_basis() +
 #'   proto_point(aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 1.5, alpha = .7))
-#' 
 #' \dontrun{
 #' animate_plotly(ggtour)
 #' 
-#' (anim <- animate_plotly(ggtour, fps = 10))
-#' 
-#' if(F) ## Example saving ploty to a .html widget, may require additional setup.
+#' ## Example saving ploty to a .html widget, may require additional setup.
+#' if(F){
+#'   anim <- animate_plotly(ggtour, fps = 10)
 #'   htmlwidgets::saveWidget(widget = anim, file = "./figures/my_tour.html",
-#'                           selfcontained = TRUE)
-#' }
+#'                           selfcontained = TRUE)}}
 animate_plotly <- function(
   ggtour,
   fps = 8,
@@ -459,8 +452,7 @@ animate_plotly <- function(
 # #'               identity_args = list(size = 1.5, alpha = .7))
 # #' 
 # #' \dontrun{
-# #' animate_gganimate_knit2pdf(ggtour)
-# #' }
+# #' animate_gganimate_knit2pdf(ggtour)}
 # animate_gganimate_knit2pdf <- function(ggtour,
 #                                        ... ## Passed gganimate::knit_print.gganim
 # ){
@@ -508,8 +500,7 @@ animate_plotly <- function(
 #' ggt1d <- ggtour(mt_path1d, dat) +
 #'   proto_default1d(list(fill = clas))
 #' \dontrun{
-#' filmstrip(ggt1d)
-#' }
+#' filmstrip(ggt1d)}
 filmstrip <- function(ggtour){
   ret <- ggtour +
     ggplot2::facet_wrap(ggplot2::vars(frame)) + ## facet on frame
@@ -517,10 +508,8 @@ filmstrip <- function(ggtour){
       margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
       panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
   
-  ## Remove last_ggtour?
-  #.set_last_ggtour(NULL) ## Clears last tour
+  ## filmstrip does NOT clear last tour
   .m <- gc() ## Mute garbage collection
-  
   return(ret)
 }
 
@@ -555,16 +544,14 @@ filmstrip <- function(ggtour){
 #' ggt <- ggtour(mt_path, dat, angle = .2) +
 #'   proto_basis()
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 #' 
 #' ## Customize basis
 #' ggt2 <- ggtour(mt_path, dat) +
 #'   proto_basis(position = "right", manip_col = "green",
 #'               line_size = .8, text_size = 8)
 #' \dontrun{
-#' animate_plotly(ggt2)
-#' }
+#' animate_plotly(ggt2)}
 #' 
 #' ## 1D case:
 #' bas1d <- basis_pca(dat, d = 1)
@@ -574,8 +561,7 @@ filmstrip <- function(ggtour){
 #' ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
 #'   proto_basis1d()
 #' \dontrun{
-#' animate_plotly(ggt1d)
-#' }
+#' animate_plotly(ggt1d)}
 proto_basis <- function(
   position = c("left", "center", "right", "bottomleft", "topright", "off"),
   manip_col = "blue",
@@ -744,15 +730,13 @@ proto_basis1d <- function(
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_point()
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 #' 
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 2, alpha = .7))
 #' \dontrun{
-#' animate_plotly(ggt2)
-#' }
+#' animate_plotly(ggt2)}
 proto_point <- function(aes_args = list(),
                         identity_args = list()
 ){
@@ -799,8 +783,7 @@ proto_point <- function(aes_args = list(),
 #'   proto_origin() +
 #'   proto_point()
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 proto_origin <- function(
   identity_args = list(color = "grey60", size = .5, alpha = .9),
   tail_size = .05
@@ -842,8 +825,7 @@ proto_origin <- function(
 #'   proto_origin1d() +
 #'   proto_density(list(fill = clas, color = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 proto_origin1d <- function(
   identity_args = list(color = "grey60", size = .5, alpha = .9)
 ){
@@ -896,8 +878,7 @@ proto_origin1d <- function(
 #'   proto_density(aes_args = list(color = clas, fill = clas)) +
 #'   proto_basis1d()
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 proto_density <- function(aes_args = list(),
                           identity_args = list(alpha = .7),
                           density_position = c("identity", "stack", "fill")
@@ -965,8 +946,7 @@ proto_density <- function(aes_args = list(),
 #' ggt <- ggtour(gt_path, dat, angle = .2) +
 #'   proto_text(list(color = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 #' 
 #' ## Custom labels, subset of points
 #' ggt2 <- ggtour(gt_path, dat) +
@@ -974,8 +954,7 @@ proto_density <- function(aes_args = list(),
 #'              list(alpha = .7),
 #'              rownum_index = 1:15)
 #' \dontrun{
-#' animate_plotly(ggt2)
-#' }
+#' animate_plotly(ggt2)}
 proto_text <- function(aes_args = list(),
                        identity_args = list(nudge_x = 0.05),
                        rownum_index = NULL
@@ -1029,8 +1008,7 @@ proto_text <- function(aes_args = list(),
 #' 
 #' ## Hexagons don't show up in plotly animation.
 #' \dontrun{
-#' animate_gganimate(ggp)
-#' }
+#' animate_gganimate(ggp)}
 proto_hex <- function(aes_args = list(),
                       identity_args = list(),
                       bins = 30
@@ -1086,8 +1064,7 @@ proto_hex <- function(aes_args = list(),
 #' ggt <- ggtour(mt_path, dat) +
 #'   proto_default(list(color = clas, shape = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 proto_default <- function(aes_args = list(),
                           identity_args = list(alpha = .9)
 ){
@@ -1110,8 +1087,7 @@ proto_default <- function(aes_args = list(),
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_default1d(list(fill = clas, color = clas))
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 proto_default1d <- function(aes_args = list(),
                             identity_args = list(alpha = .7)
 ){
@@ -1156,33 +1132,21 @@ proto_default1d <- function(aes_args = list(),
 #' clas <- tourr::flea$species
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
-#' #' ## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
+#' ## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_highlight(rownum_index = 5) +
 #'   proto_point()
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 #' 
-#' ## Custom aesthetics, highlighting multiple points defaults mark_initial to FALSE
+#' ## Custom aesthetics. Highlighting multiple points defaults mark_initial to FALSE
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_highlight(rownum_index = c( 2, 6, 19),
 #'                   identity_args = list(color = "blue", size = 4, shape = 2)) +
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 2, alpha = .7))
 #' \dontrun{
-#' animate_plotly(ggt2)
-#' }
-#' 
-#' ## 
-#' ggt2 <- ggtour(gt_path, dat) +
-#'   proto_highlight(rownum_index = c( 2, 6, 19),
-#'                   aes_args = list(color = clas)) +
-#'   proto_point(list(color = clas, shape = clas),
-#'               list(size = 2, alpha = .7))
-#' \dontrun{
-#' animate_plotly(ggt2)
-#' }
+#' animate_plotly(ggt2)}
 proto_highlight <- function(
   rownum_index,
   aes_args = list(),
@@ -1233,15 +1197,13 @@ proto_highlight <- function(
 #'   proto_default1d(list(fill = clas, color = clas)) +
 #'   proto_highlight1d(rownum_index = 7)
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 #' 
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_default1d(list(fill = clas, color = clas)) +
 #'   proto_highlight1d(rownum_index = c(2, 6, 7))
 #' \dontrun{
-#' animate_plotly(ggt2)
-#' }
+#' animate_plotly(ggt2)}
 proto_highlight1d <- function(
   rownum_index,
   aes_args = list(),

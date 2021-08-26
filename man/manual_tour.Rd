@@ -68,6 +68,5 @@ ggt <- ggtour(mt, dat_std, angle = .2) +
     proto_point(list(color = clas, shape = clas)) +
     proto_basis()
 \dontrun{
-animate_plotly(ggt)
-}
+animate_plotly(ggt)}
 }

@@ -50,33 +50,21 @@ dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
-#' ## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
+## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
 ggt <- ggtour(gt_path, dat) +
   proto_highlight(rownum_index = 5) +
   proto_point()
 \dontrun{
-animate_plotly(ggt)
-}
+animate_plotly(ggt)}
 
-## Custom aesthetics, highlighting multiple points defaults mark_initial to FALSE
+## Custom aesthetics. Highlighting multiple points defaults mark_initial to FALSE
 ggt2 <- ggtour(gt_path, dat) +
   proto_highlight(rownum_index = c( 2, 6, 19),
                   identity_args = list(color = "blue", size = 4, shape = 2)) +
   proto_point(list(color = clas, shape = clas),
               list(size = 2, alpha = .7))
 \dontrun{
-animate_plotly(ggt2)
-}
-
-## 
-ggt2 <- ggtour(gt_path, dat) +
-  proto_highlight(rownum_index = c( 2, 6, 19),
-                  aes_args = list(color = clas)) +
-  proto_point(list(color = clas, shape = clas),
-              list(size = 2, alpha = .7))
-\dontrun{
-animate_plotly(ggt2)
-}
+animate_plotly(ggt2)}
 ## 1D case:
 gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 
@@ -84,15 +72,13 @@ ggt <- ggtour(gt_path, dat) +
   proto_default1d(list(fill = clas, color = clas)) +
   proto_highlight1d(rownum_index = 7)
 \dontrun{
-animate_plotly(ggt)
-}
+animate_plotly(ggt)}
 
 ggt2 <- ggtour(gt_path, dat) +
   proto_default1d(list(fill = clas, color = clas)) +
   proto_highlight1d(rownum_index = c(2, 6, 7))
 \dontrun{
-animate_plotly(ggt2)
-}
+animate_plotly(ggt2)}
 }
 \seealso{
 Other ggtour proto: 

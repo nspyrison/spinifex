@@ -43,11 +43,9 @@ render_plotly(
   ggproto = list(theme_bw(), scale_color_brewer(palette = "Set2")))
 
 ## Saving a .gif, may require additional setup
-if(F){ ## Don't run by mistake
-render_plotly(frames = mt_df_ls, axes = "bottomleft", fps = 10,
-              html_filename = "myRadialTour.html")
-}
-}
+if(F) ## Don't run by mistake
+  render_plotly(frames = mt_df_ls, axes = "bottomleft", fps = 10,
+                html_filename = "myRadialTour.html")}
 }
 \seealso{
 \code{\link{render_}} for \code{...} arguments.

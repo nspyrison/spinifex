@@ -190,8 +190,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #'     proto_point(list(color = clas, shape = clas)) +
 #'     proto_basis()
 #' \dontrun{
-#' animate_plotly(ggt)
-#' }
+#' animate_plotly(ggt)}
 manual_tour <- function(basis,
                         manip_var,
                         theta   = NULL,
@@ -299,7 +298,7 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
   phi_path <- c(phi_delta(start = phi_start, end = phi_min),
                 phi_delta(start = phi_min,   end = phi_max),
                 phi_delta(start = phi_max,   end = phi_start),
-                phi_start) ## ensure last frame is fully at phi_start
+                0L) ## Ensure last frame is fully at phi_start (a delta of 0L)
   ## Reverse if x is negative
   if(is_mv_x_neg == TRUE)
     phi_path <- rev(phi_path)
@@ -308,8 +307,8 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
   n_frames <- length(phi_path)
   m_sp <- create_manip_space(basis_array, manip_var)
   dn <- dimnames(basis_array)[1L:2L]
-  if(is.null(dn[1L])) dn[1L] <- paste0("p", 1L:p)
-  if(is.null(dn[2L])) dn[2L] <- paste0("d", 1L:d)
+  if(is.null(dn[[1L]])) dn[[1L]] <- paste0("p", 1L:p)
+  if(is.null(dn[[2L]])) dn[[2L]] <- paste0("d", 1L:d)
   interp_array <- ## Init
     array(NA, dim = c(p, d, n_frames),
           dimnames = c(dn, list(paste0("frame", 1L:n_frames))))
@@ -319,8 +318,8 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
     interp_array[,, i] <<- this_proj[, 1L:d]
   })
   
-  attr(interp_array, "data") <- attr(basis_array, "data")
   ## Return
+  attr(interp_array, "data") <- attr(basis_array, "data")
   return(interp_array)
 }
 

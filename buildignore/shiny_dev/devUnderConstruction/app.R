@@ -7,8 +7,7 @@
 #' @author Nicholas Spyrison
 #' @export
 #' @examples \dontrun{
-#' spinifex::run_app("devUnderConstruction")
-#' }
+#' spinifex::run_app("devUnderConstruction")}
 
 
 ##TODO: Debug guided tours

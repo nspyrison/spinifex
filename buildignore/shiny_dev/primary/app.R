@@ -6,9 +6,9 @@
 #' 
 #' @author Nicholas Spyrison
 #' @export
-#' @examples \dontrun{
-#' spinifex::run_app("primary")
-#' }
+#' @examples
+#' \dontrun{
+#' spinifex::run_app("primary")}
 
 #TODO: Go to the other logging method. see spinifex_study app
 

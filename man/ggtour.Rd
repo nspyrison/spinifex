@@ -41,8 +41,7 @@ ggt <- ggtour(mt_path, dat) +
   proto_point(list(color = clas, shape = clas),
               list(size = 1.5))
 \dontrun{
-animate_plotly(ggt)
-}
+animate_plotly(ggt)}
 
 ## d = 1 case
 bas1d <- basis_pca(dat, d = 1)
@@ -50,23 +49,20 @@ mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
 ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
   proto_default1d(list(fill = clas))
 \dontrun{
-animate_plotly(ggt1d)
-}
+animate_plotly(ggt1d)}
 
 ## d = 2, with facet
 ggt <- ggtour(mt_path, dat, facet_by = clas) +
   proto_default(list(color = clas, shape = clas), list(size = 1.5))
 \dontrun{
-animate_plotly(ggt)
-}
+animate_plotly(ggt)}
 
 ## d = 1, with facet
 ggt1d <- ggtour(mt_path1d, dat, facet_by = clas) +
   proto_default1d(list(color = clas, shape = clas, fill = clas))
-\dontrun{
 ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments.
-animate_gganimate(ggt1d)
-}
+\dontrun{
+animate_gganimate(ggt1d)}
 }
 \seealso{
 Other ggtour proto: 

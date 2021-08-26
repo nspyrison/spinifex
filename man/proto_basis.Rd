@@ -52,16 +52,14 @@ mt_path <- manual_tour(bas, manip_var = mv)
 ggt <- ggtour(mt_path, dat, angle = .2) +
   proto_basis()
 \dontrun{
-animate_plotly(ggt)
-}
+animate_plotly(ggt)}
 
 ## Customize basis
 ggt2 <- ggtour(mt_path, dat) +
   proto_basis(position = "right", manip_col = "green",
               line_size = .8, text_size = 8)
 \dontrun{
-animate_plotly(ggt2)
-}
+animate_plotly(ggt2)}
 
 ## 1D case:
 bas1d <- basis_pca(dat, d = 1)
@@ -71,8 +69,7 @@ mt_path1d <- manual_tour(bas1d, manip_var = mv)
 ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
   proto_basis1d()
 \dontrun{
-animate_plotly(ggt1d)
-}
+animate_plotly(ggt1d)}
 }
 \seealso{
 Other ggtour proto: 

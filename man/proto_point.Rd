@@ -29,15 +29,13 @@ gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 ggt <- ggtour(gt_path, dat) +
   proto_point()
 \dontrun{
-animate_plotly(ggt)
-}
+animate_plotly(ggt)}
 
 ggt2 <- ggtour(gt_path, dat) +
   proto_point(list(color = clas, shape = clas),
               list(size = 2, alpha = .7))
 \dontrun{
-animate_plotly(ggt2)
-}
+animate_plotly(ggt2)}
 }
 \seealso{
 Other ggtour proto: 
