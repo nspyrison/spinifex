@@ -97,7 +97,8 @@ rotate_manip_space <- function(manip_space, theta, phi) {
     warning("manip_space was not orthonormal. Coereced to othronormal with tourr::orthonormalise(manip_space).")
     manip_space <- tourr::orthonormalise(manip_space)
   }
-  
+  if(is.na(theta))   theta <- 0L
+  if(is.null(theta)) theta <- 0L
   ### d = 2 case ###
   if(ncol(manip_space) == 3L){
     ## Initialize

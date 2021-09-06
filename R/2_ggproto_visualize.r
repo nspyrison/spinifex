@@ -385,6 +385,8 @@ animate_plotly <- function(
   fps = 8,
   ... ## Passed to plotly::layout().
 ){
+  ## Frame assymetry issue: https://github.com/ropensci/plotly/issues/1696
+  #### Adding manmy protos and do complex animate liable to break plotly animations, see above url.
   ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
@@ -911,7 +913,7 @@ proto_density <- function(aes_args = list(),
   .aes_call <- do.call(.aes_func, aes_args)
   .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_rug(mapping = .aes_call, data = .df_data,
-                      length = ggplot2::unit(0.08, "npc"), ...))
+                      length = ggplot2::unit(0.04, "npc"), ...))
   .geom_call_rug <- do.call(.geom_func, identity_args)
   
   ## Return proto
