@@ -541,6 +541,7 @@ manip_var_of <- function(basis, rank = 1){
 #' @examples
 #' scale_sd(data = wine[, 2:6])
 scale_sd <- function(data){
+  if(is.null(dim(data))) data <- matrix(data) ## As columner matrix
   return(apply(data, 2L, function(c){(c - mean(c)) / stats::sd(c)}))
 }
 

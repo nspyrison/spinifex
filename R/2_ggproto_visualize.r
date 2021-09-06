@@ -1019,13 +1019,13 @@ proto_hex <- function(aes_args = list(),
   ## Initialize
   requireNamespace("hexbin")
   eval(.init4proto)
-  if(is.null(.df_data)) 
+  if(is.null(.df_data))
     stop("proto_hex: Data is missing. Did you call ggtour() on a manual tour without passing data?")
-  if(is.null(.df_basis$y)) 
+  if(is.null(.df_basis$y))
     stop("proto_hex: Basis `y` not found, expected a 2D tour.")
   
   ## do.call aes() over the aes_args
-  .aes_func  <- function(...)
+  .aes_func <- function(...)
     ggplot2::aes(x = x, y = y, frame = frame, group = frame, ...)
   .aes_call  <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
