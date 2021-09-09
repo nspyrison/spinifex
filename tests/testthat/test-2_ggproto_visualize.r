@@ -1,19 +1,21 @@
 ## Setup -----
-library("spinifex")
-library("testthat")
-
-dat <- scale_sd(wine[1L:10L, 2L:5L]) ## small chunk for speed.
-bas <- basis_pca(dat)
-mv  <- manip_var_of(bas)
-
-mt     <- manual_tour(bas      , mv, data = dat)
-mt1d   <- manual_tour(bas[, 1L], mv, data = dat)
-.m <- capture.output(
-  gt   <- tourr::save_history(dat, guided_tour(holes()), max_bases = 3L)
-)
-.m <- capture.output(
-  gt1d <- tourr::save_history(dat, grand_tour(d = 1L),   max_bases = 3L)
-)
+{
+  library("spinifex")
+  library("testthat")
+  
+  dat <- scale_sd(wine[1L:10L, 2L:5L]) ## small chunk for speed.
+  bas <- basis_pca(dat)
+  mv  <- manip_var_of(bas)
+  
+  mt     <- manual_tour(bas      , mv, data = dat)
+  mt1d   <- manual_tour(bas[, 1L], mv, data = dat)
+  .m <- capture.output(
+    gt   <- tourr::save_history(dat, guided_tour(holes()), max_bases = 3L)
+  )
+  .m <- capture.output(
+    gt1d <- tourr::save_history(dat, grand_tour(d = 1L),   max_bases = 3L)
+  )
+}
 
 
 ## ggtourr -----

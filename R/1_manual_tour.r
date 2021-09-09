@@ -277,12 +277,22 @@ manual_tour <- function(basis,
 interpolate_manual_tour <- function(basis_array, angle = .05){
   ## Initialize and unpack attributes
   manip_var <- attr(basis_array, "manip_var")
-  theta     <- attr(basis_array, "theta")
+  theta     <- attr(basis_array, "theta") ## NULL in 1D case
   phi_start <- attr(basis_array, "phi_start")
-  phi_min   <- attr(basis_array, "phi_min")
-  phi_max   <- attr(basis_array, "phi_max")
+  phi_min   <- attr(basis_array, "phi_min") ## NULL if coloring 1 basis w/o tour
+  phi_max   <- attr(basis_array, "phi_max") ## NULL if coloring 1 basis w/o tour
   p <- nrow(basis_array)
   d <- ncol(basis_array)
+  ## Early out for single frames,
+  #### Only when phi_min | phi_max is NULL
+  if(is.null(phi_min) | phi_max){
+    dn <- dimnames(basis_array)[1L:2L]
+    dat <- attr(basis_array, "data")
+    basis_array <- as.array(basis_array)
+    dimnames(basis_array) <- c(dn, list("frame1"))
+    attr(basis_array, "data") <- dat
+    return(basis_array)
+  }
   
   ## if mv_x <0, phi_start <- pi/2 - phi_start
   is_mv_x_neg <- basis_array[manip_var, 1L, 1L] <= 0L
@@ -293,8 +303,8 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
     .end   <- -(end - phi_start)
     .by    <- ifelse(.end > .start, 1L, -1L) * angle
     .seq <- seq(from = .start, to = .end, by = .by)
-    ## If remainder is >= 10% of a full step, add it
-    if(abs(.end - .seq[length(.seq)]) / .by >= .1)
+    ## If remainder is >= 30% of a full step, add it
+    if(abs(.end - .seq[length(.seq)]) / .by >= .3)
       .seq <- c(.seq, .end)
     ## Sequence of phi values for this segment of the walk.
     return(.seq)

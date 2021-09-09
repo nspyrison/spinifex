@@ -112,7 +112,7 @@ ggtour <- function(basis_array,
   
   ## Return ggplot head, theme, and facet if used
   ## by product: last_ggtour() was set above.
-  ret <- ggplot2::ggplot(df_basis) + spinifex::theme_spinifex()
+  ret <- ggplot2::ggplot(df_basis) + spinifex::theme_spinifex() ## df_basis helps set .use_idx in filmstrip
   if(is.null(facet_by) == FALSE){
     ret <- ret +
       ggplot2::facet_grid(rows = ggplot2::vars(facet_by)) +
@@ -503,9 +503,23 @@ animate_plotly <- function(
 #'   proto_default1d(list(fill = clas))
 #' \dontrun{
 #' filmstrip(ggt1d)}
-filmstrip <- function(ggtour){
+filmstrip <- function(ggtour){ #, frame_index <- NULL
+  # ####!! This ruins the lengths of the aestheics
+  # if(is.null(frame_index) == FALSE){
+  #   ## Find usable index
+  #   .use_idx <- frame_index[frame_index %in% unique(ggtour$data$frame)]
+  #   if(length(.use_idx) == 0L)stop("filmstrip: `frame_index` did not match any frame numbers.")
+  #   ## Apply frame index to all layers that have `frame` in the data.
+  #   #### ggtour is already an evaluated object, so can't use .set_last_ggtour()
+  #   .m <- sapply(seq_along(ggtour$layers), function(i){
+  #     if(class(ggtour$layers[[i]]$data) != "waiver" &
+  #        "frame" %in% colnames(ggtour$layers[[i]]$data))
+  #       ggtour$layers[[i]]$data <<-
+  #         ggtour$layers[[i]]$data[ggtour$layers[[i]]$data$frame == .use_idx, ]
+  #   })
+  # }
   ret <- ggtour +
-    ggplot2::facet_wrap(ggplot2::vars(frame)) + ## facet on frame
+    ggplot2::facet_wrap(ggplot2::vars(factor(frame, unique(frame)))) + ## facet on frame
     ggplot2::theme(strip.text = ggplot2::element_text(
       margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
       panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
@@ -962,7 +976,6 @@ proto_text <- function(aes_args = list(),
                        rownum_index = NULL
 ){
   ## Initialize
-  if(length(rownum_index) == 0L) return() ## early out for NULL/length 0
   eval(.init4proto)
   if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
