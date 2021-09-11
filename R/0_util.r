@@ -197,13 +197,13 @@ map_relative <- function(
     xoff  <- -.7 * xdiff + xcenter
     yoff  <- ycenter
   } else if(position == "top1d"){
-    scale <- .3 * ydiff
+    scale <- .25
     xoff  <- xcenter
-    yoff  <- .7 * ydiff + ycenter
+    yoff  <- 1.2
   } else if(position == "floor1d"){
-    scale <- .3 * ydiff
+    scale <- .25
     xoff  <- xcenter
-    yoff  <- -1 * max(yrange) + ycenter 
+    yoff  <- ycenter
   } else if(position == "right"){
     scale <- .3 * ydiff
     xoff  <- .7 * xdiff + xcenter
@@ -219,11 +219,10 @@ map_relative <- function(
   } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
-  x[, 2L] <- scale * x[, 2L] + yoff
-  ## Quadruple wide for proto_basis1d.
   if(position %in% c("top1d", "floor1d")){
-    x[, 1L] <- 4 * scale * x[, 1L] + xoff
-  }else x[, 1L] <- scale * x[, 1L] + xoff
+    x[, 1L] <- 4L * scale * x[, 1L] + xoff
+  } else x[, 1L] <- scale * x[, 1L] + xoff
+  x[, 2L] <- scale * x[, 2L] + yoff
   
   return(x)
 }

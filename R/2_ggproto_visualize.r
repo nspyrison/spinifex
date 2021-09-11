@@ -917,7 +917,6 @@ proto_density <- function(aes_args = list(),
   density_position <- match.arg(density_position)
   ## "identity" is the only position working in {plotly} right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
-  .df_data <- map_relative(.df_data, "center", .map_to)
   
   ## geom_density do.call
   .aes_func <- function(...)
