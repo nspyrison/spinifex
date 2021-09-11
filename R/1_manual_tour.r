@@ -285,11 +285,11 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
   d <- ncol(basis_array)
   ## Early out for single frames,
   #### Only when phi_min | phi_max is NULL
-  if(is.null(phi_min) | phi_max){
+  if(is.null(phi_min) | is.null(phi_max)){
     dn <- dimnames(basis_array)[1L:2L]
     dat <- attr(basis_array, "data")
-    basis_array <- as.array(basis_array)
-    dimnames(basis_array) <- c(dn, list("frame1"))
+    basis_array <- array(basis_array, dim = c(dim(basis_array), 1L),
+                         dimnames = c(dn, list("frame1")))
     attr(basis_array, "data") <- dat
     return(basis_array)
   }

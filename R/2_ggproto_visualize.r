@@ -834,6 +834,7 @@ proto_origin <- function(
 #' @export
 #' @family ggtour proto
 #' @examples
+#' 
 #' ## 1D case:
 #' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 5)
 #' 
@@ -852,12 +853,13 @@ proto_origin1d <- function(
   .ymin <- min(.map_to[, 2L])
   .ymax <- max(.map_to[, 2L])
   .tail <- diff(c(.ymin, .ymax)) * .6
-  .df_origin <- data.frame(x     = c(.center[, 1L], .center[, 1L]),
-                           x_end = c(.center[, 1L], .center[, 1L]),
-                           y     = c(.center[, 2L], .center[, 2L]),
-                           y_end = c(.center[, 2L] - .tail, .center[, 2L] + .tail))
+  .df_origin <- data.frame(
+    x     = c(.center[, 1L], .center[, 1L]),
+    x_end = c(.center[, 1L], .center[, 1L]),
+    y     = c(.center[, 2L], .center[, 2L]),
+    y_end = c(.center[, 2L] - .tail, .center[, 2L] + .tail))
   
-  ## do.call geom_point() over the identity_args
+  ## do.call geom_segment() over the identity_args
   .geom_func <- function(...)
     ggplot2::geom_segment(
       ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end),
@@ -882,6 +884,8 @@ proto_origin1d <- function(
 #' @param density_position The `ggplot2` position of `geom_density()`. Either 
 #' c("identity", "stack"), defaults to "identity". Warning: "stack" does not 
 #' work with `animate_plotly()` at the moment.
+#' @param do_add_rug Logical, weather or not to add the rug marks below the 
+#' density curves.
 #' @export
 #' @aliases proto_density1d
 #' @family ggtour proto
@@ -897,7 +901,8 @@ proto_origin1d <- function(
 #' animate_plotly(ggt)}
 proto_density <- function(aes_args = list(),
                           identity_args = list(alpha = .7),
-                          density_position = c("identity", "stack", "fill")
+                          density_position = c("identity", "stack", "fill"),
+                          do_add_rug = TRUE
 ){
   ## Initialize
   eval(.init4proto)
@@ -915,23 +920,27 @@ proto_density <- function(aes_args = list(),
   
   ## geom_density do.call
   .aes_func <- function(...)
-    ggplot2::aes(x = x, y = ..scaled.., frame = frame, ...)
+    ggplot2::aes(x = x, y = ..ndensity.., frame = frame, ...)
   .aes_call <- do.call(.aes_func, aes_args)
-  .geom_func <- function(...) suppressWarnings(
+  .geom_func <- function(...)suppressWarnings(
     ggplot2::geom_density(mapping = .aes_call, data = .df_data, ...,
-                          position = density_position, color = "black", n = 256L))
-  .geom_call_den <- do.call(.geom_func, identity_args)
-  ## geom_rug do.call
-  .aes_func <- function(...)
-    ggplot2::aes(x = x, frame = frame, ...)
-  .aes_call <- do.call(.aes_func, aes_args)
-  .geom_func <- function(...) suppressWarnings(
-    ggplot2::geom_rug(mapping = .aes_call, data = .df_data,
-                      length = ggplot2::unit(0.04, "npc"), ...))
-  .geom_call_rug <- do.call(.geom_func, identity_args)
+                          position = density_position, color = "black", n = 128L))
+  ret <- do.call(.geom_func, identity_args)
   
-  ## Return proto
-  return(list(.geom_call_den, .geom_call_rug))
+  ## geom_rug do.call
+  if(do_add_rug == TRUE){
+    .rug_len <- max(.map_to[, 2L]) - min(.map_to[, 2L]) / 25L
+    .aes_func <- function(...)
+      ggplot2::aes(x = x, frame = frame, ...)
+    .aes_call <- do.call(.aes_func, aes_args)
+    .geom_func <- function(...) suppressWarnings(
+      ggplot2::geom_rug(mapping = .aes_call, data = .df_data,
+                        length = .rug_len, ...))
+    ret <- list(ret, do.call(.geom_func, identity_args))
+  }
+  
+  ## Return
+  return(ret)
 }
 
 
@@ -1108,9 +1117,9 @@ proto_default1d <- function(aes_args = list(),
                             identity_args = list(alpha = .7)
 ){
   return(list(
-    proto_density(aes_args, identity_args),
     proto_origin1d(),
-    proto_basis1d()
+    proto_basis1d(),
+    proto_density(aes_args, identity_args)
   ))
 }
 

@@ -8,7 +8,8 @@
 proto_density(
   aes_args = list(),
   identity_args = list(alpha = 0.7),
-  density_position = c("identity", "stack", "fill")
+  density_position = c("identity", "stack", "fill"),
+  do_add_rug = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \item{density_position}{The \code{ggplot2} position of \code{geom_density()}. Either
 c("identity", "stack"), defaults to "identity". Warning: "stack" does not
 work with \code{animate_plotly()} at the moment.}
+
+\item{do_add_rug}{Logical, weather or not to add the rug marks below the
+density curves.}
 }
 \description{
 Adds \code{geom_density()} and \code{geom_rug()} of the projected data. Density
