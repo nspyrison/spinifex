@@ -910,13 +910,13 @@ proto_density <- function(aes_args = list(),
     stop("proto_density requires {transformr}::tween_polygon")
   if(is.null(.df_data))
     stop("proto_density: data missing. Did you call ggtour() on a manual tour without passing data?")
-  density_position <- match.arg(density_position)
-  
-  ## "identity" is the only position working in {plotly} right now.
-  ## see: https://github.com/ropensci/plotly/issues/1544
   .nms <- names(aes_args)
   if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
     warning("proto_density: aes_args contains color without fill, did you mean to use fill to color below the curve?")
+  density_position <- match.arg(density_position)
+  ## "identity" is the only position working in {plotly} right now.
+  ## see: https://github.com/ropensci/plotly/issues/1544
+  .df_data <- map_relative(.df_data, "center", .map_to)
   
   ## geom_density do.call
   .aes_func <- function(...)
@@ -935,7 +935,7 @@ proto_density <- function(aes_args = list(),
     .aes_call <- do.call(.aes_func, aes_args)
     .geom_func <- function(...) suppressWarnings(
       ggplot2::geom_rug(mapping = .aes_call, data = .df_data,
-                        length = .rug_len, ...))
+                        length = grid::unit(.rug_len, "native"), ...))
     ret <- list(ret, do.call(.geom_func, identity_args))
   }
   
