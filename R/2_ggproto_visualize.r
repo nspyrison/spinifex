@@ -24,7 +24,7 @@
 #' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
 #' ## Returns headless ggplot(), but required for proto_* functions.
-#' ggtour(mt_path, dat, angle = .1)
+#' ggtour(mt_path, dat, angle = .15)
 #' 
 #' ## d = 2 case
 #' ggt <- ggtour(mt_path, dat) +
@@ -708,7 +708,7 @@ proto_basis1d <- function(
     ggplot2::geom_text(
       ggplot2::aes(x, y, label = label), .df_txt,
       hjust = 1L, size = text_size, color = "grey60",
-      nudge_x = -.08 * max(nchar(.df_txt$label))),
+      nudge_x = -.12 * max(nchar(.df_txt$label))),
     ## Contribution segments of current basis, changing with frame
     suppressWarnings(ggplot2::geom_segment(
       ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
@@ -743,7 +743,7 @@ proto_basis1d <- function(
 #' clas <- tourr::flea$species
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
-#' ggt <- ggtour(gt_path, dat) +
+#' ggt <- ggtour(gt_path, dat, angle = .1) +
 #'   proto_point()
 #' \dontrun{
 #' animate_plotly(ggt)}
@@ -770,7 +770,7 @@ proto_point <- function(aes_args = list(),
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
-  ## Return proto
+  ## Return
   return(do.call(.geom_func, identity_args))
 }
 
@@ -795,7 +795,7 @@ proto_point <- function(aes_args = list(),
 #' ## 2D case:
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
-#' ggt <- ggtour(gt_path, dat) +
+#' ggt <- ggtour(gt_path, dat, angle = .1) +
 #'   proto_origin() +
 #'   proto_point()
 #' \dontrun{
@@ -906,6 +906,7 @@ proto_density <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
+  
   if(class(transformr::tween_polygon) != "function")
     stop("proto_density requires {transformr}::tween_polygon")
   if(is.null(.df_data))
@@ -929,13 +930,13 @@ proto_density <- function(aes_args = list(),
   
   ## geom_rug do.call
   if(do_add_rug == TRUE){
-    .rug_len <- max(.map_to[, 2L]) - min(.map_to[, 2L]) / 25L
+    .rug_len <- .02 #(max(.map_to[, 2L]) - min(.map_to[, 2L])) / 50L
     .aes_func <- function(...)
       ggplot2::aes(x = x, frame = frame, ...)
     .aes_call <- do.call(.aes_func, aes_args)
     .geom_func <- function(...) suppressWarnings(
       ggplot2::geom_rug(mapping = .aes_call, data = .df_data,
-                        length = grid::unit(.rug_len, "native"), ...))
+                        length = ggplot2::unit(.rug_len, "native"), ...))
     ret <- list(ret, do.call(.geom_func, identity_args))
   }
   
@@ -1124,9 +1125,6 @@ proto_default1d <- function(aes_args = list(),
 }
 
 
-
-
-## ggproto api extension 1 -----
 ### should move into spinifex v0.3.1
 #' Tour proto highlighing specified points
 #'
@@ -1196,11 +1194,11 @@ proto_highlight <- function(
   
   ## Initial mark, if needed, hard-coded some aes, no frame.
   if(mark_initial == TRUE){
-    .aes_func   <- function(...)
+    .aes_func <- function(...)
       ggplot2::aes(x = x, y = y, ...)
-    .aes_call   <- do.call(.aes_func, aes_args)
+    .aes_call <- do.call(.aes_func, aes_args)
     ## do.call geom_vline over highlight obs
-    .geom_func  <- function(...) suppressWarnings(ggplot2::geom_point(
+    .geom_func <- function(...) suppressWarnings(ggplot2::geom_point(
       mapping = .aes_call, .df_data[1L, ], ## only the first row, should be frame 1.
       ..., alpha = .5)) ## Hard-coded alpha
     inital_mark <- do.call(.geom_func, identity_args)

@@ -33,7 +33,7 @@ mv <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)
 
 ## Returns headless ggplot(), but required for proto_* functions.
-ggtour(mt_path, dat, angle = .1)
+ggtour(mt_path, dat, angle = .15)
 
 ## d = 2 case
 ggt <- ggtour(mt_path, dat) +

@@ -32,7 +32,7 @@ clas <- tourr::flea$species
 ## 2D case:
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
-ggt <- ggtour(gt_path, dat) +
+ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_origin() +
   proto_point()
 \dontrun{

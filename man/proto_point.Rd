@@ -26,7 +26,7 @@ dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
-ggt <- ggtour(gt_path, dat) +
+ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_point()
 \dontrun{
 animate_plotly(ggt)}
