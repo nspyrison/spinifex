@@ -72,6 +72,7 @@ if(getRversion() >= "2.15.1"){
                            "y_end",
                            "label",
                            "..scaled..",
+                           "..ndensity..",
                            "frame",    ## Animation frame
                            "tooltip")) ## plotly tooltip
 }

@@ -36,7 +36,7 @@ ggt <- ggtour(mt_path, dat, angle = .1) +
 \dontrun{
 animate_plotly(ggtour)
 
-## Example saving ploty to a .html widget, may require additional setup.
+## Example saving plotly to a .html widget, may require additional setup.
 if(F){
   anim <- animate_plotly(ggtour, fps = 10)
   htmlwidgets::saveWidget(widget = anim, file = "./figures/my_tour.html",

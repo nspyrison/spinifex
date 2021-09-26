@@ -211,8 +211,8 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' @examples
 #' ## This expression. is not meant for external use.
 ## _.init4proto expression -----
-.init4proto <- expression({ ## expression, not function
-  .ggt <- last_ggtour()
+.init4proto <- expression({ ## An expression, not a function
+  .ggt <- spinifex::last_ggtour() ## Self-explicit for use in cheem
   if(is.null(.ggt)) stop("last_ggtour() is NULL, have you run ggtour() yet?")
   
   ## Assign elements of last_ggtour() into the scope of a ggproto func.
@@ -250,7 +250,7 @@ last_ggtour <- function(){.store$ggtour_ls}
   ## Replicate arg, if they exist
   if(exists("aes_args")){
     if(length(aes_args) > 0L){
-      aes_args <- .lapply_rep_len(aes_args, .nrow_df_data, .n)
+      aes_args <- spinifex:::.lapply_rep_len(aes_args, .nrow_df_data, .n)
       ## binding aes_args to .df_data, but then need to find another method to replace do.call.
       # .df_data <- .bind_elements2df(aes_args, .df_data)
       # aes_args <- ## TODO>>>>, go to aes_string("mpg") or aes_(quote(mpg))?
@@ -258,7 +258,7 @@ last_ggtour <- function(){.store$ggtour_ls}
   }
   if(exists("identity_args")){
     if(length(identity_args) > 0L)
-      identity_args <- .lapply_rep_len(identity_args, .nrow_df_data, .n)
+      identity_args <- spinifex:::.lapply_rep_len(identity_args, .nrow_df_data, .n)
   }
   .m <- gc() ## Mute garbage collection
 })
@@ -375,7 +375,7 @@ animate_gganimate <- function(
 #' \dontrun{
 #' animate_plotly(ggtour)
 #' 
-#' ## Example saving ploty to a .html widget, may require additional setup.
+#' ## Example saving plotly to a .html widget, may require additional setup.
 #' if(F){
 #'   anim <- animate_plotly(ggtour, fps = 10)
 #'   htmlwidgets::saveWidget(widget = anim, file = "./figures/my_tour.html",

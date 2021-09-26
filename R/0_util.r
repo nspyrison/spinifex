@@ -199,7 +199,7 @@ map_relative <- function(
   } else if(position == "top1d"){
     scale <- .25
     xoff  <- xcenter
-    yoff  <- 1.2
+    yoff  <- 1.1
   } else if(position == "floor1d"){
     scale <- .25
     xoff  <- xcenter

@@ -40,5 +40,5 @@ rotate_manip_space(msp, theta = runif(1, max = 2 * pi),
 bas1d <- basis_pca(dat_std, d = 1)
 mv <- manip_var_of(bas1d)
 msp <- create_manip_space(bas1d, mv)
-rotate_manip_space(msp, phi = runif(1, max = 2 * pi))
+rotate_manip_space(msp, theta = 0, phi = runif(1, max = 2 * pi))
 }
