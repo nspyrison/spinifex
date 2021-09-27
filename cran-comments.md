@@ -9,13 +9,11 @@
     "solaris-x86-patched",
     "windows-x86_64-release"
 
-## R CMD check results
-
-Duration: 2m 28.8s
+## R CMD check results local & virtual:
 
 0 errors v | 0 warnings v | 0 notes v
 
 R CMD check succeeded
 
 
-* This is a new release 
+* This is a new release
