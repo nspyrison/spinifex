@@ -30,7 +30,7 @@ dat_std <- scale_sd(wine[, 2:6])
 basis_guided(data = dat_std, index_f = tourr::holes())
 
 basis_guided(data = dat_std, index_f = tourr::cmass(),
-             alpha = .4, cooling = .9, max.tries = 30)
+             alpha = .4, cooling = .9, max.tries = 10, n_sample = 4)
 }
 \seealso{
 \code{\link[tourr:guided_tour]{tourr::guided_tour}} for annealing

@@ -464,7 +464,7 @@ basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
 #' basis_guided(data = dat_std, index_f = tourr::holes())
 #' 
 #' basis_guided(data = dat_std, index_f = tourr::cmass(),
-#'              alpha = .4, cooling = .9, max.tries = 30)
+#'              alpha = .4, cooling = .9, max.tries = 10, n_sample = 4)
 basis_guided <- function(data, index_f = tourr::holes(), d = 2, ...){
   .mute <- utils::capture.output(
     hist <- tourr::save_history(

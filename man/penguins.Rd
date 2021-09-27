@@ -11,7 +11,7 @@ A data frame with 333 rows and 4 numeric variables and 3 factor variables
 \item{bill_depth_mm}{a number denoting bill depth (millimeters)}
 \item{flipper_length_mm}{an integer denoting flipper length (millimeters)}
 \item{body_mass_g}{an integer denoting body mass (grams)}
-\item{species}{a factor denoting penguin species (Adélie, Chinstrap and Gentoo)}
+\item{species}{a factor denoting penguin species (Adelie, Chinstrap and Gentoo)}
 \item{sex}{a factor denoting penguin sex (female, male)}
 \item{island}{a factor denoting island in Palmer Archipelago, Antarctica (Biscoe, Dream or Torgersen)}
 }
@@ -19,7 +19,7 @@ A data frame with 333 rows and 4 numeric variables and 3 factor variables
 \source{
 {palmerpenguins R package. A. Horst, 2020. Palmer Archipelago (Antarctica) Penguin Data.} \url{https://CRAN.R-project.org/package=palmerpenguins}
 
-{Adélie penguins: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic signatures of foraging among adult male and female Adélie penguins (Pygoscelis adeliae) nesting along the Palmer Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative} \doi{10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f}
+{Adelie penguins: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic signatures of foraging among adult male and female Adelie penguins (Pygoscelis adeliae) nesting along the Palmer Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative} \doi{10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f}
 
 {Gentoo penguins: Palmer Station Antarctica LTER and K. Gorman. 2020. Structural size measurements and isotopic signatures of foraging among adult male and female Gentoo penguin (Pygoscelis papua) nesting along the Palmer Archipelago near Palmer Station, 2007-2009 ver 5. Environmental Data Initiative} \doi{10.6073/pasta/7fca67fb28d56ee2ffa3d9370ebda689}
 
