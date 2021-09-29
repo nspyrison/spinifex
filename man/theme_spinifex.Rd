@@ -3,7 +3,7 @@
 \name{theme_spinifex}
 \alias{theme_spinifex}
 \title{A ggplot2 theme suggested for linear projections with spinifex.
-The default value for ggproto arguments in spinifex functions.}
+The default theme in spinifex functions.}
 \usage{
 theme_spinifex(...)
 }
@@ -12,7 +12,7 @@ theme_spinifex(...)
 }
 \description{
 A ggplot2 theme suggested for linear projections with spinifex.
-The default value for ggproto arguments in spinifex functions.
+The default theme in spinifex functions.
 }
 \examples{
 theme_spinifex()

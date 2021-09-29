@@ -39,7 +39,7 @@ bas <- basis_pca(dat_std)
 g_path <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 
 \dontrun{
-play_tour_path(tour_path = g_path,  data = dat_std)
+play_tour_path(tour_path = g_path, data = dat_std)
 
 play_tour_path(tour_path = g_path, data = dat_std,
                axes = "bottomleft", angle = .08, fps = 8,

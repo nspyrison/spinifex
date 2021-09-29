@@ -278,7 +278,7 @@ pan_zoom <- function(x, pan = c(0L, 0L), zoom = c(1L, 1L)) {
 ##
 
 #' A ggplot2 theme suggested for linear projections with spinifex.
-#' The default value for ggproto arguments in spinifex functions.
+#' The default theme in spinifex functions.
 #' 
 #' @param ... Optionally pass arguments to `ggplot2::theme()`.
 #' @seealso \code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
@@ -303,6 +303,29 @@ theme_spinifex <- function(...){
                       ...) ## ... applied over defaults.
   )
 }
+
+## attempt 2 with %+replace%;
+# doesn't resolve needless warnings: 
+# as scale_color_brewer is not a theme obj, can't use %+replace%
+###
+# #' @import ggplot2
+# theme_spinifex2 <- function(){
+#   .theme <- theme_void() %+replace%
+#     theme(legend.position = "bottom",
+#           legend.direction = "horizontal", ## Levels within aesthetic
+#           legend.box = "vertical",         ## Between aesthetic
+#           legend.margin = margin(0L,0L,0L,0L, "mm"), ## Tighter legend margin
+#           axis.title = element_text() ## Allow axis titles, though defaulted to blank
+#     )
+#   list(.theme,
+#        scale_color_brewer(palette = "Dark2"),
+#        scale_fill_brewer(palette = "Dark2"),
+#        coord_fixed(),
+#        labs(x = "", y = ""))
+# }
+
+
+
 
 
 ##
