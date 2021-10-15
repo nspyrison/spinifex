@@ -174,10 +174,6 @@ map_relative <- function(
   if(is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
   position <- match.arg(position)
   if(position == "off") return()
-  # ## If position is map_absolute call with x = NULL;
-  # if(is.list(position) & length(position) == 2L){
-  #   return(map_absolute(x, offset = position$pan, scale = position$zoom))
-  # }
   
   ## Initialize
   xrange  <- range(to[, 1L])
@@ -197,15 +193,15 @@ map_relative <- function(
     xoff  <- -.7 * xdiff + xcenter
     yoff  <- ycenter
   } else if(position == "top1d"){
-    scale <- .25
+    scale <- .5
     xoff  <- xcenter
     yoff  <- 1.1
   } else if(position == "floor1d"){
-    scale <- .25
+    scale <- .5
     xoff  <- xcenter
     yoff  <- ycenter
   } else if(position == "right"){
-    scale <- .3 * ydiff
+    scale <- .5 * ydiff
     xoff  <- .7 * xdiff + xcenter
     yoff  <- ycenter
   } else if(position == "bottomleft"){
@@ -219,9 +215,11 @@ map_relative <- function(
   } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
-  if(position %in% c("top1d", "floor1d")){
-    x[, 1L] <- 4L * scale * x[, 1L] + xoff
-  } else x[, 1L] <- scale * x[, 1L] + xoff
+  #### extra wide 1D:
+  # if(position %in% c("top1d", "floor1d")){
+  #   x[, 1L] <- 4L * scale * x[, 1L] + xoff
+  # } else x[, 1L] <- scale * x[, 1L] + xoff
+  x[, 1L] <- scale * x[, 1L] + xoff
   x[, 2L] <- scale * x[, 2L] + yoff
   
   return(x)

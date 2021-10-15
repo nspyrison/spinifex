@@ -81,16 +81,12 @@ ggtour <- function(basis_array,
   df_data  <- df_ls$data_frames
   attr(df_basis, "manip_var") <- manip_var ## NULL if not a manual tour
   
-  ## map_to handling cases::
-  #### If data is NULL then map_to unit box
-  map_to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+  ## Make several df bounidng boxs to map_relative to, but let the proto_* select.
+  map_to_unitbox <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
   if(is.null(data) == FALSE){
-    d <- dim(basis_array)[2L]
-    #### If data 2d then map_to data
-    if(d == 2L)
-      map_to <- data.frame(x = range(df_data[, 1L]), y = range(df_data[, 2L]))
-    #### If data 1d then map_to X of data, and [01] (scaled density)
-    if(d == 1L) map_to <- data.frame(x = range(df_data[, 1L]), y = c(0L, 1L))
+    map_to_density <- data.frame(x = range(df_data[, 1L]), y = c(0L, 1L))
+    if(dim(basis_array)[2L] >= 1L)
+      map_to_data  <- data.frame(x = range(df_data[, 1L]), y = range(df_data[, 2L]))
   }
   
   nrow_df_data <- nrow(df_data)
@@ -106,7 +102,9 @@ ggtour <- function(basis_array,
   p <- nrow(df_basis) / n_frames
   n <- nrow_df_data   / n_frames
   .set_last_ggtour(list(
-    df_basis = df_basis, df_data = df_data, map_to = map_to,
+    df_basis = df_basis, df_data = df_data,
+    map_to_unitbox = map_to_unitbox,
+    map_to_density = map_to_density, map_to_data = map_to_data,
     n_frames = n_frames, nrow_df_data = nrow_df_data, n = n, p = p,
     manip_var = manip_var, facet_by = facet_by))
   
@@ -216,15 +214,17 @@ last_ggtour <- function(){.store$ggtour_ls}
   if(is.null(.ggt)) stop("last_ggtour() is NULL, have you run ggtour() yet?")
   
   ## Assign elements of last_ggtour() into the scope of a ggproto func.
-  .df_basis     <- .ggt$df_basis ## Give operable local copies
-  .df_data      <- .ggt$df_data
-  .map_to       <- .ggt$map_to
-  .n_frames     <- .ggt$n_frames
-  .nrow_df_data <- .ggt$nrow_df_data
-  .n            <- .ggt$n
-  .p            <- .ggt$p
-  .manip_var    <- .ggt$manip_var ## Can be NULL; a tourr tour.
-  .facet_by     <- .ggt$facet_by  ## Usually NULL; no facet used.
+  .df_basis       <- .ggt$df_basis ## Give operable local copies
+  .df_data        <- .ggt$df_data
+  .map_to_unitbox <- .ggt$map_to_unitbox
+  .map_to_density <- .ggt$map_to_density
+  .map_to_data    <- .ggt$map_to_data
+  .n_frames       <- .ggt$n_frames
+  .nrow_df_data   <- .ggt$nrow_df_data
+  .n              <- .ggt$n
+  .p              <- .ggt$p
+  .manip_var      <- .ggt$manip_var ## Can be NULL; a tourr tour.
+  .facet_by       <- .ggt$facet_by  ## Usually NULL; no facet used.
   
   ## subset, if rownum_index exists
   if(exists("rownum_index")){
@@ -401,13 +401,16 @@ animate_plotly <- function(
     plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
       plotly::animation_opts(frame = 1L / fps * 1000L,
                              transition = 0L, redraw = FALSE) %>%
+      ## Remove button bar and zoom box
+      plotly::config(displayModeBar = FALSE,
+                     modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d"))) %>%
+      ## Remove legends and axis lines
       plotly::layout(showlegend = FALSE,
                      #, fixedrange = TRUE ## This is a curse, do not use.
                      yaxis = list(showgrid = FALSE, showline = FALSE),
                      xaxis = list(showgrid = FALSE, showline = FALSE,
                                   scaleanchor = "y", scalaratio = 1L),
-                     ...) %>%
-      plotly::config(displayModeBar = FALSE))
+                     ...)
   
   
   ## Clean up
@@ -595,9 +598,9 @@ proto_basis <- function(
   ## Setup and transform
   .angles <- seq(0L, 2L * pi, length = 360L)
   .circle <- data.frame(x = cos(.angles), y = sin(.angles))
-  .center <- map_relative(data.frame(x = 0L, y = 0L), position, .map_to)
-  .circle <- map_relative(.circle, position, .map_to)
-  .df_basis <- map_relative(.df_basis, position, .map_to)
+  .center <- map_relative(data.frame(x = 0L, y = 0L), position, .map_to_data)
+  .circle <- map_relative(.circle, position, .map_to_data)
+  .df_basis <- map_relative(.df_basis, position, .map_to_data)
   if(is.null(.facet_by) == FALSE)
     .circle <- .bind_elements2df(
       list(facet_by = rep_len("_basis_", nrow(.circle))), .circle)
@@ -605,7 +608,7 @@ proto_basis <- function(
   ## Aesthetics for the axes segments.
   .axes_col <- "grey50"
   .axes_siz <- line_size
-  if(is.null(.manip_var) == FALSE) {
+  if(is.null(.manip_var) == FALSE){
     .axes_col <- rep("grey50", .p)
     .axes_col[.manip_var] <- manip_col
     .axes_col <- rep(.axes_col, .n_frames)
@@ -680,11 +683,11 @@ proto_basis1d <- function(
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5))
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5))
   ## Scale them
-  .df_zero <- map_relative(.df_zero, position, .map_to)
-  .df_seg  <- map_relative(.df_seg,  position, .map_to)
-  .df_txt  <- map_relative(.df_txt,  position, .map_to)
-  .df_rect <- map_relative(.df_rect, position, .map_to)
-  .df_seg0 <- map_relative(.df_seg0, position, .map_to)
+  .df_zero <- map_relative(.df_zero, position, .map_to_density)
+  .df_seg  <- map_relative(.df_seg,  position, .map_to_density)
+  .df_txt  <- map_relative(.df_txt,  position, .map_to_density)
+  .df_rect <- map_relative(.df_rect, position, .map_to_density)
+  .df_seg0 <- map_relative(.df_seg0, position, .map_to_density)
   if(is.null(.facet_by) == FALSE){
     .basis_ls <- list(facet_by = rep_len("_basis_", nrow(.df_zero)))
     .df_zero <- .bind_elements2df(.basis_ls, .df_zero)
@@ -765,7 +768,8 @@ proto_point <- function(aes_args = list(),
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
-    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tooltip for plotly on hover tip
+    ## tooltip for plotly on hover tooltip
+    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) 
   .aes_call <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(
@@ -811,9 +815,9 @@ proto_origin <- function(
     stop("proto_origin: Basis y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
   
   #### Setup origin, zero mark, 5% on each side.
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
-  .min    <- min(min(.map_to[, 1L]), min(.map_to[, 2L]))
-  .max    <- max(max(.map_to[, 1L]), max(.map_to[, 2L]))
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
+  .min    <- min(min(.map_to_data[, 1L]), min(.map_to_data[, 2L]))
+  .max    <- max(max(.map_to_data[, 1L]), max(.map_to_data[, 2L]))
   .tail   <- tail_size / 2L * (.max - .min)
   .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
                            x_end = c(.center[, 1L] + .tail, .center[, 1L]),
@@ -849,9 +853,9 @@ proto_origin1d <- function(
   ## Initialize
   eval(.init4proto)
   if(is.null(last_ggtour()$df_data) == TRUE) return()
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
-  .ymin <- min(.map_to[, 2L])
-  .ymax <- max(.map_to[, 2L])
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
+  .ymin <- min(.map_to_density[, 2L])
+  .ymax <- max(.map_to_density[, 2L])
   .tail <- diff(c(.ymin, .ymax)) * .6
   .df_origin <- data.frame(
     x     = c(.center[, 1L], .center[, 1L]),
@@ -929,7 +933,7 @@ proto_density <- function(aes_args = list(),
   
   ## geom_rug do.call
   if(do_add_rug == TRUE){
-    .rug_len <- .02 #(max(.map_to[, 2L]) - min(.map_to[, 2L])) / 50L
+    .rug_len <- .02
     .aes_func <- function(...)
       ggplot2::aes(x = x, frame = frame, ...)
     .aes_call <- do.call(.aes_func, aes_args)
@@ -1236,11 +1240,11 @@ proto_highlight1d <- function(
   ## Initialize
   eval(.init4proto)
   if(is.null(last_ggtour()$df_data) == TRUE) return()
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to)
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
   
   ## geom_segment do.calls, moving with frame
-  .ymin <- min(.map_to[, 2L])
-  .ymax <- max(.map_to[, 2L])
+  .ymin <- min(.map_to_density[, 2L])
+  .ymax <- max(.map_to_density[, 2L])
   .segment_tail <- diff(c(.ymin, .ymax)) * .1
   .aes_func <- function(...)
     ggplot2::aes(x = x, xend = x,  y = .ymin - .segment_tail,
