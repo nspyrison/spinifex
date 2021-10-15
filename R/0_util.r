@@ -149,8 +149,8 @@ as_history_array <- function(basis_array, data = NULL){
 #' @param x Numeric matrix or data.frame, first 2 columns and scaled and offset 
 #' the `to` object.
 #' @param position Text specifying the position the axes should go to.
-#' Defaults to "center" expects one of: "center", "left", "right", 
-#' "bottomleft", "topright", or "off".
+#' Defaults to "center" expects one of: c("center", "left", "right", 
+#' "bottomleft", "topright", "off", "top1d", "floor1d", "top2d", "floor2d").
 #' @param to Table to appropriately set the size and position of the axes to.
 #' Based on the min/max of the first 2 columns. If left NULL defaults to 
 #' data.frame(x = c(-1L, 1L), y = c(-1L, 1L).
@@ -166,8 +166,9 @@ as_history_array <- function(basis_array, data = NULL){
 #' map_relative(x = rb, position = "right", to = wine[, 2:3])
 map_relative <- function(
   x,
-  position = c("center", "left", "top1d", "floor1d",
-               "right", "bottomleft", "topright", "off"),
+  position = c("center", "left", "right", 
+               "bottomleft", "topright", "off",
+               "top1d", "floor1d", "top2d", "floor2d"),
   to = NULL
 ){
   ## Assumptions
@@ -192,6 +193,10 @@ map_relative <- function(
     scale <- .5 * ydiff
     xoff  <- -.7 * xdiff + xcenter
     yoff  <- ycenter
+  } else if(position == "right"){
+    scale <- .5 * ydiff
+    xoff  <- .7 * xdiff + xcenter
+    yoff  <- ycenter
   } else if(position == "top1d"){
     scale <- .5
     xoff  <- xcenter
@@ -200,9 +205,13 @@ map_relative <- function(
     scale <- .5
     xoff  <- xcenter
     yoff  <- ycenter
-  } else if(position == "right"){
+  } else if(position == "top2d"){
     scale <- .5 * ydiff
-    xoff  <- .7 * xdiff + xcenter
+    xoff  <- xcenter # + .1 * xdiff
+    yoff  <- .6 * ydiff + ycenter
+  } else if(position == "floor2d"){
+    scale <- .5 * ydiff
+    xoff  <- xcenter
     yoff  <- ycenter
   } else if(position == "bottomleft"){
     scale <- .25 * ydiff
@@ -215,12 +224,22 @@ map_relative <- function(
   } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
-  #### extra wide 1D:
-  # if(position %in% c("top1d", "floor1d")){
-  #   x[, 1L] <- 4L * scale * x[, 1L] + xoff
-  # } else x[, 1L] <- scale * x[, 1L] + xoff
-  x[, 1L] <- scale * x[, 1L] + xoff
-  x[, 2L] <- scale * x[, 2L] + yoff
+  if(position %in% c("top1d", "floor1d")){
+    #### 1D; wider & flater:
+    coef_1d <- 4L
+    x[, 1L] <- coef_1d * scale * x[, 1L] + xoff
+    x[, 2L] <- coef_1d^-1L * scale * x[, 2L] + yoff
+  } 
+  if(position %in% c("top2d", "floor2d")){
+    ## 2D data, 1D basis; Flatten basis
+    x[, 1L] <- scale * x[, 1L] + xoff
+    coef_1d <- 4L
+    x[, 2L] <- coef_1d^-1L * scale * x[, 2L] + yoff
+  } else {
+    #### 2D; unit coef:
+    x[, 1L] <- scale * x[, 1L] + xoff
+    x[, 2L] <- scale * x[, 2L] + yoff
+  }
   
   return(x)
 }

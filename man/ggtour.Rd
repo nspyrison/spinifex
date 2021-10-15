@@ -32,11 +32,11 @@ bas <- basis_pca(dat)
 mv <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)
 
-## Returns headless ggplot(), but required for proto_* functions.
-ggtour(mt_path, dat, angle = .15)
+## Returns ggplot() canvas, also performs setup for proto_* functions.
+(ggt <- ggtour(mt_path, dat, angle = .15))
 
 ## d = 2 case
-ggt <- ggtour(mt_path, dat) +
+ggt <- ggt +
   proto_basis() +
   proto_point(list(color = clas, shape = clas),
               list(size = 1.5))

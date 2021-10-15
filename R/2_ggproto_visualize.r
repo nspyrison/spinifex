@@ -23,11 +23,11 @@
 #' mv <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
-#' ## Returns headless ggplot(), but required for proto_* functions.
-#' ggtour(mt_path, dat, angle = .15)
+#' ## Returns ggplot() canvas, also performs setup for proto_* functions.
+#' (ggt <- ggtour(mt_path, dat, angle = .15))
 #' 
 #' ## d = 2 case
-#' ggt <- ggtour(mt_path, dat) +
+#' ggt <- ggt +
 #'   proto_basis() +
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 1.5))
@@ -99,13 +99,13 @@ ggtour <- function(basis_array,
   }
   ## Assign list to last_ggtour().
   n_frames <- length(unique(df_basis$frame))
+  d <- ncol(df_basis) - 2L
   p <- nrow(df_basis) / n_frames
   n <- nrow_df_data   / n_frames
   .set_last_ggtour(list(
-    df_basis = df_basis, df_data = df_data,
-    map_to_unitbox = map_to_unitbox,
+    df_basis = df_basis, df_data = df_data, map_to_unitbox = map_to_unitbox,
     map_to_density = map_to_density, map_to_data = map_to_data,
-    n_frames = n_frames, nrow_df_data = nrow_df_data, n = n, p = p,
+    n_frames = n_frames, nrow_df_data = nrow_df_data, n = n, p = p, d = d,
     manip_var = manip_var, facet_by = facet_by))
   
   ## Return ggplot head, theme, and facet if used
@@ -223,6 +223,7 @@ last_ggtour <- function(){.store$ggtour_ls}
   .nrow_df_data   <- .ggt$nrow_df_data
   .n              <- .ggt$n
   .p              <- .ggt$p
+  .d              <- .ggt$d
   .manip_var      <- .ggt$manip_var ## Can be NULL; a tourr tour.
   .facet_by       <- .ggt$facet_by  ## Usually NULL; no facet used.
   
@@ -541,8 +542,10 @@ filmstrip <- function(ggtour){ #, frame_index <- NULL
 #' circle for 2D or rectangle of unit width for 1D.
 #'
 #' @param position The position, to place the basis axes relative to the centered 
-#' data. Expects one of c("left", "center", "right", "bottomleft", "topright", 
-#' "off"), defaults to "left".
+#' data. `_basis` Expects one of c("left", "center", "right", "bottomleft", "topright", 
+#' "off"), defaults to "left". `_basis1d` Expects one of 
+#' c("top1d", "floor1d", "top2d", "floor2d", "off"), 
+#' defaults to "top1d".
 #' @param manip_col The color to highlight the manipulation variable with. Not
 #' applied if the tour isn't a manual tour. Defaults to "blue".
 #' @param line_size (2D bases only) the thickness of the lines used to make the 
@@ -646,7 +649,7 @@ proto_basis <- function(
 #' @export
 #' @family ggtour proto
 proto_basis1d <- function(
-  position = c("top1d", "floor1d", "off"),
+  position = c("top1d", "floor1d", "top2d", "floor2d", "off"),
   manip_col = "blue",
   segment_size = 2,
   text_size = 5
@@ -677,17 +680,20 @@ proto_basis1d <- function(
                          frame = .df_basis$frame,
                          label = .df_basis$label)
   ## Do note replicate across frames, it won't work any better with plotly
-  .df_txt  <- data.frame(x = -1L,
-                         y = .p:1L,
-                         label = .df_basis[.df_basis$frame == 1L, "label"])
+  .df_txt <- data.frame(
+    x = -1.25, y = .p:1L, label = .df_basis[.df_basis$frame == 1L, "label"])
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5))
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5))
   ## Scale them
-  .df_zero <- map_relative(.df_zero, position, .map_to_density)
-  .df_seg  <- map_relative(.df_seg,  position, .map_to_density)
-  .df_txt  <- map_relative(.df_txt,  position, .map_to_density)
-  .df_rect <- map_relative(.df_rect, position, .map_to_density)
-  .df_seg0 <- map_relative(.df_seg0, position, .map_to_density)
+  #### if basis 1D map to density, else map to data (ie. cheem)
+  if(.d == 1L){
+    .map_to_tgt <- .map_to_density
+  } else .map_to_tgt <- .map_to_data
+  .df_zero <- map_relative(.df_zero, position, .map_to_tgt)
+  .df_seg  <- map_relative(.df_seg,  position, .map_to_tgt)
+  .df_txt  <- map_relative(.df_txt,  position, .map_to_tgt)
+  .df_rect <- map_relative(.df_rect, position, .map_to_tgt)
+  .df_seg0 <- map_relative(.df_seg0, position, .map_to_tgt)
   if(is.null(.facet_by) == FALSE){
     .basis_ls <- list(facet_by = rep_len("_basis_", nrow(.df_zero)))
     .df_zero <- .bind_elements2df(.basis_ls, .df_zero)
@@ -710,8 +716,8 @@ proto_basis1d <- function(
     ## Variable abbreviation text
     ggplot2::geom_text(
       ggplot2::aes(x, y, label = label), .df_txt,
-      hjust = 1L, size = text_size, color = "grey60",
-      nudge_x = -.12 * max(nchar(.df_txt$label))),
+      size = text_size, color = "grey60",
+      hjust = 1L),
     ## Contribution segments of current basis, changing with frame
     suppressWarnings(ggplot2::geom_segment(
       ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
@@ -816,8 +822,8 @@ proto_origin <- function(
   
   #### Setup origin, zero mark, 5% on each side.
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
-  .min    <- min(min(.map_to_data[, 1L]), min(.map_to_data[, 2L]))
-  .max    <- max(max(.map_to_data[, 1L]), max(.map_to_data[, 2L]))
+  .min    <- min(.map_to_data[, 1L:2L])
+  .max    <- max(.map_to_data[, 1L:2L])
   .tail   <- tail_size / 2L * (.max - .min)
   .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
                            x_end = c(.center[, 1L] + .tail, .center[, 1L]),
