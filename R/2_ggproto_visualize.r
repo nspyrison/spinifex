@@ -534,7 +534,7 @@ filmstrip <- function(ggtour){ #, frame_index <- NULL
 }
 
 
-### PRROTO_BASIS_* ------
+### BASIS Protos ------
 #' Tour proto for a 2D and 1D basis axes respectively
 #'
 #' Adds basis axes to the animation, the direction and magnitude of 
@@ -731,7 +731,7 @@ proto_basis1d <- function(
 
 
 
-### PROTO_* for data obs ----
+### DATA Protos ----
 #' Tour proto for data point
 #'
 #' Adds `geom_point()` of the projected data.
@@ -768,7 +768,7 @@ proto_point <- function(aes_args = list(),
   ## Initialize
   eval(.init4proto)
   if(is.null(.df_data) == TRUE)
-    stop("proto_point: Data is NULL. Did you call ggtour() on a manual tour without passing data?")
+    stop("proto_point: Data is NULL. Was data passed to the basis array or ggtour?")
   if(is.null(.df_data$y))
     stop("proto_point: Projection y not found, expected a 2D tour.")
   
@@ -785,98 +785,6 @@ proto_point <- function(aes_args = list(),
 }
 
 
-#' Tour proto for data origin zero mark
-#'
-#' Adds a zero mark showing the location of the origin for the central data area.
-#'
-#' @param tail_size How long the origin mark should extended
-#' relative to the observations. Defaults to .05, 5% of the projection space.
-#' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
-#' @export
-#' @aliases proto_origin2d
-#' @family ggtour proto
-#' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' 
-#' ## 2D case:
-#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
-#' 
-#' ggt <- ggtour(gt_path, dat, angle = .1) +
-#'   proto_origin() +
-#'   proto_point()
-#' \dontrun{
-#' animate_plotly(ggt)}
-proto_origin <- function(
-  identity_args = list(color = "grey60", size = .5, alpha = .9),
-  tail_size = .05
-){
-  ## Initialize
-  eval(.init4proto)
-  if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
-  if(is.null(.df_basis$y))
-    stop("proto_origin: Basis y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
-  
-  #### Setup origin, zero mark, 5% on each side.
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
-  .min    <- min(.map_to_data[, 1L:2L])
-  .max    <- max(.map_to_data[, 1L:2L])
-  .tail   <- tail_size / 2L * (.max - .min)
-  .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
-                           x_end = c(.center[, 1L] + .tail, .center[, 1L]),
-                           y     = c(.center[, 2L], .center[, 2L] - .tail),
-                           y_end = c(.center[, 2L], .center[, 2L] + .tail))
-  
-  ## do.call geom_point() over the identity_args
-  .geom_func <- function(...)
-    ggplot2::geom_segment(
-      ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end),
-      data = .df_origin, ...)
-  ## Return
-  return(do.call(.geom_func, identity_args))
-}
-
-
-#' @rdname proto_origin
-#' @export
-#' @family ggtour proto
-#' @examples
-#' 
-#' ## 1D case:
-#' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 5)
-#' 
-#' ggt <- ggtour(gt_path1d, dat) +
-#'   proto_origin1d() +
-#'   proto_density(list(fill = clas, color = clas))
-#' \dontrun{
-#' animate_plotly(ggt)}
-proto_origin1d <- function(
-  identity_args = list(color = "grey60", size = .5, alpha = .9)
-){
-  ## Initialize
-  eval(.init4proto)
-  if(is.null(last_ggtour()$df_data) == TRUE) return()
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
-  .ymin <- min(.map_to_density[, 2L])
-  .ymax <- max(.map_to_density[, 2L])
-  .tail <- diff(c(.ymin, .ymax)) * .6
-  .df_origin <- data.frame(
-    x     = c(.center[, 1L], .center[, 1L]),
-    x_end = c(.center[, 1L], .center[, 1L]),
-    y     = c(.center[, 2L], .center[, 2L]),
-    y_end = c(.center[, 2L] - .tail, .center[, 2L] + .tail))
-  
-  ## do.call geom_segment() over the identity_args
-  .geom_func <- function(...)
-    ggplot2::geom_segment(
-      ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end),
-      data = .df_origin, ...)
-  ## Return
-  return(do.call(.geom_func, identity_args))
-}
 
 #' Tour proto for data, 1D density, with rug marks
 #'
@@ -1070,69 +978,6 @@ proto_hex <- function(aes_args = list(),
 }
 
 
-#' Wrapper function for default 2D/1D tours respectively.
-#' 
-#' An easier way to get to default 2D tour settings.
-#' Returns a list of proto_origin(), proto_point(...), proto_basis() for 2D.
-#' Returns a list of proto_origin1d(), proto_density(...), proto_basis1d() for 1D.
-#'
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
-#' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
-#' @export
-#' @aliases proto_default2d, proto_def, proto_def2d
-#' @family ggtour proto
-#' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' 
-#' ## 2D case:
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
-#' mt_path <- manual_tour(bas, mv)
-#' 
-#' ggt <- ggtour(mt_path, dat) +
-#'   proto_default(list(color = clas, shape = clas))
-#' \dontrun{
-#' animate_plotly(ggt)}
-proto_default <- function(aes_args = list(),
-                          identity_args = list(alpha = .9)
-){
-  return(list(
-    proto_point(aes_args, identity_args),
-    proto_origin(),
-    proto_basis()
-  ))
-}
-
-
-#' @rdname proto_default
-#' @export
-#' @aliases proto_def1d
-#' @family ggtour proto
-#' @examples
-#' ## 1D case:
-#' gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
-#' 
-#' ggt <- ggtour(gt_path, dat) +
-#'   proto_default1d(list(fill = clas, color = clas))
-#' \dontrun{
-#' animate_plotly(ggt)}
-proto_default1d <- function(aes_args = list(),
-                            identity_args = list(alpha = .7)
-){
-  return(list(
-    proto_origin1d(),
-    proto_basis1d(),
-    proto_density(aes_args, identity_args)
-  ))
-}
-
 
 ### should move into spinifex v0.3.1
 #' Tour proto highlighing specified points
@@ -1279,6 +1124,249 @@ proto_highlight1d <- function(
   return(ret)
 }
 
+
+
+
+### Guides & QoL Protos -----
+#' Tour proto for within frame correlation
+#'
+#' Adds text to the animation, the frame and its specified correlation.
+#'
+#' @param position Vector containing the probabilities of the x and y quantile; 
+#' the relative position of the text.
+#' @param tail_size How long the origin mark should extended
+#' relative to the observations. Defaults to .05, 5% of the projection space.
+#' @param aes_args A list of aesthetic arguments to passed to 
+#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
+#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
+#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' @param ... Optionally, pass additional arguments to 
+#' \code{\link[stats:cor]{stats::cor}}, specifying the type of
+#' within frame correlation.
+#' @seealso \code{\link[stats:cor]{stats::cor}}
+#' @export
+#' @examples
+#' dat <- scale_sd(tourr::flea[, 1:6])
+#' clas <- tourr::flea$species
+#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+#' 
+#' ggt <- ggtour(gt_path, dat, angle = .1) +
+#'   proto_default() +
+#'   proto_frame_cor()
+#'   
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+proto_frame_cor <- function(
+  #stat2d = stats::cor, ## hardcoded stats::cor atm
+  position = c(.85, 0),
+  aes_args = list(),
+  identity_args = list(size = 4),
+  ... ## passed to stats::cor
+){
+  ## Initialize
+  eval(.init4proto)
+  # position = match.arg(position)
+  # if(position == "off") return()
+  if(is.null(.df_data) == TRUE)
+    stop("proto_frame_stat: Data is NULL; stat not applicable. Was data passed to the basis array or ggtour?")
+  
+  # ## Removes namespace; ie. 'stats::cor' to 'cor'
+  # .stat_nm  <- substitute(stat2d)
+  # .last_pos <- regexpr("\\:[^\\:]*$", s) + 1L
+  # .stat_nm  <- substr(.stat_nm, .last_pos, nchar(.stat_nm))
+  .stat_nm <- "cor"
+  
+  ## find aggregated values, stat within the frame
+  .agg <- .df_data %>%
+    dplyr::group_by(frame) %>%
+    dplyr::summarise(value = round(stats::cor(x, y, ...), 2L)) %>%
+    dplyr::ungroup()
+  
+  ## Create df with position and string label
+  .txt_df <- data.frame(
+    x = quantile(.df_data[, 1L], probs = position[1L]),
+    y = quantile(.df_data[, 2L], probs = position[2L]),
+    frame = .agg$frame,
+    label = paste0("frame: ", .agg$frame, ", ", .stat_nm, ": ", .agg$value)
+  )
+  
+  ## do.call aes() over the aes_args
+  .aes_func <- function(...)
+    ggplot2::aes(x = x, y = y, frame = frame, label = label, ...)
+  .aes_call <- do.call(.aes_func, aes_args)
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...)suppressWarnings(
+    ggplot2::geom_text(mapping = .aes_call, data = .txt_df, ...))
+  
+  ## Return
+  return(do.call(.geom_func, identity_args))
+}
+
+#' Tour proto for data origin zero mark
+#'
+#' Adds a zero mark showing the location of the origin for the central data area.
+#'
+#' @param tail_size How long the origin mark should extended
+#' relative to the observations. Defaults to .05, 5% of the projection space.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' @export
+#' @aliases proto_origin2d
+#' @family ggtour proto
+#' @examples
+#' dat <- scale_sd(tourr::flea[, 1:6])
+#' clas <- tourr::flea$species
+#' 
+#' ## 2D case:
+#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+#' 
+#' ggt <- ggtour(gt_path, dat, angle = .1) +
+#'   proto_origin() +
+#'   proto_point()
+#' \dontrun{
+#' animate_plotly(ggt)}
+proto_origin <- function(
+  identity_args = list(color = "grey60", size = .5, alpha = .9),
+  tail_size = .05
+){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_basis$y))
+    stop("proto_origin: Basis y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
+  
+  #### Setup origin, zero mark, 5% on each side.
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
+  .min    <- min(.map_to_data[, 1L:2L])
+  .max    <- max(.map_to_data[, 1L:2L])
+  .tail   <- tail_size / 2L * (.max - .min)
+  .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
+                           x_end = c(.center[, 1L] + .tail, .center[, 1L]),
+                           y     = c(.center[, 2L], .center[, 2L] - .tail),
+                           y_end = c(.center[, 2L], .center[, 2L] + .tail))
+  
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...)
+    ggplot2::geom_segment(
+      ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end),
+      data = .df_origin, ...)
+  ## Return
+  return(do.call(.geom_func, identity_args))
+}
+
+
+#' @rdname proto_origin
+#' @export
+#' @family ggtour proto
+#' @examples
+#' 
+#' ## 1D case:
+#' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 5)
+#' 
+#' ggt <- ggtour(gt_path1d, dat) +
+#'   proto_origin1d() +
+#'   proto_density(list(fill = clas, color = clas))
+#' \dontrun{
+#' animate_plotly(ggt)}
+proto_origin1d <- function(
+  identity_args = list(color = "grey60", size = .5, alpha = .9)
+){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(last_ggtour()$df_data) == TRUE) return()
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
+  .ymin <- min(.map_to_density[, 2L])
+  .ymax <- max(.map_to_density[, 2L])
+  .tail <- diff(c(.ymin, .ymax)) * .6
+  .df_origin <- data.frame(
+    x     = c(.center[, 1L], .center[, 1L]),
+    x_end = c(.center[, 1L], .center[, 1L]),
+    y     = c(.center[, 2L], .center[, 2L]),
+    y_end = c(.center[, 2L] - .tail, .center[, 2L] + .tail))
+  
+  ## do.call geom_segment() over the identity_args
+  .geom_func <- function(...)
+    ggplot2::geom_segment(
+      ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end),
+      data = .df_origin, ...)
+  ## Return
+  return(do.call(.geom_func, identity_args))
+}
+
+#' Wrapper function for default 2D/1D tours respectively.
+#' 
+#' An easier way to get to default 2D tour settings.
+#' Returns a list of proto_origin(), proto_point(...), proto_basis() for 2D.
+#' Returns a list of proto_origin1d(), proto_density(...), proto_basis1d() for 1D.
+#'
+#' @param aes_args A list of aesthetic arguments to passed to 
+#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
+#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
+#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' @export
+#' @aliases proto_default2d, proto_def, proto_def2d
+#' @family ggtour proto
+#' @examples
+#' dat <- scale_sd(tourr::flea[, 1:6])
+#' clas <- tourr::flea$species
+#' 
+#' ## 2D case:
+#' bas <- basis_pca(dat)
+#' mv <- manip_var_of(bas)
+#' mt_path <- manual_tour(bas, mv)
+#' 
+#' ggt <- ggtour(mt_path, dat) +
+#'   proto_default(list(color = clas, shape = clas))
+#' \dontrun{
+#' animate_plotly(ggt)}
+proto_default <- function(aes_args = list(),
+                          identity_args = list(alpha = .9)
+){
+  return(list(
+    proto_basis(),
+    proto_point(aes_args, identity_args),
+    proto_origin()
+  ))
+}
+
+
+#' @rdname proto_default
+#' @export
+#' @aliases proto_def1d
+#' @family ggtour proto
+#' @examples
+#' ## 1D case:
+#' gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+#' 
+#' ggt <- ggtour(gt_path, dat) +
+#'   proto_default1d(list(fill = clas, color = clas))
+#' \dontrun{
+#' animate_plotly(ggt)}
+proto_default1d <- function(aes_args = list(),
+                            identity_args = list(alpha = .7)
+){
+  return(list(
+    proto_basis1d(),
+    proto_density(aes_args, identity_args),
+    proto_origin1d()
+  ))
+}
+
+
+
+
+### UNAPPLIED DRAFTING -----
 
 if(FALSE){ ## DONT RUN
   proto_hdr <- function(
