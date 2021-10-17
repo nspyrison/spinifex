@@ -406,7 +406,7 @@ animate_plotly <- function(
       plotly::config(displayModeBar = FALSE,
                      modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d"))) %>%
       ## Remove legends and axis lines
-      plotly::layout(showlegend = FALSE,
+      plotly::layout(showlegend = FALSE, dragmode = FALSE,
                      #, fixedrange = TRUE ## This is a curse, do not use.
                      yaxis = list(showgrid = FALSE, showline = FALSE),
                      xaxis = list(showgrid = FALSE, showline = FALSE,
@@ -636,7 +636,7 @@ proto_basis <- function(
         data = .df_basis,
         color = .axes_col, size = text_size,
         vjust = "outward", hjust = "outward",
-        mapping = ggplot2::aes(x = x, y = y, frame = frame, label = label)
+        mapping = ggplot2::aes(x = x, y = y, frame = frame)
       ))
     )
   )
@@ -715,7 +715,7 @@ proto_basis1d <- function(
       .df_rect, fill = NA, color = "grey60"),
     ## Variable abbreviation text
     ggplot2::geom_text(
-      ggplot2::aes(x, y, label = label), .df_txt,
+      ggplot2::aes(x, y), .df_txt,
       size = text_size, color = "grey60",
       hjust = 1L),
     ## Contribution segments of current basis, changing with frame
