@@ -401,7 +401,11 @@ animate_plotly <- function(
   anim <- suppressWarnings(
     plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
       plotly::animation_opts(frame = 1L / fps * 1000L,
-                             transition = 0L, redraw = FALSE) %>%
+                             transition = 0L, redraw = TRUE) %>%
+      plotly::animation_slider(
+        active = 0L, ## 0 indexed first frame
+        currentvalue = list(prefix = "Frame: ", font = list(color = "black"))
+      ) %>% 
       ## Remove button bar and zoom box
       plotly::config(displayModeBar = FALSE,
                      modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d"))) %>%
@@ -412,7 +416,6 @@ animate_plotly <- function(
                      xaxis = list(showgrid = FALSE, showline = FALSE,
                                   scaleanchor = "y", scalaratio = 1L),
                      ...)
-  
   
   ## Clean up
   .set_last_ggtour(NULL) ## Clears last tour
@@ -636,7 +639,7 @@ proto_basis <- function(
         data = .df_basis,
         color = .axes_col, size = text_size,
         vjust = "outward", hjust = "outward",
-        mapping = ggplot2::aes(x = x, y = y, frame = frame)
+        mapping = ggplot2::aes(x = x, y = y, frame = frame, label = label)
       ))
     )
   )
@@ -715,7 +718,7 @@ proto_basis1d <- function(
       .df_rect, fill = NA, color = "grey60"),
     ## Variable abbreviation text
     ggplot2::geom_text(
-      ggplot2::aes(x, y), .df_txt,
+      ggplot2::aes(x, y, label = label), .df_txt,
       size = text_size, color = "grey60",
       hjust = 1L),
     ## Contribution segments of current basis, changing with frame
