@@ -5,7 +5,7 @@
 \title{Tour proto for within frame correlation}
 \usage{
 proto_frame_cor(
-  position = c(0.85, 0),
+  position = c(0.85, 0.001),
   aes_args = list(),
   identity_args = list(size = 4),
   ...

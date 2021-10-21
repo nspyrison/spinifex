@@ -1166,7 +1166,7 @@ proto_highlight1d <- function(
 #' }
 proto_frame_cor <- function(
   #stat2d = stats::cor, ## hardcoded stats::cor atm
-  position = c(.85, 0),
+  position = c(.85, .001),
   aes_args = list(),
   identity_args = list(size = 4),
   ... ## passed to stats::cor
@@ -1192,8 +1192,8 @@ proto_frame_cor <- function(
   
   ## Create df with position and string label
   .txt_df <- data.frame(
-    x = quantile(.df_data[, 1L], probs = position[1L]),
-    y = quantile(.df_data[, 2L], probs = position[2L]),
+    x = quantile(.df_data[, 1L], probs = position[1L], na.rm = TRUE),
+    y = quantile(.df_data[, 2L], probs = position[2L], na.rm = TRUE),
     frame = .agg$frame,
     label = paste0("frame: ", .agg$frame, ", ", .stat_nm, ": ", .agg$value)
   )

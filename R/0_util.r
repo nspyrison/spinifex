@@ -1,7 +1,8 @@
 ##
 ## MATH AND TRANSFORMS -----
 ##
-
+#' Orthonormality of a matrix
+#' 
 #' Test if a numeric matrix is orthonormal, that is, each column is orthogonal,
 #' at a right angle with the others, and each column has a norm 
 #' length of 1. This must be true for a projection to be linear.
@@ -59,8 +60,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 array2df <- function(
   basis_array,
   data = NULL,
-  basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else 1:nrow(basis_array),
-  data_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("v", 1:ncol(basis_array))
+  basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("v", 1:nrow(basis_array)),
+  data_label = if(is.null(data) == FALSE) rownames(data) else 1:nrow(basis_array)
 ){
   if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
   
