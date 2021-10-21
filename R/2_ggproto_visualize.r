@@ -1128,15 +1128,13 @@ proto_highlight1d <- function(
 }
 
 
-
-
 ### Guides & QoL Protos -----
 #' Tour proto for within frame correlation
 #'
 #' Adds text to the animation, the frame and its specified correlation.
 #'
-#' @param position Vector containing the probabilities of the x and y quantile; 
-#' the relative position of the text.
+#' @param position Vector x and y position relative to the unit data position; 
+#' (0, 1) in each direction. Defaults to c(.7, -.1).
 #' @param tail_size How long the origin mark should extended
 #' relative to the observations. Defaults to .05, 5% of the projection space.
 #' @param aes_args A list of aesthetic arguments to passed to 
@@ -1159,43 +1157,50 @@ proto_highlight1d <- function(
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .1) +
 #'   proto_default() +
-#'   proto_frame_cor()
+#'   proto_frame_cor(c(.70, -.1))
 #'   
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 proto_frame_cor <- function(
   #stat2d = stats::cor, ## hardcoded stats::cor atm
-  position = c(.85, .001),
+  position = c(.7, -.1),
   aes_args = list(),
   identity_args = list(size = 4),
   ... ## passed to stats::cor
 ){
   ## Initialize
   eval(.init4proto)
-  # position = match.arg(position)
-  # if(position == "off") return()
   if(is.null(.df_data) == TRUE)
     stop("proto_frame_stat: Data is NULL; stat not applicable. Was data passed to the basis array or ggtour?")
   
-  # ## Removes namespace; ie. 'stats::cor' to 'cor'
-  # .stat_nm  <- substitute(stat2d)
-  # .last_pos <- regexpr("\\:[^\\:]*$", s) + 1L
-  # .stat_nm  <- substr(.stat_nm, .last_pos, nchar(.stat_nm))
-  .stat_nm <- "cor"
-  
-  ## find aggregated values, stat within the frame
+  ## Find aggregated values, stat within the frame
   .agg <- .df_data %>%
     dplyr::group_by(frame) %>%
     dplyr::summarise(value = round(stats::cor(x, y, ...), 2L)) %>%
     dplyr::ungroup()
   
+  ## Set position
+  .x_ran <- range(.df_data[, 1L])
+  .x_dif <- diff(.x_ran)
+  .y_ran <- range(.df_data[, 2L])
+  .y_dif <- diff(.y_ran)
+  .x <- min(.x_ran) + position[1L] * .x_dif
+  .y <- min(.y_ran) + position[2L] * .y_dif
+  ## Prefix text:
+  # ## Removes namespace; ie. 'stats::cor' to 'cor'
+  # .stat_nm  <- substitute(stat2d)
+  # .last_pos <- regexpr("\\:[^\\:]*$", s) + 1L
+  # .stat_nm  <- substr(.stat_nm, .last_pos, nchar(.stat_nm))
+  .stat_nm <- "cor"
   ## Create df with position and string label
   .txt_df <- data.frame(
-    x = quantile(.df_data[, 1L], probs = position[1L], na.rm = TRUE),
-    y = quantile(.df_data[, 2L], probs = position[2L], na.rm = TRUE),
+    x = .x,
+    y = .y,
     frame = .agg$frame,
-    label = paste0("frame: ", .agg$frame, ", ", .stat_nm, ": ", .agg$value)
+    label = paste0(#"frame: ", .agg$frame, ", ",
+                   .stat_nm, ": ",
+                   sprintf("%3.2f", .agg$value))
   )
   
   ## do.call aes() over the aes_args
@@ -1369,9 +1374,12 @@ proto_default1d <- function(aes_args = list(),
 
 
 
-### UNAPPLIED DRAFTING -----
-
+### UNAPPLIED IDEA DRAFTS -----
 if(FALSE){ ## DONT RUN
+  proto_basis_table <- function(){}
+  proto_chull <- function(){}
+  proto_ahull <- function(){}
+  
   proto_hdr <- function(
     aes_args = list(),
     identity_args = list(),

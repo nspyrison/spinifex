@@ -5,15 +5,15 @@
 \title{Tour proto for within frame correlation}
 \usage{
 proto_frame_cor(
-  position = c(0.85, 0.001),
+  position = c(0.7, -0.1),
   aes_args = list(),
   identity_args = list(size = 4),
   ...
 )
 }
 \arguments{
-\item{position}{Vector containing the probabilities of the x and y quantile;
-the relative position of the text.}
+\item{position}{Vector x and y position relative to the unit data position;
+(0, 1) in each direction. Defaults to c(.7, -.1).}
 
 \item{aes_args}{A list of aesthetic arguments to passed to
 \verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
@@ -42,7 +42,7 @@ gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_default() +
-  proto_frame_cor()
+  proto_frame_cor(c(.70, -.1))
   
 \dontrun{
 animate_plotly(ggt)

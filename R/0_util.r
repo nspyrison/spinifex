@@ -61,11 +61,14 @@ array2df <- function(
   basis_array,
   data = NULL,
   basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("v", 1:nrow(basis_array)),
-  data_label = if(is.null(data) == FALSE) rownames(data) else 1:nrow(basis_array)
+  data_label = 1:nrow(basis_array)
 ){
   if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
   
   ## Initialize
+  if(is.null(data) == FALSE &
+     suppressWarnings(any(is.na(as.numeric(as.character(rownames(data)))))))
+    data_label <- paste0("row: ", 1:nrow(data), ", ", rownames(data))
   manip_var <- attributes(basis_array)$manip_var
   p <- dim(basis_array)[1L]
   n_frames <- dim(basis_array)[3L]
@@ -226,18 +229,19 @@ map_relative <- function(
   
   ## Apply scale and return
   if(position %in% c("top1d", "floor1d")){
-    #### 1D; wider & flater:
+    ## 1D data & basis; widen basis:
     coef_1d <- 4L
     x[, 1L] <- coef_1d * scale * x[, 1L] + xoff
-    x[, 2L] <- coef_1d^-1L * scale * x[, 2L] + yoff
+    x[, 2L] <- #(.5 * coef_1d)^-1L * 
+      scale * x[, 2L] + yoff
   } 
   if(position %in% c("top2d", "floor2d")){
-    ## 2D data, 1D basis; Flatten basis
+    ## 2D data, 1D basis; flatten basis:
     x[, 1L] <- scale * x[, 1L] + xoff
     coef_1d <- 4L
     x[, 2L] <- coef_1d^-1L * scale * x[, 2L] + yoff
   } else {
-    #### 2D; unit coef:
+    ## 2D; unit coef:
     x[, 1L] <- scale * x[, 1L] + xoff
     x[, 2L] <- scale * x[, 2L] + yoff
   }

@@ -9,7 +9,7 @@ array2df(
   data = NULL,
   basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3) else
     paste0("v", 1:nrow(basis_array)),
-  data_label = if (is.null(data) == FALSE) rownames(data) else 1:nrow(basis_array)
+  data_label = 1:nrow(basis_array)
 )
 }
 \arguments{
