@@ -38,7 +38,8 @@ gt_path <- save_history(dat, tourr::grand_tour(), max_bases = 5)
 ggt <- ggtour(gt_path, dat, angle = .2) +
   proto_text(list(color = clas))
 \dontrun{
-animate_plotly(ggt)}
+animate_plotly(ggt)
+}
 
 ## Custom labels, subset of points
 ggt2 <- ggtour(gt_path, dat) +
@@ -46,7 +47,8 @@ ggt2 <- ggtour(gt_path, dat) +
              list(alpha = .7),
              rownum_index = 1:15)
 \dontrun{
-animate_plotly(ggt2)}
+animate_plotly(ggt2)
+}
 }
 \seealso{
 Other ggtour proto: 

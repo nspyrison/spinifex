@@ -58,7 +58,8 @@ if(F){
                             start_pause = 1, end_pause = 2)
   gganimate::anim_save("my_tour.gif",
                        animation = anim,
-                       path = "./figures")}}
+                       path = "./figures")}
+}
 }
 \seealso{
 \code{\link[gganimate:animate]{gganimate::animate}}

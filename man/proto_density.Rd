@@ -43,7 +43,8 @@ ggt <- ggtour(gt_path, dat) +
   proto_density(aes_args = list(color = clas, fill = clas)) +
   proto_basis1d()
 \dontrun{
-animate_plotly(ggt)}
+animate_plotly(ggt)
+}
 }
 \seealso{
 Other ggtour proto: 

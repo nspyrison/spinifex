@@ -36,7 +36,8 @@ ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_origin() +
   proto_point()
 \dontrun{
-animate_plotly(ggt)}
+animate_plotly(ggt)
+}
 
 ## 1D case:
 gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 5)
@@ -45,7 +46,8 @@ ggt <- ggtour(gt_path1d, dat) +
   proto_origin1d() +
   proto_density(list(fill = clas, color = clas))
 \dontrun{
-animate_plotly(ggt)}
+animate_plotly(ggt)
+}
 }
 \seealso{
 Other ggtour proto: 

@@ -55,7 +55,8 @@ ggt <- ggtour(gt_path, dat) +
   proto_highlight(rownum_index = 5) +
   proto_point()
 \dontrun{
-animate_plotly(ggt)}
+animate_plotly(ggt)
+}
 
 ## Custom aesthetics. Highlighting multiple points defaults mark_initial to FALSE
 ggt2 <- ggtour(gt_path, dat) +
@@ -64,7 +65,8 @@ ggt2 <- ggtour(gt_path, dat) +
   proto_point(list(color = clas, shape = clas),
               list(size = 2, alpha = .7))
 \dontrun{
-animate_plotly(ggt2)}
+animate_plotly(ggt2)
+}
 ## 1D case:
 gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 
@@ -72,13 +74,15 @@ ggt <- ggtour(gt_path, dat) +
   proto_default1d(list(fill = clas, color = clas)) +
   proto_highlight1d(rownum_index = 7)
 \dontrun{
-animate_plotly(ggt)}
+animate_plotly(ggt)
+}
 
 ggt2 <- ggtour(gt_path, dat) +
   proto_default1d(list(fill = clas, color = clas)) +
   proto_highlight1d(rownum_index = c(2, 6, 7))
 \dontrun{
-animate_plotly(ggt2)}
+animate_plotly(ggt2)
+}
 }
 \seealso{
 Other ggtour proto: 

@@ -40,7 +40,8 @@ animate_plotly(ggtour)
 if(F){
   anim <- animate_plotly(ggtour, fps = 10)
   htmlwidgets::saveWidget(widget = anim, file = "./figures/my_tour.html",
-                          selfcontained = TRUE)}}
+                          selfcontained = TRUE)}
+}
 }
 \seealso{
 \code{\link[plotly:ggplotly]{plotly::ggplotly}}

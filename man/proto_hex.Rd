@@ -38,7 +38,8 @@ ggp <- ggtour(gt_path, dat) +
 
 ## Hexagons don't show up in plotly animation.
 \dontrun{
-animate_gganimate(ggp)}
+animate_gganimate(ggp)
+}
 }
 \seealso{
 Other ggtour proto: 
