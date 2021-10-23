@@ -50,12 +50,19 @@ ggt <- ggtour(mt_path, dat, angle = .1) +
               identity_args = list(size = 1.5, alpha = .7))
 
 \dontrun{
-animate_gganimate(ggt)
+animate_gganimate(ggt) ## default .gif rendering
 
-## Example saving gganime to a .gif, may require additional setup.
-if(F){
+if(F){ ## Don't accidentally save file
+  ## Alternative renderer, saving as .mp4
+  animate_gganimate(ggt,
+    height = 4, width = 4, units = "in", ## "px", "in", "cm", or "mm."
+    res = 300, ## resolution (dpi)
+    render = gganimate::av_renderer("my_tour.mp4")) ## Alternative render
+  
+  ## Default gganimate::gifski_renderer(width = NULL, height = NULL)
   anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
                             start_pause = 1, end_pause = 2)
+  ## Save rendered animation as .gif
   gganimate::anim_save("my_tour.gif",
                        animation = anim,
                        path = "./figures")}
@@ -65,6 +72,7 @@ if(F){
 \code{\link[gganimate:animate]{gganimate::animate}}
 
 Other ggtour animator: 
-\code{\link{animate_plotly}()}
+\code{\link{animate_plotly}()},
+\code{\link{filmstrip}()}
 }
 \concept{ggtour animator}

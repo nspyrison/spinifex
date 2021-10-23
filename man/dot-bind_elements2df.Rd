@@ -14,7 +14,7 @@
 }
 \description{
 Internal function. To be applied to \code{aes_args}
-replicates elements to length data
+replicates elements to the length of the data and bind as a column.
 }
 \examples{
 ## This function is not meant for external use

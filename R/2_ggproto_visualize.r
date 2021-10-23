@@ -12,8 +12,6 @@
 #' stored as an attribute of the the `basis_array`.
 #' @param angle Target angle (in radians) for interpolation for
 #' `tour::save_history()` generated `basis_array`. Defaults to .05.
-#' @param facet_by Optionally, add a vector to facet the ggtour on. Similar to
-#' adding `facet_grid(rows = facet_by)` to the tour.
 #' @export
 #' @family ggtour proto
 #' @examples
@@ -40,25 +38,9 @@
 #' \dontrun{
 #' animate_plotly(ggt1d)
 #' }
-#' 
-#' ## d = 2, with facet
-#' ggt <- ggtour(mt_path, dat, facet_by = clas) +
-#'   proto_default(list(color = clas, shape = clas), list(size = 1.5))
-#' \dontrun{
-#' animate_plotly(ggt)
-#' }
-#' 
-#' ## d = 1, with facet
-#' ggt1d <- ggtour(mt_path1d, dat, facet_by = clas) +
-#'   proto_default1d(list(color = clas, shape = clas, fill = clas))
-#' ## faceted 1d doesn't work the best with plotly; esp rug, and basis segments.
-#' \dontrun{
-#' animate_gganimate(ggt1d)
-#' }
 ggtour <- function(basis_array,
                    data = NULL,
-                   angle = .05,
-                   facet_by = NULL
+                   angle = .05
 ){
   if(is.null(data) == TRUE) data <- attr(basis_array, "data") ## Could be NULL
   manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
@@ -79,7 +61,7 @@ ggtour <- function(basis_array,
   
   df_ls <- array2df(basis_array, data)
   df_basis <- df_ls$basis_frames
-  df_data  <- df_ls$data_frames
+  df_data  <- df_ls$data_frames ## Can be NULL
   attr(df_basis, "manip_var") <- manip_var ## NULL if not a manual tour
   
   ## Make several df bounidng boxs to map_relative to, but let the proto_* select.
@@ -91,34 +73,22 @@ ggtour <- function(basis_array,
   }
   
   nrow_df_data <- nrow(df_data)
-  ## Append facet_by to df_basis and df_data if needed.
-  if(is.null(facet_by) == FALSE){
-    df_data <- .bind_elements2df(
-      list(facet_by = rep_len(facet_by, nrow_df_data)), df_data)
-    df_basis <- .bind_elements2df( ## basis facet always on first/top level
-      list(facet_by = rep_len("_basis_", nrow(df_basis))), df_basis)
-  }
+
   ## Assign list to last_ggtour().
   n_frames <- length(unique(df_basis$frame))
   d <- ncol(df_basis) - 2L
   p <- nrow(df_basis) / n_frames
   n <- nrow_df_data   / n_frames
+  ## BYPRODUCT:
   .set_last_ggtour(list(
     df_basis = df_basis, df_data = df_data, map_to_unitbox = map_to_unitbox,
     map_to_density = map_to_density, map_to_data = map_to_data,
     n_frames = n_frames, nrow_df_data = nrow_df_data, n = n, p = p, d = d,
-    manip_var = manip_var, facet_by = facet_by))
+    manip_var = manip_var, is_faceted = FALSE))
   
   ## Return ggplot head, theme, and facet if used
-  ## by product: last_ggtour() was set above.
   ret <- ggplot2::ggplot(df_basis) + spinifex::theme_spinifex() ## df_basis helps set .use_idx in filmstrip
-  if(is.null(facet_by) == FALSE){
-    ret <- ret +
-      ggplot2::facet_grid(rows = ggplot2::vars(facet_by)) +
-      ggplot2::theme(strip.text = ggplot2::element_text(
-        margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
-        panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
-  }
+
   return(ret)
 }
 # ## Print method for ggtours ?? using proto_default()
@@ -131,6 +101,70 @@ ggtour <- function(basis_array,
 #     proto_origin(gridline_probs = FALSE) +
 #     proto_point()
 # }
+
+#' Wrap a 1d ribbon of panels into 2d for animation
+#' 
+#' Create and wrap a 1d ribbon of panels in 2d. 
+#' Because of byproducts of `ggtour` and `facet_wrap_tour` this wants to be 
+#' applied after `ggtour` and before any `proto_*` functions.
+#' `plotly` may not display well with with faceting.
+#' 
+#' @param facet_var Expects a single variable to facet the levels of. 
+#' Should be a vector not formula, `~cyl`, or `ggplot2::vars()` call.
+#' @param nrow Number of rows. Defaults to NULL; set by display dim.
+#' @param ncol Number of columns. Defaults to NULL; set by display dim.
+#' @param dir Direction of wrapping: either "h" horizontal by rows, 
+#' or "v", for vertical by columns. Defaults to "h"
+#' @export
+#' @family ggtour proto
+#' @examples
+#' dat <- scale_sd(tourr::flea[, 1:6])
+#' clas <- tourr::flea$species
+#' bas <- basis_pca(dat)
+#' mv <- manip_var_of(bas)
+#' mt_path <- manual_tour(bas, manip_var = mv)
+#' 
+#' ## d = 2 case
+#' ggt <- ggtour(mt_path, dat, angle = .15) +
+#'   facet_wrap_tour(facet_var = clas, ncol = 2, nrow = 2) +
+#'   proto_basis() +
+#'   proto_point(list(color = clas, shape = clas),
+#'               list(size = 1.5))
+#' \dontrun{
+#' animate_gganimate(ggt) ## Faceting may not play well with `plotly`
+#' }
+facet_wrap_tour <- function(
+  facet_var = NULL, nrow = NULL, ncol = NULL, dir = "h"
+){
+  eval(.init4proto)
+  
+  ## Append facet_var to df_basis and df_data if needed.
+  if(is.null(facet_var) == FALSE){
+    .df_data <- .bind_elements2df(
+      list(facet_var = rep_len(facet_var, .nrow_df_data)), .df_data)
+    ## "_basis_" becomes an honorary level of facet_var
+    .df_basis <- .bind_elements2df( ## basis facet always on first/top level
+      list(facet_var = rep_len("_basis_", nrow(.df_basis))), .df_basis)
+  }
+  
+  ## BYPRODUCT:
+  #### Changes: .df_basis & .df_data have facet_var bound, is_faceted == TRUE
+  .set_last_ggtour(list(
+    df_basis = .df_basis, df_data = .df_data, map_to_unitbox = .map_to_unitbox,
+    map_to_density = .map_to_density, map_to_data = .map_to_data,
+    n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p, d = .d,
+    manip_var = .manip_var, is_faceted = TRUE))
+  
+  ## Return
+  return(list(
+    ggplot2::facet_wrap(facets = ggplot2::vars(facet_var),
+                        nrow = nrow, ncol = ncol, dir = dir),
+    ggplot2::theme(strip.text = ggplot2::element_text(
+      margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
+      panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
+  ))
+}
+
 
 .store <- new.env(parent = emptyenv())
 #' Retrieve/set a list from the last `ggtour()`, required for the use 
@@ -180,7 +214,7 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' Binds replicated elements of a list as columns of a data frame.
 #' 
 #' Internal function. To be applied to `aes_args` 
-#' replicates elements to length data
+#' replicates elements to the length of the data and bind as a column.
 #'
 #' @param list A list of arguments such as those passed in `aes_args` and 
 #' `identity_args`.
@@ -226,9 +260,9 @@ last_ggtour <- function(){.store$ggtour_ls}
   .p              <- .ggt$p
   .d              <- .ggt$d
   .manip_var      <- .ggt$manip_var ## Can be NULL; a tourr tour.
-  .facet_by       <- .ggt$facet_by  ## Usually NULL; no facet used.
+  .is_faceted     <- .ggt$is_faceted ## Usually NULL; no facet used.
   
-  ## subset, if rownum_index exists
+  ## Subset, if rownum_index exists
   if(exists("rownum_index")){
     if(is.null(rownum_index) == FALSE){
       ## Subset arg_lists
@@ -303,14 +337,17 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' \dontrun{
 #' animate_gganimate(ggt) ## default .gif rendering
 #' 
-#' ## Using an alternative renderer and saving an .mp4
-#' animate_gganimate(ggt, ## alternative render
-#'   render = gganimate::av_renderer("my_out.mp4"))
-#' 
-#' ## Example saving to .gif, may require additional setup.
-#' if(F){
+#' if(F){ ## Don't accidentally save file
+#'   ## Alternative renderer, saving as .mp4
+#'   animate_gganimate(ggt,
+#'     height = 4, width = 4, units = "in", ## "px", "in", "cm", or "mm."
+#'     res = 300, ## resolution (dpi)
+#'     render = gganimate::av_renderer("my_tour.mp4")) ## Alternative render
+#'   
+#'   ## Default gganimate::gifski_renderer(width = NULL, height = NULL)
 #'   anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
 #'                             start_pause = 1, end_pause = 2)
+#'   ## Save rendered animation as .gif
 #'   gganimate::anim_save("my_tour.gif",
 #'                        animation = anim,
 #'                        path = "./figures")}
@@ -380,11 +417,11 @@ animate_gganimate <- function(
 #'   proto_point(aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 1.5, alpha = .7))
 #' \dontrun{
-#' animate_plotly(ggtour)
+#' animate_plotly(ggt, width = 700, height = 450) ## pixels only, no resolution
 #' 
 #' ## Example saving to a .html widget, may require additional setup.
 #' if(F){
-#'   anim <- animate_plotly(ggt, fps = 10)
+#'   anim <- animate_plotly(ggt, fps = 10, width = 700, height = 450)
 #'   
 #'   htmlwidgets::saveWidget(widget = anim, file = "./figures/my_tour.html",
 #'                           selfcontained = TRUE)}
@@ -399,24 +436,13 @@ animate_plotly <- function(
   ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
+  ## 1 Frame only:
   if(n_frames == 1L){
     warning("ggtour df_basis only has 1 frame, applying just plotly::ggplotly instead.")
-    return(plotly::ggplotly(p = ggtour, tooltip = "tooltip"))
-  }
-  
-  ## Block plotly.js warning: lack of support for horizontal legend;
-  #### https://github.com/plotly/plotly.js/issues/53
-  anim <- suppressWarnings(
-    plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
-      plotly::animation_opts(frame = 1L / fps * 1000L,
-                             transition = 0L, redraw = TRUE) %>%
-      plotly::animation_slider(
-        active = 0L, ## 0 indexed first frame
-        currentvalue = list(prefix = "Frame: ", font = list(color = "black"))
-      ) %>% 
+    anim <- plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
       ## Remove button bar and zoom box
       plotly::config(displayModeBar = FALSE,
-                     modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d"))) %>%
+                     modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d")) %>%
       ## Remove legends and axis lines
       plotly::layout(showlegend = FALSE, dragmode = FALSE,
                      #, fixedrange = TRUE ## This is a curse, do not use.
@@ -424,6 +450,30 @@ animate_plotly <- function(
                      xaxis = list(showgrid = FALSE, showline = FALSE,
                                   scaleanchor = "y", scalaratio = 1L),
                      ...)
+  }else{
+    ## More than 1 frame:
+    
+    ## Block plotly.js warning: lack of support for horizontal legend;
+    #### https://github.com/plotly/plotly.js/issues/53
+    anim <- suppressWarnings(
+      plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
+        plotly::animation_opts(frame = 1L / fps * 1000L,
+                               transition = 0L, redraw = TRUE) %>%
+        plotly::animation_slider(
+          active = 0L, ## 0 indexed first frame
+          currentvalue = list(prefix = "Frame: ", font = list(color = "black"))
+        ) %>%
+        ## Remove button bar and zoom box
+        plotly::config(displayModeBar = FALSE,
+                       modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d"))) %>%
+      ## Remove legends and axis lines
+      plotly::layout(showlegend = FALSE, dragmode = FALSE,
+                     #, fixedrange = TRUE ## This is a curse, do not use.
+                     yaxis = list(showgrid = FALSE, showline = FALSE),
+                     xaxis = list(showgrid = FALSE, showline = FALSE,
+                                  scaleanchor = "y", scalaratio = 1L),
+                     ...)
+  }
   
   ## Clean up
   .set_last_ggtour(NULL) ## Clears last tour
@@ -494,7 +544,7 @@ animate_plotly <- function(
 #' @param ggtour A grammar of graphics tour with appended protos added. 
 #' A return from `ggtour() + proto_*()`.
 #' @export
-#' @family ggtour proto
+#' @family ggtour animator
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -612,7 +662,7 @@ proto_basis <- function(
     stop("proto_basis: Basis `y` not found, expected a 2D tour. Did you mean to call `proto_basis1d`?")
   position = match.arg(position)
   if(position == "off") return()
-  if(is.null(.facet_by) == FALSE) position = "center"
+  if(.is_faceted == TRUE) position = "center"
   
   ## Setup and transform
   .angles <- seq(0L, 2L * pi, length = 360L)
@@ -620,9 +670,9 @@ proto_basis <- function(
   .center <- map_relative(data.frame(x = 0L, y = 0L), position, .map_to_data)
   .circle <- map_relative(.circle, position, .map_to_data)
   .df_basis <- map_relative(.df_basis, position, .map_to_data)
-  if(is.null(.facet_by) == FALSE)
+  if(.is_faceted == TRUE)
     .circle <- .bind_elements2df(
-      list(facet_by = rep_len("_basis_", nrow(.circle))), .circle)
+      list(facet_var = rep_len("_basis_", nrow(.circle))), .circle)
   
   ## Aesthetics for the axes segments.
   .axes_col <- "grey50"
@@ -674,7 +724,7 @@ proto_basis1d <- function(
   eval(.init4proto)
   position = match.arg(position)
   if(position == "off") return()
-  if(is.null(.facet_by) == FALSE) position = "floor1d"
+  if(.is_faceted == TRUE) position = "floor1d"
   
   ## Aesthetics for the axes segments
   .axes_col <- .text_col <- "grey50"
@@ -710,8 +760,8 @@ proto_basis1d <- function(
   .df_txt  <- map_relative(.df_txt,  position, .map_to_tgt)
   .df_rect <- map_relative(.df_rect, position, .map_to_tgt)
   .df_seg0 <- map_relative(.df_seg0, position, .map_to_tgt)
-  if(is.null(.facet_by) == FALSE){
-    .basis_ls <- list(facet_by = rep_len("_basis_", nrow(.df_zero)))
+  if(.is_faceted == TRUE){
+    .basis_ls <- list(facet_var = rep_len("_basis_", nrow(.df_zero)))
     .df_zero <- .bind_elements2df(.basis_ls, .df_zero)
     .df_seg  <- .bind_elements2df(.basis_ls, .df_seg)
     .df_txt  <- .bind_elements2df(.basis_ls, .df_txt)
