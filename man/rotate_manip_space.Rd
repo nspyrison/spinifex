@@ -42,3 +42,11 @@ mv <- manip_var_of(bas1d)
 msp <- create_manip_space(bas1d, mv)
 rotate_manip_space(msp, theta = 0, phi = runif(1, max = 2 * pi))
 }
+\seealso{
+Other manual tour adjacent functions: 
+\code{\link{create_manip_space}()},
+\code{\link{interpolate_manual_tour}()},
+\code{\link{manip_var_of}()},
+\code{\link{manual_tour}()}
+}
+\concept{manual tour adjacent functions}

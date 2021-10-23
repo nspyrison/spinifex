@@ -42,7 +42,7 @@ animate_gganimate(ggp)
 }
 }
 \seealso{
-Other ggtour proto: 
+Other ggtour proto functions: 
 \code{\link{facet_wrap_tour}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
@@ -53,4 +53,4 @@ Other ggtour proto:
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 }
-\concept{ggtour proto}
+\concept{ggtour proto functions}

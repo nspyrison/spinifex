@@ -35,3 +35,11 @@ bas1d <- basis_pca(dat_std, d = 1)
 mv <- manip_var_of(bas1d)
 create_manip_space(bas1d, mv)
 }
+\seealso{
+Other manual tour adjacent functions: 
+\code{\link{interpolate_manual_tour}()},
+\code{\link{manip_var_of}()},
+\code{\link{manual_tour}()},
+\code{\link{rotate_manip_space}()}
+}
+\concept{manual tour adjacent functions}

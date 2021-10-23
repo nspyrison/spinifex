@@ -19,11 +19,11 @@ dat_std <- scale_sd(wine[, 2:6])
 bas <- basis_half_circle(dat_std)
 }
 \seealso{
-Other basis identifiers: 
+Other basis producing functions: 
 \code{\link{basis_guided}()},
 \code{\link{basis_odp}()},
 \code{\link{basis_olda}()},
 \code{\link{basis_onpp}()},
 \code{\link{basis_pca}()}
 }
-\concept{basis identifiers}
+\concept{basis producing functions}

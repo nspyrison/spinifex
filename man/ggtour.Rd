@@ -4,7 +4,14 @@
 \alias{ggtour}
 \title{Prepare a new grammar of graphics tour}
 \usage{
-ggtour(basis_array, data = NULL, angle = 0.05)
+ggtour(
+  basis_array,
+  data = NULL,
+  angle = 0.05,
+  basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3) else
+    paste0("v", 1:nrow(basis_array)),
+  data_label = 1:nrow(basis_array)
+)
 }
 \arguments{
 \item{basis_array}{An array of projection bases for the tour, as produced
@@ -15,6 +22,14 @@ stored as an attribute of the the \code{basis_array}.}
 
 \item{angle}{Target angle (in radians) for interpolation for
 \code{tour::save_history()} generated \code{basis_array}. Defaults to .05.}
+
+\item{basis_label}{Labels for basis display, a character
+vector with length equal to the number of variables.
+Defaults to the 3 character abbreviation of the original variables names.}
+
+\item{data_label}{Labels for \code{plotly} tooltip display.
+Defaults to the row number, (and rownames of the data if they contain
+characters).}
 }
 \description{
 \code{ggtour()} initializes a ggplot object for a tour. \verb{proto_*} functions are
@@ -48,7 +63,7 @@ animate_plotly(ggt1d)
 }
 }
 \seealso{
-Other ggtour proto: 
+Other ggtour proto functions: 
 \code{\link{facet_wrap_tour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
@@ -59,4 +74,4 @@ Other ggtour proto:
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 }
-\concept{ggtour proto}
+\concept{ggtour proto functions}

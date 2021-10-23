@@ -19,12 +19,13 @@ tour, the output of \code{manual_tour} or \verb{save_history(*_tour())}.}
 \item{data}{Optional, (n, p) dataset to project, consisting of numeric
 variables.}
 
-\item{basis_label}{Optional, labels for the reference frame, a character
-vector of the number of variables.
+\item{basis_label}{Labels for basis display, a character
+vector with length equal to the number of variables.
 Defaults to the 3 character abbreviation of the original variables names.}
 
-\item{data_label}{Optional, labels for plotly tooltip and return object.
-Defaults to the rownames of the data, if available, then the row number.}
+\item{data_label}{Labels for \code{plotly} tooltip display.
+Defaults to the row number, (and rownames of the data if they contain
+characters).}
 }
 \description{
 Internal function, many end users will not need this. Takes the result of

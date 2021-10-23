@@ -12,8 +12,14 @@
 #' stored as an attribute of the the `basis_array`.
 #' @param angle Target angle (in radians) for interpolation for
 #' `tour::save_history()` generated `basis_array`. Defaults to .05.
+#' @param basis_label Labels for basis display, a character 
+#' vector with length equal to the number of variables.
+#' Defaults to the 3 character abbreviation of the original variables names.
+#' @param data_label Labels for `plotly` tooltip display. 
+#' Defaults to the row number, (and rownames of the data if they contain 
+#' characters).
 #' @export
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -40,10 +46,18 @@
 #' }
 ggtour <- function(basis_array,
                    data = NULL,
-                   angle = .05
+                   angle = .05,
+                   ##TESTING:
+                   basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("v", 1:nrow(basis_array)),
+                   data_label = 1:nrow(basis_array)
 ){
   if(is.null(data) == TRUE) data <- attr(basis_array, "data") ## Could be NULL
   manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
+  
+  ## If characters are used in the rownames, add them to tooltip
+  if(is.null(data) == FALSE &
+     suppressWarnings(any(is.na(as.numeric(as.character(rownames(data)))))))
+    data_label <- paste0("row: ", 1:nrow(data), ", ", rownames(data))
   
   ## Single basis, no manip var
   if(is.null(manip_var) == TRUE) ## if manip_var is null; IE. single basis, not tour
@@ -59,7 +73,7 @@ ggtour <- function(basis_array,
     ## Basis_array from manual tours is only 1 basis.
     basis_array <- interpolate_manual_tour(basis_array, angle)
   
-  df_ls <- array2df(basis_array, data)
+  df_ls <- array2df(basis_array, data, basis_label, data_label)
   df_basis <- df_ls$basis_frames
   df_data  <- df_ls$data_frames ## Can be NULL
   attr(df_basis, "manip_var") <- manip_var ## NULL if not a manual tour
@@ -116,7 +130,7 @@ ggtour <- function(basis_array,
 #' @param dir Direction of wrapping: either "h" horizontal by rows, 
 #' or "v", for vertical by columns. Defaults to "h"
 #' @export
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -363,7 +377,7 @@ animate_gganimate <- function(
   ## Assumptions
   requireNamespace("gifski")
   requireNamespace("png")
-  ## Early out, print ggplot if oonly 1 frame. 
+  ## Early out, print ggplot if oonly 1 frame.
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
   if(n_frames == 1L){
@@ -616,7 +630,7 @@ filmstrip <- function(ggtour){ #, frame_index <- NULL
 #' @param text_size Size of the text label of the variables.
 #' @export
 #' @aliases proto_basis
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -687,25 +701,23 @@ proto_basis <- function(
   }
   
   ## Return proto
-  return(
-    list(
-      ggplot2::geom_path(data = .circle, color = "grey80",
-                         size = line_size, inherit.aes = FALSE,
-                         mapping = ggplot2::aes(x = x, y = y)),
-      suppressWarnings(ggplot2::geom_segment( ## Suppress unused arg: frames
-        data = .df_basis,
-        size = .axes_siz, color = .axes_col,
-        mapping = ggplot2::aes(x = x, y = y, frame = frame,
-                               xend = .center[, 1L], yend = .center[, 2L])
-      )),
-      suppressWarnings(ggplot2::geom_text(
-        data = .df_basis,
-        color = .axes_col, size = text_size,
-        vjust = "outward", hjust = "outward",
-        mapping = ggplot2::aes(x = x, y = y, frame = frame, label = label)
-      ))
-    )
-  )
+  return(list(
+    ggplot2::geom_path(data = .circle, color = "grey80",
+                       size = line_size, inherit.aes = FALSE,
+                       mapping = ggplot2::aes(x = x, y = y)),
+    suppressWarnings(ggplot2::geom_segment( ## Suppress unused arg: frames
+      data = .df_basis,
+      size = .axes_siz, color = .axes_col,
+      mapping = ggplot2::aes(x = x, y = y, frame = frame,
+                             xend = .center[, 1L], yend = .center[, 2L])
+    )),
+    suppressWarnings(ggplot2::geom_text(
+      data = .df_basis,
+      color = .axes_col, size = text_size,
+      vjust = "outward", hjust = "outward",
+      mapping = ggplot2::aes(x = x, y = y, frame = frame, label = label)
+    ))
+  ))
 }
 
 
@@ -713,7 +725,7 @@ proto_basis <- function(
 #' @param segment_size (1D bases only) the width thickness of the rectangle bar
 #' showing variable magnitude on the axes. Defaults to 2.
 #' @export
-#' @family ggtour proto
+#' @family ggtour proto functions
 proto_basis1d <- function(
   position = c("top1d", "floor1d", "top2d", "floor2d", "off"),
   manip_col = "blue",
@@ -754,7 +766,7 @@ proto_basis1d <- function(
   #### if basis 1D map to density, else map to data (ie. cheem)
   if(.d == 1L){
     .map_to_tgt <- .map_to_density
-  } else .map_to_tgt <- .map_to_data
+  }else .map_to_tgt <- .map_to_data
   .df_zero <- map_relative(.df_zero, position, .map_to_tgt)
   .df_seg  <- map_relative(.df_seg,  position, .map_to_tgt)
   .df_txt  <- map_relative(.df_txt,  position, .map_to_tgt)
@@ -812,7 +824,7 @@ proto_basis1d <- function(
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' @export
 #' @aliases proto_points
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -874,7 +886,7 @@ proto_point <- function(aes_args = list(),
 #' density curves.
 #' @export
 #' @aliases proto_density1d
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -930,6 +942,65 @@ proto_density <- function(aes_args = list(),
   return(ret)
 }
 
+#' @param fixed_y Vector of length of the data, values to fix vertical height.
+#' Typically related to but not an explanatory variable, for instance,
+#' predicted Y, or residuals.
+#' @rdname proto_density
+#' @export
+#' @family ggtour proto functions
+#' @examples
+#' 
+#' ## proto_point1d_fixed_y:
+#' # Fixed y values are useful for related values that are 
+#' # not in the X variables, _eg_ predictions or residuals of you X space.
+#' dummy_y <- as.integer(clas) + rnorm(nrow(dat))# %>% scale_sd
+#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+#' 
+#' ggt <- ggtour(gt_path, dat) +
+#'   proto_basis1d("top2d") +
+#'   proto_origin() + 
+#'   proto_point1d_fixed_y(list(fill = clas, color = clas),
+#'     fixed_y = dummy_y)
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+proto_point1d_fixed_y <- function(
+  aes_args = list(),
+  identity_args = list(),
+  fixed_y
+){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(.df_data) == TRUE)
+    stop("proto_point1d_fixed_y: Data is NULL. Was data passed to the basis array or ggtour?")
+  
+  ## Add fixed y
+  .df_data <- .bind_elements2df(
+    list(fixed_y = rep_len(fixed_y, .nrow_df_data)), .df_data)
+  ## Scale to density size
+  ##TODO: scaling of fixed_y is height in the example, but it works for now
+  # what didn't help:
+  # -preprocess with scale_sd
+  # -map_rel to .map_to_density/.map_to_density
+  # -incidentally .map_to_data worked best, but unreliable; 
+  # --_ie_cheem doens't have 2d basis.
+  .df_data <- map_relative(
+    data.frame(x = .df_data$x, fixed_y = .df_data$fixed_y,
+               frame = .df_data$frame, label = .df_data$label),
+    "center", .map_to_density)
+  
+  ## do.call aes() over the aes_args
+  .aes_func <- function(...)
+    ## tooltip for plotly on hover tooltip
+    ggplot2::aes(x = x, y = fixed_y, frame = frame, tooltip = label, ...) 
+  .aes_call <- do.call(.aes_func, aes_args)
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...) suppressWarnings(
+    ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
+  ## Return
+  return(do.call(.geom_func, identity_args))
+}
+
 
 #' Tour proto for data, text labels
 #'
@@ -947,7 +1018,7 @@ proto_density <- function(aes_args = list(),
 #' subset to. Should be within 1:n, the rows of the original data. Defaults to
 #' NULL, labeling all rows.
 #' @export
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -1007,7 +1078,7 @@ proto_text <- function(aes_args = list(),
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' @export
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' raw <- ggplot2::diamonds
 #' dat <- scale_sd(raw[1:10000, c(1, 5:6, 8:10)])
@@ -1075,7 +1146,7 @@ proto_hex <- function(aes_args = list(),
 #' FALSE.
 #' @export
 #' @aliases proto_highlight_2d
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -1089,7 +1160,7 @@ proto_hex <- function(aes_args = list(),
 #' animate_plotly(ggt)
 #' }
 #' 
-#' ## Custom aesthetics. Highlighting multiple points defaults mark_initial to FALSE
+#' ## Highlight multiple observations, mark_initial defaults to off
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_highlight(rownum_index = c( 2, 6, 19),
 #'                   identity_args = list(color = "blue", size = 4, shape = 2)) +
@@ -1140,21 +1211,23 @@ proto_highlight <- function(
 
 #' @rdname proto_highlight
 #' @export
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' ## 1D case:
-#' gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+#' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 #' 
-#' ggt <- ggtour(gt_path, dat) +
+#' ggt <- ggtour(gt_path1d, dat) +
 #'   proto_default1d(list(fill = clas, color = clas)) +
 #'   proto_highlight1d(rownum_index = 7)
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
-#' ggt2 <- ggtour(gt_path, dat) +
+#' ## Highlight multiple observations, mark_initial defaults to off
+#' ggt2 <- ggtour(gt_path1d, dat) +
 #'   proto_default1d(list(fill = clas, color = clas)) +
-#'   proto_highlight1d(rownum_index = c(2, 6, 7))
+#'   proto_highlight1d(rownum_index = c(2, 6, 7),
+#'                     identity_args = list(color = "green", linetype = 1))
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
@@ -1301,7 +1374,7 @@ proto_frame_cor <- function(
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' @export
 #' @aliases proto_origin2d
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -1347,7 +1420,7 @@ proto_origin <- function(
 
 #' @rdname proto_origin
 #' @export
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' 
 #' ## 1D case:
@@ -1400,7 +1473,7 @@ proto_origin1d <- function(
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' @export
 #' @aliases proto_default2d, proto_def, proto_def2d
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' dat <- scale_sd(tourr::flea[, 1:6])
 #' clas <- tourr::flea$species
@@ -1429,7 +1502,7 @@ proto_default <- function(aes_args = list(),
 #' @rdname proto_default
 #' @export
 #' @aliases proto_def1d
-#' @family ggtour proto
+#' @family ggtour proto functions
 #' @examples
 #' ## 1D case:
 #' gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)

@@ -77,7 +77,7 @@ animate_plotly(ggt1d)
 }
 }
 \seealso{
-Other ggtour proto: 
+Other ggtour proto functions: 
 \code{\link{facet_wrap_tour}()},
 \code{\link{ggtour}()},
 \code{\link{proto_default}()},
@@ -88,7 +88,7 @@ Other ggtour proto:
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 
-Other ggtour proto: 
+Other ggtour proto functions: 
 \code{\link{facet_wrap_tour}()},
 \code{\link{ggtour}()},
 \code{\link{proto_default}()},
@@ -99,4 +99,4 @@ Other ggtour proto:
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 }
-\concept{ggtour proto}
+\concept{ggtour proto functions}

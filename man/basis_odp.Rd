@@ -43,11 +43,11 @@ preservation arguments.
 \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd}} for
 details on \code{type}.
 
-Other basis identifiers: 
+Other basis producing functions: 
 \code{\link{basis_guided}()},
 \code{\link{basis_half_circle}()},
 \code{\link{basis_olda}()},
 \code{\link{basis_onpp}()},
 \code{\link{basis_pca}()}
 }
-\concept{basis identifiers}
+\concept{basis producing functions}

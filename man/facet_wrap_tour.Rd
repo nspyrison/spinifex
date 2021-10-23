@@ -41,7 +41,7 @@ animate_gganimate(ggt) ## Faceting may not play well with `plotly`
 }
 }
 \seealso{
-Other ggtour proto: 
+Other ggtour proto functions: 
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
@@ -52,4 +52,4 @@ Other ggtour proto:
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 }
-\concept{ggtour proto}
+\concept{ggtour proto functions}

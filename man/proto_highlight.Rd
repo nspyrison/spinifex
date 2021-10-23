@@ -58,7 +58,7 @@ ggt <- ggtour(gt_path, dat) +
 animate_plotly(ggt)
 }
 
-## Custom aesthetics. Highlighting multiple points defaults mark_initial to FALSE
+## Highlight multiple observations, mark_initial defaults to off
 ggt2 <- ggtour(gt_path, dat) +
   proto_highlight(rownum_index = c( 2, 6, 19),
                   identity_args = list(color = "blue", size = 4, shape = 2)) +
@@ -68,24 +68,26 @@ ggt2 <- ggtour(gt_path, dat) +
 animate_plotly(ggt2)
 }
 ## 1D case:
-gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 
-ggt <- ggtour(gt_path, dat) +
+ggt <- ggtour(gt_path1d, dat) +
   proto_default1d(list(fill = clas, color = clas)) +
   proto_highlight1d(rownum_index = 7)
 \dontrun{
 animate_plotly(ggt)
 }
 
-ggt2 <- ggtour(gt_path, dat) +
+## Highlight multiple observations, mark_initial defaults to off
+ggt2 <- ggtour(gt_path1d, dat) +
   proto_default1d(list(fill = clas, color = clas)) +
-  proto_highlight1d(rownum_index = c(2, 6, 7))
+  proto_highlight1d(rownum_index = c(2, 6, 7),
+                    identity_args = list(color = "green", linetype = 1))
 \dontrun{
 animate_plotly(ggt2)
 }
 }
 \seealso{
-Other ggtour proto: 
+Other ggtour proto functions: 
 \code{\link{facet_wrap_tour}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
@@ -96,7 +98,7 @@ Other ggtour proto:
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 
-Other ggtour proto: 
+Other ggtour proto functions: 
 \code{\link{facet_wrap_tour}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
@@ -107,4 +109,4 @@ Other ggtour proto:
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 }
-\concept{ggtour proto}
+\concept{ggtour proto functions}

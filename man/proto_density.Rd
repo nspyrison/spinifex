@@ -3,6 +3,7 @@
 \name{proto_density}
 \alias{proto_density}
 \alias{proto_density1d}
+\alias{proto_point1d_fixed_y}
 \title{Tour proto for data, 1D density, with rug marks}
 \usage{
 proto_density(
@@ -11,6 +12,8 @@ proto_density(
   density_position = c("identity", "stack", "fill"),
   do_add_rug = TRUE
 )
+
+proto_point1d_fixed_y(aes_args = list(), identity_args = list(), fixed_y)
 }
 \arguments{
 \item{aes_args}{A list of aesthetic arguments to passed to
@@ -29,6 +32,10 @@ work with \code{animate_plotly()} at the moment.}
 
 \item{do_add_rug}{Logical, weather or not to add the rug marks below the
 density curves.}
+
+\item{fixed_y}{Vector of length of the data, values to fix vertical height.
+Typically related to but not an explanatory variable, for instance,
+predicted Y, or residuals.}
 }
 \description{
 Adds \code{geom_density()} and \code{geom_rug()} of the projected data. Density
@@ -45,9 +52,35 @@ ggt <- ggtour(gt_path, dat) +
 \dontrun{
 animate_plotly(ggt)
 }
+
+## proto_point1d_fixed_y:
+# Fixed y values are useful for related values that are 
+# not in the X variables, _eg_ predictions or residuals of you X space.
+dummy_y <- as.integer(clas) + rnorm(nrow(dat))# \%>\% scale_sd
+gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+
+ggt <- ggtour(gt_path, dat) +
+  proto_basis1d("top2d") +
+  proto_origin() + 
+  proto_point1d_fixed_y(list(fill = clas, color = clas),
+    fixed_y = dummy_y)
+\dontrun{
+animate_plotly(ggt)
+}
 }
 \seealso{
-Other ggtour proto: 
+Other ggtour proto functions: 
+\code{\link{facet_wrap_tour}()},
+\code{\link{ggtour}()},
+\code{\link{proto_basis}()},
+\code{\link{proto_default}()},
+\code{\link{proto_hex}()},
+\code{\link{proto_highlight}()},
+\code{\link{proto_origin}()},
+\code{\link{proto_point}()},
+\code{\link{proto_text}()}
+
+Other ggtour proto functions: 
 \code{\link{facet_wrap_tour}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
@@ -58,4 +91,4 @@ Other ggtour proto:
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 }
-\concept{ggtour proto}
+\concept{ggtour proto functions}

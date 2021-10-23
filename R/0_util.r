@@ -34,11 +34,12 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' tour, the output of `manual_tour` or `save_history(*_tour())`.
 #' @param data Optional, (n, p) dataset to project, consisting of numeric 
 #' variables.
-#' @param basis_label Optional, labels for the reference frame, a character 
-#' vector of the number of variables.
+#' @param basis_label Labels for basis display, a character 
+#' vector with length equal to the number of variables.
 #' Defaults to the 3 character abbreviation of the original variables names.
-#' @param data_label Optional, labels for plotly tooltip and return object. 
-#' Defaults to the rownames of the data, if available, then the row number.
+#' @param data_label Labels for `plotly` tooltip display. 
+#' Defaults to the row number, (and rownames of the data if they contain 
+#' characters).
 #' @export
 #' @examples
 #' ## !!This function is not meant for external use!!
@@ -66,10 +67,7 @@ array2df <- function(
   if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
   
   ## Initialize
-  if(is.null(data) == FALSE &
-     suppressWarnings(any(is.na(as.numeric(as.character(rownames(data)))))))
-    data_label <- paste0("row: ", 1:nrow(data), ", ", rownames(data))
-  manip_var <- attributes(basis_array)$manip_var
+  manip_var <- attributes(basis_array)$manip_var ## NULL means tourr tour
   p <- dim(basis_array)[1L]
   n_frames <- dim(basis_array)[3L]
   
@@ -99,13 +97,13 @@ array2df <- function(
     data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c(.nms[1L:(ncol(data_frames) - 1L)], "frame")
     ## Data label rep if applicable
-    if(is.null(data_label) == TRUE)
-      data_label <- 1L:nrow(data)
-    data_frames$label <- rep_len(data_label, nrow(data_frames))
+    if(length(data_label) > 0L)
+      data_frames$label <- rep_len(data_label, nrow(data_frames))
   }
   
   ## Basis label and manip_var attribute.
-  basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
+  if(length(basis_label) > 0L)
+    basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
   attr(basis_frames, "manip_var") <- manip_var
   
   ## Return, include data if it exists.
@@ -161,7 +159,7 @@ as_history_array <- function(basis_array, data = NULL){
 #' @return Transformed values of `x`, dimension and class unchanged.
 #' @seealso \code{\link{map_absolute}} for more manual control.
 #' @export
-#' @family Linear mapping
+#' @family linear mapping functions
 #' @examples
 #' ## !!This function is not meant for external use!!
 #' rb <- tourr::basis_random(4, 2)
@@ -271,7 +269,7 @@ scale_axes <- function(...) {
 #' @return Scaled and offset `x`.
 #' @seealso \code{\link{scale_axes}} for preset choices.
 #' @export
-#' @family Linear mapping
+#' @family linear mapping functions
 #' @examples 
 #' bas <- tourr::basis_random(4, 2)
 #' 
@@ -363,7 +361,7 @@ theme_spinifex <- function(...){
 #' @param d Number of dimensions in the projection space.
 #' @seealso \code{\link[Rdimtools:do.pca]{Rdimtools::do.pca}}
 #' @export
-#' @family basis identifiers
+#' @family basis producing functions
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:6])
 #' basis_pca(data = dat_std)
@@ -392,7 +390,7 @@ basis_pca <- function(data, d = 2){
 #' Discriminant Analysis on Undersampled Problems." J. Mach. Learn. Res., 
 #' 6, 483-502. ISSN 1532-4435.
 #' @export
-#' @family basis identifiers
+#' @family basis producing functions
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
@@ -433,7 +431,7 @@ basis_olda <- function(data, class, d = 2){
 #' Li B, Wang C, Huang D (2009). "Supervised feature extraction based on 
 #' orthogonal discriminant projection." Neurocomputing, 73(1-3), 191-196.
 #' @export
-#' @family basis identifiers
+#' @family basis producing functions
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
@@ -473,7 +471,7 @@ basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
 #' He X (2005). Locality Preserving Projections. PhD Thesis, 
 #' University of Chicago, Chicago, IL, USA.
 #' @export
-#' @family basis identifiers
+#' @family basis producing functions
 #' @examples
 #' dat_std <- scale_sd(wine[, 2:6])
 #' basis_onpp(data = dat_std)
@@ -503,7 +501,7 @@ basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
 #' @seealso \code{\link[tourr:guided_tour]{tourr::guided_tour}} for annealing 
 #' arguments.
 #' @export
-#' @family basis identifiers
+#' @family basis producing functions
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:6])
 #' basis_guided(data = dat_std, index_f = tourr::holes())
@@ -530,7 +528,7 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2, ...){
 #' 
 #' @param data The data to create a basis for.
 #' @export
-#' @family basis identifiers
+#' @family basis producing functions
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:6])
 #' bas <- basis_half_circle(dat_std)
@@ -558,7 +556,7 @@ basis_half_circle <- function(data){
 #' contribution. Defaults to 1.
 #' @return Numeric scalar, the column number of a variable.
 #' @export
-#' @family manual tour
+#' @family manual tour adjacent functions
 #' @examples 
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:6])

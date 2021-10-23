@@ -30,4 +30,11 @@ bas <- basis_pca(dat_std)
 manip_var_of(basis = bas) ## Variable with the largest contribution
 manip_var_of(basis = bas, rank = 5) ## Variable with 5th-largest contribution
 }
-\concept{manual tour}
+\seealso{
+Other manual tour adjacent functions: 
+\code{\link{create_manip_space}()},
+\code{\link{interpolate_manual_tour}()},
+\code{\link{manual_tour}()},
+\code{\link{rotate_manip_space}()}
+}
+\concept{manual tour adjacent functions}

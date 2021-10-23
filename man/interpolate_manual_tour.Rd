@@ -29,9 +29,10 @@ dim(interp)
 str(interp)
 }
 \seealso{
-Other Internal utility: 
-\code{\link{.bind_elements2df}()},
-\code{\link{.init4proto}},
-\code{\link{.lapply_rep_len}()}
+Other manual tour adjacent functions: 
+\code{\link{create_manip_space}()},
+\code{\link{manip_var_of}()},
+\code{\link{manual_tour}()},
+\code{\link{rotate_manip_space}()}
 }
-\concept{Internal utility}
+\concept{manual tour adjacent functions}

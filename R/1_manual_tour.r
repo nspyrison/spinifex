@@ -17,6 +17,7 @@
 #' manipulate the projection in.
 #' @import tourr
 #' @export
+#' @family manual tour adjacent functions
 #' @examples
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:6])
@@ -76,6 +77,7 @@ create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
 #' The first 2 columns are x and y in the projection plane. The 3rd column
 #' extends "in the z-direction" orthogonal to the projection plane.
 #' @export
+#' @family manual tour adjacent functions
 #' @examples
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:6])
@@ -167,6 +169,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @return A (p, d, 4) history_array of the radial tour. The bases set for
 #' phi_start, `phi_min`, `phi_max`, and back to phi_start.
 #' @export
+#' @family manual tour adjacent functions
 #' @examples
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:6])
@@ -262,7 +265,7 @@ manual_tour <- function(basis,
 #'
 #' @param basis_array array, of the target bases, the extrema of the walk/segments.
 #' @param angle The step size between interpolated frames, in radians.
-#' @family Internal utility
+#' @family manual tour adjacent functions
 #' @examples
 #' ## This function is not meant for external use
 #' dat_std <- scale_sd(wine[, 2:6])

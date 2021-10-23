@@ -29,7 +29,7 @@ map_absolute(bas, offset = c(-2, 0), scale = c(2/3, 2/3))
 \seealso{
 \code{\link{scale_axes}} for preset choices.
 
-Other Linear mapping: 
+Other linear mapping functions: 
 \code{\link{map_relative}()}
 }
-\concept{Linear mapping}
+\concept{linear mapping functions}

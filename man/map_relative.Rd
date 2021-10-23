@@ -40,7 +40,7 @@ map_relative(x = rb, position = "right", to = wine[, 2:3])
 \seealso{
 \code{\link{map_absolute}} for more manual control.
 
-Other Linear mapping: 
+Other linear mapping functions: 
 \code{\link{map_absolute}()}
 }
-\concept{Linear mapping}
+\concept{linear mapping functions}
