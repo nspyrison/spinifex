@@ -5,16 +5,14 @@
 \title{Tour proto for within frame correlation}
 \usage{
 proto_frame_cor(
-  position = c(0.7, -0.1),
   aes_args = list(),
   identity_args = list(size = 4),
+  data = NULL,
+  position = c(0.7, -0.1),
   ...
 )
 }
 \arguments{
-\item{position}{Vector x and y position relative to the unit data position;
-(0, 1) in each direction. Defaults to c(.7, -.1).}
-
 \item{aes_args}{A list of aesthetic arguments to passed to
 \verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
 for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
@@ -24,6 +22,9 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point()}, but outside of \code{aes()}, for instance
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
+
+\item{position}{Vector x and y position relative to the unit data position;
+(0, 1) in each direction. Defaults to c(.7, -.1).}
 
 \item{...}{Optionally, pass additional arguments to
 \code{\link[stats:cor]{stats::cor}}, specifying the type of

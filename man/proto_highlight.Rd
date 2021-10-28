@@ -7,23 +7,20 @@
 \title{Tour proto highlighing specified points}
 \usage{
 proto_highlight(
-  rownum_index,
   aes_args = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  mark_initial = if (length(rownum_index) == 1) TRUE else FALSE
+  data = NULL,
+  mark_initial = FALSE
 )
 
 proto_highlight1d(
-  rownum_index,
   aes_args = list(),
   identity_args = list(color = "red", linetype = 2, alpha = 0.9),
-  mark_initial = if (length(rownum_index) == 1) TRUE else FALSE
+  data = NULL,
+  mark_initial = FALSE
 )
 }
 \arguments{
-\item{rownum_index}{One or more integers, the row numbers of the to
-highlight. Should be within 1:n, the rows of the original data.}
-
 \item{aes_args}{A list of aesthetic arguments to passed to
 \verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
 for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
@@ -35,32 +32,35 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.
 Typically a single numeric for point size, alpha, or similar.}
 
+\item{data}{Numeric data to project. If left NULL, will check if it data is
+stored as an attribute of the the \code{basis_array}.}
+
 \item{mark_initial}{Logical, whether or not to leave a fainter mark at the
-subset's initial position. By default: TRUE if single row number given else
-FALSE.}
+subset's initial position. Defaults to FALSE.}
 }
 \description{
 A \code{geom_point} or \code{geom_segment}(*1d) call to draw attention to a subset of
-points. Subset the projected data frames to the specified \code{rownum_index} of
-the original data.frame with specified highlighting aesthetics. The order you
-apply highlighting is import when using with other \verb{proto_*} functions.
+points. With the addition of \code{data} argument to related \verb{proto_*} this is
+mostly redundant with an addition \code{proto_point} call on a subset of the data,
+but does allow for keeping the initial position with the \code{mark_initial}
+argument if desired.
 }
 \examples{
 dat <- scale_sd(tourr::flea[, 1:6])
 clas <- tourr::flea$species
 gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 
-## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
+## d = 2 case
 ggt <- ggtour(gt_path, dat) +
-  proto_highlight(rownum_index = 5) +
+  proto_highlight(data = dat[5,]) +
   proto_point()
 \dontrun{
 animate_plotly(ggt)
 }
 
-## Highlight multiple observations, mark_initial defaults to off
+## Highlight multiple observations
 ggt2 <- ggtour(gt_path, dat) +
-  proto_highlight(rownum_index = c( 2, 6, 19),
+  proto_highlight(data = dat[c( 2, 6, 19), ],
                   identity_args = list(color = "blue", size = 4, shape = 2)) +
   proto_point(list(color = clas, shape = clas),
               list(size = 2, alpha = .7))
@@ -72,7 +72,7 @@ gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
 
 ggt <- ggtour(gt_path1d, dat) +
   proto_default1d(list(fill = clas, color = clas)) +
-  proto_highlight1d(rownum_index = 7)
+  proto_highlight1d(data = dat[7, ])
 \dontrun{
 animate_plotly(ggt)
 }
@@ -80,7 +80,7 @@ animate_plotly(ggt)
 ## Highlight multiple observations, mark_initial defaults to off
 ggt2 <- ggtour(gt_path1d, dat) +
   proto_default1d(list(fill = clas, color = clas)) +
-  proto_highlight1d(rownum_index = c(2, 6, 7),
+  proto_highlight1d(data = dat[c(2, 6, 7), ],
                     identity_args = list(color = "green", linetype = 1))
 \dontrun{
 animate_plotly(ggt2)

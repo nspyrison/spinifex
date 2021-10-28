@@ -51,59 +51,47 @@ ggtour <- function(basis_array,
                    basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("v", 1:nrow(basis_array)),
                    data_label = 1:nrow(basis_array)
 ){
+  ## If data missing, check if data is passed to the basis_array
   if(is.null(data) == TRUE) data <- attr(basis_array, "data") ## Could be NULL
-  manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
+  .manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
   
   ## If characters are used in the rownames, add them to tooltip
   if(is.null(data) == FALSE &
      suppressWarnings(any(is.na(as.numeric(as.character(rownames(data)))))))
-    data_label <- paste0("row: ", 1:nrow(data), ", ", rownames(data))
+    data_label <- paste0("row: ", 1L:nrow(data), ", ", rownames(data))
   
   ## Single basis, no manip var
-  if(is.null(manip_var) == TRUE) ## if manip_var is null; IE. single basis, not tour
+  if(is.null(.manip_var) == TRUE) ## if manip_var is null; IE. single basis, not tour
     if(length(dim(basis_array)) == 2L) ## AND 1 basis.
       basis_array <- array(as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   ## Interpolate {tourr} tours
-  if(is.null(manip_var) == TRUE) ## if manip_var is null; IE. from tourr
+  if(is.null(.manip_var) == TRUE) ## if manip_var is null; IE. from tourr
     if(dim(basis_array)[3L] != 1L) ## AND more than 1 basis.
       .m <- utils::capture.output(
-        basis_array <- tourr::interpolate(basis_array, angle))
+        .interpolated_basis_array <- tourr::interpolate(basis_array, angle))
   ## Interpolate manual tours
-  if(is.null(manip_var) == FALSE)
+  if(is.null(.manip_var) == FALSE)
     ## Basis_array from manual tours is only 1 basis.
-    basis_array <- interpolate_manual_tour(basis_array, angle)
+    .interpolated_basis_array <- interpolate_manual_tour(basis_array, angle)
   
-  df_ls <- array2df(basis_array, data, basis_label, data_label)
-  df_basis <- df_ls$basis_frames
-  df_data  <- df_ls$data_frames ## Can be NULL
-  attr(df_basis, "manip_var") <- manip_var ## NULL if not a manual tour
+  df_ls <- array2df(.interpolated_basis_array, data, basis_label, data_label)
+  .df_basis <- df_ls$basis_frames
+  attr(.df_basis, "manip_var") <- .manip_var ## NULL if not a manual tour
+  .n_frames <- length(unique(.df_basis$frame))
+  .d <- ncol(.df_basis) - 2L
+  .p <- nrow(.df_basis) / .n_frames
+  eval(.fortify_data)
   
-  ## Make several df bounidng boxs to map_relative to, but let the proto_* select.
-  map_to_unitbox <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
-  if(is.null(data) == FALSE){
-    map_to_density <- data.frame(x = range(df_data[, 1L]), y = c(0L, 1L))
-    if(dim(basis_array)[2L] >= 1L)
-      map_to_data  <- data.frame(x = range(df_data[, 1L]), y = range(df_data[, 2L]))
-  }
-  
-  nrow_df_data <- nrow(df_data)
-
-  ## Assign list to last_ggtour().
-  n_frames <- length(unique(df_basis$frame))
-  d <- ncol(df_basis) - 2L
-  p <- nrow(df_basis) / n_frames
-  n <- nrow_df_data   / n_frames
-  ## BYPRODUCT:
+  ## BYPRODUCT: Assign list to last_ggtour().
   .set_last_ggtour(list(
-    df_basis = df_basis, df_data = df_data, map_to_unitbox = map_to_unitbox,
-    map_to_density = map_to_density, map_to_data = map_to_data,
-    n_frames = n_frames, nrow_df_data = nrow_df_data, n = n, p = p, d = d,
-    manip_var = manip_var, is_faceted = FALSE))
+    interpolated_basis_array = .interpolated_basis_array,
+    df_basis = .df_basis, df_data = .df_data, map_to_unitbox = .map_to_unitbox,
+    map_to_density = .map_to_density, map_to_data = .map_to_data,
+    n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p, d = .d,
+    manip_var = .manip_var, is_faceted = FALSE))
   
   ## Return ggplot head, theme, and facet if used
-  ret <- ggplot2::ggplot(df_basis) + spinifex::theme_spinifex() ## df_basis helps set .use_idx in filmstrip
-
-  return(ret)
+  return(ggplot2::ggplot(.df_basis) + spinifex::theme_spinifex())
 }
 # ## Print method for ggtours ?? using proto_default()
 # #### Was a good idea, but ggplot stops working when you change the first class, 
@@ -248,6 +236,31 @@ last_ggtour <- function(){.store$ggtour_ls}
   return(.ret)
 }
 
+#' Prep data, especially for local data passes in `proto_*`
+#' 
+#' Internal expression. Creates local .objects to be commonly consumed by 
+#' spinifex proto_* functions.
+#'
+#' @export
+#' @family Internal utility
+#' @examples
+#' ## This expression. is not meant for external use.
+## _.fortify_data expression -----
+.fortify_data <- expression({ ## Expected df_ls
+  .df_data <- df_ls$data_frames ## Can be NULL
+  ## Make several df bounding boxs to map_relative to, but let the proto_* select.
+  .map_to_unitbox <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
+  if(is.null(data) == FALSE){
+    .map_to_density <- data.frame(x = range(.df_data[, 1L]), y = c(0L, 1L))
+    if(ncol(.interpolated_basis_array) >= 1L)
+      .map_to_data <- data.frame(x = range(.df_data[, 1L]),
+                                 y = range(.df_data[, 2L]))
+  }
+  .nrow_df_data <- nrow(.df_data) ## NULL if data is NULL
+  .n <- .nrow_df_data / .n_frames ## NULL if data is NULL
+})
+
+
 #' Initialize common obj from .global `ggtour()` objects & test their existence
 #' 
 #' Internal expression. Creates local .objects to be commonly consumed by 
@@ -262,44 +275,30 @@ last_ggtour <- function(){.store$ggtour_ls}
   .ggt <- spinifex::last_ggtour() ## Self-explicit for use in cheem
   if(is.null(.ggt)) stop("last_ggtour() is NULL, have you run ggtour() yet?")
   
-  ## Assign elements of last_ggtour() into the scope of a ggproto func.
-  .df_basis       <- .ggt$df_basis ## Give operable local copies
-  .df_data        <- .ggt$df_data
-  .map_to_unitbox <- .ggt$map_to_unitbox
-  .map_to_density <- .ggt$map_to_density
-  .map_to_data    <- .ggt$map_to_data
-  .n_frames       <- .ggt$n_frames
-  .nrow_df_data   <- .ggt$nrow_df_data
-  .n              <- .ggt$n
-  .p              <- .ggt$p
-  .d              <- .ggt$d
-  .manip_var      <- .ggt$manip_var ## Can be NULL; a tourr tour.
-  .is_faceted     <- .ggt$is_faceted ## Usually NULL; no facet used.
+  ## Assign elements ggtour list as quiet .objects in the environment
+  .env <- environment()
+  .nms <- names(.ggt)
+  .m <- sapply(seq_along(.ggt), function(i){
+    assign(paste0(".", .nms[i]), .ggt[[i]], envir = .env)
+  })
   
-  ## Subset, if rownum_index exists
-  if(exists("rownum_index")){
-    if(is.null(rownum_index) == FALSE){
-      ## Subset arg_lists
-      if(exists("aes_args"))
-        if(length(aes_args) > 0L)
-          aes_args <- lapply(aes_args, function(arg)arg[rownum_index])
-      if(exists("identity_args"))
-        if(length(aes_args) > 0L)
-          identity_args <- lapply(identity_args, function(arg)
-            if(length(arg) == .n) arg[rownum_index] else arg)
-      ## Subset .df_data
-      .idx <- NULL## NEED SOME MOD MATH:
-      .m <- sapply(1L:.n_frames - 1L, function(i){
-        .idx <<- c(.idx, rownum_index + i * .n)
-      })
-      .n <- length(rownum_index)
-      .df_data <- .df_data[.idx, ]
-      .nrow_df_data <- nrow(.df_data)
-    }
+  ## If data is passed locally, update it
+  if(is.null(data) == FALSE & identical(data, utils::data) == FALSE){
+    df_ls <- array2df(.interpolated_basis_array, data)
+    eval(.fortify_data)
   }
-  ## Replicate arg, if they exist
+  
+  ## Replicate arg lists, if they exist
   if(exists("aes_args")){
     if(length(aes_args) > 0L){
+      ## Warn if aes_args arg mismatched length of data
+      lapply(aes_args, function(arg){
+        if(length(arg) %in% c(1L, .n) == FALSE)
+          warning(paste0(
+            "element of aes_args had length ", length(arg),
+            "was expecting 1 or n (", .n,
+            "). Was a subset of data used with a full lengthed aesthetic?"))})
+      ## Replicate across bases
       aes_args <- spinifex:::.lapply_rep_len(aes_args, .nrow_df_data, .n)
       ## binding aes_args to .df_data, but then need to find another method to replace do.call.
       # .df_data <- .bind_elements2df(aes_args, .df_data)
@@ -307,8 +306,15 @@ last_ggtour <- function(){.store$ggtour_ls}
     }
   }
   if(exists("identity_args")){
-    if(length(identity_args) > 0L)
+    if(length(identity_args) > 0L){
+      lapply(identity_args, function(arg){
+        if(length(arg) %in% c(1L, .n) == FALSE)
+          warning(paste0(
+            "element of identity_args had length ",
+            length(arg), "was expecting 1 or n (", .n,
+            "). Was a subset of data used with a full lengthed identidy?"))})
       identity_args <- spinifex:::.lapply_rep_len(identity_args, .nrow_df_data, .n)
+    }
   }
   .m <- gc() ## Mute garbage collection
 })
@@ -822,6 +828,9 @@ proto_basis1d <- function(
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
+#' @param data Optionally pass a dataframe to this proto, superceeds data 
+#' passed to `ggtour`. Analogous to ggplot2 where data passed into a `geom_*` 
+#' is used independent of data passed to `ggplot`.
 #' @export
 #' @aliases proto_points
 #' @family ggtour proto functions
@@ -843,7 +852,8 @@ proto_basis1d <- function(
 #' animate_plotly(ggt2)
 #' }
 proto_point <- function(aes_args = list(),
-                        identity_args = list()
+                        identity_args = list(),
+                        data = NULL
 ){
   ## Initialize
   eval(.init4proto)
@@ -879,6 +889,9 @@ proto_point <- function(aes_args = list(),
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
+#' @param data Optionally pass a dataframe to this proto, superceeds data 
+#' passed to `ggtour`. Analogous to ggplot2 where data passed into a `geom_*` 
+#' is used independent of data passed to `ggplot`.
 #' @param density_position The `ggplot2` position of `geom_density()`. Either 
 #' c("identity", "stack"), defaults to "identity". Warning: "stack" does not 
 #' work with `animate_plotly()` at the moment.
@@ -900,6 +913,7 @@ proto_point <- function(aes_args = list(),
 #' }
 proto_density <- function(aes_args = list(),
                           identity_args = list(alpha = .7),
+                          data = NULL,
                           density_position = c("identity", "stack", "fill"),
                           do_add_rug = TRUE
 ){
@@ -950,7 +964,7 @@ proto_density <- function(aes_args = list(),
 #' @family ggtour proto functions
 #' @examples
 #' 
-#' ## proto_point1d_fixed_y:
+#' ## proto_point.1d_fix_y:
 #' # Fixed y values are useful for related values that are 
 #' # not in the X variables, _eg_ predictions or residuals of you X space.
 #' dummy_y <- as.integer(clas) + rnorm(nrow(dat))# %>% scale_sd
@@ -959,14 +973,15 @@ proto_density <- function(aes_args = list(),
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_basis1d("top2d") +
 #'   proto_origin() + 
-#'   proto_point1d_fixed_y(list(fill = clas, color = clas),
+#'   proto_point.1d_fix_y(list(fill = clas, color = clas),
 #'     fixed_y = dummy_y)
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_point1d_fixed_y <- function(
+proto_point.1d_fix_y <- function(
   aes_args = list(),
   identity_args = list(),
+  data = NULL,
   fixed_y
 ){
   ## Initialize
@@ -985,14 +1000,21 @@ proto_point1d_fixed_y <- function(
   # -incidentally .map_to_data worked best, but unreliable; 
   # --_ie_cheem doens't have 2d basis.
   .df_data <- map_relative(
-    data.frame(x = .df_data$x, fixed_y = .df_data$fixed_y,
+    data.frame(x = .df_data$x, y = .df_data$fixed_y, 
                frame = .df_data$frame, label = .df_data$label),
     "center", .map_to_density)
+  ## Pass data back to .store; to calm some oddities 
+  # such as proto_origin() complaining about y being missing
+  .set_last_ggtour(list(
+    df_basis = .df_basis, df_data = .df_data, map_to_unitbox = .map_to_unitbox,
+    map_to_density = .map_to_density, map_to_data = .map_to_data,
+    n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p, d = .d,
+    manip_var = .manip_var, is_faceted = TRUE))
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
     ## tooltip for plotly on hover tooltip
-    ggplot2::aes(x = x, y = fixed_y, frame = frame, tooltip = label, ...) 
+    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) 
   .aes_call <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(
@@ -1014,9 +1036,9 @@ proto_point1d_fixed_y <- function(
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
-#' @param rownum_index One or more integers, the row numbers of the to 
-#' subset to. Should be within 1:n, the rows of the original data. Defaults to
-#' NULL, labeling all rows.
+#' @param data Optionally pass a dataframe to this proto, superceeds data 
+#' passed to `ggtour`. Analogous to ggplot2 where data passed into a `geom_*` 
+#' is used independent of data passed to `ggplot`.
 #' @export
 #' @family ggtour proto functions
 #' @examples
@@ -1036,13 +1058,13 @@ proto_point1d_fixed_y <- function(
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_text(list(color = clas, size = as.integer(clas)),
 #'              list(alpha = .7),
-#'              rownum_index = 1:15)
+#'              data = dat[1:15,])
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
 proto_text <- function(aes_args = list(),
                        identity_args = list(nudge_x = 0.05),
-                       rownum_index = NULL
+                       data = NULL
 ){
   ## Initialize
   eval(.init4proto)
@@ -1067,8 +1089,6 @@ proto_text <- function(aes_args = list(),
 #' Adds `geom_hex()` of the projected data. Does not display hexagons in plotly
 #' animations; will not work with `animate_plotly()`.
 #'
-#' @param bins Numeric vector giving number of bins in both vertical and 
-#' horizontal directions. Defaults to 30.
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
 #' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
@@ -1077,6 +1097,11 @@ proto_text <- function(aes_args = list(),
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
+#' @param data Optionally pass a dataframe to this proto, superceeds data 
+#' passed to `ggtour`. Analogous to ggplot2 where data passed into a `geom_*` 
+#' is used independent of data passed to `ggplot`.
+#' @param bins Numeric vector giving number of bins in both vertical and 
+#' horizontal directions. Defaults to 30.
 #' @export
 #' @family ggtour proto functions
 #' @examples
@@ -1097,6 +1122,7 @@ proto_text <- function(aes_args = list(),
 #' }
 proto_hex <- function(aes_args = list(),
                       identity_args = list(),
+                      data = NULL,
                       bins = 30
 ){
   ## Initialize
@@ -1126,12 +1152,11 @@ proto_hex <- function(aes_args = list(),
 #' Tour proto highlighing specified points
 #'
 #' A `geom_point` or `geom_segment`(*1d) call to draw attention to a subset of 
-#' points. Subset the projected data frames to the specified `rownum_index` of 
-#' the original data.frame with specified highlighting aesthetics. The order you
-#' apply highlighting is import when using with other `proto_*` functions.
+#' points. With the addition of `data` argument to related `proto_*` this is 
+#' mostly redundant with an addition `proto_point` call on a subset of the data,
+#' but does allow for keeping the initial position with the `mark_initial`
+#' argument if desired.
 #'
-#' @param rownum_index One or more integers, the row numbers of the to 
-#' highlight. Should be within 1:n, the rows of the original data.
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
 #' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
@@ -1141,9 +1166,10 @@ proto_hex <- function(aes_args = list(),
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' Typically a single numeric for point size, alpha, or similar.
+#' @param data Numeric data to project. If left NULL, will check if it data is 
+#' stored as an attribute of the the `basis_array`.
 #' @param mark_initial Logical, whether or not to leave a fainter mark at the 
-#' subset's initial position. By default: TRUE if single row number given else 
-#' FALSE.
+#' subset's initial position. Defaults to FALSE.
 #' @export
 #' @aliases proto_highlight_2d
 #' @family ggtour proto functions
@@ -1152,17 +1178,17 @@ proto_hex <- function(aes_args = list(),
 #' clas <- tourr::flea$species
 #' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 #' 
-#' ## d = 2 case, Highlighting 1 obs defaults mark_initial to TRUE.
+#' ## d = 2 case
 #' ggt <- ggtour(gt_path, dat) +
-#'   proto_highlight(rownum_index = 5) +
+#'   proto_highlight(data = dat[5,]) +
 #'   proto_point()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
-#' ## Highlight multiple observations, mark_initial defaults to off
+#' ## Highlight multiple observations
 #' ggt2 <- ggtour(gt_path, dat) +
-#'   proto_highlight(rownum_index = c( 2, 6, 19),
+#'   proto_highlight(data = dat[c( 2, 6, 19), ],
 #'                   identity_args = list(color = "blue", size = 4, shape = 2)) +
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 2, alpha = .7))
@@ -1170,13 +1196,12 @@ proto_hex <- function(aes_args = list(),
 #' animate_plotly(ggt2)
 #' }
 proto_highlight <- function(
-  rownum_index,
   aes_args = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  mark_initial = if(length(rownum_index) == 1) TRUE else FALSE
+  data = NULL,
+  mark_initial = FALSE
 ){
   ## Initialize
-  if(length(rownum_index) == 0L) return() ## early out for NULL/length 0
   eval(.init4proto)
   if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
@@ -1218,7 +1243,7 @@ proto_highlight <- function(
 #' 
 #' ggt <- ggtour(gt_path1d, dat) +
 #'   proto_default1d(list(fill = clas, color = clas)) +
-#'   proto_highlight1d(rownum_index = 7)
+#'   proto_highlight1d(data = dat[7, ])
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1226,19 +1251,18 @@ proto_highlight <- function(
 #' ## Highlight multiple observations, mark_initial defaults to off
 #' ggt2 <- ggtour(gt_path1d, dat) +
 #'   proto_default1d(list(fill = clas, color = clas)) +
-#'   proto_highlight1d(rownum_index = c(2, 6, 7),
+#'   proto_highlight1d(data = dat[c(2, 6, 7), ],
 #'                     identity_args = list(color = "green", linetype = 1))
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
 proto_highlight1d <- function(
-  rownum_index,
   aes_args = list(),
   identity_args = list(color = "red", linetype = 2, alpha = .9),
-  mark_initial = if(length(rownum_index) == 1) TRUE else FALSE
+  data = NULL,
+  mark_initial = FALSE
 ){
   ## Initialize
-  if(length(rownum_index) == 0L) return() ## early out for NULL/length 0
   eval(.init4proto)
   if(is.null(last_ggtour()$df_data) == TRUE) return()
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
@@ -1310,10 +1334,11 @@ proto_highlight1d <- function(
 #' animate_plotly(ggt)
 #' }
 proto_frame_cor <- function(
-  #stat2d = stats::cor, ## hardcoded stats::cor atm
-  position = c(.7, -.1),
   aes_args = list(),
   identity_args = list(size = 4),
+  data = NULL,
+  #stat2d = stats::cor, ## hardcoded stats::cor atm
+  position = c(.7, -.1),
   ... ## passed to stats::cor
 ){
   ## Initialize

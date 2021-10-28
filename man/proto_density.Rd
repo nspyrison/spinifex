@@ -3,17 +3,23 @@
 \name{proto_density}
 \alias{proto_density}
 \alias{proto_density1d}
-\alias{proto_point1d_fixed_y}
+\alias{proto_point.1d_fix_y}
 \title{Tour proto for data, 1D density, with rug marks}
 \usage{
 proto_density(
   aes_args = list(),
   identity_args = list(alpha = 0.7),
+  data = NULL,
   density_position = c("identity", "stack", "fill"),
   do_add_rug = TRUE
 )
 
-proto_point1d_fixed_y(aes_args = list(), identity_args = list(), fixed_y)
+proto_point.1d_fix_y(
+  aes_args = list(),
+  identity_args = list(),
+  data = NULL,
+  fixed_y
+)
 }
 \arguments{
 \item{aes_args}{A list of aesthetic arguments to passed to
@@ -25,6 +31,10 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point()}, but outside of \code{aes()}, for instance
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
+
+\item{data}{Optionally pass a dataframe to this proto, superceeds data
+passed to \code{ggtour}. Analogous to ggplot2 where data passed into a \verb{geom_*}
+is used independent of data passed to \code{ggplot}.}
 
 \item{density_position}{The \code{ggplot2} position of \code{geom_density()}. Either
 c("identity", "stack"), defaults to "identity". Warning: "stack" does not
@@ -53,7 +63,7 @@ ggt <- ggtour(gt_path, dat) +
 animate_plotly(ggt)
 }
 
-## proto_point1d_fixed_y:
+## proto_point.1d_fix_y:
 # Fixed y values are useful for related values that are 
 # not in the X variables, _eg_ predictions or residuals of you X space.
 dummy_y <- as.integer(clas) + rnorm(nrow(dat))# \%>\% scale_sd
@@ -62,7 +72,7 @@ gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
 ggt <- ggtour(gt_path, dat) +
   proto_basis1d("top2d") +
   proto_origin() + 
-  proto_point1d_fixed_y(list(fill = clas, color = clas),
+  proto_point.1d_fix_y(list(fill = clas, color = clas),
     fixed_y = dummy_y)
 \dontrun{
 animate_plotly(ggt)

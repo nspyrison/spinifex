@@ -85,6 +85,10 @@ array2df <- function(
   if(is.null(data) == FALSE){
     data_frames <- NULL
     data <- as.matrix(data)
+    if(ncol(data) != nrow(basis_array[,, 1L]))
+      stop(paste0(
+        "array2df: Non-conformable matrices; data has ", ncol(data),
+        " columns while basis has ", nrow(basis_array[,, 1L]), " rows."))
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% matrix(basis_array[,, i], nrow(basis_array), ncol(basis_array))
       ## Center the new frame
@@ -109,7 +113,7 @@ array2df <- function(
   ## Return, include data if it exists.
   if(exists("data_frames")){
     return(list(basis_frames = basis_frames,
-                data_frames = data_frames))
+                data_frames  = data_frames))
   } else
     return(list(basis_frames = basis_frames))
 }

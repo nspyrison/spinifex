@@ -7,7 +7,7 @@
 proto_text(
   aes_args = list(),
   identity_args = list(nudge_x = 0.05),
-  rownum_index = NULL
+  data = NULL
 )
 }
 \arguments{
@@ -21,9 +21,9 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
 
-\item{rownum_index}{One or more integers, the row numbers of the to
-subset to. Should be within 1:n, the rows of the original data. Defaults to
-NULL, labeling all rows.}
+\item{data}{Optionally pass a dataframe to this proto, superceeds data
+passed to \code{ggtour}. Analogous to ggplot2 where data passed into a \verb{geom_*}
+is used independent of data passed to \code{ggplot}.}
 }
 \description{
 Adds \code{geom_text()} of the projected data.
@@ -45,7 +45,7 @@ animate_plotly(ggt)
 ggt2 <- ggtour(gt_path, dat) +
   proto_text(list(color = clas, size = as.integer(clas)),
              list(alpha = .7),
-             rownum_index = 1:15)
+             data = dat[1:15,])
 \dontrun{
 animate_plotly(ggt2)
 }

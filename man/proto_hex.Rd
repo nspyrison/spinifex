@@ -4,7 +4,7 @@
 \alias{proto_hex}
 \title{Tour proto for data, hexagonal heatmap}
 \usage{
-proto_hex(aes_args = list(), identity_args = list(), bins = 30)
+proto_hex(aes_args = list(), identity_args = list(), data = NULL, bins = 30)
 }
 \arguments{
 \item{aes_args}{A list of aesthetic arguments to passed to
@@ -16,6 +16,10 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point()}, but outside of \code{aes()}, for instance
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
+
+\item{data}{Optionally pass a dataframe to this proto, superceeds data
+passed to \code{ggtour}. Analogous to ggplot2 where data passed into a \verb{geom_*}
+is used independent of data passed to \code{ggplot}.}
 
 \item{bins}{Numeric vector giving number of bins in both vertical and
 horizontal directions. Defaults to 30.}
