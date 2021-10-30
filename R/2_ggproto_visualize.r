@@ -29,9 +29,9 @@
 #' 
 #' ## d = 2 case
 #' ggt <- ggtour(mt_path, dat, angle = .15) +
-#'   proto_basis() +
 #'   proto_point(list(color = clas, shape = clas),
-#'               list(size = 1.5))
+#'               list(size = 1.5)) +
+#'   proto_basis()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1517,8 +1517,8 @@ proto_default <- function(aes_args = list(),
                           identity_args = list(alpha = .9)
 ){
   return(list(
-    proto_basis(),
     proto_point(aes_args, identity_args),
+    proto_basis(),
     proto_origin()
   ))
 }
@@ -1541,8 +1541,8 @@ proto_default1d <- function(aes_args = list(),
                             identity_args = list(alpha = .7)
 ){
   return(list(
-    proto_basis1d(),
     proto_density(aes_args, identity_args),
+    proto_basis1d(),
     proto_origin1d()
   ))
 }

@@ -46,9 +46,9 @@ mt_path <- manual_tour(bas, manip_var = mv)
 
 ## d = 2 case
 ggt <- ggtour(mt_path, dat, angle = .15) +
-  proto_basis() +
   proto_point(list(color = clas, shape = clas),
-              list(size = 1.5))
+              list(size = 1.5)) +
+  proto_basis()
 \dontrun{
 animate_plotly(ggt)
 }
