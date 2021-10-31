@@ -809,7 +809,109 @@ proto_basis1d <- function(
   ))
 }
 
-
+#' draw a basis on a static ggplot
+#' 
+#' Aditively draws a basis on a static ggplot.
+#' Not a formal `geom`, nor does it use the setup from `ggtour` that 
+#' `proto_*` functions expect.
+#' 
+#' @param basis A (p*d) basis to draw. Draws the first two components. 
+#' If facet is used cbind the facet variable to a specidic facet level 
+#' (2nd example), otherwise the basis prints on all facet levels.
+#' @param map_to A data.frame to scale the basis to. 
+#' Defaults to a unitbox; data.frame(x=c(0,1), y=c(0,1)).
+#' @param position The position, to place the basis axes relative to the centered 
+#' data. `_basis` Expects one of c("left", "center", "right", "bottomleft", 
+#' "topright", "off"), defaults to "left".
+#' @param manip_col The color to highlight the manipulation variable with. Not
+#' applied if the tour isn't a manual tour. Defaults to "blue".
+#' @param line_size (2D bases only) the thickness of the lines used to make the 
+#' axes and unit circle. Defaults to 1.
+#' @param text_size Size of the text label of the variables.
+#' @param label The text labels of the data variables. 
+#' Defaults to the 3 character abbreviation of the rownames of the basis.
+#' @export
+#' @examples
+#' library(ggplot2)
+#' dat <- scale_sd(tourr::flea[, 1:6])
+#' bas <- basis_pca(dat)
+#' proj <- as.data.frame(dat %*% bas)
+#' 
+#' ggplot() +
+#'   geom_point(aes(PC1, PC2), proj) +
+#'   draw_basis(bas, proj, "left")
+#'   
+#' ## Aesthetics and facet
+#' proj <- cbind(proj, clas = tourr::flea$species)
+#' bas <- cbind(as.data.frame(bas), clas = levels(tourr::flea$species)[2])
+#' ggplot() +
+#'   facet_wrap(vars(clas)) +
+#'   geom_point(aes(PC1, PC2, color = clas, shape = clas), proj) +
+#'   draw_basis(bas, proj, "left")
+#' # To repeat basis in all facet levels don't append teh facet variable.
+draw_basis <- function(
+  basis, ## WITH APPENDED FACET LEVEL
+  map_to = data.frame(x = c(0, 1), y = c(0, 1)),
+  position = c("left", "center", "right", "bottomleft", "topright", "off"),
+  manip_col = "blue",
+  line_size = 1,
+  text_size = 5,
+  label = abbreviate(rownames(basis), 3L)
+){
+  ## Initialize
+  d <- ncol(basis)
+  if(d < 2L)
+    stop("geom_basis: expects a basis of 2 or more columns.")
+  position = match.arg(position)
+  if(position == "off") return()
+  
+  ## Setup and transform
+  .angles <- seq(0L, 2L * pi, length = 360L)
+  .circle <- data.frame(x = cos(.angles), y = sin(.angles))
+  .center <- map_relative(data.frame(x = 0L, y = 0L), position, map_to)
+  .circle <- map_relative(.circle, position, map_to)
+  ## Assuming facet var will be right most var if used:
+  
+  if(d > 2L){
+    .circle <- cbind(.circle, basis[, d])
+    colnames(.circle)[3L] <- colnames(basis)[d]
+  }
+  .df_basis <- as.data.frame(map_relative(basis, position, map_to))
+  colnames(.df_basis)[1L:2L] <- c("x", "y")
+  
+  ## Aesthetics for the axes segments.
+  .axes_col <- "grey50"
+  .axes_siz <- line_size
+  .manip_var <- attr(basis, "manip_var")
+  if(is.null(.manip_var) == FALSE){
+    .axes_col <- rep("grey50", .p)
+    .axes_col[.manip_var] <- manip_col
+    .axes_col <- rep(.axes_col, .n_frames)
+    .axes_siz <- rep(line_size, .p)
+    .axes_siz[.manip_var] <- 1.5 * line_size
+    .axes_siz <- rep(.axes_siz, .n_frames)
+  }
+  
+  ## Return proto
+  return(list(
+    ggplot2::coord_fixed(),
+    ggplot2::geom_path(data = .circle, color = "grey80",
+                       size = line_size, inherit.aes = FALSE,
+                       mapping = ggplot2::aes(x = x, y = y)),
+    suppressWarnings(ggplot2::geom_segment( ## Suppress unused arg: frames
+      data = .df_basis,
+      size = .axes_siz, color = .axes_col,
+      mapping = ggplot2::aes(x = x, y = y,
+                             xend = .center[, 1L], yend = .center[, 2L])
+    )),
+    suppressWarnings(ggplot2::geom_text(
+      data = .df_basis,
+      color = .axes_col, size = text_size,
+      vjust = "outward", hjust = "outward",
+      mapping = ggplot2::aes(x = x, y = y, label = label)
+    ))
+  ))
+}
 
 
 
