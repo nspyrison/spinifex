@@ -43,9 +43,11 @@ Not a formal \code{geom}, nor does it use the setup from \code{ggtour} that
 \verb{proto_*} functions expect.
 }
 \examples{
+library(spinifex)
 library(ggplot2)
-dat <- scale_sd(tourr::flea[, 1:6])
-bas <- basis_pca(dat)
+dat  <- scale_sd(flea[, 1:6])
+clas <- flea$species
+bas  <- basis_pca(dat)
 proj <- as.data.frame(dat \%*\% bas)
 
 ggplot() +
@@ -53,11 +55,12 @@ ggplot() +
   draw_basis(bas, proj, "left")
   
 ## Aesthetics and facet
-proj <- cbind(proj, clas = tourr::flea$species)
-bas <- cbind(as.data.frame(bas), clas = levels(tourr::flea$species)[2])
+proj <- cbind(proj, clas = flea$species)
+bas <- cbind(as.data.frame(bas), clas = levels(clas)[2])
 ggplot() +
   facet_wrap(vars(clas)) +
   geom_point(aes(PC1, PC2, color = clas, shape = clas), proj) +
-  draw_basis(bas, proj, "left")
-# To repeat basis in all facet levels don't append teh facet variable.
+  draw_basis(bas, proj, "left") +
+  theme_bw()
+# To repeat basis in all facet levels don't cbind a facet variable.
 }

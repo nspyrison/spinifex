@@ -37,9 +37,9 @@ relative to the observations. Defaults to .05, 5\% of the projection space.}
 Adds text to the animation, the frame and its specified correlation.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+dat     <- scale_sd(flea[, 1:6])
+clas    <- flea$species
+gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_default() +

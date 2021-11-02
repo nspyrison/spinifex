@@ -26,12 +26,11 @@ relative to the observations. Defaults to .05, 5\% of the projection space.}
 Adds a zero mark showing the location of the origin for the central data area.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
+dat  <- scale_sd(flea[, 1:6])
+clas <- flea$species
 
 ## 2D case:
-gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
-
+gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_origin() +
   proto_point()
@@ -40,7 +39,7 @@ animate_plotly(ggt)
 }
 
 ## 1D case:
-gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 5)
+gt_path1d <- save_history(dat, grand_tour(d = 1), max_bases = 5)
 
 ggt <- ggtour(gt_path1d, dat) +
   proto_origin1d() +

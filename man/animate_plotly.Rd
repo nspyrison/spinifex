@@ -22,25 +22,27 @@ Animates the static \code{ggtour()} and added \verb{proto_*()} functions as a
 the row number.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
+library(spinifex)
+dat     <- scale_sd(flea[, 1:6])
+clas    <- flea$species
+bas     <- basis_pca(dat)
+mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)
 
-ggt <- ggtour(mt_path, dat, angle = .1) +
+ggt <- ggtour(mt_path, dat, angle = .3) +
   proto_origin() +
   proto_basis() +
   proto_point(aes_args = list(color = clas, shape = clas),
               identity_args = list(size = 1.5, alpha = .7))
 \dontrun{
-animate_plotly(ggt, width = 700, height = 450) ## pixels only, no resolution
+animate_plotly(ggt, width = 700, height = 450) ## pixels only, no resolution argument
 
 ## Example saving to a .html widget, may require additional setup.
 if(F){
   anim <- animate_plotly(ggt, fps = 10, width = 700, height = 450)
   
-  htmlwidgets::saveWidget(widget = anim, file = "./figures/my_tour.html",
+  htmlwidgets::saveWidget(widget = anim,
+                          file = "./figures/my_tour.html",
                           selfcontained = TRUE)}
 }
 }

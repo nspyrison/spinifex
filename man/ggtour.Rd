@@ -38,16 +38,17 @@ then animated with \code{animate_plotly()} or \code{animate_ggtour()}, or passed
 \code{filmstrip()} for static plot faceting on frames.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
+library(spinifex)
+dat     <- scale_sd(flea[, 1:6])
+clas    <- flea$species
+bas     <- basis_pca(dat)
+mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)
 
 ## d = 2 case
-ggt <- ggtour(mt_path, dat, angle = .15) +
-  proto_point(list(color = clas, shape = clas),
-              list(size = 1.5)) +
+ggt <- ggtour(basis_array = mt_path, data = dat, angle = .3) +
+  proto_point(aes_args = list(color = clas, shape = clas),
+              identity_args = list(size = 1.5)) +
   proto_basis()
 \dontrun{
 animate_plotly(ggt)
@@ -56,8 +57,9 @@ animate_plotly(ggt)
 ## d = 1 case
 bas1d <- basis_pca(dat, d = 1)
 mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
-ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
-  proto_default1d(list(fill = clas))
+
+ggt1d <- ggtour(basis_array = mt_path1d, data = dat, angle = .3) +
+  proto_default1d(aes_args = list(fill= clas, color = clas))
 \dontrun{
 animate_plotly(ggt1d)
 }

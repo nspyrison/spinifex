@@ -21,16 +21,17 @@
 #' @export
 #' @family ggtour proto functions
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
+#' library(spinifex)
+#' dat     <- scale_sd(flea[, 1:6])
+#' clas    <- flea$species
+#' bas     <- basis_pca(dat)
+#' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
 #' ## d = 2 case
-#' ggt <- ggtour(mt_path, dat, angle = .15) +
-#'   proto_point(list(color = clas, shape = clas),
-#'               list(size = 1.5)) +
+#' ggt <- ggtour(basis_array = mt_path, data = dat, angle = .3) +
+#'   proto_point(aes_args = list(color = clas, shape = clas),
+#'               identity_args = list(size = 1.5)) +
 #'   proto_basis()
 #' \dontrun{
 #' animate_plotly(ggt)
@@ -39,8 +40,9 @@
 #' ## d = 1 case
 #' bas1d <- basis_pca(dat, d = 1)
 #' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
-#' ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
-#'   proto_default1d(list(fill = clas))
+#' 
+#' ggt1d <- ggtour(basis_array = mt_path1d, data = dat, angle = .3) +
+#'   proto_default1d(aes_args = list(fill= clas, color = clas))
 #' \dontrun{
 #' animate_plotly(ggt1d)
 #' }
@@ -120,20 +122,20 @@ ggtour <- function(basis_array,
 #' @export
 #' @family ggtour proto functions
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
+#' library(spinifex)
+#' dat     <- scale_sd(flea[, 1:6])
+#' clas    <- flea$species
+#' bas     <- basis_pca(dat)
+#' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
 #' ## d = 2 case
-#' ggt <- ggtour(mt_path, dat, angle = .15) +
+#' ggt <- ggtour(mt_path, dat, angle = .3) +
 #'   facet_wrap_tour(facet_var = clas, ncol = 2, nrow = 2) +
-#'   proto_basis() +
-#'   proto_point(list(color = clas, shape = clas),
-#'               list(size = 1.5))
+#'   proto_default(list(color = clas, shape = clas),
+#'                 list(size = 1.5))
 #' \dontrun{
-#' animate_gganimate(ggt) ## Faceting may not play well with `plotly`
+#' animate_gganimate(ggt) ## Faceting not likely to play well with `plotly`
 #' }
 facet_wrap_tour <- function(
   facet_var = NULL, nrow = NULL, ncol = NULL, dir = "h"
@@ -342,35 +344,37 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' @export
 #' @family ggtour animator
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
+#' library(spinifex)
+#' dat     <- scale_sd(flea[, 1:6])
+#' clas    <- flea$species
+#' bas     <- basis_pca(dat)
+#' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
-#' ggt <- ggtour(mt_path, dat, angle = .1) +
-#'   proto_basis() +
-#'   proto_origin() +
-#'   proto_point(aes_args = list(color = clas, shape = clas),
-#'               identity_args = list(size = 1.5, alpha = .7))
-#' 
+#' ggt <- ggtour(mt_path, dat, angle = .3) +
+#'   proto_default(aes_args = list(color = clas, shape = clas),
+#'                 identity_args = list(size = 1.5, alpha = .7))
 #' \dontrun{
-#' animate_gganimate(ggt) ## default .gif rendering
+#' animate_gganimate(ggt)
 #' 
 #' if(F){ ## Don't accidentally save file
-#'   ## Alternative renderer, saving as .mp4
-#'   animate_gganimate(ggt,
-#'     height = 4, width = 4, units = "in", ## "px", "in", "cm", or "mm."
-#'     res = 300, ## resolution (dpi)
-#'     render = gganimate::av_renderer("my_tour.mp4")) ## Alternative render
-#'   
-#'   ## Default gganimate::gifski_renderer(width = NULL, height = NULL)
-#'   anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
-#'                             start_pause = 1, end_pause = 2)
+#'   ## Alternative arguments storing to a variable for saving
+#'   anim <- animate_gganimate(
+#'     ggt, fps = 10, rewind = TRUE,
+#'     start_pause = 1, end_pause = 2,
+#'     height = 6, width = 10, units = "cm", ## "px", "in", "cm", or "mm."
+#'     res = 150)
 #'   ## Save rendered animation as .gif
 #'   gganimate::anim_save("my_tour.gif",
 #'                        animation = anim,
-#'                        path = "./figures")}
+#'                        path = "./figures")
+#'   
+#'   ## Alternative renderer saving directly as an .mp4
+#'   animate_gganimate(ggt,
+#'     height = 10, width = 18, units = "cm", ## "px", "in", "cm", or "mm."
+#'     res = 150, ## resolution in dpi (dots per inch)
+#'     render = gganimate::av_renderer("./my_tour.mp4")) ## Alternative render
+#'   }
 #' }
 animate_gganimate <- function(
   ggtour,
@@ -425,25 +429,27 @@ animate_gganimate <- function(
 #' @export
 #' @family ggtour animator
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
+#' library(spinifex)
+#' dat     <- scale_sd(flea[, 1:6])
+#' clas    <- flea$species
+#' bas     <- basis_pca(dat)
+#' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
-#' ggt <- ggtour(mt_path, dat, angle = .1) +
+#' ggt <- ggtour(mt_path, dat, angle = .3) +
 #'   proto_origin() +
 #'   proto_basis() +
 #'   proto_point(aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 1.5, alpha = .7))
 #' \dontrun{
-#' animate_plotly(ggt, width = 700, height = 450) ## pixels only, no resolution
+#' animate_plotly(ggt, width = 700, height = 450) ## pixels only, no resolution argument
 #' 
 #' ## Example saving to a .html widget, may require additional setup.
 #' if(F){
 #'   anim <- animate_plotly(ggt, fps = 10, width = 700, height = 450)
 #'   
-#'   htmlwidgets::saveWidget(widget = anim, file = "./figures/my_tour.html",
+#'   htmlwidgets::saveWidget(widget = anim,
+#'                           file = "./figures/my_tour.html",
 #'                           selfcontained = TRUE)}
 #' }
 animate_plotly <- function(
@@ -452,7 +458,7 @@ animate_plotly <- function(
   ... ## Passed to plotly::layout().
 ){
   ## Frame assymetry issue: https://github.com/ropensci/plotly/issues/1696
-  #### Adding manmy protos and do complex animate liable to break plotly animations, see above url.
+  #### Adding many protos is liable to break plotly animations, see above url.
   ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
@@ -526,10 +532,10 @@ animate_plotly <- function(
 # #' @export
 # #' @family ggtour animator
 # #' #' @examples
-# #' dat <- scale_sd(tourr::flea[, 1:6])
-# #' clas <- tourr::flea$species
-# #' bas <- basis_pca(dat)
-# #' mv <- manip_var_of(bas)
+# #' dat     <- scale_sd(flea[, 1:6])
+# #' clas    <- flea$species
+# #' bas     <- basis_pca(dat)
+# #' mv      <- manip_var_of(bas)
 # #' mt_path <- manual_tour(bas, manip_var = mv)
 # #' 
 # #' ggt <- ggtour(mt_path, dat, angle = .1) +
@@ -566,10 +572,10 @@ animate_plotly <- function(
 #' @export
 #' @family ggtour animator
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
+#' dat  <- scale_sd(flea[, 1:6])
+#' clas <- flea$species
+#' bas  <- basis_pca(dat)
+#' mv   <- manip_var_of(bas)
 #' 
 #' ## d = 2 case
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -580,7 +586,7 @@ animate_plotly <- function(
 #' filmstrip(ggt)
 #' 
 #' ## d = 1 case
-#' bas1d <- basis_pca(dat, d = 1)
+#' bas1d     <- basis_pca(dat, d = 1)
 #' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
 #' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
 #'   proto_default1d(list(fill = clas))
@@ -591,26 +597,11 @@ animate_plotly <- function(
 #' filmstrip(ggt1d)
 #' }
 filmstrip <- function(ggtour){ #, frame_index <- NULL
-  # ####!! This ruins the lengths of the aestheics
-  # if(is.null(frame_index) == FALSE){
-  #   ## Find usable index
-  #   .use_idx <- frame_index[frame_index %in% unique(ggtour$data$frame)]
-  #   if(length(.use_idx) == 0L)stop("filmstrip: `frame_index` did not match any frame numbers.")
-  #   ## Apply frame index to all layers that have `frame` in the data.
-  #   #### ggtour is already an evaluated object, so can't use .set_last_ggtour()
-  #   .m <- sapply(seq_along(ggtour$layers), function(i){
-  #     if(class(ggtour$layers[[i]]$data) != "waiver" &
-  #        "frame" %in% colnames(ggtour$layers[[i]]$data))
-  #       ggtour$layers[[i]]$data <<-
-  #         ggtour$layers[[i]]$data[ggtour$layers[[i]]$data$frame == .use_idx, ]
-  #   })
-  # }
   ret <- ggtour +
     ggplot2::facet_wrap(ggplot2::vars(factor(frame, unique(frame)))) + ## facet on frame
     ggplot2::theme(strip.text = ggplot2::element_text(
       margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
       panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
-  
   ## filmstrip does NOT clear last tour
   .m <- gc() ## Mute garbage collection
   return(ret)
@@ -638,16 +629,16 @@ filmstrip <- function(ggtour){ #, frame_index <- NULL
 #' @aliases proto_basis
 #' @family ggtour proto functions
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
+#' library(spinifex)
+#' dat  <- scale_sd(flea[, 1:6])
+#' clas <- flea$species
+#' bas  <- basis_pca(dat)
+#' mv   <- manip_var_of(bas)
 #' 
 #' ## 2D case:
 #' mt_path <- manual_tour(bas, manip_var = mv)
-#' 
-#' ggt <- ggtour(mt_path, dat, angle = .2) +
-#'   proto_basis()
+#' ggt <- ggtour(mt_path, dat, angle = .3) +
+#'   proto_default()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -661,11 +652,11 @@ filmstrip <- function(ggtour){ #, frame_index <- NULL
 #' }
 #' 
 #' ## 1D case:
-#' bas1d <- basis_pca(dat, d = 1)
-#' mv <- manip_var_of(bas, 3)
+#' bas1d     <- basis_pca(dat, d = 1)
+#' mv        <- manip_var_of(bas, 3)
 #' mt_path1d <- manual_tour(bas1d, manip_var = mv)
 #' 
-#' ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
+#' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
 #'   proto_basis1d()
 #' \dontrun{
 #' animate_plotly(ggt1d)
@@ -832,9 +823,11 @@ proto_basis1d <- function(
 #' Defaults to the 3 character abbreviation of the rownames of the basis.
 #' @export
 #' @examples
+#' library(spinifex)
 #' library(ggplot2)
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' bas <- basis_pca(dat)
+#' dat  <- scale_sd(flea[, 1:6])
+#' clas <- flea$species
+#' bas  <- basis_pca(dat)
 #' proj <- as.data.frame(dat %*% bas)
 #' 
 #' ggplot() +
@@ -842,13 +835,14 @@ proto_basis1d <- function(
 #'   draw_basis(bas, proj, "left")
 #'   
 #' ## Aesthetics and facet
-#' proj <- cbind(proj, clas = tourr::flea$species)
-#' bas <- cbind(as.data.frame(bas), clas = levels(tourr::flea$species)[2])
+#' proj <- cbind(proj, clas = flea$species)
+#' bas <- cbind(as.data.frame(bas), clas = levels(clas)[2])
 #' ggplot() +
 #'   facet_wrap(vars(clas)) +
 #'   geom_point(aes(PC1, PC2, color = clas, shape = clas), proj) +
-#'   draw_basis(bas, proj, "left")
-#' # To repeat basis in all facet levels don't append teh facet variable.
+#'   draw_basis(bas, proj, "left") +
+#'   theme_bw()
+#' # To repeat basis in all facet levels don't cbind a facet variable.
 draw_basis <- function(
   basis, ## WITH APPENDED FACET LEVEL
   map_to = data.frame(x = c(0, 1), y = c(0, 1)),
@@ -937,9 +931,10 @@ draw_basis <- function(
 #' @aliases proto_points
 #' @family ggtour proto functions
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+#' library(spinifex)
+#' dat     <- scale_sd(flea[, 1:6])
+#' clas    <- flea$species
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .1) +
 #'   proto_point()
@@ -948,8 +943,8 @@ draw_basis <- function(
 #' }
 #' 
 #' ggt2 <- ggtour(gt_path, dat) +
-#'   proto_point(list(color = clas, shape = clas),
-#'               list(size = 2, alpha = .7))
+#'   proto_point(aes_args = list(color = clas, shape = clas),
+#'               identity_args = list(size = 2, alpha = .7))
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
@@ -977,7 +972,6 @@ proto_point <- function(aes_args = list(),
 }
 
 
-
 #' Tour proto for data, 1D density, with rug marks
 #'
 #' Adds `geom_density()` and `geom_rug()` of the projected data. Density 
@@ -1003,8 +997,9 @@ proto_point <- function(aes_args = list(),
 #' @aliases proto_density1d
 #' @family ggtour proto functions
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
+#' library(spinifex)
+#' dat     <- scale_sd(flea[, 1:6])
+#' clas    <- flea$species
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
@@ -1070,7 +1065,7 @@ proto_density <- function(aes_args = list(),
 #' # Fixed y values are useful for related values that are 
 #' # not in the X variables, _eg_ predictions or residuals of you X space.
 #' dummy_y <- as.integer(clas) + rnorm(nrow(dat))# %>% scale_sd
-#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_basis1d("top2d") +
@@ -1144,11 +1139,12 @@ proto_point.1d_fix_y <- function(
 #' @export
 #' @family ggtour proto functions
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
-#' gt_path <- save_history(dat, tourr::grand_tour(), max_bases = 5)
+#' library(spinifex)
+#' dat     <- scale_sd(flea[, 1:6])
+#' clas    <- flea$species
+#' bas     <- basis_pca(dat)
+#' mv      <- manip_var_of(bas)
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .2) +
 #'   proto_text(list(color = clas))
@@ -1207,8 +1203,9 @@ proto_text <- function(aes_args = list(),
 #' @export
 #' @family ggtour proto functions
 #' @examples
-#' raw <- ggplot2::diamonds
-#' dat <- scale_sd(raw[1:10000, c(1, 5:6, 8:10)])
+#' library(spinifex)
+#' raw     <- ggplot2::diamonds
+#' dat     <- scale_sd(raw[1:10000, c(1, 5:6, 8:10)])
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ## 10000 rows is quite heavy to animate.
@@ -1276,24 +1273,23 @@ proto_hex <- function(aes_args = list(),
 #' @aliases proto_highlight_2d
 #' @family ggtour proto functions
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+#' dat     <- scale_sd(flea[, 1:6])
+#' clas    <- flea$species
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ## d = 2 case
-#' ggt <- ggtour(gt_path, dat) +
-#'   proto_highlight(data = dat[5,]) +
-#'   proto_point()
+#' ggt <- ggtour(gt_path, dat, angle = .3) +
+#'   proto_default(list(color = clas, shape = clas)) +
+#'   proto_highlight(data = dat[5,, drop=FALSE])
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ## Highlight multiple observations
-#' ggt2 <- ggtour(gt_path, dat) +
+#' ggt2 <- ggtour(gt_path, dat, angle = .3) +
+#'   proto_default(list(color = clas, shape = clas)) +
 #'   proto_highlight(data = dat[c( 2, 6, 19), ],
-#'                   identity_args = list(color = "blue", size = 4, shape = 2)) +
-#'   proto_point(list(color = clas, shape = clas),
-#'               list(size = 2, alpha = .7))
+#'                   identity_args = list(color = "blue", size = 4, shape = 4))
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
@@ -1341,17 +1337,17 @@ proto_highlight <- function(
 #' @family ggtour proto functions
 #' @examples
 #' ## 1D case:
-#' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+#' gt_path1d <- save_history(dat, grand_tour(d = 1), max_bases = 3)
 #' 
-#' ggt <- ggtour(gt_path1d, dat) +
+#' ggt <- ggtour(gt_path1d, dat, angle = .3) +
 #'   proto_default1d(list(fill = clas, color = clas)) +
-#'   proto_highlight1d(data = dat[7, ])
+#'   proto_highlight1d(data = dat[7,, drop = FALSE ])
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
 #' ## Highlight multiple observations, mark_initial defaults to off
-#' ggt2 <- ggtour(gt_path1d, dat) +
+#' ggt2 <- ggtour(gt_path1d, dat, angle = .3) +
 #'   proto_default1d(list(fill = clas, color = clas)) +
 #'   proto_highlight1d(data = dat[c(2, 6, 7), ],
 #'                     identity_args = list(color = "green", linetype = 1))
@@ -1424,9 +1420,9 @@ proto_highlight1d <- function(
 #' @seealso \code{\link[stats:cor]{stats::cor}}
 #' @export
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
-#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+#' dat     <- scale_sd(flea[, 1:6])
+#' clas    <- flea$species
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .1) +
 #'   proto_default() +
@@ -1474,8 +1470,7 @@ proto_frame_cor <- function(
     frame = .agg$frame,
     label = paste0(#"frame: ", .agg$frame, ", ",
                    .stat_nm, ": ",
-                   sprintf("%3.2f", .agg$value))
-  )
+                   sprintf("%3.2f", .agg$value)))
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
@@ -1503,12 +1498,11 @@ proto_frame_cor <- function(
 #' @aliases proto_origin2d
 #' @family ggtour proto functions
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
+#' dat  <- scale_sd(flea[, 1:6])
+#' clas <- flea$species
 #' 
 #' ## 2D case:
-#' gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
-#' 
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' ggt <- ggtour(gt_path, dat, angle = .1) +
 #'   proto_origin() +
 #'   proto_point()
@@ -1551,7 +1545,7 @@ proto_origin <- function(
 #' @examples
 #' 
 #' ## 1D case:
-#' gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 5)
+#' gt_path1d <- save_history(dat, grand_tour(d = 1), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path1d, dat) +
 #'   proto_origin1d() +
@@ -1602,12 +1596,12 @@ proto_origin1d <- function(
 #' @aliases proto_default2d, proto_def, proto_def2d
 #' @family ggtour proto functions
 #' @examples
-#' dat <- scale_sd(tourr::flea[, 1:6])
-#' clas <- tourr::flea$species
+#' dat  <- scale_sd(flea[, 1:6])
+#' clas <- flea$species
 #' 
 #' ## 2D case:
-#' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
+#' bas     <- basis_pca(dat)
+#' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, mv)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
@@ -1632,7 +1626,7 @@ proto_default <- function(aes_args = list(),
 #' @family ggtour proto functions
 #' @examples
 #' ## 1D case:
-#' gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+#' gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_default1d(list(fill = clas, color = clas))

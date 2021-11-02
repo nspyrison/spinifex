@@ -37,35 +37,37 @@ Animates the ggplot return of \code{ggtour()} and added \verb{proto_*()} functio
 .gif without interaction, through use of \code{{gganimate}}.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
+library(spinifex)
+dat     <- scale_sd(flea[, 1:6])
+clas    <- flea$species
+bas     <- basis_pca(dat)
+mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)
 
-ggt <- ggtour(mt_path, dat, angle = .1) +
-  proto_basis() +
-  proto_origin() +
-  proto_point(aes_args = list(color = clas, shape = clas),
-              identity_args = list(size = 1.5, alpha = .7))
-
+ggt <- ggtour(mt_path, dat, angle = .3) +
+  proto_default(aes_args = list(color = clas, shape = clas),
+                identity_args = list(size = 1.5, alpha = .7))
 \dontrun{
-animate_gganimate(ggt) ## default .gif rendering
+animate_gganimate(ggt)
 
 if(F){ ## Don't accidentally save file
-  ## Alternative renderer, saving as .mp4
-  animate_gganimate(ggt,
-    height = 4, width = 4, units = "in", ## "px", "in", "cm", or "mm."
-    res = 300, ## resolution (dpi)
-    render = gganimate::av_renderer("my_tour.mp4")) ## Alternative render
-  
-  ## Default gganimate::gifski_renderer(width = NULL, height = NULL)
-  anim <- animate_gganimate(ggt, fps = 10, rewind = TRUE,
-                            start_pause = 1, end_pause = 2)
+  ## Alternative arguments storing to a variable for saving
+  anim <- animate_gganimate(
+    ggt, fps = 10, rewind = TRUE,
+    start_pause = 1, end_pause = 2,
+    height = 6, width = 10, units = "cm", ## "px", "in", "cm", or "mm."
+    res = 150)
   ## Save rendered animation as .gif
   gganimate::anim_save("my_tour.gif",
                        animation = anim,
-                       path = "./figures")}
+                       path = "./figures")
+  
+  ## Alternative renderer saving directly as an .mp4
+  animate_gganimate(ggt,
+    height = 10, width = 18, units = "cm", ## "px", "in", "cm", or "mm."
+    res = 150, ## resolution in dpi (dots per inch)
+    render = gganimate::av_renderer("./my_tour.mp4")) ## Alternative render
+  }
 }
 }
 \seealso{

@@ -26,9 +26,10 @@ is used independent of data passed to \code{ggplot}.}
 Adds \code{geom_point()} of the projected data.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+library(spinifex)
+dat     <- scale_sd(flea[, 1:6])
+clas    <- flea$species
+gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_point()
@@ -37,8 +38,8 @@ animate_plotly(ggt)
 }
 
 ggt2 <- ggtour(gt_path, dat) +
-  proto_point(list(color = clas, shape = clas),
-              list(size = 2, alpha = .7))
+  proto_point(aes_args = list(color = clas, shape = clas),
+              identity_args = list(size = 2, alpha = .7))
 \dontrun{
 animate_plotly(ggt2)
 }

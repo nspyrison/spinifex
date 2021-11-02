@@ -43,16 +43,16 @@ contributions of the variables to the projection space inscribed in a unit
 circle for 2D or rectangle of unit width for 1D.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
+library(spinifex)
+dat  <- scale_sd(flea[, 1:6])
+clas <- flea$species
+bas  <- basis_pca(dat)
+mv   <- manip_var_of(bas)
 
 ## 2D case:
 mt_path <- manual_tour(bas, manip_var = mv)
-
-ggt <- ggtour(mt_path, dat, angle = .2) +
-  proto_basis()
+ggt <- ggtour(mt_path, dat, angle = .3) +
+  proto_default()
 \dontrun{
 animate_plotly(ggt)
 }
@@ -66,11 +66,11 @@ animate_plotly(ggt2)
 }
 
 ## 1D case:
-bas1d <- basis_pca(dat, d = 1)
-mv <- manip_var_of(bas, 3)
+bas1d     <- basis_pca(dat, d = 1)
+mv        <- manip_var_of(bas, 3)
 mt_path1d <- manual_tour(bas1d, manip_var = mv)
 
-ggt1d <- ggtour(mt_path1d, dat, angle = .2) +
+ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
   proto_basis1d()
 \dontrun{
 animate_plotly(ggt1d)

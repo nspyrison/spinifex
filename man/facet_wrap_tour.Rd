@@ -24,20 +24,20 @@ applied after \code{ggtour} and before any \verb{proto_*} functions.
 \code{plotly} may not display well with with faceting.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
+library(spinifex)
+dat     <- scale_sd(flea[, 1:6])
+clas    <- flea$species
+bas     <- basis_pca(dat)
+mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)
 
 ## d = 2 case
-ggt <- ggtour(mt_path, dat, angle = .15) +
+ggt <- ggtour(mt_path, dat, angle = .3) +
   facet_wrap_tour(facet_var = clas, ncol = 2, nrow = 2) +
-  proto_basis() +
-  proto_point(list(color = clas, shape = clas),
-              list(size = 1.5))
+  proto_default(list(color = clas, shape = clas),
+                list(size = 1.5))
 \dontrun{
-animate_gganimate(ggt) ## Faceting may not play well with `plotly`
+animate_gganimate(ggt) ## Faceting not likely to play well with `plotly`
 }
 }
 \seealso{

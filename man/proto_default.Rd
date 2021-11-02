@@ -30,12 +30,12 @@ Returns a list of proto_origin(), proto_point(...), proto_basis() for 2D.
 Returns a list of proto_origin1d(), proto_density(...), proto_basis1d() for 1D.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
+dat  <- scale_sd(flea[, 1:6])
+clas <- flea$species
 
 ## 2D case:
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
+bas     <- basis_pca(dat)
+mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, mv)
 
 ggt <- ggtour(mt_path, dat) +
@@ -44,7 +44,7 @@ ggt <- ggtour(mt_path, dat) +
 animate_plotly(ggt)
 }
 ## 1D case:
-gt_path <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 3)
 
 ggt <- ggtour(gt_path, dat) +
   proto_default1d(list(fill = clas, color = clas))

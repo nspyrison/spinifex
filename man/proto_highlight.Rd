@@ -46,39 +46,38 @@ but does allow for keeping the initial position with the \code{mark_initial}
 argument if desired.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 5)
+dat     <- scale_sd(flea[, 1:6])
+clas    <- flea$species
+gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ## d = 2 case
-ggt <- ggtour(gt_path, dat) +
-  proto_highlight(data = dat[5,]) +
-  proto_point()
+ggt <- ggtour(gt_path, dat, angle = .3) +
+  proto_default(list(color = clas, shape = clas)) +
+  proto_highlight(data = dat[5,, drop=FALSE])
 \dontrun{
 animate_plotly(ggt)
 }
 
 ## Highlight multiple observations
-ggt2 <- ggtour(gt_path, dat) +
+ggt2 <- ggtour(gt_path, dat, angle = .3) +
+  proto_default(list(color = clas, shape = clas)) +
   proto_highlight(data = dat[c( 2, 6, 19), ],
-                  identity_args = list(color = "blue", size = 4, shape = 2)) +
-  proto_point(list(color = clas, shape = clas),
-              list(size = 2, alpha = .7))
+                  identity_args = list(color = "blue", size = 4, shape = 4))
 \dontrun{
 animate_plotly(ggt2)
 }
 ## 1D case:
-gt_path1d <- tourr::save_history(dat, grand_tour(d = 1), max_bases = 3)
+gt_path1d <- save_history(dat, grand_tour(d = 1), max_bases = 3)
 
-ggt <- ggtour(gt_path1d, dat) +
+ggt <- ggtour(gt_path1d, dat, angle = .3) +
   proto_default1d(list(fill = clas, color = clas)) +
-  proto_highlight1d(data = dat[7, ])
+  proto_highlight1d(data = dat[7,, drop = FALSE ])
 \dontrun{
 animate_plotly(ggt)
 }
 
 ## Highlight multiple observations, mark_initial defaults to off
-ggt2 <- ggtour(gt_path1d, dat) +
+ggt2 <- ggtour(gt_path1d, dat, angle = .3) +
   proto_default1d(list(fill = clas, color = clas)) +
   proto_highlight1d(data = dat[c(2, 6, 7), ],
                     identity_args = list(color = "green", linetype = 1))

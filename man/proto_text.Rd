@@ -29,11 +29,11 @@ is used independent of data passed to \code{ggplot}.}
 Adds \code{geom_text()} of the projected data.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
-gt_path <- save_history(dat, tourr::grand_tour(), max_bases = 5)
+dat     <- scale_sd(flea[, 1:6])
+clas    <- flea$species
+bas     <- basis_pca(dat)
+mv      <- manip_var_of(bas)
+gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat, angle = .2) +
   proto_text(list(color = clas))

@@ -9,7 +9,7 @@ array2df(
   data = NULL,
   basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3) else
     paste0("v", 1:nrow(basis_array)),
-  data_label = 1:nrow(basis_array)
+  data_label = rownames(data)
 )
 }
 \arguments{
@@ -24,8 +24,7 @@ vector with length equal to the number of variables.
 Defaults to the 3 character abbreviation of the original variables names.}
 
 \item{data_label}{Labels for \code{plotly} tooltip display.
-Defaults to the row number, (and rownames of the data if they contain
-characters).}
+Defaults to the rownames of data. If null, inializes to 1:nrow(data).}
 }
 \description{
 Internal function, many end users will not need this. Takes the result of

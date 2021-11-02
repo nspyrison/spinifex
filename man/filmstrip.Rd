@@ -16,10 +16,10 @@ number of frames is more than desired, try increasing the \code{angle} argument 
 the tour.
 }
 \examples{
-dat <- scale_sd(tourr::flea[, 1:6])
-clas <- tourr::flea$species
-bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
+dat  <- scale_sd(flea[, 1:6])
+clas <- flea$species
+bas  <- basis_pca(dat)
+mv   <- manip_var_of(bas)
 
 ## d = 2 case
 mt_path <- manual_tour(bas, manip_var = mv)
@@ -30,7 +30,7 @@ ggt <- ggtour(mt_path, dat, angle = .25) +
 filmstrip(ggt)
 
 ## d = 1 case
-bas1d <- basis_pca(dat, d = 1)
+bas1d     <- basis_pca(dat, d = 1)
 mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
 ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
   proto_default1d(list(fill = clas))

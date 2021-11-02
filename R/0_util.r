@@ -38,8 +38,7 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' vector with length equal to the number of variables.
 #' Defaults to the 3 character abbreviation of the original variables names.
 #' @param data_label Labels for `plotly` tooltip display. 
-#' Defaults to the row number, (and rownames of the data if they contain 
-#' characters).
+#' Defaults to the rownames of data. If null, inializes to 1:nrow(data).
 #' @export
 #' @examples
 #' ## !!This function is not meant for external use!!
@@ -62,11 +61,10 @@ array2df <- function(
   basis_array,
   data = NULL,
   basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("v", 1:nrow(basis_array)),
-  data_label = 1:nrow(basis_array)
+  data_label = rownames(data)
 ){
-  if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
-  
   ## Initialize
+  if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
   manip_var <- attributes(basis_array)$manip_var ## NULL means tourr tour
   p <- dim(basis_array)[1L]
   n_frames <- dim(basis_array)[3L]
@@ -80,35 +78,35 @@ array2df <- function(
   basis_frames <- as.data.frame(basis_frames)
   .nms <- c("x", "y", "z", "w")
   colnames(basis_frames) <- c(.nms[1L:(ncol(basis_frames) - 1L)], "frame")
+  ## Basis label and manip_var attribute.
+  if(length(basis_label) > 0L)
+    basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
+  attr(basis_frames, "manip_var") <- manip_var
   
   ## Data; if exists
   if(is.null(data) == FALSE){
     data_frames <- NULL
     data <- as.matrix(data)
-    if(ncol(data) != nrow(basis_array[,, 1L]))
+    if(ncol(data) != nrow(basis_array))
       stop(paste0(
         "array2df: Non-conformable matrices; data has ", ncol(data),
-        " columns while basis has ", nrow(basis_array[,, 1L]), " rows."))
+        " columns while basis has ", nrow(basis_array), " rows."))
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% matrix(basis_array[,, i], nrow(basis_array), ncol(basis_array))
-      ## Center the new frame
-      new_frame <- sapply(1L:ncol(new_frame), function(i)
-        new_frame[, i] - mean(new_frame[, i])
-      )
+      # ## Center the new frame
+      # new_frame <- sapply(1L:ncol(new_frame), function(i)
+      #   new_frame[, i] - mean(new_frame[, i])
+      # )
       new_frame <- cbind(new_frame, i) ## Append frame number
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
     data_frames <- as.data.frame(data_frames)
-    colnames(data_frames) <- c(.nms[1L:(ncol(data_frames) - 1L)], "frame")
+    colnames(data_frames) <- c(.nms[1L:ncol(basis_array)], "frame")
     ## Data label rep if applicable
+    if(is.null(data_label) == TRUE) data_label <- 1L:nrow(data)
     if(length(data_label) > 0L)
       data_frames$label <- rep_len(data_label, nrow(data_frames))
   }
-  
-  ## Basis label and manip_var attribute.
-  if(length(basis_label) > 0L)
-    basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
-  attr(basis_frames, "manip_var") <- manip_var
   
   ## Return, include data if it exists.
   if(exists("data_frames")){
@@ -635,3 +633,5 @@ save_history <- function(..., verbose = FALSE){
   
   return(ret)
 }
+
+## UTILITY ----
