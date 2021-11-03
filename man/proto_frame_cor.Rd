@@ -37,14 +37,14 @@ relative to the observations. Defaults to .05, 5\% of the projection space.}
 Adds text to the animation, the frame and its specified correlation.
 }
 \examples{
+library(spinifex)
 dat     <- scale_sd(flea[, 1:6])
 clas    <- flea$species
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
-ggt <- ggtour(gt_path, dat, angle = .1) +
-  proto_default() +
-  proto_frame_cor(c(.70, -.1))
-  
+ggt <- ggtour(gt_path, dat, angle = .3) +
+  proto_default(list(color = clas, shape = clas)) +
+  proto_frame_cor(position = c(.70, -.1))
 \dontrun{
 animate_plotly(ggt)
 }

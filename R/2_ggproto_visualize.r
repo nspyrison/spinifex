@@ -274,7 +274,7 @@ last_ggtour <- function(){.store$ggtour_ls}
 ## _.init4proto expression -----
 .init4proto <- expression({ ## An expression, not a function
   .ggt <- spinifex::last_ggtour() ## Self-explicit for use in cheem
-  if(is.null(.ggt)) stop("last_ggtour() is NULL, have you run ggtour() yet?")
+  if(is.null(.ggt)) stop(".init4proto: last_ggtour() is NULL, have you run ggtour() yet?")
   
   ## Assign elements ggtour list as quiet .objects in the environment
   .env <- environment()
@@ -292,11 +292,16 @@ last_ggtour <- function(){.store$ggtour_ls}
   ## Replicate arg lists, if they exist
   if(exists("aes_args")){
     if(length(aes_args) > 0L){
+      ## Check for names
+      .nms <- names(aes_args)
+      if(is.null(.nms) | length(.nms) > length(unique(.nms)))
+        stop(".init4proto: aes_args were unamed or had none unique names.")
+      
       ## Warn if aes_args arg mismatched length of data
       lapply(aes_args, function(arg){
         if(length(arg) %in% c(1L, .n) == FALSE)
           warning(paste0(
-            "element of aes_args had length ", length(arg),
+            ".init4proto: element of aes_args had length ", length(arg),
             "was expecting 1 or n (", .n,
             "). Was a subset of data used with a full lengthed aesthetic?"))})
       ## Replicate across bases
@@ -308,10 +313,14 @@ last_ggtour <- function(){.store$ggtour_ls}
   }
   if(exists("identity_args")){
     if(length(identity_args) > 0L){
+      .nms <- names(identity_args)
+      if(is.null(.nms) | length(.nms) > length(unique(.nms)))
+        stop(".init4proto: identity_args were unamed or had none unique names.")
+      
       lapply(identity_args, function(arg){
         if(length(arg) %in% c(1L, .n) == FALSE)
           warning(paste0(
-            "element of identity_args had length ",
+            ".init4proto: element of identity_args had length ",
             length(arg), "was expecting 1 or n (", .n,
             "). Was a subset of data used with a full lengthed identidy?"))})
       identity_args <- spinifex:::.lapply_rep_len(identity_args, .nrow_df_data, .n)
@@ -1420,14 +1429,14 @@ proto_highlight1d <- function(
 #' @seealso \code{\link[stats:cor]{stats::cor}}
 #' @export
 #' @examples
+#' library(spinifex)
 #' dat     <- scale_sd(flea[, 1:6])
 #' clas    <- flea$species
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
-#' ggt <- ggtour(gt_path, dat, angle = .1) +
-#'   proto_default() +
-#'   proto_frame_cor(c(.70, -.1))
-#'   
+#' ggt <- ggtour(gt_path, dat, angle = .3) +
+#'   proto_default(list(color = clas, shape = clas)) +
+#'   proto_frame_cor(position = c(.70, -.1))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
