@@ -130,6 +130,7 @@ ggtour <- function(basis_array,
 #' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
 #' ## d = 2 case
+#' message("facet_wrap_tour wants be called early, so that other proto's adopt the facet_var.")
 #' ggt <- ggtour(mt_path, dat, angle = .3) +
 #'   facet_wrap_tour(facet_var = clas, ncol = 2, nrow = 2) +
 #'   proto_default(list(color = clas, shape = clas),
@@ -1099,8 +1100,7 @@ proto_point.1d_fix_y <- function(
   ## Add fixed y
   .df_data <- .bind_elements2df(
     list(fixed_y = rep_len(fixed_y, .nrow_df_data)), .df_data)
-  .df_data <- data.frame(x = .df_data$x, y = .df_data$fixed_y,
-                         frame = .df_data$frame, label = .df_data$label)
+  .df_data$y <- .df_data$fixed_y
   
   ## BYPRODUCT: pass data back to .store
   # to calm some oddities; like proto_origin() complaining about y being missing

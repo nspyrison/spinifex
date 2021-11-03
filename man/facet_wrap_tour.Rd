@@ -32,6 +32,7 @@ mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)
 
 ## d = 2 case
+message("facet_wrap_tour wants be called early, so that other proto's adopt the facet_var.")
 ggt <- ggtour(mt_path, dat, angle = .3) +
   facet_wrap_tour(facet_var = clas, ncol = 2, nrow = 2) +
   proto_default(list(color = clas, shape = clas),
