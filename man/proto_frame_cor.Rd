@@ -44,7 +44,7 @@ gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_default(list(color = clas, shape = clas)) +
-  proto_frame_cor(position = c(.70, -.1))
+  proto_frame_cor(position = c(.5, 1.1))
 \dontrun{
 animate_plotly(ggt)
 }
