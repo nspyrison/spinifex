@@ -29,6 +29,7 @@ Adds \code{geom_hex()} of the projected data. Does not display hexagons in plotl
 animations; will not work with \code{animate_plotly()}.
 }
 \examples{
+library(spinifex)
 raw     <- ggplot2::diamonds
 dat     <- scale_sd(raw[1:10000, c(1, 5:6, 8:10)])
 gt_path <- save_history(dat, grand_tour(), max = 3)

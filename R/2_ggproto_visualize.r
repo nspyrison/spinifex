@@ -153,11 +153,10 @@ facet_wrap_tour <- function(
   
   ## BYPRODUCT:
   #### Changes: .df_basis & .df_data have facet_var bound, is_faceted == TRUE
-  .set_last_ggtour(list(
-    df_basis = .df_basis, df_data = .df_data, map_to_unitbox = .map_to_unitbox,
-    map_to_density = .map_to_density, map_to_data = .map_to_data,
-    n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p, d = .d,
-    manip_var = .manip_var, is_faceted = TRUE))
+  .ggt$df_basis   <- .df_basis
+  .ggt$df_data    <- .df_data
+  .ggt$is_faceted <- TRUE
+  .set_last_ggtour(.ggt)
   
   ## Return
   return(list(
@@ -1273,6 +1272,7 @@ proto_hex <- function(aes_args = list(),
 #' @aliases proto_highlight_2d
 #' @family ggtour proto functions
 #' @examples
+#' library(spinifex)
 #' dat     <- scale_sd(flea[, 1:6])
 #' clas    <- flea$species
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)

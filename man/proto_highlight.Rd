@@ -46,6 +46,7 @@ but does allow for keeping the initial position with the \code{mark_initial}
 argument if desired.
 }
 \examples{
+library(spinifex)
 dat     <- scale_sd(flea[, 1:6])
 clas    <- flea$species
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)

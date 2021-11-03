@@ -29,6 +29,7 @@ is used independent of data passed to \code{ggplot}.}
 Adds \code{geom_text()} of the projected data.
 }
 \examples{
+library(spinifex)
 dat     <- scale_sd(flea[, 1:6])
 clas    <- flea$species
 bas     <- basis_pca(dat)
