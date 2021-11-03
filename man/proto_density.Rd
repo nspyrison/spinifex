@@ -67,14 +67,16 @@ animate_plotly(ggt)
 ## proto_point.1d_fix_y:
 # Fixed y values are useful for related values that are 
 # not in the X variables, _eg_ predictions or residuals of you X space.
-dummy_y <- as.integer(clas) + rnorm(nrow(dat))# \%>\% scale_sd
+message("don't forget to scale your fixed_y.")
+dummy_y <- (as.integer(clas) + rnorm(nrow(dat))) \%>\% scale_sd
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
-ggt <- ggtour(gt_path, dat) +
-  proto_basis1d("top2d") +
-  proto_origin() + 
+message("proto_point.1d_fix_y wants to be called early so other proto's adopt the fixed_y.")
+ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_point.1d_fix_y(list(fill = clas, color = clas),
-    fixed_y = dummy_y)
+                       fixed_y = dummy_y) +
+  proto_basis1d("top2d") +
+  proto_origin()
 \dontrun{
 animate_plotly(ggt)
 }

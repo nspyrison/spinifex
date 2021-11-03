@@ -1072,14 +1072,16 @@ proto_density <- function(aes_args = list(),
 #' ## proto_point.1d_fix_y:
 #' # Fixed y values are useful for related values that are 
 #' # not in the X variables, _eg_ predictions or residuals of you X space.
-#' dummy_y <- as.integer(clas) + rnorm(nrow(dat))# %>% scale_sd
+#' message("don't forget to scale your fixed_y.")
+#' dummy_y <- (as.integer(clas) + rnorm(nrow(dat))) %>% scale_sd
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
-#' ggt <- ggtour(gt_path, dat) +
-#'   proto_basis1d("top2d") +
-#'   proto_origin() + 
+#' message("proto_point.1d_fix_y wants to be called early so other proto's adopt the fixed_y.")
+#' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_point.1d_fix_y(list(fill = clas, color = clas),
-#'     fixed_y = dummy_y)
+#'                        fixed_y = dummy_y) +
+#'   proto_basis1d("top2d") +
+#'   proto_origin()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1097,24 +1099,13 @@ proto_point.1d_fix_y <- function(
   ## Add fixed y
   .df_data <- .bind_elements2df(
     list(fixed_y = rep_len(fixed_y, .nrow_df_data)), .df_data)
-  ## Scale to density size
-  ##TODO: scaling of fixed_y is height in the example, but it works for now
-  # what didn't help:
-  # -preprocess with scale_sd
-  # -map_rel to .map_to_density/.map_to_density
-  # -incidentally .map_to_data worked best, but unreliable; 
-  # --_ie_cheem doens't have 2d basis.
-  .df_data <- map_relative(
-    data.frame(x = .df_data$x, y = .df_data$fixed_y, 
-               frame = .df_data$frame, label = .df_data$label),
-    "center", .map_to_density)
-  ## Pass data back to .store; to calm some oddities 
-  # such as proto_origin() complaining about y being missing
-  .set_last_ggtour(list(
-    df_basis = .df_basis, df_data = .df_data, map_to_unitbox = .map_to_unitbox,
-    map_to_density = .map_to_density, map_to_data = .map_to_data,
-    n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p, d = .d,
-    manip_var = .manip_var, is_faceted = TRUE))
+  .df_data <- data.frame(x = .df_data$x, y = .df_data$fixed_y,
+                         frame = .df_data$frame, label = .df_data$label)
+  
+  ## BYPRODUCT: pass data back to .store
+  # to calm some oddities; like proto_origin() complaining about y being missing
+  .ggt$df_data <- .df_data
+  .set_last_ggtour(.ggt)
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
