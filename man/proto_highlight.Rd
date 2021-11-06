@@ -9,14 +9,14 @@
 proto_highlight(
   aes_args = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  data = NULL,
+  row_index = 1,
   mark_initial = FALSE
 )
 
 proto_highlight1d(
   aes_args = list(),
   identity_args = list(color = "red", linetype = 2, alpha = 0.9),
-  data = NULL,
+  row_index = 1,
   mark_initial = FALSE
 )
 }
@@ -30,20 +30,19 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point()}, but outside of \code{aes()}, for instance
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.
-Typically a single numeric for point size, alpha, or similar.}
+#' Typically a single numeric for point size, alpha, or similar.}
 
-\item{data}{Numeric data to project. If left NULL, will check if it data is
-stored as an attribute of the the \code{basis_array}.}
+\item{row_index}{A numeric or logical index of rows to subset to.
+Defaults to TRUE, all observations.}
 
 \item{mark_initial}{Logical, whether or not to leave a fainter mark at the
 subset's initial position. Defaults to FALSE.}
 }
 \description{
-A \code{geom_point} or \code{geom_segment}(*1d) call to draw attention to a subset of
-points. With the addition of \code{data} argument to related \verb{proto_*} this is
-mostly redundant with an addition \code{proto_point} call on a subset of the data,
-but does allow for keeping the initial position with the \code{mark_initial}
-argument if desired.
+A \code{geom_point} or \code{geom_segment}(1d case) call to draw attention to a subset
+of points. This is mostly redundant \code{proto_point} with the implementation
+of the \code{row_index} argument on data protos, still helpful in the 1d case and
+for \code{mark_initial}, does not use bkg_row_color
 }
 \examples{
 library(spinifex)
@@ -54,7 +53,7 @@ gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 ## d = 2 case
 ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_default(list(color = clas, shape = clas)) +
-  proto_highlight(data = dat[5,, drop=FALSE])
+  proto_highlight(row_index = 5)
 \dontrun{
 animate_plotly(ggt)
 }
@@ -62,7 +61,7 @@ animate_plotly(ggt)
 ## Highlight multiple observations
 ggt2 <- ggtour(gt_path, dat, angle = .3) +
   proto_default(list(color = clas, shape = clas)) +
-  proto_highlight(data = dat[c( 2, 6, 19), ],
+  proto_highlight(row_index = c( 2, 6, 19),
                   identity_args = list(color = "blue", size = 4, shape = 4))
 \dontrun{
 animate_plotly(ggt2)
@@ -72,7 +71,7 @@ gt_path1d <- save_history(dat, grand_tour(d = 1), max_bases = 3)
 
 ggt <- ggtour(gt_path1d, dat, angle = .3) +
   proto_default1d(list(fill = clas, color = clas)) +
-  proto_highlight1d(data = dat[7,, drop = FALSE ])
+  proto_highlight1d(row_index = 7)
 \dontrun{
 animate_plotly(ggt)
 }
@@ -80,7 +79,7 @@ animate_plotly(ggt)
 ## Highlight multiple observations, mark_initial defaults to off
 ggt2 <- ggtour(gt_path1d, dat, angle = .3) +
   proto_default1d(list(fill = clas, color = clas)) +
-  proto_highlight1d(data = dat[c(2, 6, 7), ],
+  proto_highlight1d(row_index = c(2, 6, 7),
                     identity_args = list(color = "green", linetype = 1))
 \dontrun{
 animate_plotly(ggt2)

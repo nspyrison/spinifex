@@ -7,7 +7,7 @@
 proto_text(
   aes_args = list(),
   identity_args = list(nudge_x = 0.05),
-  data = NULL
+  row_index = TRUE
 )
 }
 \arguments{
@@ -46,7 +46,7 @@ animate_plotly(ggt)
 ggt2 <- ggtour(gt_path, dat) +
   proto_text(list(color = clas, size = as.integer(clas)),
              list(alpha = .7),
-             data = dat[1:15,])
+             row_index = 1:15)
 \dontrun{
 animate_plotly(ggt2)
 }

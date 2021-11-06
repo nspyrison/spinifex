@@ -30,9 +30,21 @@
 #' 
 #' ## d = 2 case
 #' ggt <- ggtour(basis_array = mt_path, data = dat, angle = .3) +
+#'   proto_default(aes_args = list(color = clas, shape = clas),
+#'                 identity_args = list(size = 1.5, alpha = .8))
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+#' 
+#' ## Finer control calling individual proto_* functions
+#' ggt <- ggtour(basis_array = mt_path, data = dat, angle = .3) +
+#'   proto_basis(position = "right", 
+#'               manip_col = "red",
+#'               text_size = 7L) +
 #'   proto_point(aes_args = list(color = clas, shape = clas),
-#'               identity_args = list(size = 1.5)) +
-#'   proto_basis()
+#'               identity_args = list(size = 1.5, alpha = .8),
+#'               row_index = which(clas == levels(clas)[1])) +
+#'   proto_origin()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -203,13 +215,17 @@ last_ggtour <- function(){.store$ggtour_ls}
 ){
   list <- as.list(list)
   .nms <- names(list)
+  ## Check names
+  if(is.null(.nms) | length(.nms) > length(unique(.nms)))
+    stop(".lapply_rep_len: args list was unamed or had none unique names. Please ensure that elements of aes_args and indentity_args have unique names.")
   .m <- lapply(seq_along(list), function(i){
-    .this_vector <- list[[i]]
-    if(length(.this_vector) != 1L & typeof(.this_vector) != "environment"){
-      if(length(.this_vector) != expected_length)
-        warning(paste0(".lapply_rep_len: `", .nms[i], "` not of length 1 or data."))
-      ret_vect <- rep_len(.this_vector, to_length)
-    }else ret_vect <- .this_vector
+    .elem <- list[[i]]
+    ## Check cycling
+    if(length(.elem) != 1L & typeof(.elem) != "environment"){
+      if(length(.elem) != expected_length) 
+        warning(paste0(".lapply_rep_len: `", .nms[i], "` not of length 1 or data; liable to cause cycling issues. Should it be of length 1 or data?"))
+      ret_vect <- rep_len(.elem, to_length)
+    }else ret_vect <- .elem
     list[[i]] <<- ret_vect
   })
   return(list)
@@ -238,6 +254,7 @@ last_ggtour <- function(){.store$ggtour_ls}
   return(.ret)
 }
 
+
 #' Prep data, especially for local data passes in `proto_*`
 #' 
 #' Internal expression. Creates local .objects to be commonly consumed by 
@@ -248,7 +265,7 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' @examples
 #' ## This expression. is not meant for external use.
 ## _.fortify_data expression -----
-.fortify_data <- expression({ ## Expected df_ls
+.fortify_data <- expression({ ## Expects df_ls
   .df_data <- df_ls$data_frames ## Can be NULL
   ## Make several df bounding boxs to map_relative to, but let the proto_* select.
   .map_to_unitbox <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
@@ -284,49 +301,80 @@ last_ggtour <- function(){.store$ggtour_ls}
     assign(paste0(".", .nms[i]), .ggt[[i]], envir = .env)
   })
   
-  ## If data is passed locally, update it
+  
+  ## row_index, if exists
+  if(exists("row_index")){
+    if(is.null(row_index) == FALSE)
+      if(identical(row_index, TRUE) == FALSE){
+        
+        ## Coerce index to full length logical index
+        if(is.numeric(row_index) == TRUE){
+          .rep_f <- rep(FALSE, .n)
+          .rep_f[row_index] <- TRUE
+          row_index <- .rep_f
+        }
+        
+        ### Background case:
+        if(exists("bkg_color") == TRUE)
+          if(is.null("bkg_color") == FALSE)
+            if(bkg_color != FALSE){
+              #### Subset (but not replicate) bkg_aes_args, bkg_identity_args:
+              if(exists("aes_args"))
+                if(length(aes_args) > 0L)
+                  bkg_aes_args <- lapply(aes_args, function(arg)arg[!row_index])
+              if(exists("identity_args"))
+                if(length(aes_args) > 0L)
+                  bkg_identity_args <- lapply(identity_args, function(arg)
+                    if(length(arg) == .n) arg[!row_index] else arg)
+              #### Subset .df_data_bkg
+              .df_data_bkg <- .df_data[
+                rep(!row_index, .n_frames),, drop = FALSE]
+            }
+        
+        ### Foreground case:
+        #### Subset (but not replicate) aes_args, identity_args
+        if(exists("aes_args"))
+          if(length(aes_args) > 0L)
+            aes_args <- lapply(aes_args, function(arg)arg[row_index])
+        if(exists("identity_args"))
+          if(length(aes_args) > 0L)
+            identity_args <- lapply(identity_args, function(arg)
+              if(length(arg) == .n) arg[row_index] else arg)
+        
+        #### Subset .df_data, update .n & .nrow_df_data
+        .df_data <- .df_data[
+          rep(row_index, .n_frames),, drop = FALSE]
+        .n <- sum(row_index) ## n rows _slecected_
+        .nrow_df_data <- nrow(.df_data)
+      }
+  }
+  ## If data is passed locally to data arg, update it
   if(is.null(data) == FALSE & identical(data, utils::data) == FALSE){
     df_ls <- array2df(.interpolated_basis_array, data)
     eval(.fortify_data)
   }
   
-  ## Replicate arg lists, if they exist
-  if(exists("aes_args")){
-    if(length(aes_args) > 0L){
-      ## Check for names
-      .nms <- names(aes_args)
-      if(is.null(.nms) | length(.nms) > length(unique(.nms)))
-        stop(".init4proto: aes_args were unamed or had none unique names.")
-      
-      ## Warn if aes_args arg mismatched length of data
-      lapply(aes_args, function(arg){
-        if(length(arg) %in% c(1L, .n) == FALSE)
-          warning(paste0(
-            ".init4proto: element of aes_args had length ", length(arg),
-            "was expecting 1 or n (", .n,
-            "). Was a subset of data used with a full lengthed aesthetic?"))})
-      ## Replicate across bases
+  ##Possible dev: to fix the legend issue of color and shape mapped to class:
+  # would need to bind args to the .df_data, and then remake a true aes(), 
+  # based on the names of the lists. will need to quote/or symb, probably. 
+  # .df_data <- .bind_elements2df(aes_args, .df_data)
+  # aes_args <- ## TODO>>>>, go to aes_string("mpg") or aes_(quote(mpg))?
+  
+  ## Replicate argument lists, if they exist
+  if(exists("bkg_aes_args"))
+    if(length(bkg_aes_args) > 0L)
+      bkg_aes_args <- spinifex:::.lapply_rep_len(
+        bkg_aes_args, nrow(.df_data_bkg), sum(!row_index))
+  if(exists("bkg_identity_args"))
+    if(length(identity_args) > 0L)
+      bkg_identity_args <- spinifex:::.lapply_rep_len(
+        bkg_identity_args, nrow(.df_data_bkg), sum(!row_index))
+  if(exists("aes_args"))
+    if(length(aes_args) > 0L)
       aes_args <- spinifex:::.lapply_rep_len(aes_args, .nrow_df_data, .n)
-      ## binding aes_args to .df_data, but then need to find another method to replace do.call.
-      # .df_data <- .bind_elements2df(aes_args, .df_data)
-      # aes_args <- ## TODO>>>>, go to aes_string("mpg") or aes_(quote(mpg))?
-    }
-  }
-  if(exists("identity_args")){
-    if(length(identity_args) > 0L){
-      .nms <- names(identity_args)
-      if(is.null(.nms) | length(.nms) > length(unique(.nms)))
-        stop(".init4proto: identity_args were unamed or had none unique names.")
-      
-      lapply(identity_args, function(arg){
-        if(length(arg) %in% c(1L, .n) == FALSE)
-          warning(paste0(
-            ".init4proto: element of identity_args had length ",
-            length(arg), "was expecting 1 or n (", .n,
-            "). Was a subset of data used with a full lengthed identidy?"))})
+  if(exists("identity_args"))
+    if(length(identity_args) > 0L)
       identity_args <- spinifex:::.lapply_rep_len(identity_args, .nrow_df_data, .n)
-    }
-  }
   .m <- gc() ## Mute garbage collection
 })
 
@@ -413,11 +461,8 @@ animate_gganimate <- function(
     start_pause = fps * start_pause,
     end_pause = fps * end_pause, ...)
   
-  ## Clean up
   .set_last_ggtour(NULL) ## Clears last tour
-  ## this should prevent some errors from not running ggtour() right before animating it.
   .m <- gc() ## Mute garbage collection
-  
   return(anim)
 }
 
@@ -466,7 +511,7 @@ animate_plotly <- function(
   fps = 8,
   ... ## Passed to plotly::layout().
 ){
-  ## Frame assymetry issue: https://github.com/ropensci/plotly/issues/1696
+  ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
   #### Adding many protos is liable to break plotly animations, see above url.
   ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
@@ -841,7 +886,8 @@ proto_basis1d <- function(
 #' 
 #' ggplot() +
 #'   geom_point(aes(PC1, PC2), proj) +
-#'   draw_basis(bas, proj, "left")
+#'   draw_basis(bas, proj, "left") +
+#'   coord_fixed()
 #'   
 #' ## Aesthetics and facet
 #' proj <- cbind(proj, clas = flea$species)
@@ -850,7 +896,8 @@ proto_basis1d <- function(
 #'   facet_wrap(vars(clas)) +
 #'   geom_point(aes(PC1, PC2, color = clas, shape = clas), proj) +
 #'   draw_basis(bas, proj, "left") +
-#'   theme_bw()
+#'   theme_bw() +
+#'   coord_fixed()
 #' # To repeat basis in all facet levels don't cbind a facet variable.
 draw_basis <- function(
   basis, ## WITH APPENDED FACET LEVEL
@@ -873,11 +920,13 @@ draw_basis <- function(
   .circle <- data.frame(x = cos(.angles), y = sin(.angles))
   .center <- map_relative(data.frame(x = 0L, y = 0L), position, map_to)
   .circle <- map_relative(.circle, position, map_to)
-  ## Assuming facet var will be right most var if used:
   
-  if(d > 2L){
-    .circle <- cbind(.circle, basis[, d])
-    colnames(.circle)[3L] <- colnames(basis)[d]
+  ## Handle facet var if used:
+  # Assuming a char/fct in last col is the facet_var
+  .p <- ncol(basis) 
+  if(is.numeric(basis[, .p]) == FALSE){
+    .circle$facet_var <- basis[, .p]
+    colnames(.circle) <- c("x", "y", colnames(basis)[.p])
   }
   .df_basis <- as.data.frame(map_relative(basis, position, map_to))
   colnames(.df_basis)[1L:2L] <- c("x", "y")
@@ -897,15 +946,14 @@ draw_basis <- function(
   
   ## Return proto
   return(list(
-    ggplot2::coord_fixed(),
     ggplot2::geom_path(data = .circle, color = "grey80",
                        size = line_size, inherit.aes = FALSE,
                        mapping = ggplot2::aes(x = x, y = y)),
     suppressWarnings(ggplot2::geom_segment( ## Suppress unused arg: frames
       data = .df_basis,
       size = .axes_siz, color = .axes_col,
-      mapping = ggplot2::aes(x = x, y = y,
-                             xend = .center[, 1L], yend = .center[, 2L])
+      mapping = ggplot2::aes(
+        x = x, y = y, xend = .center[, 1L], yend = .center[, 2L])
     )),
     suppressWarnings(ggplot2::geom_text(
       data = .df_basis,
@@ -936,6 +984,11 @@ draw_basis <- function(
 #' @param data Optionally pass a dataframe to this proto, superceeds data 
 #' passed to `ggtour`. Analogous to ggplot2 where data passed into a `geom_*` 
 #' is used independent of data passed to `ggplot`.
+#' @param bkg_color The character color by name or hexidemical to display
+#' backgrund observations, those not identified in `row_index`. 
+#' Defaults to "grey80". Use FALSE or NULL to skip rendering background points.
+#' Other aesthetic values such as shape and alpha are set adopted from 
+#' `aes_args` and `identity_args`.
 #' @export
 #' @aliases proto_points
 #' @family ggtour proto functions
@@ -945,21 +998,27 @@ draw_basis <- function(
 #' clas    <- flea$species
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
-#' ggt <- ggtour(gt_path, dat, angle = .1) +
-#'   proto_point()
+#' ggt <- ggtour(gt_path, dat, angle = .3) +
+#'   proto_point(aes_args = list(color = clas, shape = clas),
+#'               identity_args = list(size = 2, alpha = .7))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 #' 
-#' ggt2 <- ggtour(gt_path, dat) +
+#' ## Select/highlight observations with `row_index`
+#' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_point(aes_args = list(color = clas, shape = clas),
-#'               identity_args = list(size = 2, alpha = .7))
+#'               identity_args = list(size = 2, alpha = .7),
+#'               row_index = which(clas == levels(clas)[1]),
+#'               bkg_color = "grey80") ## FALSE or NULL to skip ploting background
 #' \dontrun{
-#' animate_plotly(ggt2)
+#' animate_plotly(ggt)
 #' }
-proto_point <- function(aes_args = list(),
-                        identity_args = list(),
-                        data = NULL
+proto_point <- function(
+  aes_args = list(),
+  identity_args = list(),
+  row_index = TRUE,
+  bkg_color = "grey80"
 ){
   ## Initialize
   eval(.init4proto)
@@ -970,14 +1029,29 @@ proto_point <- function(aes_args = list(),
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
-    ## tooltip for plotly on hover tooltip
-    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) 
+    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tolltip for plotly hover tt.
   .aes_call <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
+  ret <- do.call(.geom_func, identity_args)
+  
+
+  if(is.null(bkg_color) == FALSE)
+    if(bkg_color != FALSE)
+      if(exists("bkg_aes_args") & exists("bkg_identity_args") & exists("bkg_aes_args")){
+        ## do.call aes() over the bkg_aes_args
+        .aes_func <- function(...)
+          ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) 
+        .aes_call <- suppressWarnings(do.call(.aes_func, bkg_aes_args))
+        ## do.call geom_point() over the bkg_identity_args
+        .geom_func <- function(...) suppressWarnings(
+          ggplot2::geom_point(mapping = .aes_call, data = .df_data_bkg, 
+                              color = bkg_color, ...)) ## Trumps color set in aes_args
+        ret <- list(do.call(.geom_func, bkg_identity_args), ret)
+      }
   ## Return
-  return(do.call(.geom_func, identity_args))
+  return(ret)
 }
 
 
@@ -1017,11 +1091,12 @@ proto_point <- function(aes_args = list(),
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_density <- function(aes_args = list(),
-                          identity_args = list(alpha = .7),
-                          data = NULL,
-                          density_position = c("identity", "stack", "fill"),
-                          do_add_rug = TRUE
+proto_density <- function(
+  aes_args = list(),
+  identity_args = list(alpha = .7),
+  row_index = TRUE,
+  density_position = c("identity", "stack", "fill"),
+  do_add_rug = TRUE
 ){
   ## Initialize
   eval(.init4proto)
@@ -1089,7 +1164,7 @@ proto_density <- function(aes_args = list(),
 proto_point.1d_fix_y <- function(
   aes_args = list(),
   identity_args = list(),
-  data = NULL,
+  row_index = TRUE,
   fixed_y
 ){
   ## Initialize
@@ -1155,13 +1230,13 @@ proto_point.1d_fix_y <- function(
 #' ggt2 <- ggtour(gt_path, dat) +
 #'   proto_text(list(color = clas, size = as.integer(clas)),
 #'              list(alpha = .7),
-#'              data = dat[1:15,])
+#'              row_index = 1:15)
 #' \dontrun{
 #' animate_plotly(ggt2)
 #' }
 proto_text <- function(aes_args = list(),
                        identity_args = list(nudge_x = 0.05),
-                       data = NULL
+                       row_index = TRUE
 ){
   ## Initialize
   eval(.init4proto)
@@ -1218,10 +1293,11 @@ proto_text <- function(aes_args = list(),
 #' \dontrun{
 #' animate_gganimate(ggp)
 #' }
-proto_hex <- function(aes_args = list(),
-                      identity_args = list(),
-                      data = NULL,
-                      bins = 30
+proto_hex <- function(
+  aes_args = list(),
+  identity_args = list(),
+  row_index = TRUE,
+  bins = 30
 ){
   ## Initialize
   requireNamespace("hexbin")
@@ -1246,14 +1322,12 @@ proto_hex <- function(aes_args = list(),
 
 
 
-### should move into spinifex v0.3.1
 #' Tour proto highlighing specified points
 #'
-#' A `geom_point` or `geom_segment`(*1d) call to draw attention to a subset of 
-#' points. With the addition of `data` argument to related `proto_*` this is 
-#' mostly redundant with an addition `proto_point` call on a subset of the data,
-#' but does allow for keeping the initial position with the `mark_initial`
-#' argument if desired.
+#' A `geom_point` or `geom_segment`(1d case) call to draw attention to a subset 
+#' of points. This is mostly redundant `proto_point` with the implementation 
+#' of the `row_index` argument on data protos, still helpful in the 1d case and
+#' for `mark_initial`, does not use bkg_row_color
 #'
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
@@ -1263,9 +1337,9 @@ proto_hex <- function(aes_args = list(),
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
-#' Typically a single numeric for point size, alpha, or similar.
-#' @param data Numeric data to project. If left NULL, will check if it data is 
-#' stored as an attribute of the the `basis_array`.
+#' #' Typically a single numeric for point size, alpha, or similar.
+#' @param row_index A numeric or logical index of rows to subset to. 
+#' Defaults to TRUE, all observations.
 #' @param mark_initial Logical, whether or not to leave a fainter mark at the 
 #' subset's initial position. Defaults to FALSE.
 #' @export
@@ -1280,7 +1354,7 @@ proto_hex <- function(aes_args = list(),
 #' ## d = 2 case
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_default(list(color = clas, shape = clas)) +
-#'   proto_highlight(data = dat[5,, drop=FALSE])
+#'   proto_highlight(row_index = 5)
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1288,7 +1362,7 @@ proto_hex <- function(aes_args = list(),
 #' ## Highlight multiple observations
 #' ggt2 <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_default(list(color = clas, shape = clas)) +
-#'   proto_highlight(data = dat[c( 2, 6, 19), ],
+#'   proto_highlight(row_index = c( 2, 6, 19),
 #'                   identity_args = list(color = "blue", size = 4, shape = 4))
 #' \dontrun{
 #' animate_plotly(ggt2)
@@ -1296,11 +1370,13 @@ proto_hex <- function(aes_args = list(),
 proto_highlight <- function(
   aes_args = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  data = NULL,
+  row_index = 1,
   mark_initial = FALSE
 ){
+  if(length(row_index) == 0L) stop("proto_highlight: length of row_index is 0.")
+  if(sum(row_index) == 0L) return() ## Early out adding nothing
   ## Initialize
-  eval(.init4proto)
+  eval(.init4proto) ## aes_args/identity_args/df_data subset in .init4proto.
   if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_highlight: Projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
@@ -1310,8 +1386,8 @@ proto_highlight <- function(
     ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## rownum for tooltip
   .aes_call <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
-  .geom_func <- function(...) suppressWarnings(
-    ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
+  .geom_func <- function(...) suppressWarnings(ggplot2::geom_point(
+    mapping = .aes_call, data = .df_data, ...))
   ret <- do.call(.geom_func, identity_args)
   
   ## Initial mark, if needed, hard-coded some aes, no frame.
@@ -1323,7 +1399,7 @@ proto_highlight <- function(
     .geom_func <- function(...) suppressWarnings(ggplot2::geom_point(
       mapping = .aes_call, .df_data[1L, ], ## only the first row, should be frame 1.
       ..., alpha = .5)) ## Hard-coded alpha
-    inital_mark <- do.call(.geom_func, identity_args)
+    inital_mark <- do.call(.geom_func, identity_args[row_index])
     ret <- list(inital_mark, ret)
   }
   
@@ -1341,7 +1417,7 @@ proto_highlight <- function(
 #' 
 #' ggt <- ggtour(gt_path1d, dat, angle = .3) +
 #'   proto_default1d(list(fill = clas, color = clas)) +
-#'   proto_highlight1d(data = dat[7,, drop = FALSE ])
+#'   proto_highlight1d(row_index = 7)
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1349,7 +1425,7 @@ proto_highlight <- function(
 #' ## Highlight multiple observations, mark_initial defaults to off
 #' ggt2 <- ggtour(gt_path1d, dat, angle = .3) +
 #'   proto_default1d(list(fill = clas, color = clas)) +
-#'   proto_highlight1d(data = dat[c(2, 6, 7), ],
+#'   proto_highlight1d(row_index = c(2, 6, 7),
 #'                     identity_args = list(color = "green", linetype = 1))
 #' \dontrun{
 #' animate_plotly(ggt2)
@@ -1357,7 +1433,7 @@ proto_highlight <- function(
 proto_highlight1d <- function(
   aes_args = list(),
   identity_args = list(color = "red", linetype = 2, alpha = .9),
-  data = NULL,
+  row_index = 1,
   mark_initial = FALSE
 ){
   ## Initialize
@@ -1431,10 +1507,10 @@ proto_highlight1d <- function(
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_frame_cor <- function(
+proto_frame_cor2 <- function(
   aes_args = list(),
   identity_args = list(size = 4),
-  data = NULL,
+  row_index = TRUE,
   #stat2d = stats::cor, ## hardcoded stats::cor atm
   position = c(.7, -.1),
   ... ## passed to stats::cor
@@ -1447,7 +1523,7 @@ proto_frame_cor <- function(
   ## Find aggregated values, stat within the frame
   .agg <- .df_data %>%
     dplyr::group_by(frame) %>%
-    dplyr::summarise(value = round(stats::cor(x, y, ...), 2L)) %>%
+    dplyr::summarise(value = round(stats::cor(x, y, ...)^2L, 2L)) %>%
     dplyr::ungroup()
   
   ## Set position
@@ -1592,6 +1668,8 @@ proto_origin1d <- function(
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
+#' @param ... Optionally pass additional arguments to `proto_point` or 
+#' `proto_density`.
 #' @export
 #' @aliases proto_default2d, proto_def, proto_def2d
 #' @family ggtour proto functions
@@ -1605,15 +1683,18 @@ proto_origin1d <- function(
 #' mt_path <- manual_tour(bas, mv)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_default(list(color = clas, shape = clas))
+#'   proto_default(list(color = clas, shape = clas),
+#'                 list())
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_default <- function(aes_args = list(),
-                          identity_args = list(alpha = .9)
+proto_default <- function(
+  aes_args = list(),
+  identity_args = list(alpha = .9),
+  ...
 ){
   return(list(
-    proto_point(aes_args, identity_args),
+    proto_point(aes_args, identity_args, ...),
     proto_basis(),
     proto_origin()
   ))

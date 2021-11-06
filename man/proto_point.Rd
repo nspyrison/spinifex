@@ -5,7 +5,12 @@
 \alias{proto_points}
 \title{Tour proto for data point}
 \usage{
-proto_point(aes_args = list(), identity_args = list(), data = NULL)
+proto_point(
+  aes_args = list(),
+  identity_args = list(),
+  row_index = TRUE,
+  bkg_color = "grey80"
+)
 }
 \arguments{
 \item{aes_args}{A list of aesthetic arguments to passed to
@@ -17,6 +22,12 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point()}, but outside of \code{aes()}, for instance
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
+
+\item{bkg_color}{The character color by name or hexidemical to display
+backgrund observations, those not identified in \code{row_index}.
+Defaults to "grey80". Use FALSE or NULL to skip rendering background points.
+Other aesthetic values such as shape and alpha are set adopted from
+\code{aes_args} and \code{identity_args}.}
 
 \item{data}{Optionally pass a dataframe to this proto, superceeds data
 passed to \code{ggtour}. Analogous to ggplot2 where data passed into a \verb{geom_*}
