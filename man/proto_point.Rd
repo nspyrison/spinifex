@@ -42,17 +42,21 @@ dat     <- scale_sd(flea[, 1:6])
 clas    <- flea$species
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
-ggt <- ggtour(gt_path, dat, angle = .1) +
-  proto_point()
+ggt <- ggtour(gt_path, dat, angle = .3) +
+  proto_point(aes_args = list(color = clas, shape = clas),
+              identity_args = list(size = 2, alpha = .7))
 \dontrun{
 animate_plotly(ggt)
 }
 
-ggt2 <- ggtour(gt_path, dat) +
+## Select/highlight observations with `row_index`
+ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_point(aes_args = list(color = clas, shape = clas),
-              identity_args = list(size = 2, alpha = .7))
+              identity_args = list(size = 2, alpha = .7),
+              row_index = which(clas == levels(clas)[1]),
+              bkg_color = "grey80") ## FALSE or NULL to skip ploting background
 \dontrun{
-animate_plotly(ggt2)
+animate_plotly(ggt)
 }
 }
 \seealso{

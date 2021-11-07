@@ -168,6 +168,7 @@ facet_wrap_tour <- function(
   #### Changes: .df_basis & .df_data have facet_var bound, is_faceted == TRUE
   .ggt$df_basis   <- .df_basis
   .ggt$df_data    <- .df_data
+  .ggt$facet_var  <- facet_var
   .ggt$is_faceted <- TRUE
   .set_last_ggtour(.ggt)
   
@@ -300,7 +301,6 @@ last_ggtour <- function(){.store$ggtour_ls}
   .m <- sapply(seq_along(.ggt), function(i){
     assign(paste0(".", .nms[i]), .ggt[[i]], envir = .env)
   })
-  
   
   ## row_index, if exists
   if(exists("row_index")){
@@ -1474,7 +1474,7 @@ proto_highlight1d <- function(
 
 
 ### Guides & QoL Protos -----
-#' Tour proto for within frame correlation
+#' Tour proto for frames square correlation
 #'
 #' Adds text to the animation, the frame and its specified correlation.
 #'
@@ -1503,7 +1503,7 @@ proto_highlight1d <- function(
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_default(list(color = clas, shape = clas)) +
-#'   proto_frame_cor(position = c(.5, 1.1))
+#'   proto_frame_cor2(position = c(.5, 1.1))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1538,15 +1538,17 @@ proto_frame_cor2 <- function(
   # .stat_nm  <- substitute(stat2d)
   # .last_pos <- regexpr("\\:[^\\:]*$", s) + 1L
   # .stat_nm  <- substr(.stat_nm, .last_pos, nchar(.stat_nm))
-  .stat_nm <- "cor"
+  .stat_nm <- "cor^2"
   ## Create df with position and string label
   .txt_df <- data.frame(
     x = .x,
     y = .y,
     frame = .agg$frame,
-    label = paste0(#"frame: ", .agg$frame, ", ",
+    label = paste0(#"frame: ", .agg$frame, ", ", ## frame is redundant
                    .stat_nm, ": ",
                    sprintf("%3.2f", .agg$value)))
+  if(.is_faceted == TRUE) ## Append first facet_var value.
+    .txt_df <- data.frame(.txt_df, facet_var = .facet_var[1L])
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)

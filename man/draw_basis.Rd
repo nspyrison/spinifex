@@ -52,7 +52,8 @@ proj <- as.data.frame(dat \%*\% bas)
 
 ggplot() +
   geom_point(aes(PC1, PC2), proj) +
-  draw_basis(bas, proj, "left")
+  draw_basis(bas, proj, "left") +
+  coord_fixed()
   
 ## Aesthetics and facet
 proj <- cbind(proj, clas = flea$species)
@@ -61,6 +62,7 @@ ggplot() +
   facet_wrap(vars(clas)) +
   geom_point(aes(PC1, PC2, color = clas, shape = clas), proj) +
   draw_basis(bas, proj, "left") +
-  theme_bw()
+  theme_bw() +
+  coord_fixed()
 # To repeat basis in all facet levels don't cbind a facet variable.
 }

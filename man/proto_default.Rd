@@ -9,7 +9,7 @@
 \alias{proto_def1d}
 \title{Wrapper function for default 2D/1D tours respectively.}
 \usage{
-proto_default(aes_args = list(), identity_args = list(alpha = 0.9))
+proto_default(aes_args = list(), identity_args = list(alpha = 0.9), ...)
 
 proto_default1d(aes_args = list(), identity_args = list(alpha = 0.7))
 }
@@ -23,6 +23,9 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point()}, but outside of \code{aes()}, for instance
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
+
+\item{...}{Optionally pass additional arguments to \code{proto_point} or
+\code{proto_density}.}
 }
 \description{
 An easier way to get to default 2D tour settings.
@@ -39,7 +42,8 @@ mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, mv)
 
 ggt <- ggtour(mt_path, dat) +
-  proto_default(list(color = clas, shape = clas))
+  proto_default(list(color = clas, shape = clas),
+                list())
 \dontrun{
 animate_plotly(ggt)
 }
