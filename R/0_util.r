@@ -316,7 +316,7 @@ theme_spinifex <- function(...){
        ggplot2::theme(legend.position = "bottom",
                       legend.direction = "horizontal", ## Levels within aesthetic
                       legend.box = "vertical",         ## Between aesthetic
-                      legend.margin = ggplot2::margin(-1L,-1L,-1L,-1L, "mm"), ## Tighter legend margin
+                      legend.margin = ggplot2::margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
                       axis.title = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
                       ...) ## ... applied over defaults.
   )
