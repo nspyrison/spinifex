@@ -347,7 +347,7 @@ last_ggtour <- function(){.store$ggtour_ls}
         .n <- sum(row_index) ## n rows _slecected_
         .nrow_df_data <- nrow(.df_data)
       }
-  }
+  } ## end row_index, if exists
   ## If data is passed locally to data arg, update it
   if(is.null(data) == FALSE & identical(data, utils::data) == FALSE){
     df_ls <- array2df(.interpolated_basis_array, data)
@@ -361,14 +361,17 @@ last_ggtour <- function(){.store$ggtour_ls}
   # aes_args <- ## TODO>>>>, go to aes_string("mpg") or aes_(quote(mpg))?
   
   ## Replicate argument lists, if they exist
-  if(exists("bkg_aes_args"))
-    if(length(bkg_aes_args) > 0L)
-      bkg_aes_args <- spinifex:::.lapply_rep_len(
-        bkg_aes_args, nrow(.df_data_bkg), sum(!row_index))
-  if(exists("bkg_identity_args"))
-    if(length(identity_args) > 0L)
-      bkg_identity_args <- spinifex:::.lapply_rep_len(
-        bkg_identity_args, nrow(.df_data_bkg), sum(!row_index))
+  if(exists("row_index"))
+    if(is.null(row_index) == FALSE){
+      if(exists("bkg_aes_args"))
+        if(length(bkg_aes_args) > 0L)
+          bkg_aes_args <- spinifex:::.lapply_rep_len(
+            bkg_aes_args, nrow(.df_data_bkg), sum(!row_index))
+      if(exists("bkg_identity_args"))
+        if(length(identity_args) > 0L)
+          bkg_identity_args <- spinifex:::.lapply_rep_len(
+            bkg_identity_args, nrow(.df_data_bkg), sum(!row_index))
+    }
   if(exists("aes_args"))
     if(length(aes_args) > 0L)
       aes_args <- spinifex:::.lapply_rep_len(aes_args, .nrow_df_data, .n)
