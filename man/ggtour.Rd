@@ -75,6 +75,14 @@ ggt1d <- ggtour(basis_array = mt_path1d, data = dat, angle = .3) +
 \dontrun{
 animate_plotly(ggt1d)
 }
+
+## basis_array is a single matrix, returning
+### As static ggplot2 object
+ggt <- ggtour(basis_array = bas, data = dat) +
+  proto_default(aes_args = list(fill= clas, color = clas))
+ggt
+### As html widget with tooltips
+animate_plotly(ggt)
 }
 \seealso{
 Other ggtour proto functions: 

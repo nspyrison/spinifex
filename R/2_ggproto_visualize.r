@@ -58,6 +58,14 @@
 #' \dontrun{
 #' animate_plotly(ggt1d)
 #' }
+#' 
+#' ## basis_array is a single matrix, returning
+#' ### As static ggplot2 object
+#' ggt <- ggtour(basis_array = bas, data = dat) +
+#'   proto_default(aes_args = list(fill= clas, color = clas))
+#' ggt
+#' ### As html widget with tooltips
+#' animate_plotly(ggt)
 ggtour <- function(basis_array,
                    data = NULL,
                    angle = .05,
@@ -74,15 +82,15 @@ ggtour <- function(basis_array,
      suppressWarnings(any(is.na(as.numeric(as.character(rownames(data)))))))
     data_label <- paste0("row: ", 1L:nrow(data), ", ", rownames(data))
   
-  ## Single basis, no manip var
+  ## Single basis, no manip var as a matrix coerce to array.
   if(is.null(.manip_var) == TRUE) ## if manip_var is null; IE. single basis, not tour
     if(length(dim(basis_array)) == 2L) ## AND 1 basis.
-      basis_array <- array(as.matrix(basis_array), dim = c(dim(basis_array), 1L))
+      basis_array <- array(
+        as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   ## Interpolate {tourr} tours
   if(is.null(.manip_var) == TRUE) ## if manip_var is null; IE. from tourr
-    if(dim(basis_array)[3L] != 1L) ## AND more than 1 basis.
-      .m <- utils::capture.output(
-        .interpolated_basis_array <- tourr::interpolate(basis_array, angle))
+    .m <- utils::capture.output(
+      .interpolated_basis_array <- tourr::interpolate(basis_array, angle))
   ## Interpolate manual tours
   if(is.null(.manip_var) == FALSE)
     ## Basis_array from manual tours is only 1 basis.
@@ -636,26 +644,35 @@ animate_plotly <- function(
 #' 
 #' ## d = 2 case
 #' mt_path <- manual_tour(bas, manip_var = mv)
-#' ggt <- ggtour(mt_path, dat, angle = .25) +
-#'   proto_basis() +
+#' ggt <- ggtour(mt_path, dat, angle = .3) +
 #'   proto_point(list(color = clas, shape = clas),
-#'               list(size = 1.5))
+#'               list(size = 1.5)) +
+#'   proto_basis()
 #' filmstrip(ggt)
 #' 
-#' ## d = 1 case
+#' ## Keep select frames, d = 1 case
 #' bas1d     <- basis_pca(dat, d = 1)
 #' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
 #' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
 #'   proto_default1d(list(fill = clas))
-#' 
-#' ggt1d <- ggtour(mt_path1d, dat) +
-#'   proto_default1d(list(fill = clas))
-#' \dontrun{
 #' filmstrip(ggt1d)
-#' }
-filmstrip <- function(ggtour){ #, frame_index <- NULL
+filmstrip <- function(
+  ggtour
+){
+  #frame_nums_kept = NULL, 
+  ## Not going to work; would have to modify all mappings and identity args.
+  # if(is.null(frame_nums_kept) == FALSE){
+  #   ggtour$data <- ggtour$data[ggtour$data$frame %in% frame_nums_kept, ]
+  #   .n_layers <- length(ggtour$layers)
+  #   .m <- sapply(1L:.n_layers, function(i){
+  #     ggtour$layers[[i]]$data <<-
+  #       ggtour$layers[[i]]$data[
+  #         ggtour$layers[[i]]$data$frame %in% frame_nums_kept, ]
+  #   })
+  # }
+  
   ret <- ggtour +
-    ggplot2::facet_wrap(ggplot2::vars(factor(frame, unique(frame)))) + ## facet on frame
+    ggplot2::facet_wrap(ggplot2::vars(factor(frame))) + ## facet on frame
     ggplot2::theme(strip.text = ggplot2::element_text(
       margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
       panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing

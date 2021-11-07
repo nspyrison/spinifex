@@ -93,10 +93,6 @@ array2df <- function(
         " columns while basis has ", nrow(basis_array), " rows."))
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% matrix(basis_array[,, i], nrow(basis_array), ncol(basis_array))
-      # ## Center the new frame
-      # new_frame <- sapply(1L:ncol(new_frame), function(i)
-      #   new_frame[, i] - mean(new_frame[, i])
-      # )
       new_frame <- cbind(new_frame, i) ## Append frame number
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
@@ -216,7 +212,7 @@ map_relative <- function(
   } else if(position == "floor2d"){
     scale <- .5 * ydiff
     xoff  <- xcenter
-    yoff  <- ycenter
+    yoff  <- -.5 * ydiff + ycenter
   } else if(position == "bottomleft"){
     scale <- .25 * ydiff
     xoff  <- -.25 * xdiff + xcenter
