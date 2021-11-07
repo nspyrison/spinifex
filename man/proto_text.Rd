@@ -21,9 +21,8 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
 
-\item{data}{Optionally pass a dataframe to this proto, superceeds data
-passed to \code{ggtour}. Analogous to ggplot2 where data passed into a \verb{geom_*}
-is used independent of data passed to \code{ggplot}.}
+\item{row_index}{A numeric or logical index of rows to subset to.
+Defaults to NULL, all observations.}
 }
 \description{
 Adds \code{geom_text()} of the projected data.

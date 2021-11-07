@@ -7,7 +7,7 @@
 proto_hex(
   aes_args = list(),
   identity_args = list(),
-  row_index = TRUE,
+  row_index = NULL,
   bins = 30
 )
 }
@@ -22,12 +22,11 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
 
+\item{row_index}{A numeric or logical index of rows to subset to.
+Defaults to NULL, all observations.}
+
 \item{bins}{Numeric vector giving number of bins in both vertical and
 horizontal directions. Defaults to 30.}
-
-\item{data}{Optionally pass a dataframe to this proto, superceeds data
-passed to \code{ggtour}. Analogous to ggplot2 where data passed into a \verb{geom_*}
-is used independent of data passed to \code{ggplot}.}
 }
 \description{
 Adds \code{geom_hex()} of the projected data. Does not display hexagons in plotly
@@ -40,8 +39,7 @@ dat     <- scale_sd(raw[1:10000, c(1, 5:6, 8:10)])
 gt_path <- save_history(dat, grand_tour(), max = 3)
 
 ## 10000 rows is quite heavy to animate.
-## Decrease the points drawn in each frame by aggregating many points into
-#### a hexegon heatmap, using geom_hex!
+## Increase performance by aggregating many points into few hexagons
 ggp <- ggtour(gt_path, dat) +
   proto_basis() +
   proto_hex(bins = 20)

@@ -38,7 +38,7 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' vector with length equal to the number of variables.
 #' Defaults to the 3 character abbreviation of the original variables names.
 #' @param data_label Labels for `plotly` tooltip display. 
-#' Defaults to the rownames of data. If null, inializes to 1:nrow(data).
+#' Defaults to the rownames of data. If null, initializes to 1:nrow(data).
 #' @export
 #' @examples
 #' ## !!This function is not meant for external use!!

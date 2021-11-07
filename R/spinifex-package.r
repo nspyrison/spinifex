@@ -45,34 +45,45 @@ NULL
 
 ## Manual tour globals ------
 if(getRversion() >= "2.15.1"){
-  utils::globalVariables(c("phi_min",
-                           "phi_max",
-                           "manip_col",
-                           "n_frames",
-                           "theta",
-                           "angle"))
+  utils::globalVariables(c(
+    "phi_min",
+    "phi_max",
+    "manip_col",
+    "n_frames",
+    "theta",
+    "angle"))
   ## ggproto globals:
-  utils::globalVariables(c(".df_data",
-                           ".df_basis",
-                           ".map_to",
-                           ".n_frames",
-                           ".nrow_df_data",
-                           ".n",
-                           ".p",
-                           ".manip_var",
-                           "rownum_index",
-                           ".facet_by"))
+  utils::globalVariables(c(
+    ".df_data",
+    ".df_basis",
+    ".map_to",
+    ".n_frames",
+    ".nrow_df_data",
+    ".n",
+    ".p",
+    ".d",
+    ".manip_var",
+    "rownum_index",
+    ".facet_var",
+    ".map_to_unitbox",
+    ".map_to_density",
+    ".map_to_data",
+    ".is_faceted",
+    ".df_data_bkg",
+    "bkg_aes_args",
+    "bkg_identity_args"))
   ## ggplot aes globals:
-  utils::globalVariables(c("x",
-                           "y",
-                           "z",
-                           "xend",
-                           "yend",
-                           "x_end",
-                           "y_end",
-                           "label",
-                           "..scaled..",
-                           "..ndensity..",
-                           "frame",    ## Animation frame
-                           "tooltip")) ## plotly tooltip
+  utils::globalVariables(c(
+    "x",
+    "y",
+    "z",
+    "xend",
+    "yend",
+    "x_end",
+    "y_end",
+    "label",
+    "..scaled..",
+    "..ndensity..",
+    "frame",    ## Animation frame
+    "tooltip")) ## plotly tooltip
 }

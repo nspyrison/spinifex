@@ -16,7 +16,7 @@ draw_basis(
 }
 \arguments{
 \item{basis}{A (p*d) basis to draw. Draws the first two components.
-If facet is used cbind the facet variable to a specidic facet level
+If facet is used cbind the facet variable to a specific facet level
 (2nd example), otherwise the basis prints on all facet levels.}
 
 \item{map_to}{A data.frame to scale the basis to.
@@ -38,7 +38,7 @@ axes and unit circle. Defaults to 1.}
 Defaults to the 3 character abbreviation of the rownames of the basis.}
 }
 \description{
-Aditively draws a basis on a static ggplot.
+additively draws a basis on a static ggplot.
 Not a formal \code{geom}, nor does it use the setup from \code{ggtour} that
 \verb{proto_*} functions expect.
 }

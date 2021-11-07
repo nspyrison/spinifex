@@ -23,15 +23,15 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
 
+\item{row_index}{A numeric or logical index of rows to subset to.
+Defaults to NULL, all observations.}
+
 \item{position}{Vector x and y position relative to the unit data position;
 (0, 1) in each direction. Defaults to c(.7, -.1).}
 
 \item{...}{Optionally, pass additional arguments to
 \code{\link[stats:cor]{stats::cor}}, specifying the type of
 within frame correlation.}
-
-\item{tail_size}{How long the origin mark should extended
-relative to the observations. Defaults to .05, 5\% of the projection space.}
 }
 \description{
 Adds text to the animation, the frame and its specified correlation.

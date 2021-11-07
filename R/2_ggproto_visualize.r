@@ -312,49 +312,47 @@ last_ggtour <- function(){.store$ggtour_ls}
   
   ## row_index, if exists
   if(exists("row_index")){
-    if(is.null(row_index) == FALSE)
-      if(identical(row_index, TRUE) == FALSE){
-        
-        ## Coerce index to full length logical index
-        if(is.numeric(row_index) == TRUE){
-          .rep_f <- rep(FALSE, .n)
-          .rep_f[row_index] <- TRUE
-          row_index <- .rep_f
-        }
-        
-        ### Background case:
-        if(exists("bkg_color") == TRUE)
-          if(is.null("bkg_color") == FALSE)
-            if(bkg_color != FALSE){
-              #### Subset (but not replicate) bkg_aes_args, bkg_identity_args:
-              if(exists("aes_args"))
-                if(length(aes_args) > 0L)
-                  bkg_aes_args <- lapply(aes_args, function(arg)arg[!row_index])
-              if(exists("identity_args"))
-                if(length(aes_args) > 0L)
-                  bkg_identity_args <- lapply(identity_args, function(arg)
-                    if(length(arg) == .n) arg[!row_index] else arg)
-              #### Subset .df_data_bkg
-              .df_data_bkg <- .df_data[
-                rep(!row_index, .n_frames),, drop = FALSE]
-            }
-        
-        ### Foreground case:
-        #### Subset (but not replicate) aes_args, identity_args
-        if(exists("aes_args"))
-          if(length(aes_args) > 0L)
-            aes_args <- lapply(aes_args, function(arg)arg[row_index])
-        if(exists("identity_args"))
-          if(length(aes_args) > 0L)
-            identity_args <- lapply(identity_args, function(arg)
-              if(length(arg) == .n) arg[row_index] else arg)
-        
-        #### Subset .df_data, update .n & .nrow_df_data
-        .df_data <- .df_data[
-          rep(row_index, .n_frames),, drop = FALSE]
-        .n <- sum(row_index) ## n rows _slecected_
-        .nrow_df_data <- nrow(.df_data)
+    if(is.null(row_index) == FALSE){
+      ## Coerce index to full length logical index
+      if(is.numeric(row_index) == TRUE){
+        .rep_f <- rep(FALSE, .n)
+        .rep_f[row_index] <- TRUE
+        row_index <- .rep_f
       }
+      
+      ### Background case:
+      if(exists("bkg_color") == TRUE)
+        if(is.null("bkg_color") == FALSE)
+          if(bkg_color != FALSE){
+            #### Subset (but not replicate) bkg_aes_args, bkg_identity_args:
+            if(exists("aes_args"))
+              if(length(aes_args) > 0L)
+                bkg_aes_args <- lapply(aes_args, function(arg)arg[!row_index])
+            if(exists("identity_args"))
+              if(length(aes_args) > 0L)
+                bkg_identity_args <- lapply(identity_args, function(arg)
+                  if(length(arg) == .n) arg[!row_index] else arg)
+            #### Subset .df_data_bkg
+            .df_data_bkg <- .df_data[
+              rep(!row_index, .n_frames),, drop = FALSE]
+          }
+      
+      ### Foreground case:
+      #### Subset (but not replicate) aes_args, identity_args
+      if(exists("aes_args"))
+        if(length(aes_args) > 0L)
+          aes_args <- lapply(aes_args, function(arg)arg[row_index])
+      if(exists("identity_args"))
+        if(length(aes_args) > 0L)
+          identity_args <- lapply(identity_args, function(arg)
+            if(length(arg) == .n) arg[row_index] else arg)
+      
+      #### Subset .df_data, update .n & .nrow_df_data
+      .df_data <- .df_data[
+        rep(row_index, .n_frames),, drop = FALSE]
+      .n <- sum(row_index) ## n rows _slecected_
+      .nrow_df_data <- nrow(.df_data)
+    }
   } ## end row_index, if exists
   ## If data is passed locally to data arg, update it
   if(is.null(data) == FALSE & identical(data, utils::data) == FALSE){
@@ -876,12 +874,12 @@ proto_basis1d <- function(
 
 #' draw a basis on a static ggplot
 #' 
-#' Aditively draws a basis on a static ggplot.
+#' additively draws a basis on a static ggplot.
 #' Not a formal `geom`, nor does it use the setup from `ggtour` that 
 #' `proto_*` functions expect.
 #' 
 #' @param basis A (p*d) basis to draw. Draws the first two components. 
-#' If facet is used cbind the facet variable to a specidic facet level 
+#' If facet is used cbind the facet variable to a specific facet level 
 #' (2nd example), otherwise the basis prints on all facet levels.
 #' @param map_to A data.frame to scale the basis to. 
 #' Defaults to a unitbox; data.frame(x=c(0,1), y=c(0,1)).
@@ -1001,11 +999,10 @@ draw_basis <- function(
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
-#' @param data Optionally pass a dataframe to this proto, superceeds data 
-#' passed to `ggtour`. Analogous to ggplot2 where data passed into a `geom_*` 
-#' is used independent of data passed to `ggplot`.
-#' @param bkg_color The character color by name or hexidemical to display
-#' backgrund observations, those not identified in `row_index`. 
+#' @param row_index A numeric or logical index of rows to subset to. 
+#' Defaults to NULL, all observations.
+#' @param bkg_color The character color by name or hexademical to display
+#' background observations, those not identified in `row_index`. 
 #' Defaults to "grey80". Use FALSE or NULL to skip rendering background points.
 #' Other aesthetic values such as shape and alpha are set adopted from 
 #' `aes_args` and `identity_args`.
@@ -1037,7 +1034,7 @@ draw_basis <- function(
 proto_point <- function(
   aes_args = list(),
   identity_args = list(),
-  row_index = TRUE,
+  row_index = NULL,
   bkg_color = "grey80"
 ){
   ## Initialize
@@ -1088,9 +1085,8 @@ proto_point <- function(
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
-#' @param data Optionally pass a dataframe to this proto, superceeds data 
-#' passed to `ggtour`. Analogous to ggplot2 where data passed into a `geom_*` 
-#' is used independent of data passed to `ggplot`.
+#' @param row_index A numeric or logical index of rows to subset to. 
+#' Defaults to NULL, all observations.
 #' @param density_position The `ggplot2` position of `geom_density()`. Either 
 #' c("identity", "stack"), defaults to "identity". Warning: "stack" does not 
 #' work with `animate_plotly()` at the moment.
@@ -1114,7 +1110,7 @@ proto_point <- function(
 proto_density <- function(
   aes_args = list(),
   identity_args = list(alpha = .7),
-  row_index = TRUE,
+  row_index = NULL,
   density_position = c("identity", "stack", "fill"),
   do_add_rug = TRUE
 ){
@@ -1169,7 +1165,7 @@ proto_density <- function(
 #' # Fixed y values are useful for related values that are 
 #' # not in the X variables, _eg_ predictions or residuals of you X space.
 #' message("don't forget to scale your fixed_y.")
-#' dummy_y <- (as.integer(clas) + rnorm(nrow(dat))) %>% scale_sd
+#' dummy_y <- scale_sd(as.integer(clas) + rnorm(nrow(dat)))
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' message("proto_point.1d_fix_y wants to be called early so other proto's adopt the fixed_y.")
@@ -1184,7 +1180,7 @@ proto_density <- function(
 proto_point.1d_fix_y <- function(
   aes_args = list(),
   identity_args = list(),
-  row_index = TRUE,
+  row_index = NULL,
   fixed_y
 ){
   ## Initialize
@@ -1227,9 +1223,8 @@ proto_point.1d_fix_y <- function(
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
-#' @param data Optionally pass a dataframe to this proto, superceeds data 
-#' passed to `ggtour`. Analogous to ggplot2 where data passed into a `geom_*` 
-#' is used independent of data passed to `ggplot`.
+#' @param row_index A numeric or logical index of rows to subset to. 
+#' Defaults to NULL, all observations.
 #' @export
 #' @family ggtour proto functions
 #' @examples
@@ -1289,9 +1284,8 @@ proto_text <- function(aes_args = list(),
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
-#' @param data Optionally pass a dataframe to this proto, superceeds data 
-#' passed to `ggtour`. Analogous to ggplot2 where data passed into a `geom_*` 
-#' is used independent of data passed to `ggplot`.
+#' @param row_index A numeric or logical index of rows to subset to. 
+#' Defaults to NULL, all observations.
 #' @param bins Numeric vector giving number of bins in both vertical and 
 #' horizontal directions. Defaults to 30.
 #' @export
@@ -1303,8 +1297,7 @@ proto_text <- function(aes_args = list(),
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ## 10000 rows is quite heavy to animate.
-#' ## Decrease the points drawn in each frame by aggregating many points into
-#' #### a hexegon heatmap, using geom_hex!
+#' ## Increase performance by aggregating many points into few hexagons
 #' ggp <- ggtour(gt_path, dat) +
 #'   proto_basis() +
 #'   proto_hex(bins = 20)
@@ -1316,7 +1309,7 @@ proto_text <- function(aes_args = list(),
 proto_hex <- function(
   aes_args = list(),
   identity_args = list(),
-  row_index = TRUE,
+  row_index = NULL,
   bins = 30
 ){
   ## Initialize
@@ -1359,7 +1352,7 @@ proto_hex <- function(
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' #' Typically a single numeric for point size, alpha, or similar.
 #' @param row_index A numeric or logical index of rows to subset to. 
-#' Defaults to TRUE, all observations.
+#' Defaults to NULL, all observations.
 #' @param mark_initial Logical, whether or not to leave a fainter mark at the 
 #' subset's initial position. Defaults to FALSE.
 #' @export
@@ -1390,16 +1383,17 @@ proto_hex <- function(
 proto_highlight <- function(
   aes_args = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  row_index = 1,
+  row_index = NULL,
   mark_initial = FALSE
 ){
-  if(length(row_index) == 0L) stop("proto_highlight: length of row_index is 0.")
   if(sum(row_index) == 0L) return() ## Early out adding nothing
+  if(is.null(row_index)) row_index <- rep(TRUE, last_ggtour()$n)
   ## Initialize
   eval(.init4proto) ## aes_args/identity_args/df_data subset in .init4proto.
   if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_highlight: Projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
+
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
@@ -1500,8 +1494,6 @@ proto_highlight1d <- function(
 #'
 #' @param position Vector x and y position relative to the unit data position; 
 #' (0, 1) in each direction. Defaults to c(.7, -.1).
-#' @param tail_size How long the origin mark should extended
-#' relative to the observations. Defaults to .05, 5% of the projection space.
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
 #' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
@@ -1510,6 +1502,8 @@ proto_highlight1d <- function(
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
 #' `identity_args = list(size = 2, alpha = .7)`.
+#' @param row_index A numeric or logical index of rows to subset to. 
+#' Defaults to NULL, all observations.
 #' @param ... Optionally, pass additional arguments to 
 #' \code{\link[stats:cor]{stats::cor}}, specifying the type of
 #' within frame correlation.

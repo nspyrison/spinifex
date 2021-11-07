@@ -9,7 +9,7 @@
 proto_highlight(
   aes_args = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  row_index = 1,
+  row_index = NULL,
   mark_initial = FALSE
 )
 
@@ -33,7 +33,7 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 #' Typically a single numeric for point size, alpha, or similar.}
 
 \item{row_index}{A numeric or logical index of rows to subset to.
-Defaults to TRUE, all observations.}
+Defaults to NULL, all observations.}
 
 \item{mark_initial}{Logical, whether or not to leave a fainter mark at the
 subset's initial position. Defaults to FALSE.}

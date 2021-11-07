@@ -24,7 +24,7 @@ vector with length equal to the number of variables.
 Defaults to the 3 character abbreviation of the original variables names.}
 
 \item{data_label}{Labels for \code{plotly} tooltip display.
-Defaults to the rownames of data. If null, inializes to 1:nrow(data).}
+Defaults to the rownames of data. If null, initializes to 1:nrow(data).}
 }
 \description{
 Internal function, many end users will not need this. Takes the result of

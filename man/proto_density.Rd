@@ -9,7 +9,7 @@
 proto_density(
   aes_args = list(),
   identity_args = list(alpha = 0.7),
-  row_index = TRUE,
+  row_index = NULL,
   density_position = c("identity", "stack", "fill"),
   do_add_rug = TRUE
 )
@@ -17,7 +17,7 @@ proto_density(
 proto_point.1d_fix_y(
   aes_args = list(),
   identity_args = list(),
-  row_index = TRUE,
+  row_index = NULL,
   fixed_y
 )
 }
@@ -32,6 +32,9 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
 \code{identity_args = list(size = 2, alpha = .7)}.}
 
+\item{row_index}{A numeric or logical index of rows to subset to.
+Defaults to NULL, all observations.}
+
 \item{density_position}{The \code{ggplot2} position of \code{geom_density()}. Either
 c("identity", "stack"), defaults to "identity". Warning: "stack" does not
 work with \code{animate_plotly()} at the moment.}
@@ -42,10 +45,6 @@ density curves.}
 \item{fixed_y}{Vector of length of the data, values to fix vertical height.
 Typically related to but not an explanatory variable, for instance,
 predicted Y, or residuals.}
-
-\item{data}{Optionally pass a dataframe to this proto, superceeds data
-passed to \code{ggtour}. Analogous to ggplot2 where data passed into a \verb{geom_*}
-is used independent of data passed to \code{ggplot}.}
 }
 \description{
 Adds \code{geom_density()} and \code{geom_rug()} of the projected data. Density
@@ -68,7 +67,7 @@ animate_plotly(ggt)
 # Fixed y values are useful for related values that are 
 # not in the X variables, _eg_ predictions or residuals of you X space.
 message("don't forget to scale your fixed_y.")
-dummy_y <- (as.integer(clas) + rnorm(nrow(dat))) \%>\% scale_sd
+dummy_y <- scale_sd(as.integer(clas) + rnorm(nrow(dat)))
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 message("proto_point.1d_fix_y wants to be called early so other proto's adopt the fixed_y.")

@@ -160,10 +160,10 @@ test_that("proto_default", {
 })
 
 ## proto_highlight -----
-ph_mt   <- ggtour(mt  , angle = 1L) + proto_highlight(1)
-ph_gt   <- ggtour(gt  , angle = 1L) + proto_highlight(1:2)
-ph_mt1d <- ggtour(mt1d, angle = 1L) + proto_highlight1d(1:2)
-ph_gt1d <- ggtour(gt1d, angle = 1L) + proto_highlight1d(1)
+ph_mt   <- ggtour(mt  , angle = 1L) + proto_highlight(row_index = 1L)
+ph_gt   <- ggtour(gt  , angle = 1L) + proto_highlight(row_index = 1L:2L)
+ph_mt1d <- ggtour(mt1d, angle = 1L) + proto_highlight1d(row_index = 1L:2L)
+ph_gt1d <- ggtour(gt1d, angle = 1L) + proto_highlight1d(row_index = 1L)
 test_that("proto_highlight", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_default())
   expect_is(ph_mt  , c("gg", "ggplot"))
