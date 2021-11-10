@@ -69,9 +69,10 @@ if(getRversion() >= "2.15.1"){
     ".map_to_density",
     ".map_to_data",
     ".is_faceted",
+    "facet_var",
     ".df_data_bkg",
-    "bkg_aes_args",
-    "bkg_identity_args"))
+    ".bkg_aes_args",
+    ".bkg_identity_args"))
   ## ggplot aes globals:
   utils::globalVariables(c(
     "x",

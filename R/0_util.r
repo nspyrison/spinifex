@@ -210,7 +210,7 @@ map_relative <- function(
     xoff  <- xcenter # + .1 * xdiff
     yoff  <- .6 * ydiff + ycenter
   } else if(position == "floor2d"){
-    scale <- .5 * ydiff
+    scale <- 1L * ydiff
     xoff  <- xcenter
     yoff  <- -.5 * ydiff + ycenter
   } else if(position == "bottomleft"){
@@ -228,13 +228,13 @@ map_relative <- function(
     ## 1D data & basis; widen basis:
     coef_1d <- 4L
     x[, 1L] <- coef_1d * scale * x[, 1L] + xoff
-    x[, 2L] <- #(.5 * coef_1d)^-1L * 
+    x[, 2L] <- #(.5 * coef_1d)^-1L *
       scale * x[, 2L] + yoff
   } 
   if(position %in% c("top2d", "floor2d")){
     ## 2D data, 1D basis; flatten basis:
-    x[, 1L] <- scale * x[, 1L] + xoff
     coef_1d <- 4L
+    x[, 1L] <- scale * x[, 1L] + xoff
     x[, 2L] <- coef_1d^-1L * scale * x[, 2L] + yoff
   } else {
     ## 2D; unit coef:

@@ -74,7 +74,7 @@ ggtour <- function(basis_array,
                    data_label = 1:nrow(basis_array)
 ){
   ## If data missing, check if data is passed to the basis_array
-  if(is.null(data) == TRUE) data <- attr(basis_array, "data") ## Could be NULL
+  if(is.null(data)) data <- attr(basis_array, "data") ## Could be NULL
   .manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
   
   ## If characters are used in the rownames, add them to tooltip
@@ -83,12 +83,12 @@ ggtour <- function(basis_array,
     data_label <- paste0("row: ", 1L:nrow(data), ", ", rownames(data))
   
   ## Single basis, no manip var as a matrix coerce to array.
-  if(is.null(.manip_var) == TRUE) ## if manip_var is null; IE. single basis, not tour
+  if(is.null(.manip_var)) ## if manip_var is null; IE. single basis, not tour
     if(length(dim(basis_array)) == 2L) ## AND 1 basis.
       basis_array <- array(
         as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   ## Interpolate {tourr} tours
-  if(is.null(.manip_var) == TRUE) ## if manip_var is null; IE. from tourr
+  if(is.null(.manip_var)) ## if manip_var is null; IE. from tourr
     .m <- utils::capture.output(
       .interpolated_basis_array <- tourr::interpolate(basis_array, angle))
   ## Interpolate manual tours
@@ -173,11 +173,14 @@ facet_wrap_tour <- function(
   }
   
   ## BYPRODUCT:
-  #### Changes: .df_basis & .df_data have facet_var bound, is_faceted == TRUE
+  #### Changes: .df_basis & .df_data have facet_var bound, is_faceted = TRUE
   .ggt$df_basis   <- .df_basis
   .ggt$df_data    <- .df_data
   .ggt$facet_var  <- facet_var
   .ggt$is_faceted <- TRUE
+  .ggt$map_to_density <- data.frame(x = range(.df_data[, 1L]), y = c(0L, 1L))
+  .ggt$map_to_data <- data.frame(x = range(.df_data[, 1L]),
+                                 y = range(.df_data[, 2L]))
   .set_last_ggtour(.ggt)
   
   ## Return
@@ -314,23 +317,23 @@ last_ggtour <- function(){.store$ggtour_ls}
   if(exists("row_index")){
     if(is.null(row_index) == FALSE){
       ## Coerce index to full length logical index
-      if(is.numeric(row_index) == TRUE){
+      if(is.numeric(row_index)){
         .rep_f <- rep(FALSE, .n)
         .rep_f[row_index] <- TRUE
         row_index <- .rep_f
       }
       
       ### Background case:
-      if(exists("bkg_color") == TRUE)
+      if(exists("bkg_color"))
         if(is.null("bkg_color") == FALSE)
           if(bkg_color != FALSE){
             #### Subset (but not replicate) bkg_aes_args, bkg_identity_args:
             if(exists("aes_args"))
               if(length(aes_args) > 0L)
-                bkg_aes_args <- lapply(aes_args, function(arg)arg[!row_index])
+                .bkg_aes_args <- lapply(aes_args, function(arg)arg[!row_index])
             if(exists("identity_args"))
               if(length(aes_args) > 0L)
-                bkg_identity_args <- lapply(identity_args, function(arg)
+                .bkg_identity_args <- lapply(identity_args, function(arg)
                   if(length(arg) == .n) arg[!row_index] else arg)
             #### Subset .df_data_bkg
             .df_data_bkg <- .df_data[
@@ -343,7 +346,7 @@ last_ggtour <- function(){.store$ggtour_ls}
         if(length(aes_args) > 0L)
           aes_args <- lapply(aes_args, function(arg)arg[row_index])
       if(exists("identity_args"))
-        if(length(aes_args) > 0L)
+        if(length(identity_args) > 0L)
           identity_args <- lapply(identity_args, function(arg)
             if(length(arg) == .n) arg[row_index] else arg)
       
@@ -354,11 +357,6 @@ last_ggtour <- function(){.store$ggtour_ls}
       .nrow_df_data <- nrow(.df_data)
     }
   } ## end row_index, if exists
-  ## If data is passed locally to data arg, update it
-  if(is.null(data) == FALSE & identical(data, utils::data) == FALSE){
-    df_ls <- array2df(.interpolated_basis_array, data)
-    eval(.fortify_data)
-  }
   
   ##Possible dev: to fix the legend issue of color and shape mapped to class:
   # would need to bind args to the .df_data, and then remake a true aes(), 
@@ -745,7 +743,6 @@ proto_basis <- function(
     stop("proto_basis: Basis `y` not found, expected a 2D tour. Did you mean to call `proto_basis1d`?")
   position = match.arg(position)
   if(position == "off") return()
-  if(.is_faceted == TRUE) position = "center"
   
   ## Setup and transform
   .angles <- seq(0L, 2L * pi, length = 360L)
@@ -753,10 +750,12 @@ proto_basis <- function(
   .center <- map_relative(data.frame(x = 0L, y = 0L), position, .map_to_data)
   .circle <- map_relative(.circle, position, .map_to_data)
   .df_basis <- map_relative(.df_basis, position, .map_to_data)
-  if(.is_faceted == TRUE)
+  if(.is_faceted){
+    position = "center"
     .circle <- .bind_elements2df(
       list(facet_var = rep_len("_basis_", nrow(.circle))), .circle)
-  
+  }
+    
   ## Aesthetics for the axes segments.
   .axes_col <- "grey50"
   .axes_siz <- line_size
@@ -805,7 +804,6 @@ proto_basis1d <- function(
   eval(.init4proto)
   position = match.arg(position)
   if(position == "off") return()
-  if(.is_faceted == TRUE) position = "floor1d"
   
   ## Aesthetics for the axes segments
   .axes_col <- .text_col <- "grey50"
@@ -841,7 +839,9 @@ proto_basis1d <- function(
   .df_txt  <- map_relative(.df_txt,  position, .map_to_tgt)
   .df_rect <- map_relative(.df_rect, position, .map_to_tgt)
   .df_seg0 <- map_relative(.df_seg0, position, .map_to_tgt)
-  if(.is_faceted == TRUE){
+  if(.is_faceted){
+    if(position == "top1d") position <- "floor1d"
+    if(position == "top2d") position <- "floor2d"
     .basis_ls <- list(facet_var = rep_len("_basis_", nrow(.df_zero)))
     .df_zero <- .bind_elements2df(.basis_ls, .df_zero)
     .df_seg  <- .bind_elements2df(.basis_ls, .df_seg)
@@ -863,8 +863,7 @@ proto_basis1d <- function(
     ## Variable abbreviation text
     ggplot2::geom_text(
       ggplot2::aes(x, y, label = label), .df_txt,
-      size = text_size, color = "grey60",
-      hjust = 1L),
+      size = text_size, color = "grey60", hjust = 1L),
     ## Contribution segments of current basis, changing with frame
     suppressWarnings(ggplot2::geom_segment(
       ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
@@ -1027,7 +1026,7 @@ draw_basis <- function(
 #'   proto_point(aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 2, alpha = .7),
 #'               row_index = which(clas == levels(clas)[1]),
-#'               bkg_color = "grey80") ## FALSE or NULL to skip ploting background
+#'               bkg_color = "grey80") ## FALSE or NULL to skip plotting background
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1039,7 +1038,7 @@ proto_point <- function(
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data) == TRUE)
+  if(is.null(.df_data))
     stop("proto_point: Data is NULL. Was data passed to the basis array or ggtour?")
   if(is.null(.df_data$y))
     stop("proto_point: Projection y not found, expected a 2D tour.")
@@ -1053,19 +1052,18 @@ proto_point <- function(
     ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
   ret <- do.call(.geom_func, identity_args)
   
-
   if(is.null(bkg_color) == FALSE)
     if(bkg_color != FALSE)
-      if(exists("bkg_aes_args") & exists("bkg_identity_args") & exists("bkg_aes_args")){
+      if(exists(".df_data_bkg")){
         ## do.call aes() over the bkg_aes_args
         .aes_func <- function(...)
-          ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) 
-        .aes_call <- suppressWarnings(do.call(.aes_func, bkg_aes_args))
+          ggplot2::aes(x = x, y = y, frame = frame, ...) 
+        .aes_call <- suppressWarnings(do.call(.aes_func, .bkg_aes_args))
         ## do.call geom_point() over the bkg_identity_args
         .geom_func <- function(...) suppressWarnings(
-          ggplot2::geom_point(mapping = .aes_call, data = .df_data_bkg, 
+          ggplot2::geom_point(mapping = .aes_call, data = .df_data_bkg,
                               color = bkg_color, ...)) ## Trumps color set in aes_args
-        ret <- list(do.call(.geom_func, bkg_identity_args), ret)
+        ret <- list(do.call(.geom_func, .bkg_identity_args), ret)
       }
   ## Return
   return(ret)
@@ -1103,7 +1101,8 @@ proto_point <- function(
 #' 
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_density(aes_args = list(color = clas, fill = clas)) +
-#'   proto_basis1d()
+#'   proto_basis1d() +
+#'   proto_origin1d()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1138,7 +1137,7 @@ proto_density <- function(
   ret <- do.call(.geom_func, identity_args)
   
   ## geom_rug do.call
-  if(do_add_rug == TRUE){
+  if(do_add_rug){
     .rug_len <- .02
     .aes_func <- function(...)
       ggplot2::aes(x = x, frame = frame, ...)
@@ -1161,53 +1160,48 @@ proto_density <- function(
 #' @family ggtour proto functions
 #' @examples
 #' 
-#' ## proto_point.1d_fix_y:
+#' ## append_fixed_y:
 #' # Fixed y values are useful for related values that are 
 #' # not in the X variables, _eg_ predictions or residuals of you X space.
 #' message("don't forget to scale your fixed_y.")
-#' dummy_y <- scale_sd(as.integer(clas) + rnorm(nrow(dat)))
-#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
+#' dummy_y <- scale_sd(as.integer(clas) + rnorm(nrow(dat), 0, .5))
+#' gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 5)
 #' 
-#' message("proto_point.1d_fix_y wants to be called early so other proto's adopt the fixed_y.")
+#' message("append_fixed_y wants to be called early so other proto's adopt the fixed_y.")
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
-#'   proto_point.1d_fix_y(list(fill = clas, color = clas),
-#'                        fixed_y = dummy_y) +
+#'   append_fixed_y(fixed_y = dummy_y) + ## insert/overwrites vertical values.
+#'   proto_point(list(fill = clas, color = clas)) +
 #'   proto_basis1d("top2d") +
 #'   proto_origin()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_point.1d_fix_y <- function(
-  aes_args = list(),
-  identity_args = list(),
-  row_index = NULL,
+append_fixed_y <- function(
   fixed_y
 ){
-  ## Initialize
-  eval(.init4proto)
-  if(is.null(.df_data) == TRUE)
-    stop("proto_point1d_fixed_y: Data is NULL. Was data passed to the basis array or ggtour?")
+  ## Minimal init4 proto
+  .ggt <- spinifex::last_ggtour() ## Self-explicit for use in cheem
+  if(is.null(.ggt)) stop(".init4proto: last_ggtour() is NULL, have you run ggtour() yet?")
+  
+  ## Assign elements ggtour list as quiet .objects in the environment
+  .env <- environment()
+  .nms <- names(.ggt)
+  .m <- sapply(seq_along(.ggt), function(i){
+    assign(paste0(".", .nms[i]), .ggt[[i]], envir = .env)
+  })
   
   ## Add fixed y
-  .df_data <- .bind_elements2df(
-    list(fixed_y = rep_len(fixed_y, .nrow_df_data)), .df_data)
-  .df_data$y <- .df_data$fixed_y
+  .df_data$y <- rep_len(fixed_y, .nrow_df_data)
   
   ## BYPRODUCT: pass data back to .store
   # to calm some oddities; like proto_origin() complaining about y being missing
   .ggt$df_data <- .df_data
+  .ggt$map_to_data <- data.frame(x = range(.df_data[, 1L]),
+                                 y = range(.df_data[, 2L]))
   .set_last_ggtour(.ggt)
   
-  ## do.call aes() over the aes_args
-  .aes_func <- function(...)
-    ## tooltip for plotly on hover tooltip
-    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) 
-  .aes_call <- do.call(.aes_func, aes_args)
-  ## do.call geom_point() over the identity_args
-  .geom_func <- function(...) suppressWarnings(
-    ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
   ## Return
-  return(do.call(.geom_func, identity_args))
+  return(NULL)
 }
 
 
@@ -1255,7 +1249,7 @@ proto_text <- function(aes_args = list(),
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_text: Projection y not found, expected a 2D tour.")
   
@@ -1386,11 +1380,9 @@ proto_highlight <- function(
   row_index = NULL,
   mark_initial = FALSE
 ){
-  if(sum(row_index) == 0L) return() ## Early out adding nothing
-  if(is.null(row_index)) row_index <- rep(TRUE, last_ggtour()$n)
   ## Initialize
   eval(.init4proto) ## aes_args/identity_args/df_data subset in .init4proto.
-  if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_highlight: Projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
 
@@ -1405,7 +1397,7 @@ proto_highlight <- function(
   ret <- do.call(.geom_func, identity_args)
   
   ## Initial mark, if needed, hard-coded some aes, no frame.
-  if(mark_initial == TRUE){
+  if(mark_initial){
     .aes_func <- function(...)
       ggplot2::aes(x = x, y = y, ...)
     .aes_call <- do.call(.aes_func, aes_args)
@@ -1452,7 +1444,7 @@ proto_highlight1d <- function(
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(last_ggtour()$df_data) == TRUE) return()
+  if(is.null(.df_data)) return()
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
   
   ## geom_segment do.calls, moving with frame
@@ -1469,7 +1461,7 @@ proto_highlight1d <- function(
   ret <- do.call(.geom_func, identity_args)
   
   ## Initial mark, if needed, no frame, some hard-coded aes.
-  if(mark_initial == TRUE){
+  if(mark_initial){
     .aes_func <- function(...)
       ggplot2::aes(x = x, xend = x, y = .ymin - .segment_tail,
                    yend = .ymax + .segment_tail, ...)
@@ -1531,12 +1523,16 @@ proto_frame_cor2 <- function(
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data) == TRUE)
+  if(is.null(.df_data))
     stop("proto_frame_stat: Data is NULL; stat not applicable. Was data passed to the basis array or ggtour?")
   
   ## Find aggregated values, stat within the frame
-  .agg <- .df_data %>%
-    dplyr::group_by(frame) %>%
+  if(.is_faceted){
+    .gb <- .df_data %>% dplyr::group_by(frame, facet_var)
+  }else{
+    .gb <- .df_data %>% dplyr::group_by(frame)
+  }
+  .agg <- .gb %>%
     dplyr::summarise(value = round(stats::cor(x, y, ...)^2L, 2L)) %>%
     dplyr::ungroup()
   
@@ -1552,17 +1548,10 @@ proto_frame_cor2 <- function(
   # .stat_nm  <- substitute(stat2d)
   # .last_pos <- regexpr("\\:[^\\:]*$", s) + 1L
   # .stat_nm  <- substr(.stat_nm, .last_pos, nchar(.stat_nm))
-  .stat_nm <- "cor^2"
-  ## Create df with position and string label
+  ## Create the final df with position, frame, facet_var, label
   .txt_df <- data.frame(
-    x = .x,
-    y = .y,
-    frame = .agg$frame,
-    label = paste0(#"frame: ", .agg$frame, ", ", ## frame is redundant
-                   .stat_nm, ": ",
-                   sprintf("%3.2f", .agg$value)))
-  if(.is_faceted == TRUE) ## Append first facet_var value.
-    .txt_df <- data.frame(.txt_df, facet_var = .facet_var[1L])
+    x = .x, y = .y, .agg,
+    label = paste0("cor^2: ", sprintf("%3.2f", .agg$value)))
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
@@ -1607,9 +1596,9 @@ proto_origin <- function(
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
-  if(is.null(.df_basis$y))
-    stop("proto_origin: Basis y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
+  if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data$y))
+    stop("proto_origin: data y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
   
   #### Setup origin, zero mark, 5% on each side.
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
@@ -1620,6 +1609,11 @@ proto_origin <- function(
                            x_end = c(.center[, 1L] + .tail, .center[, 1L]),
                            y     = c(.center[, 2L], .center[, 2L] - .tail),
                            y_end = c(.center[, 2L], .center[, 2L] + .tail))
+  
+  if(.is_faceted){
+    .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
+    .df_origin <- merge(.df_origin, .df_u_facet_lvls)
+  }
   
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...)
@@ -1650,7 +1644,7 @@ proto_origin1d <- function(
 ){
   ## Initialize
   eval(.init4proto)
-  if(is.null(last_ggtour()$df_data) == TRUE) return()
+  if(is.null(.df_data)) return()
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
   .ymin <- min(.map_to_density[, 2L])
   .ymax <- max(.map_to_density[, 2L])
@@ -1660,6 +1654,11 @@ proto_origin1d <- function(
     x_end = c(.center[, 1L], .center[, 1L]),
     y     = c(.center[, 2L], .center[, 2L]),
     y_end = c(.center[, 2L] - .tail, .center[, 2L] + .tail))
+  
+  if(.is_faceted){
+    .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
+    .df_origin <- merge(.df_origin, .df_u_facet_lvls)
+  }
   
   ## do.call geom_segment() over the identity_args
   .geom_func <- function(...)
@@ -1759,7 +1758,7 @@ if(FALSE){ ## DONT RUN
   ){
     ## Initialize
     eval(.init4proto)
-    if(is.null(.df_data) == TRUE) stop("Data is NULL, proto not applicable.")
+    if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
     if(is.null(.df_data$y)) stop("proto_hdr: Projection y not found, expects a 2D tour.")
     
     ##TODO: DENSITY WORK & SEGMENT.

@@ -1,3 +1,11 @@
+# spinifex v0.3.2
+- New function: `facet_wrap_tour()`, for faceting tours!
+- New function: `proto_frame_cor2()`, adds text for the within-frame correlation squared.
+- New function: `append_fixed_y()`, add/overwride data y column to fixed values, such as for the height of predicted values or residuals of a model.
+- New function: `draw_basis()` static ggplot2 variant of `proto_basis`, that accepts a basis directly without requiring ggtour initialization.
+- Most data-oriented `proto_*` functions have `row_index` argument; allowing for subsetting that is compatiable with faceting and appending a fixed y! By default, `proto_point()` will plot unselected point in faint grey.
+- Better examples for setting dimensions, resolution, and renders in `animate_*` functions.
+
 # spinifex v0.3.1
 
 - Fixed 'phi issue' where manual tours were not consistent in their initial direction, now always move toward full contribution before 0 contribution.
@@ -11,7 +19,7 @@ rows & reordered columns
 - Experimental wrapper function `spinifex::save_history`, muting the noisy execution of `tourr::save_history`
 
 
-# spinifex v0.3.0!
+# spinifex v0.3.0
 
 - New ggproto api for visuals, see `?ggplot_tour()` to get started!!
 -- 10x new `proto_*` functions, essentially `geoms_*` for animated tours: 

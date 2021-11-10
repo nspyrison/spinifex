@@ -3,7 +3,7 @@
 \name{proto_density}
 \alias{proto_density}
 \alias{proto_density1d}
-\alias{proto_point.1d_fix_y}
+\alias{append_fixed_y}
 \title{Tour proto for data, 1D density, with rug marks}
 \usage{
 proto_density(
@@ -14,12 +14,7 @@ proto_density(
   do_add_rug = TRUE
 )
 
-proto_point.1d_fix_y(
-  aes_args = list(),
-  identity_args = list(),
-  row_index = NULL,
-  fixed_y
-)
+append_fixed_y(fixed_y)
 }
 \arguments{
 \item{aes_args}{A list of aesthetic arguments to passed to
@@ -58,22 +53,23 @@ gt_path <- save_history(dat, grand_tour(), max = 3)
 
 ggt <- ggtour(gt_path, dat) +
   proto_density(aes_args = list(color = clas, fill = clas)) +
-  proto_basis1d()
+  proto_basis1d() +
+  proto_origin1d()
 \dontrun{
 animate_plotly(ggt)
 }
 
-## proto_point.1d_fix_y:
+## append_fixed_y:
 # Fixed y values are useful for related values that are 
 # not in the X variables, _eg_ predictions or residuals of you X space.
 message("don't forget to scale your fixed_y.")
-dummy_y <- scale_sd(as.integer(clas) + rnorm(nrow(dat)))
-gt_path <- save_history(dat, grand_tour(), max_bases = 5)
+dummy_y <- scale_sd(as.integer(clas) + rnorm(nrow(dat), 0, .5))
+gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 5)
 
-message("proto_point.1d_fix_y wants to be called early so other proto's adopt the fixed_y.")
+message("append_fixed_y wants to be called early so other proto's adopt the fixed_y.")
 ggt <- ggtour(gt_path, dat, angle = .3) +
-  proto_point.1d_fix_y(list(fill = clas, color = clas),
-                       fixed_y = dummy_y) +
+  append_fixed_y(fixed_y = dummy_y) + ## insert/overwrites vertical values.
+  proto_point(list(fill = clas, color = clas)) +
   proto_basis1d("top2d") +
   proto_origin()
 \dontrun{

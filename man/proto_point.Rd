@@ -53,7 +53,7 @@ ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_point(aes_args = list(color = clas, shape = clas),
               identity_args = list(size = 2, alpha = .7),
               row_index = which(clas == levels(clas)[1]),
-              bkg_color = "grey80") ## FALSE or NULL to skip ploting background
+              bkg_color = "grey80") ## FALSE or NULL to skip plotting background
 \dontrun{
 animate_plotly(ggt)
 }
