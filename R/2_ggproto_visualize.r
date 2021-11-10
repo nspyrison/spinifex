@@ -1486,10 +1486,6 @@ proto_highlight1d <- function(
 #'
 #' @param position Vector x and y position relative to the unit data position; 
 #' (0, 1) in each direction. Defaults to c(.7, -.1).
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
 #' @param identity_args A list of static, identity arguments passed into 
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
@@ -1514,7 +1510,6 @@ proto_highlight1d <- function(
 #' animate_plotly(ggt)
 #' }
 proto_frame_cor2 <- function(
-  aes_args = list(),
   identity_args = list(size = 4),
   row_index = TRUE,
   #stat2d = stats::cor, ## hardcoded stats::cor atm

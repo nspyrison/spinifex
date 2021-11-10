@@ -5,7 +5,6 @@
 \title{Tour proto for frames square correlation}
 \usage{
 proto_frame_cor2(
-  aes_args = list(),
   identity_args = list(size = 4),
   row_index = TRUE,
   position = c(0.7, -0.1),
@@ -13,11 +12,6 @@ proto_frame_cor2(
 )
 }
 \arguments{
-\item{aes_args}{A list of aesthetic arguments to passed to
-\verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,
-for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
-\code{aes_args = list(color = myCol, shape = myCol)}.}
-
 \item{identity_args}{A list of static, identity arguments passed into
 \code{geom_point()}, but outside of \code{aes()}, for instance
 \code{geom_point(aes(...), size = 2, alpha = .7)} becomes
