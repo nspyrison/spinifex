@@ -19,7 +19,7 @@ the \code{to} object.}
 Defaults to "center" expects one of: c("center", "left", "right",
 "bottomleft", "topright", "off", "top1d", "floor1d", "top2d", "floor2d").}
 
-\item{to}{Table to appropriately set the size and position of the axes to.
+\item{to}{Data.frame to scale to.
 Based on the min/max of the first 2 columns. If left NULL defaults to
 data.frame(x = c(-1L, 1L), y = c(-1L, 1L).}
 }

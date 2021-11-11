@@ -4,18 +4,10 @@
 \alias{proto_frame_cor2}
 \title{Tour proto for frames square correlation}
 \usage{
-proto_frame_cor2(
-  identity_args = list(size = 4),
-  row_index = TRUE,
-  position = c(0.7, -0.1),
-  ...
-)
+proto_frame_cor2(text_size = 4, row_index = TRUE, position = c(0.7, -0.1), ...)
 }
 \arguments{
-\item{identity_args}{A list of static, identity arguments passed into
-\code{geom_point()}, but outside of \code{aes()}, for instance
-\code{geom_point(aes(...), size = 2, alpha = .7)} becomes
-\code{identity_args = list(size = 2, alpha = .7)}.}
+\item{text_size}{Size of the text. defaults to 4.}
 
 \item{row_index}{A numeric or logical index of rows to subset to.
 Defaults to NULL, all observations.}

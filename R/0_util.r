@@ -112,34 +112,6 @@ array2df <- function(
     return(list(basis_frames = basis_frames))
 }
 
-#' Changes an array of bases into a "history_array" class for use 
-#' in `tourr::interpolate()`.
-#' 
-#' Internal function, many end users will not need this. Attaches data to an array and assigns the custom class "history_array" as 
-#' used in `tourr`. Typically called by basis arrays from `spinifex` functions.
-#' 
-#' @param basis_array An array of bases.
-#' @param data The data matrix to be projected through the basis. This is
-#' `tourr::save_history` objects, but not consumed downstream in `spinifex`.
-#' @return An array of numeric bases with custom class "history_array" for 
-#' consumption by `tourr::interpolate`.
-#' 
-#' @seealso \code{\link[tourr:save_history]{tourr::save_history}} for preset choices.
-#' @export
-#' @examples 
-#' ## !!This function is not meant for external use!!
-#' dat_std <- scale_sd(wine[, 2:6])
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
-#' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' as_history_array(mt_array, dat_std)
-as_history_array <- function(basis_array, data = NULL){
-  if(length(data) > 0L)
-    attr(basis_array, "data") <- as.matrix(data)
-  class(basis_array) <- "history_array"
-  return(basis_array)
-}
-
 
 #' Returns the axis scale and position.
 #' 
@@ -151,7 +123,7 @@ as_history_array <- function(basis_array, data = NULL){
 #' @param position Text specifying the position the axes should go to.
 #' Defaults to "center" expects one of: c("center", "left", "right", 
 #' "bottomleft", "topright", "off", "top1d", "floor1d", "top2d", "floor2d").
-#' @param to Table to appropriately set the size and position of the axes to.
+#' @param to Data.frame to scale to.
 #' Based on the min/max of the first 2 columns. If left NULL defaults to 
 #' data.frame(x = c(-1L, 1L), y = c(-1L, 1L).
 #' @return Transformed values of `x`, dimension and class unchanged.
@@ -166,7 +138,7 @@ as_history_array <- function(basis_array, data = NULL){
 #' map_relative(x = rb, position = "right", to = wine[, 2:3])
 map_relative <- function(
   x,
-  position = c("center", "left", "right", 
+  position = c("center", "left", "right",
                "bottomleft", "topright", "off",
                "top1d", "floor1d", "top2d", "floor2d"),
   to = NULL
@@ -186,33 +158,27 @@ map_relative <- function(
   
   ## Condition handling of position
   if(position == "center"){
-    scale <- .5 * ydiff
+    scale <- .4 * ydiff
     xoff  <- xcenter
     yoff  <- ycenter
   } else if(position == "left"){
-    scale <- .5 * ydiff
+    scale <- .4 * ydiff
     xoff  <- -.7 * xdiff + xcenter
     yoff  <- ycenter
   } else if(position == "right"){
-    scale <- .5 * ydiff
+    scale <- .4 * ydiff
     xoff  <- .7 * xdiff + xcenter
     yoff  <- ycenter
-  } else if(position == "top1d"){
-    scale <- .5
+  } else if(position %in% c("top1d", "top2d")){
+    xscale <- .3 * xdiff
+    yscale <- ydiff
     xoff  <- xcenter
-    yoff  <- 1.1
-  } else if(position == "floor1d"){
-    scale <- .5
-    xoff  <- xcenter
-    yoff  <- ycenter
-  } else if(position == "top2d"){
-    scale <- .5 * ydiff
-    xoff  <- xcenter # + .1 * xdiff
     yoff  <- .6 * ydiff + ycenter
-  } else if(position == "floor2d"){
-    scale <- 1L * ydiff
+  } else if(position %in% c("floor1d", "floor2d")){
+    xscale <- .3 * xdiff
+    yscale <- ydiff
     xoff  <- xcenter
-    yoff  <- -.5 * ydiff + ycenter
+    yoff  <- -.6 * ydiff + ycenter
   } else if(position == "bottomleft"){
     scale <- .25 * ydiff
     xoff  <- -.25 * xdiff + xcenter
@@ -224,20 +190,11 @@ map_relative <- function(
   } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
-  if(position %in% c("top1d", "floor1d")){
-    ## 1D data & basis; widen basis:
-    coef_1d <- 4L
-    x[, 1L] <- coef_1d * scale * x[, 1L] + xoff
-    x[, 2L] <- #(.5 * coef_1d)^-1L *
-      scale * x[, 2L] + yoff
-  } 
-  if(position %in% c("top2d", "floor2d")){
-    ## 2D data, 1D basis; flatten basis:
-    coef_1d <- 4L
-    x[, 1L] <- scale * x[, 1L] + xoff
-    x[, 2L] <- coef_1d^-1L * scale * x[, 2L] + yoff
-  } else {
-    ## 2D; unit coef:
+  #browser()
+  if(position %in% c("top1d", "floor1d", "top2d", "floor2d")){
+    x[, 1L] <- xscale * x[, 1L] + xoff
+    x[, 2L] <- yscale * x[, 2L] + yoff
+  }else{
     x[, 1L] <- scale * x[, 1L] + xoff
     x[, 2L] <- scale * x[, 2L] + yoff
   }
@@ -253,6 +210,46 @@ scale_axes <- function(...) {
   .Deprecated("map_relative")
   map_relative(...)
 }
+
+
+#' Preprocess numeric variables
+#' 
+#' Centers and scales each column by standard deviation (sd) or to the 
+#' interval (0, 1).
+#' 
+#' @param data Numeric matrix or data.frame of the observations.
+#' @export
+#' @examples
+#' scale_sd(data = wine[, 2:6])
+scale_sd <- function(data){
+  if(is.null(dim(data))) data <- matrix(data) ## As columnar matrix
+  return(apply(data, 2L, function(c){(c - mean(c)) / stats::sd(c)}))
+}
+
+#' @rdname scale_sd
+#' @export
+#' @examples
+#' scale_01(data = wine[, 2:6])
+scale_01 <- function(data){
+  if(is.null(dim(data))) data <- matrix(data) ## As columnar matrix
+  if(nrow(data) == 1L) return(matrix(0L, ncol = ncol(data)))
+  return(apply(data, 2L, function(c) (c - min(c)) / diff(range(c))))
+}
+
+# ## <<experimental>> Mutes verbose functions, without suppressing warnings or error,
+# ## wrapper function for .mute <- capture.output(x <- value)
+# #' @examples 
+# #' ## mute assignment
+# #' mute(gt <- tourr::save_history(mtcars, max_bases = 3))
+# mute <- function(...){
+#   .mute <- capture.output(
+#     ret <- for (i in seq_len(...length())) {
+#       out <- withVisible(...elt(i))
+#       if (out$visible)
+#         print(out$value)
+#     }
+#   )
+# }
 
 
 #' Manually offset and scale the first 2 columns of a matrix or data.frame.
@@ -291,36 +288,6 @@ pan_zoom <- function(x, pan = c(0L, 0L), zoom = c(1L, 1L)) {
   map_absolute(x, pan, zoom)
 }
 
-##
-## GGPLOT2 AESTHETICS ------
-##
-
-#' A ggplot2 theme suggested for linear projections with spinifex.
-#' The default theme in spinifex functions.
-#' 
-#' @param ... Optionally pass arguments to `ggplot2::theme()`.
-#' @seealso \code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
-#' @export
-#' @examples 
-#' theme_spinifex()
-#' 
-#' require("ggplot2")
-#' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
-#'   geom_point() + theme_spinifex()
-theme_spinifex <- function(...){
-  list(ggplot2::theme_void(),
-       ggplot2::scale_color_brewer(palette = "Dark2"),
-       ggplot2::scale_fill_brewer(palette = "Dark2"),
-       ggplot2::coord_fixed(),
-       ggplot2::labs(x = "", y = ""),
-       ggplot2::theme(legend.position = "bottom",
-                      legend.direction = "horizontal", ## Levels within aesthetic
-                      legend.box = "vertical",         ## Between aesthetic
-                      legend.margin = ggplot2::margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
-                      axis.title = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
-                      ...) ## ... applied over defaults.
-  )
-}
 
 ## attempt 2 with %+replace%;
 # doesn't resolve needless warnings: 
@@ -541,6 +508,36 @@ basis_half_circle <- function(data){
 }
 
 
+## UTILITY ----
+
+
+#' A ggplot2 theme suggested for linear projections with spinifex.
+#' The default theme in spinifex functions.
+#' 
+#' @param ... Optionally pass arguments to `ggplot2::theme()`.
+#' @seealso \code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
+#' @export
+#' @examples 
+#' theme_spinifex()
+#' 
+#' require("ggplot2")
+#' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
+#'   geom_point() + theme_spinifex()
+theme_spinifex <- function(...){
+  list(ggplot2::theme_void(),
+       ggplot2::scale_color_brewer(palette = "Dark2"),
+       ggplot2::scale_fill_brewer(palette = "Dark2"),
+       ggplot2::coord_fixed(),
+       ggplot2::labs(x = "", y = ""),
+       ggplot2::theme(legend.position = "bottom",
+                      legend.direction = "horizontal", ## Levels within aesthetic
+                      legend.box = "vertical",         ## Between aesthetic
+                      legend.margin = ggplot2::margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
+                      axis.title = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
+                      ...) ## ... applied over defaults.
+  )
+}
+
 #' Suggest a manipulation variable.
 #' 
 #' Find the column number of the variable with the `rank`-ith largest 
@@ -571,43 +568,6 @@ manip_var_of <- function(basis, rank = 1){
   return(ret)
 }
 
-#' Preprocess numeric variables
-#' 
-#' Centers and scales each column by standard deviation (sd) or to the 
-#' interval (0, 1).
-#' 
-#' @param data Numeric matrix or data.frame of the observations.
-#' @export
-#' @examples
-#' scale_sd(data = wine[, 2:6])
-scale_sd <- function(data){
-  if(is.null(dim(data))) data <- matrix(data) ## As columnar matrix
-  return(apply(data, 2L, function(c){(c - mean(c)) / stats::sd(c)}))
-}
-
-#' @rdname scale_sd
-#' @export
-#' @examples 
-#' scale_01(data = wine[, 2:6])
-scale_01 <- function(data){
-  if(is.null(dim(data))) data <- matrix(data) ## As columnar matrix
-  return(apply(data, 2L, function(c) (c - min(c)) / diff(range(c))))
-}
-
-# ## <<experimental>> Mutes verbose functions, without suppressing warnings or error,
-# ## wrapper function for .mute <- capture.output(x <- value)
-# #' @examples 
-# #' ## mute assignment
-# #' mute(gt <- tourr::save_history(mtcars, max_bases = 3))
-# mute <- function(...){
-#   .mute <- capture.output(
-#     ret <- for (i in seq_len(...length())) {
-#       out <- withVisible(...elt(i))
-#       if (out$visible)
-#         print(out$value)
-#     }
-#   )
-# }
 
 
 #' A wrapper muting the text byproduct of 
@@ -623,11 +583,38 @@ scale_01 <- function(data){
 #' dim(tour_path)
 save_history <- function(..., verbose = FALSE){
   if(verbose == FALSE){
-  .mute <- utils::capture.output(
-    ret <- tourr::save_history(...))
+    .mute <- utils::capture.output(
+      ret <- tourr::save_history(...))
   } else ret <- tourr::save_history(...)
   
   return(ret)
 }
 
-## UTILITY ----
+# ### as_history_array ----
+# #' Changes an array of bases into a "history_array" class for use 
+# #' in `tourr::interpolate()`.
+# #' 
+# #' Internal function, many end users will not need this. Attaches data to an array and assigns the custom class "history_array" as 
+# #' used in `tourr`. Typically called by basis arrays from `spinifex` functions.
+# #' 
+# #' @param basis_array An array of bases.
+# #' @param data The data matrix to be projected through the basis. This is
+# #' `tourr::save_history` objects, but not consumed downstream in `spinifex`.
+# #' @return An array of numeric bases with custom class "history_array" for 
+# #' consumption by `tourr::interpolate`.
+# #' 
+# #' @seealso \code{\link[tourr:save_history]{tourr::save_history}} for preset choices.
+# #' @export
+# #' @examples 
+# #' ## !!This function is not meant for external use!!
+# #' dat_std <- scale_sd(wine[, 2:6])
+# #' bas <- basis_pca(dat_std)
+# #' mv <- manip_var_of(bas)
+# #' mt_array <- manual_tour(basis = bas, manip_var = mv)
+# #' as_history_array(mt_array, dat_std)
+# as_history_array <- function(basis_array, data = NULL){
+#   if(length(data) > 0L)
+#     attr(basis_array, "data") <- as.matrix(data)
+#   class(basis_array) <- "history_array"
+#   return(basis_array)
+# }

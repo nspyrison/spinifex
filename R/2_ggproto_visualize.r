@@ -688,8 +688,7 @@ filmstrip <- function(
 #' @param position The position, to place the basis axes relative to the centered 
 #' data. `_basis` Expects one of c("left", "center", "right", "bottomleft", "topright", 
 #' "off"), defaults to "left". `_basis1d` Expects one of 
-#' c("top1d", "floor1d", "top2d", "floor2d", "off"), 
-#' defaults to "top1d".
+#' c("top1d", "floor1d", "top2d", "floor2d", "off"). Defaults to "top1d".
 #' @param manip_col The color to highlight the manipulation variable with. Not
 #' applied if the tour isn't a manual tour. Defaults to "blue".
 #' @param line_size (2D bases only) the thickness of the lines used to make the 
@@ -708,7 +707,8 @@ filmstrip <- function(
 #' ## 2D case:
 #' mt_path <- manual_tour(bas, manip_var = mv)
 #' ggt <- ggtour(mt_path, dat, angle = .3) +
-#'   proto_default()
+#'   proto_point() +
+#'   proto_basis()
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -727,7 +727,19 @@ filmstrip <- function(
 #' mt_path1d <- manual_tour(bas1d, manip_var = mv)
 #' 
 #' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
+#'   proto_density() +
 #'   proto_basis1d()
+#' \dontrun{
+#' animate_plotly(ggt1d)
+#' }
+#' 
+#' ## Customized basis1d
+#' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
+#'   proto_density() +
+#'   proto_basis1d(position = "bottom",
+#'                 manip_col = "pink",
+#'                 segment_size = 3,
+#'                 text_size = 5)
 #' \dontrun{
 #' animate_plotly(ggt1d)
 #' }
@@ -821,22 +833,24 @@ proto_basis1d <- function(
   ## Initialize data.frames, before scaling
   .df_zero <- data.frame(x = 0L, y = 0L)
   .df_seg  <- data.frame(x = .df_basis$x,
-                         y = rep(.p:1L, .n_frames),
+                         y = rep(.p:1L, .n_frames) / .p,
                          frame = .df_basis$frame,
                          label = .df_basis$label)
   ## Do note replicate across frames, it won't work any better with plotly
-  .df_txt <- data.frame(
-    x = -1.25, y = .p:1L, label = .df_basis[.df_basis$frame == 1L, "label"])
-  .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5))
-  .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5))
+  .df_txt <- data.frame(x = -1.25, y = .p:1L/.p, 
+                        label = .df_basis[.df_basis$frame == 1L, "label"])
+  .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5) / .p)
+  .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5) / .p)
   ## Scale them
   #### if basis 1D map to density, else map to data (ie. cheem)
-  if(.d == 1L){
+  if(position %in% c("top1d", "floor1d")){
     .map_to_tgt <- .map_to_density
   }else .map_to_tgt <- .map_to_data
   .df_zero <- map_relative(.df_zero, position, .map_to_tgt)
   .df_seg  <- map_relative(.df_seg,  position, .map_to_tgt)
   .df_txt  <- map_relative(.df_txt,  position, .map_to_tgt)
+  # browser()
+  # debugonce(map_relative)
   .df_rect <- map_relative(.df_rect, position, .map_to_tgt)
   .df_seg0 <- map_relative(.df_seg0, position, .map_to_tgt)
   if(.is_faceted){
@@ -1182,7 +1196,6 @@ append_fixed_y <- function(
   ## Minimal init4 proto
   .ggt <- spinifex::last_ggtour() ## Self-explicit for use in cheem
   if(is.null(.ggt)) stop(".init4proto: last_ggtour() is NULL, have you run ggtour() yet?")
-  
   ## Assign elements ggtour list as quiet .objects in the environment
   .env <- environment()
   .nms <- names(.ggt)
@@ -1198,6 +1211,7 @@ append_fixed_y <- function(
   .ggt$df_data <- .df_data
   .ggt$map_to_data <- data.frame(x = range(.df_data[, 1L]),
                                  y = range(.df_data[, 2L]))
+  .ggt$d <- 2L
   .set_last_ggtour(.ggt)
   
   ## Return
@@ -1439,10 +1453,11 @@ proto_highlight <- function(
 proto_highlight1d <- function(
   aes_args = list(),
   identity_args = list(color = "red", linetype = 2, alpha = .9),
-  row_index = 1,
+  row_index = NULL,
   mark_initial = FALSE
 ){
   ## Initialize
+  if(is.null(row_index)) return()
   eval(.init4proto)
   if(is.null(.df_data)) return()
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
@@ -1486,10 +1501,7 @@ proto_highlight1d <- function(
 #'
 #' @param position Vector x and y position relative to the unit data position; 
 #' (0, 1) in each direction. Defaults to c(.7, -.1).
-#' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
+#' @param text_size Size of the text. defaults to 4.
 #' @param row_index A numeric or logical index of rows to subset to. 
 #' Defaults to NULL, all observations.
 #' @param ... Optionally, pass additional arguments to 
@@ -1510,7 +1522,7 @@ proto_highlight1d <- function(
 #' animate_plotly(ggt)
 #' }
 proto_frame_cor2 <- function(
-  identity_args = list(size = 4),
+  text_size = 4,
   row_index = TRUE,
   #stat2d = stats::cor, ## hardcoded stats::cor atm
   position = c(.7, -.1),
@@ -1548,16 +1560,10 @@ proto_frame_cor2 <- function(
     x = .x, y = .y, .agg,
     label = paste0("cor^2: ", sprintf("%3.2f", .agg$value)))
   
-  ## do.call aes() over the aes_args
-  .aes_func <- function(...)
-    ggplot2::aes(x = x, y = y, frame = frame, label = label, ...)
-  .aes_call <- do.call(.aes_func, aes_args)
-  ## do.call geom_point() over the identity_args
-  .geom_func <- function(...)suppressWarnings(
-    ggplot2::geom_text(mapping = .aes_call, data = .txt_df, ...))
-  
   ## Return
-  return(do.call(.geom_func, identity_args))
+  return(suppressWarnings(ggplot2::geom_text(
+    ggplot2::aes(x = x, y = y, frame = frame, label = label),
+    data = .txt_df, ...)))
 }
 
 #' Tour proto for data origin zero mark

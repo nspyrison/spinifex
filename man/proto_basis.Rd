@@ -23,8 +23,7 @@ proto_basis1d(
 \item{position}{The position, to place the basis axes relative to the centered
 data. \verb{_basis} Expects one of c("left", "center", "right", "bottomleft", "topright",
 "off"), defaults to "left". \verb{_basis1d} Expects one of
-c("top1d", "floor1d", "top2d", "floor2d", "off"),
-defaults to "top1d".}
+c("top1d", "floor1d", "top2d", "floor2d", "off"). Defaults to "top1d".}
 
 \item{manip_col}{The color to highlight the manipulation variable with. Not
 applied if the tour isn't a manual tour. Defaults to "blue".}
@@ -52,7 +51,8 @@ mv   <- manip_var_of(bas)
 ## 2D case:
 mt_path <- manual_tour(bas, manip_var = mv)
 ggt <- ggtour(mt_path, dat, angle = .3) +
-  proto_default()
+  proto_point() +
+  proto_basis()
 \dontrun{
 animate_plotly(ggt)
 }
@@ -71,7 +71,19 @@ mv        <- manip_var_of(bas, 3)
 mt_path1d <- manual_tour(bas1d, manip_var = mv)
 
 ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
+  proto_density() +
   proto_basis1d()
+\dontrun{
+animate_plotly(ggt1d)
+}
+
+## Customized basis1d
+ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
+  proto_density() +
+  proto_basis1d(position = "bottom",
+                manip_col = "pink",
+                segment_size = 3,
+                text_size = 5)
 \dontrun{
 animate_plotly(ggt1d)
 }

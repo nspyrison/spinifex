@@ -16,7 +16,7 @@ proto_highlight(
 proto_highlight1d(
   aes_args = list(),
   identity_args = list(color = "red", linetype = 2, alpha = 0.9),
-  row_index = 1,
+  row_index = NULL,
   mark_initial = FALSE
 )
 }
