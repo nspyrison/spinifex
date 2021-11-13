@@ -11,7 +11,7 @@ proto_density(
   identity_args = list(alpha = 0.7),
   row_index = NULL,
   density_position = c("identity", "stack", "fill"),
-  do_add_rug = TRUE
+  rug_shape = c(142, 124, NULL)
 )
 
 append_fixed_y(fixed_y)
@@ -34,8 +34,9 @@ Defaults to NULL, all observations.}
 c("identity", "stack"), defaults to "identity". Warning: "stack" does not
 work with \code{animate_plotly()} at the moment.}
 
-\item{do_add_rug}{Logical, weather or not to add the rug marks below the
-density curves.}
+\item{rug_shape}{Numeric, the number of the shape to make rug marks.
+Expects either 142, 124 or NULL, \code{|} for plotly, ggplot2 and off respectively.
+defaults to 142.}
 
 \item{fixed_y}{Vector of length of the data, values to fix vertical height.
 Typically related to but not an explanatory variable, for instance,
@@ -70,7 +71,7 @@ message("append_fixed_y wants to be called early so other proto's adopt the fixe
 ggt <- ggtour(gt_path, dat, angle = .3) +
   append_fixed_y(fixed_y = dummy_y) + ## insert/overwrites vertical values.
   proto_point(list(fill = clas, color = clas)) +
-  proto_basis1d("top2d") +
+  proto_basis1d() +
   proto_origin()
 \dontrun{
 animate_plotly(ggt)

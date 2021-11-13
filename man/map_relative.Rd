@@ -7,7 +7,7 @@
 map_relative(
   x,
   position = c("center", "left", "right", "bottomleft", "topright", "off", "top1d",
-    "floor1d", "top2d", "floor2d"),
+    "floor1d", "bottom1d"),
   to = NULL
 )
 }
@@ -17,7 +17,7 @@ the \code{to} object.}
 
 \item{position}{Text specifying the position the axes should go to.
 Defaults to "center" expects one of: c("center", "left", "right",
-"bottomleft", "topright", "off", "top1d", "floor1d", "top2d", "floor2d").}
+"bottomleft", "topright", "off", "top1d", "floor1d", "bottom1d").}
 
 \item{to}{Data.frame to scale to.
 Based on the min/max of the first 2 columns. If left NULL defaults to

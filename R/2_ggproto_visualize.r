@@ -95,22 +95,33 @@ ggtour <- function(basis_array,
   if(is.null(.manip_var) == FALSE)
     ## Basis_array from manual tours is only 1 basis.
     .interpolated_basis_array <- interpolate_manual_tour(basis_array, angle)
-  
+  ## df_basis related
   df_ls <- array2df(.interpolated_basis_array, data, basis_label, data_label)
   .df_basis <- df_ls$basis_frames
   attr(.df_basis, "manip_var") <- .manip_var ## NULL if not a manual tour
   .n_frames <- length(unique(.df_basis$frame))
-  .d <- ncol(.df_basis) - 2L
+  .d <- ncol(.interpolated_basis_array)
   .p <- nrow(.df_basis) / .n_frames
-  eval(.fortify_data)
-  
+  ## .df_data related
+  .df_data <- df_ls$data_frames ## Can be NULL
+  if(is.null(.df_data) == FALSE){
+    .map_to_data <- data.frame(x = range(.df_data$x),
+                               y = c(0L, 1L)) ## init dummy y for just map_to
+    if(ncol(.interpolated_basis_array) > 1L){
+      ## Raise data y so density floor isn't the middle.
+      .df_data$y <- .df_data$y - min(.df_data$y)
+      ## If 2D map data to density shape
+      .map_to_data$y <- range(.df_data$y)
+    }
+  }
+  .nrow_df_data <- nrow(.df_data) ## NULL if data is NULL
+  .n <- .nrow_df_data / .n_frames ## NULL if data is NULL
   ## BYPRODUCT: Assign list to last_ggtour().
   .set_last_ggtour(list(
     interpolated_basis_array = .interpolated_basis_array,
-    df_basis = .df_basis, df_data = .df_data, map_to_unitbox = .map_to_unitbox,
-    map_to_density = .map_to_density, map_to_data = .map_to_data,
-    n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p, d = .d,
-    manip_var = .manip_var, is_faceted = FALSE))
+    df_basis = .df_basis, df_data = .df_data, map_to_data = .map_to_data,
+    n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p, 
+    d = .d, manip_var = .manip_var, is_faceted = FALSE))
   
   ## Return ggplot head, theme, and facet if used
   return(ggplot2::ggplot(.df_basis) + spinifex::theme_spinifex())
@@ -178,9 +189,9 @@ facet_wrap_tour <- function(
   .ggt$df_data    <- .df_data
   .ggt$facet_var  <- facet_var
   .ggt$is_faceted <- TRUE
-  .ggt$map_to_density <- data.frame(x = range(.df_data[, 1L]), y = c(0L, 1L))
-  .ggt$map_to_data <- data.frame(x = range(.df_data[, 1L]),
-                                 y = range(.df_data[, 2L]))
+  .ggt$map_to_density <- data.frame(x = range(.df_data$x), y = c(0L, 1L))
+  .ggt$map_to_data <- data.frame(x = range(.df_data$x),
+                                 y = range(.df_data$y))
   .set_last_ggtour(.ggt)
   
   ## Return
@@ -267,30 +278,6 @@ last_ggtour <- function(){.store$ggtour_ls}
 }
 
 
-#' Prep data, especially for local data passes in `proto_*`
-#' 
-#' Internal expression. Creates local .objects to be commonly consumed by 
-#' spinifex proto_* functions.
-#'
-#' @export
-#' @family Internal utility
-#' @examples
-#' ## This expression. is not meant for external use.
-## _.fortify_data expression -----
-.fortify_data <- expression({ ## Expects df_ls
-  .df_data <- df_ls$data_frames ## Can be NULL
-  ## Make several df bounding boxs to map_relative to, but let the proto_* select.
-  .map_to_unitbox <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
-  if(is.null(data) == FALSE){
-    .map_to_density <- data.frame(x = range(.df_data[, 1L]), y = c(0L, 1L))
-    if(ncol(.interpolated_basis_array) >= 1L)
-      .map_to_data <- data.frame(x = range(.df_data[, 1L]),
-                                 y = range(.df_data[, 2L]))
-  }
-  .nrow_df_data <- nrow(.df_data) ## NULL if data is NULL
-  .n <- .nrow_df_data / .n_frames ## NULL if data is NULL
-})
-
 
 #' Initialize common obj from .global `ggtour()` objects & test their existence
 #' 
@@ -351,8 +338,7 @@ last_ggtour <- function(){.store$ggtour_ls}
             if(length(arg) == .n) arg[row_index] else arg)
       
       #### Subset .df_data, update .n & .nrow_df_data
-      .df_data <- .df_data[
-        rep(row_index, .n_frames),, drop = FALSE]
+      .df_data <- .df_data[rep(row_index, .n_frames),, drop = FALSE]
       .n <- sum(row_index) ## n rows _slecected_
       .nrow_df_data <- nrow(.df_data)
     }
@@ -655,20 +641,9 @@ animate_plotly <- function(
 filmstrip <- function(
   ggtour
 ){
-  #frame_nums_kept = NULL, 
-  ## Not going to work; would have to modify all mappings and identity args.
-  # if(is.null(frame_nums_kept) == FALSE){
-  #   ggtour$data <- ggtour$data[ggtour$data$frame %in% frame_nums_kept, ]
-  #   .n_layers <- length(ggtour$layers)
-  #   .m <- sapply(1L:.n_layers, function(i){
-  #     ggtour$layers[[i]]$data <<-
-  #       ggtour$layers[[i]]$data[
-  #         ggtour$layers[[i]]$data$frame %in% frame_nums_kept, ]
-  #   })
-  # }
-  
   ret <- ggtour +
-    ggplot2::facet_wrap(ggplot2::vars(factor(frame))) + ## facet on frame
+    ## Display level of previous facet (if applicable) next level of frame.
+    ggplot2::facet_wrap(c("frame", names(ggtour$facet$params$facets))) +
     ggplot2::theme(strip.text = ggplot2::element_text(
       margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
       panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
@@ -688,7 +663,7 @@ filmstrip <- function(
 #' @param position The position, to place the basis axes relative to the centered 
 #' data. `_basis` Expects one of c("left", "center", "right", "bottomleft", "topright", 
 #' "off"), defaults to "left". `_basis1d` Expects one of 
-#' c("top1d", "floor1d", "top2d", "floor2d", "off"). Defaults to "top1d".
+#' c("bottom1d", "floor1d", "top1d", "off"). Defaults to "bottom1d".
 #' @param manip_col The color to highlight the manipulation variable with. Not
 #' applied if the tour isn't a manual tour. Defaults to "blue".
 #' @param line_size (2D bases only) the thickness of the lines used to make the 
@@ -789,7 +764,7 @@ proto_basis <- function(
       data = .df_basis,
       size = .axes_siz, color = .axes_col,
       mapping = ggplot2::aes(x = x, y = y, frame = frame,
-                             xend = .center[, 1L], yend = .center[, 2L])
+                             xend = .center$x, yend = .center$y)
     )),
     suppressWarnings(ggplot2::geom_text(
       data = .df_basis,
@@ -807,7 +782,7 @@ proto_basis <- function(
 #' @export
 #' @family ggtour proto functions
 proto_basis1d <- function(
-  position = c("top1d", "floor1d", "top2d", "floor2d", "off"),
+  position = c("bottom1d", "floor1d",  "top1d", "off"),
   manip_col = "blue",
   segment_size = 2,
   text_size = 5
@@ -837,25 +812,20 @@ proto_basis1d <- function(
                          frame = .df_basis$frame,
                          label = .df_basis$label)
   ## Do note replicate across frames, it won't work any better with plotly
-  .df_txt <- data.frame(x = -1.25, y = .p:1L/.p, 
+  .df_txt <- data.frame(x = -1.2, y = .p:1L/.p, 
                         label = .df_basis[.df_basis$frame == 1L, "label"])
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5) / .p)
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5) / .p)
   ## Scale them
   #### if basis 1D map to density, else map to data (ie. cheem)
-  if(position %in% c("top1d", "floor1d")){
-    .map_to_tgt <- .map_to_density
-  }else .map_to_tgt <- .map_to_data
-  .df_zero <- map_relative(.df_zero, position, .map_to_tgt)
-  .df_seg  <- map_relative(.df_seg,  position, .map_to_tgt)
-  .df_txt  <- map_relative(.df_txt,  position, .map_to_tgt)
+  .df_zero <- map_relative(.df_zero, position, .map_to_data)
+  .df_seg  <- map_relative(.df_seg,  position, .map_to_data)
+  .df_txt  <- map_relative(.df_txt,  position, .map_to_data)
   # browser()
   # debugonce(map_relative)
-  .df_rect <- map_relative(.df_rect, position, .map_to_tgt)
-  .df_seg0 <- map_relative(.df_seg0, position, .map_to_tgt)
+  .df_rect <- map_relative(.df_rect, position, .map_to_data)
+  .df_seg0 <- map_relative(.df_seg0, position, .map_to_data)
   if(.is_faceted){
-    if(position == "top1d") position <- "floor1d"
-    if(position == "top2d") position <- "floor2d"
     .basis_ls <- list(facet_var = rep_len("_basis_", nrow(.df_zero)))
     .df_zero <- .bind_elements2df(.basis_ls, .df_zero)
     .df_seg  <- .bind_elements2df(.basis_ls, .df_seg)
@@ -880,7 +850,7 @@ proto_basis1d <- function(
       size = text_size, color = "grey60", hjust = 1L),
     ## Contribution segments of current basis, changing with frame
     suppressWarnings(ggplot2::geom_segment(
-      ggplot2::aes(x, y, xend = .df_zero[, 1L], yend = y, frame = frame),
+      ggplot2::aes(x = .df_zero$x, y, xend = x, yend = y, frame = frame),
       .df_seg, color = .axes_col, size = .axes_siz))
   ))
 }
@@ -984,7 +954,7 @@ draw_basis <- function(
       data = .df_basis,
       size = .axes_siz, color = .axes_col,
       mapping = ggplot2::aes(
-        x = x, y = y, xend = .center[, 1L], yend = .center[, 2L])
+        x = x, y = y, xend = .center$x, yend = .center$y)
     )),
     suppressWarnings(ggplot2::geom_text(
       data = .df_basis,
@@ -1102,8 +1072,9 @@ proto_point <- function(
 #' @param density_position The `ggplot2` position of `geom_density()`. Either 
 #' c("identity", "stack"), defaults to "identity". Warning: "stack" does not 
 #' work with `animate_plotly()` at the moment.
-#' @param do_add_rug Logical, weather or not to add the rug marks below the 
-#' density curves.
+#' @param rug_shape Numeric, the number of the shape to make rug marks.
+#' Expects either 142, 124 or NULL, `|` for plotly, ggplot2 and off respectively.
+#' defaults to 142.
 #' @export
 #' @aliases proto_density1d
 #' @family ggtour proto functions
@@ -1125,7 +1096,7 @@ proto_density <- function(
   identity_args = list(alpha = .7),
   row_index = NULL,
   density_position = c("identity", "stack", "fill"),
-  do_add_rug = TRUE
+  rug_shape = c(142, 124, NULL)
 ){
   ## Initialize
   eval(.init4proto)
@@ -1138,28 +1109,31 @@ proto_density <- function(
   if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
     warning("proto_density: aes_args contains color without fill, did you mean to use fill to color below the curve?")
   density_position <- match.arg(density_position)
+  rug_shape <- rug_shape[1]
   ## "identity" is the only position working in {plotly} right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
   
   ## geom_density do.call
+  y_coef <- diff(range(.map_to_data$y))
   .aes_func <- function(...)
-    ggplot2::aes(x = x, y = ..ndensity.., frame = frame, ...)
+    ggplot2::aes(x = x, y = y_coef * ..ndensity.., frame = frame, ...)
   .aes_call <- do.call(.aes_func, aes_args)
   .geom_func <- function(...)suppressWarnings(
     ggplot2::geom_density(mapping = .aes_call, data = .df_data, ...,
                           position = density_position, color = "black", n = 128L))
-  ret <- do.call(.geom_func, identity_args)
+  ret <- list(do.call(.geom_func, identity_args),
+              ggplot2::theme(legend.position  = "right",
+                             legend.direction = "vertical",
+                             legend.box       = "vertical"))
   
   ## geom_rug do.call
-  if(do_add_rug){
-    .rug_len <- .02
+  if(is.null(rug_shape) == FALSE){
     .aes_func <- function(...)
-      ggplot2::aes(x = x, frame = frame, ...)
+      ggplot2::aes(x = x, y = -.02 * y_coef, frame = frame, ...)
     .aes_call <- do.call(.aes_func, aes_args)
     .geom_func <- function(...) suppressWarnings(
-      ggplot2::geom_rug(mapping = .aes_call, data = .df_data,
-                        length = ggplot2::unit(.rug_len, "native"), ...))
-    ret <- list(ret, do.call(.geom_func, identity_args))
+      ggplot2::geom_point(.aes_call, .df_data, shape = rug_shape, ...))
+    ret <- c(ret, do.call(.geom_func, identity_args))
   }
   
   ## Return
@@ -1185,7 +1159,7 @@ proto_density <- function(
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   append_fixed_y(fixed_y = dummy_y) + ## insert/overwrites vertical values.
 #'   proto_point(list(fill = clas, color = clas)) +
-#'   proto_basis1d("top2d") +
+#'   proto_basis1d() +
 #'   proto_origin()
 #' \dontrun{
 #' animate_plotly(ggt)
@@ -1205,12 +1179,13 @@ append_fixed_y <- function(
   
   ## Add fixed y
   .df_data$y <- rep_len(fixed_y, .nrow_df_data)
+  .df_data$y <- .df_data$y - min(.df_data$y)
   
   ## BYPRODUCT: pass data back to .store
   # to calm some oddities; like proto_origin() complaining about y being missing
   .ggt$df_data <- .df_data
-  .ggt$map_to_data <- data.frame(x = range(.df_data[, 1L]),
-                                 y = range(.df_data[, 2L]))
+  .ggt$map_to_data <- data.frame(x = range(.df_data$x),
+                                 y = range(.df_data$y))
   .ggt$d <- 2L
   .set_last_ggtour(.ggt)
   
@@ -1325,8 +1300,8 @@ proto_hex <- function(
   eval(.init4proto)
   if(is.null(.df_data))
     stop("proto_hex: Data is missing. Did you call ggtour() on a manual tour without passing data?")
-  if(is.null(.df_basis$y))
-    stop("proto_hex: Basis `y` not found, expected a 2D tour.")
+  if(is.null(.df_data$y))
+    stop("proto_hex: data `y` not found, expected a 2D tour.")
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
@@ -1460,19 +1435,19 @@ proto_highlight1d <- function(
   if(is.null(row_index)) return()
   eval(.init4proto)
   if(is.null(.df_data)) return()
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
   
   ## geom_segment do.calls, moving with frame
-  .ymin <- min(.map_to_density[, 2L])
-  .ymax <- max(.map_to_density[, 2L])
-  .segment_tail <- diff(c(.ymin, .ymax)) * .1
+  .ymin <- min(.map_to_data$y)
+  .ymax <- max(.map_to_data$y)
+  .segment_tail <- diff(c(.ymin, .ymax)) * .5
   .aes_func <- function(...)
     ggplot2::aes(x = x, xend = x,  y = .ymin - .segment_tail,
                  yend = .ymax + .segment_tail,
                  frame = frame, tooltip = label, ...) ## rownum for tooltip
   .aes_call <- do.call(.aes_func, aes_args)
-  .geom_func <- function(...) suppressWarnings(ggplot2::geom_segment(
-    mapping = .aes_call, .df_data, ...))
+  .geom_func <- function(...) suppressWarnings(
+    ggplot2::geom_segment(.aes_call, .df_data, ...))
   ret <- do.call(.geom_func, identity_args)
   
   ## Initial mark, if needed, no frame, some hard-coded aes.
@@ -1544,12 +1519,12 @@ proto_frame_cor2 <- function(
     dplyr::ungroup()
   
   ## Set position
-  .x_ran <- range(.df_data[, 1L])
+  .x_ran <- range(.df_data$x)
   .x_dif <- diff(.x_ran)
-  .y_ran <- range(.df_data[, 2L])
+  .y_ran <- range(.df_data$y)
   .y_dif <- diff(.y_ran)
-  .x <- min(.x_ran) + position[1L] * .x_dif
-  .y <- min(.y_ran) + position[2L] * .y_dif
+  .x <- .x_ran[1L] + position[1L] * .x_dif
+  .y <- .y_ran[1L] + position[2L] * .y_dif
   ## Prefix text:
   # ## Removes namespace; ie. 'stats::cor' to 'cor'
   # .stat_nm  <- substitute(stat2d)
@@ -1603,13 +1578,11 @@ proto_origin <- function(
   
   #### Setup origin, zero mark, 5% on each side.
   .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
-  .min    <- min(.map_to_data[, 1L:2L])
-  .max    <- max(.map_to_data[, 1L:2L])
-  .tail   <- tail_size / 2L * (.max - .min)
-  .df_origin <- data.frame(x     = c(.center[, 1L] - .tail, .center[, 1L]),
-                           x_end = c(.center[, 1L] + .tail, .center[, 1L]),
-                           y     = c(.center[, 2L], .center[, 2L] - .tail),
-                           y_end = c(.center[, 2L], .center[, 2L] + .tail))
+  .tail   <- tail_size / 2L * diff(range(.map_to_data[, 1L:2L]))
+  .df_origin <- data.frame(x     = c(.center$x - .tail, .center$x),
+                           x_end = c(.center$x + .tail, .center$x),
+                           y     = c(.center$y, .center$y - .tail),
+                           y_end = c(.center$y, .center$y + .tail))
   
   if(.is_faceted){
     .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
@@ -1646,15 +1619,14 @@ proto_origin1d <- function(
   ## Initialize
   eval(.init4proto)
   if(is.null(.df_data)) return()
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_density)
-  .ymin <- min(.map_to_density[, 2L])
-  .ymax <- max(.map_to_density[, 2L])
-  .tail <- diff(c(.ymin, .ymax)) * .6
+  
+  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
+  .tail <- diff(range(.map_to_data$y)) * .55
   .df_origin <- data.frame(
-    x     = c(.center[, 1L], .center[, 1L]),
-    x_end = c(.center[, 1L], .center[, 1L]),
-    y     = c(.center[, 2L], .center[, 2L]),
-    y_end = c(.center[, 2L] - .tail, .center[, 2L] + .tail))
+    x     = c(.center$x, .center$x),
+    x_end = c(.center$x, .center$x),
+    y     = c(.center$y, .center$y),
+    y_end = c(.center$y - .tail, .center$y + .tail))
   
   if(.is_faceted){
     .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))

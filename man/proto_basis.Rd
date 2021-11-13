@@ -13,7 +13,7 @@ proto_basis(
 )
 
 proto_basis1d(
-  position = c("top1d", "floor1d", "top2d", "floor2d", "off"),
+  position = c("bottom1d", "floor1d", "top1d", "off"),
   manip_col = "blue",
   segment_size = 2,
   text_size = 5
@@ -23,7 +23,7 @@ proto_basis1d(
 \item{position}{The position, to place the basis axes relative to the centered
 data. \verb{_basis} Expects one of c("left", "center", "right", "bottomleft", "topright",
 "off"), defaults to "left". \verb{_basis1d} Expects one of
-c("top1d", "floor1d", "top2d", "floor2d", "off"). Defaults to "top1d".}
+c("bottom1d", "floor1d", "top1d", "off"). Defaults to "bottom1d".}
 
 \item{manip_col}{The color to highlight the manipulation variable with. Not
 applied if the tour isn't a manual tour. Defaults to "blue".}

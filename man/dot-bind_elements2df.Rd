@@ -21,7 +21,6 @@ replicates elements to the length of the data and bind as a column.
 }
 \seealso{
 Other Internal utility: 
-\code{\link{.fortify_data}},
 \code{\link{.init4proto}},
 \code{\link{.lapply_rep_len}()}
 }

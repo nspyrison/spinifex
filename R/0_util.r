@@ -77,7 +77,8 @@ array2df <- function(
   })
   basis_frames <- as.data.frame(basis_frames)
   .nms <- c("x", "y", "z", "w")
-  colnames(basis_frames) <- c(.nms[1L:(ncol(basis_frames) - 1L)], "frame")
+  if(ncol(basis_array) > 4) .nms <- c(.nms, paste0("y"))
+  colnames(basis_frames) <- c(.nms[1L:ncol(basis_array)], "frame")
   ## Basis label and manip_var attribute.
   if(length(basis_label) > 0L)
     basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
@@ -122,7 +123,7 @@ array2df <- function(
 #' the `to` object.
 #' @param position Text specifying the position the axes should go to.
 #' Defaults to "center" expects one of: c("center", "left", "right", 
-#' "bottomleft", "topright", "off", "top1d", "floor1d", "top2d", "floor2d").
+#' "bottomleft", "topright", "off", "top1d", "floor1d", "bottom1d").
 #' @param to Data.frame to scale to.
 #' Based on the min/max of the first 2 columns. If left NULL defaults to 
 #' data.frame(x = c(-1L, 1L), y = c(-1L, 1L).
@@ -140,7 +141,7 @@ map_relative <- function(
   x,
   position = c("center", "left", "right",
                "bottomleft", "topright", "off",
-               "top1d", "floor1d", "top2d", "floor2d"),
+               "top1d", "floor1d", "bottom1d"),
   to = NULL
 ){
   ## Assumptions
@@ -153,48 +154,54 @@ map_relative <- function(
   yrange  <- range(to[, 2L])
   xdiff   <- diff(xrange)
   ydiff   <- diff(yrange)
-  xcenter <- mean(xrange)
-  ycenter <- mean(yrange)
+  xcenter <- xrange[1L] + .5 * xdiff
+  ycenter <- yrange[1L] + .5 * ydiff
   
   ## Condition handling of position
   if(position == "center"){
-    scale <- .4 * ydiff
+    scale <- .4 * min(xdiff, ydiff)
     xoff  <- xcenter
     yoff  <- ycenter
   } else if(position == "left"){
-    scale <- .4 * ydiff
+    scale <- .4 * min(xdiff, ydiff)
     xoff  <- -.7 * xdiff + xcenter
     yoff  <- ycenter
   } else if(position == "right"){
-    scale <- .4 * ydiff
+    scale <- .4 * min(xdiff, ydiff)
     xoff  <- .7 * xdiff + xcenter
     yoff  <- ycenter
-  } else if(position %in% c("top1d", "top2d")){
+  } else if(position %in% c("top1d")){
     xscale <- .3 * xdiff
     yscale <- ydiff
     xoff  <- xcenter
-    yoff  <- .6 * ydiff + ycenter
-  } else if(position %in% c("floor1d", "floor2d")){
+    yoff  <- .5 * ydiff + ycenter
+  } else if(position %in% c("floor1d")){
     xscale <- .3 * xdiff
     yscale <- ydiff
     xoff  <- xcenter
     yoff  <- -.6 * ydiff + ycenter
+  } else if(position %in% c("bottom1d")){
+    xscale <- .3 * xdiff
+    yscale <- ydiff
+    xoff  <- xcenter
+    yoff  <- -1.7 * ydiff + ycenter
   } else if(position == "bottomleft"){
-    scale <- .25 * ydiff
+    scale <- .25 * min(xdiff, ydiff)
     xoff  <- -.25 * xdiff + xcenter
     yoff  <- -.5 * ydiff + ycenter
   } else if(position == "topright"){
-    scale <- .25 * ydiff
+    scale <- .25 * min(xdiff, ydiff)
     xoff  <- .25 * xdiff + xcenter
     yoff  <- .5 * ydiff + ycenter
   } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
-  #browser()
-  if(position %in% c("top1d", "floor1d", "top2d", "floor2d")){
+  if(position %in% c("top1d", "floor1d", "bottom1d")){
+    ## 1d basis with x&y scales
     x[, 1L] <- xscale * x[, 1L] + xoff
     x[, 2L] <- yscale * x[, 2L] + yoff
   }else{
+    ## 2d basis with 1 scale
     x[, 1L] <- scale * x[, 1L] + xoff
     x[, 2L] <- scale * x[, 2L] + yoff
   }
@@ -529,12 +536,13 @@ theme_spinifex <- function(...){
        ggplot2::scale_fill_brewer(palette = "Dark2"),
        ggplot2::coord_fixed(),
        ggplot2::labs(x = "", y = ""),
-       ggplot2::theme(legend.position = "bottom",
-                      legend.direction = "horizontal", ## Levels within aesthetic
-                      legend.box = "vertical",         ## Between aesthetic
-                      legend.margin = ggplot2::margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
-                      axis.title = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
-                      ...) ## ... applied over defaults.
+       ggplot2::theme(
+         legend.position  = "bottom",
+         legend.direction = "horizontal", ## Levels within an aesthetic
+         legend.box       = "vertical",   ## Between aesthetics
+         legend.margin    = ggplot2::margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
+         axis.title       = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
+         ...) ## ... applied over defaults.
   )
 }
 
