@@ -20,9 +20,9 @@ proto_basis1d(
 )
 }
 \arguments{
-\item{position}{The position, to place the basis axes relative to the centered
-data. \verb{_basis} Expects one of c("left", "center", "right", "bottomleft", "topright",
-"off"), defaults to "left". \verb{_basis1d} Expects one of
+\item{position}{The position, to place the basis axes relative to the
+data. \code{proto_basis} expects one of c("left", "center", "right", "bottomleft", "topright",
+"off"), defaults to "left". \code{proto_basis1d} expects one of
 c("bottom1d", "floor1d", "top1d", "off"). Defaults to "bottom1d".}
 
 \item{manip_col}{The color to highlight the manipulation variable with. Not

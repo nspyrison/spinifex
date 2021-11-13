@@ -7,7 +7,7 @@
 \usage{
 proto_point(
   aes_args = list(),
-  identity_args = list(),
+  identity_args = list(alpha = 0.9),
   row_index = NULL,
   bkg_color = "grey80"
 )

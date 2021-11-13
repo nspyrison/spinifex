@@ -660,9 +660,9 @@ filmstrip <- function(
 #' contributions of the variables to the projection space inscribed in a unit 
 #' circle for 2D or rectangle of unit width for 1D.
 #'
-#' @param position The position, to place the basis axes relative to the centered 
-#' data. `_basis` Expects one of c("left", "center", "right", "bottomleft", "topright", 
-#' "off"), defaults to "left". `_basis1d` Expects one of 
+#' @param position The position, to place the basis axes relative to the 
+#' data. `proto_basis` expects one of c("left", "center", "right", "bottomleft", "topright", 
+#' "off"), defaults to "left". `proto_basis1d` expects one of 
 #' c("bottom1d", "floor1d", "top1d", "off"). Defaults to "bottom1d".
 #' @param manip_col The color to highlight the manipulation variable with. Not
 #' applied if the tour isn't a manual tour. Defaults to "blue".
@@ -1016,7 +1016,7 @@ draw_basis <- function(
 #' }
 proto_point <- function(
   aes_args = list(),
-  identity_args = list(),
+  identity_args = list(alpha = .9),
   row_index = NULL,
   bkg_color = "grey80"
 ){
@@ -1577,12 +1577,12 @@ proto_origin <- function(
     stop("proto_origin: data y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
   
   #### Setup origin, zero mark, 5% on each side.
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
-  .tail   <- tail_size / 2L * diff(range(.map_to_data[, 1L:2L]))
-  .df_origin <- data.frame(x     = c(.center$x - .tail, .center$x),
-                           x_end = c(.center$x + .tail, .center$x),
-                           y     = c(.center$y, .center$y - .tail),
-                           y_end = c(.center$y, .center$y + .tail))
+  .zero <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
+  .tail <- tail_size / 2L * diff(range(.map_to_data[, 1L:2L]))
+  .df_origin <- data.frame(x     = c(.zero$x - .tail, .zero$x),
+                           x_end = c(.zero$x + .tail, .zero$x),
+                           y     = c(.zero$y, .zero$y - .tail),
+                           y_end = c(.zero$y, .zero$y + .tail))
   
   if(.is_faceted){
     .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
@@ -1620,13 +1620,13 @@ proto_origin1d <- function(
   eval(.init4proto)
   if(is.null(.df_data)) return()
   
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
+  .zero <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
   .tail <- diff(range(.map_to_data$y)) * .55
   .df_origin <- data.frame(
-    x     = c(.center$x, .center$x),
-    x_end = c(.center$x, .center$x),
-    y     = c(.center$y, .center$y),
-    y_end = c(.center$y - .tail, .center$y + .tail))
+    x     = c(.zero$x, .zero$x),
+    x_end = c(.zero$x, .zero$x),
+    y     = c(.zero$y, .zero$y),
+    y_end = c(.zero$y - .tail, .zero$y + .tail))
   
   if(.is_faceted){
     .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
@@ -1648,14 +1648,10 @@ proto_origin1d <- function(
 #' Returns a list of proto_origin(), proto_point(...), proto_basis() for 2D.
 #' Returns a list of proto_origin1d(), proto_density(...), proto_basis1d() for 1D.
 #'
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
-#' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
+#' @param position The position, to place the basis axes relative to the 
+#' data. `proto_basis` expects one of c("left", "center", "right", "bottomleft", "topright", 
+#' "off"), defaults to "left". `proto_basis1d` expects one of 
+#' c("bottom1d", "floor1d", "top1d", "off"). Defaults to "bottom1d".
 #' @param ... Optionally pass additional arguments to `proto_point` or 
 #' `proto_density`.
 #' @export
@@ -1671,19 +1667,18 @@ proto_origin1d <- function(
 #' mt_path <- manual_tour(bas, mv)
 #' 
 #' ggt <- ggtour(mt_path, dat) +
-#'   proto_default(list(color = clas, shape = clas),
-#'                 list())
+#'   proto_default(aes_args = list(color = clas, shape = clas),
+#'                 identity_args = list())
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 proto_default <- function(
-  aes_args = list(),
-  identity_args = list(alpha = .9),
+  position = c("left", "center", "right", "bottomleft", "topright", "off"),
   ...
 ){
   return(list(
-    proto_point(aes_args, identity_args, ...),
-    proto_basis(),
+    proto_point(...),
+    proto_basis(position),
     proto_origin()
   ))
 }
@@ -1698,16 +1693,17 @@ proto_default <- function(
 #' gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
-#'   proto_default1d(list(fill = clas, color = clas))
+#'   proto_default1d(aes_args = list(fill = clas, color = clas))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-proto_default1d <- function(aes_args = list(),
-                            identity_args = list(alpha = .7)
+proto_default1d <- function(
+  position = c("bottom1d", "floor1d", "top1d", "off"),
+  ...
 ){
   return(list(
-    proto_density(aes_args, identity_args),
-    proto_basis1d(),
+    proto_density(...),
+    proto_basis1d(position),
     proto_origin1d()
   ))
 }
