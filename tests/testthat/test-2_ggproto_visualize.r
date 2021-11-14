@@ -3,10 +3,11 @@
   library("spinifex")
   library("testthat")
   
-  dat <- scale_sd(wine[1L:10L, 2L:5L]) ## small chunk for speed.
+  r_idx <- 1L:10L
+  dat <- scale_sd(wine[r_idx, 2L:5L]) ## small chunk for speed.
   bas <- basis_pca(dat)
   mv  <- manip_var_of(bas)
-  clas <- wine
+  clas <- wine[r_idx, ]
   
   mt     <- manual_tour(bas      , mv, data = dat)
   mt1d   <- manual_tour(bas[, 1L], mv, data = dat)
