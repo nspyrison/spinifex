@@ -1329,7 +1329,7 @@ proto_hex <- function(
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' #' Typically a single numeric for point size, alpha, or similar.
 #' @param row_index A numeric or logical index of rows to subset to. 
-#' Defaults to NULL, all observations.
+#' Defaults to 1, highlighting the first row.
 #' @param mark_initial Logical, whether or not to leave a fainter mark at the 
 #' subset's initial position. Defaults to FALSE.
 #' @export
@@ -1360,10 +1360,11 @@ proto_hex <- function(
 proto_highlight <- function(
   aes_args = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  row_index = NULL,
+  row_index = 1,
   mark_initial = FALSE
 ){
   ## Initialize
+  if(is.null(row_index)) return()
   eval(.init4proto) ## aes_args/identity_args/df_data subset in .init4proto.
   if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
@@ -1422,7 +1423,7 @@ proto_highlight <- function(
 proto_highlight1d <- function(
   aes_args = list(),
   identity_args = list(color = "red", linetype = 2, alpha = .9),
-  row_index = NULL,
+  row_index = 1,
   mark_initial = FALSE
 ){
   ## Initialize
