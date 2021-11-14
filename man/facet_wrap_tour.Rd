@@ -43,10 +43,10 @@ animate_gganimate(ggt) ## Faceting not likely to play well with `plotly`
 }
 \seealso{
 Other ggtour proto functions: 
+\code{\link{append_fixed_y}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
-\code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},
 \code{\link{proto_origin}()},

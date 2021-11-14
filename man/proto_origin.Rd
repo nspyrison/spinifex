@@ -50,22 +50,22 @@ animate_plotly(ggt)
 }
 \seealso{
 Other ggtour proto functions: 
+\code{\link{append_fixed_y}()},
 \code{\link{facet_wrap_tour}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
-\code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},
 \code{\link{proto_point}()},
 \code{\link{proto_text}()}
 
 Other ggtour proto functions: 
+\code{\link{append_fixed_y}()},
 \code{\link{facet_wrap_tour}()},
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
-\code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},
 \code{\link{proto_point}()},

@@ -201,6 +201,59 @@ facet_wrap_tour <- function(
 }
 
 
+#' @param fixed_y Vector of length of the data, values to fix vertical height.
+#' Typically related to but not an explanatory variable, for instance,
+#' predicted Y, or residuals.
+#' @rdname proto_density
+#' @export
+#' @family ggtour proto functions
+#' @examples
+#' 
+#' ## append_fixed_y:
+#' # Fixed y values are useful for related values that are 
+#' # not in the X variables, _eg_ predictions or residuals of you X space.
+#' message("don't forget to scale your fixed_y.")
+#' dummy_y <- scale_sd(as.integer(clas) + rnorm(nrow(dat), 0, .5))
+#' gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 5)
+#' 
+#' message("append_fixed_y wants to be called early so other proto's adopt the fixed_y.")
+#' ggt <- ggtour(gt_path, dat, angle = .3) +
+#'   append_fixed_y(fixed_y = dummy_y) + ## insert/overwrites vertical values.
+#'   proto_point(list(fill = clas, color = clas)) +
+#'   proto_basis1d() +
+#'   proto_origin()
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+append_fixed_y <- function(
+  fixed_y
+){
+  ## Minimal init4 proto
+  .ggt <- spinifex::last_ggtour() ## Self-explicit for use in cheem
+  if(is.null(.ggt)) stop(".init4proto: last_ggtour() is NULL, have you run ggtour() yet?")
+  ## Assign elements ggtour list as quiet .objects in the environment
+  .env <- environment()
+  .nms <- names(.ggt)
+  .m <- sapply(seq_along(.ggt), function(i){
+    assign(paste0(".", .nms[i]), .ggt[[i]], envir = .env)
+  })
+  
+  ## Add fixed y
+  .df_data$y <- rep_len(fixed_y, .nrow_df_data)
+  .df_data$y <- .df_data$y - min(.df_data$y)
+  
+  ## BYPRODUCT: pass data back to .store
+  # to calm some oddities; like proto_origin() complaining about y being missing
+  .ggt$df_data <- .df_data
+  .ggt$map_to_data$y <- range(.df_data$y)
+  .ggt$d <- 2L
+  .set_last_ggtour(.ggt)
+  
+  ## Return
+  return(NULL)
+}
+
+
 .store <- new.env(parent = emptyenv())
 #' Retrieve/set a list from the last `ggtour()`, required for the use 
 #' of `proto_*` functions.
@@ -305,26 +358,25 @@ last_ggtour <- function(){.store$ggtour_ls}
         .rep_f[row_index] <- TRUE
         row_index <- .rep_f
       }
-      
-      ### Background case:
-      if(exists("bkg_color"))
+      ### Background:
+      if(exists("bkg_color")) ## Only proto_point atm
         if(sum(!row_index) > 0L)
           if(is.null("bkg_color") == FALSE)
             if(bkg_color != FALSE){
-              #### Subset (but not replicate) bkg_aes_args, bkg_identity_args:
+              .bkg_aes_args <- .bkg_identity_args <- list()
+              #### Subset .df_data_bkg
+              .df_data_bkg <- .df_data[rep(!row_index, .n_frames),, drop = FALSE]
+              #### Subset (but not replicate) .bkg_aes_args, bkg_identity_args:
               if(exists("aes_args"))
                 if(length(aes_args) > 0L)
                   .bkg_aes_args <- lapply(aes_args, function(arg)arg[!row_index])
               if(exists("identity_args"))
-                if(length(aes_args) > 0L)
+                if(length(identity_args) > 0L)
                   .bkg_identity_args <- lapply(identity_args, function(arg)
                     if(length(arg) == .n) arg[!row_index] else arg)
-              #### Subset .df_data_bkg
-              .df_data_bkg <- .df_data[
-                rep(!row_index, .n_frames),, drop = FALSE]
             }
       
-      ### Foreground case:
+      ### Foreground:
       #### Subset (but not replicate) aes_args, identity_args
       if(exists("aes_args"))
         if(length(aes_args) > 0L)
@@ -349,15 +401,15 @@ last_ggtour <- function(){.store$ggtour_ls}
   
   ## Replicate argument lists, if they exist
   if(exists("row_index"))
-    if(is.null(row_index) == FALSE){
-      if(exists("bkg_aes_args"))
-        if(length(bkg_aes_args) > 0L)
-          bkg_aes_args <- spinifex:::.lapply_rep_len(
-            bkg_aes_args, nrow(.df_data_bkg), sum(!row_index))
-      if(exists("bkg_identity_args"))
+    if(sum(row_index) != .n){
+      if(exists(".bkg_aes_args"))
+        if(length(.bkg_aes_args) > 0L)
+          .bkg_aes_args <- spinifex:::.lapply_rep_len(
+            .bkg_aes_args, nrow(.df_data_bkg), sum(!row_index))
+      if(exists(".bkg_identity_args"))
         if(length(identity_args) > 0L)
-          bkg_identity_args <- spinifex:::.lapply_rep_len(
-            bkg_identity_args, nrow(.df_data_bkg), sum(!row_index))
+          .bkg_identity_args <- spinifex:::.lapply_rep_len(
+            .bkg_identity_args, nrow(.df_data_bkg), sum(!row_index))
     }
   if(exists("aes_args"))
     if(length(aes_args) > 0L)
@@ -1035,7 +1087,7 @@ proto_point <- function(
   if(is.null(bkg_color) == FALSE)
     if(bkg_color != FALSE)
       if(exists(".df_data_bkg")){
-        ## do.call aes() over the bkg_aes_args
+        ## do.call aes() over the .bkg_aes_args
         .aes_func <- function(...)
           ggplot2::aes(x = x, y = y, frame = frame, ...) 
         .aes_call <- suppressWarnings(do.call(.aes_func, .bkg_aes_args))
@@ -1134,58 +1186,6 @@ proto_density <- function(
   
   ## Return
   return(ret)
-}
-
-#' @param fixed_y Vector of length of the data, values to fix vertical height.
-#' Typically related to but not an explanatory variable, for instance,
-#' predicted Y, or residuals.
-#' @rdname proto_density
-#' @export
-#' @family ggtour proto functions
-#' @examples
-#' 
-#' ## append_fixed_y:
-#' # Fixed y values are useful for related values that are 
-#' # not in the X variables, _eg_ predictions or residuals of you X space.
-#' message("don't forget to scale your fixed_y.")
-#' dummy_y <- scale_sd(as.integer(clas) + rnorm(nrow(dat), 0, .5))
-#' gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 5)
-#' 
-#' message("append_fixed_y wants to be called early so other proto's adopt the fixed_y.")
-#' ggt <- ggtour(gt_path, dat, angle = .3) +
-#'   append_fixed_y(fixed_y = dummy_y) + ## insert/overwrites vertical values.
-#'   proto_point(list(fill = clas, color = clas)) +
-#'   proto_basis1d() +
-#'   proto_origin()
-#' \dontrun{
-#' animate_plotly(ggt)
-#' }
-append_fixed_y <- function(
-  fixed_y
-){
-  ## Minimal init4 proto
-  .ggt <- spinifex::last_ggtour() ## Self-explicit for use in cheem
-  if(is.null(.ggt)) stop(".init4proto: last_ggtour() is NULL, have you run ggtour() yet?")
-  ## Assign elements ggtour list as quiet .objects in the environment
-  .env <- environment()
-  .nms <- names(.ggt)
-  .m <- sapply(seq_along(.ggt), function(i){
-    assign(paste0(".", .nms[i]), .ggt[[i]], envir = .env)
-  })
-  
-  ## Add fixed y
-  .df_data$y <- rep_len(fixed_y, .nrow_df_data)
-  .df_data$y <- .df_data$y - min(.df_data$y)
-  
-  ## BYPRODUCT: pass data back to .store
-  # to calm some oddities; like proto_origin() complaining about y being missing
-  .ggt$df_data <- .df_data
-  .ggt$map_to_data$y <- range(.df_data$y)
-  .ggt$d <- 2L
-  .set_last_ggtour(.ggt)
-  
-  ## Return
-  return(NULL)
 }
 
 
