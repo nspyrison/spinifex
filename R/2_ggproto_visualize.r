@@ -308,20 +308,21 @@ last_ggtour <- function(){.store$ggtour_ls}
       
       ### Background case:
       if(exists("bkg_color"))
-        if(is.null("bkg_color") == FALSE)
-          if(bkg_color != FALSE){
-            #### Subset (but not replicate) bkg_aes_args, bkg_identity_args:
-            if(exists("aes_args"))
-              if(length(aes_args) > 0L)
-                .bkg_aes_args <- lapply(aes_args, function(arg)arg[!row_index])
-            if(exists("identity_args"))
-              if(length(aes_args) > 0L)
-                .bkg_identity_args <- lapply(identity_args, function(arg)
-                  if(length(arg) == .n) arg[!row_index] else arg)
-            #### Subset .df_data_bkg
-            .df_data_bkg <- .df_data[
-              rep(!row_index, .n_frames),, drop = FALSE]
-          }
+        if(sum(!row_index) > 0L)
+          if(is.null("bkg_color") == FALSE)
+            if(bkg_color != FALSE){
+              #### Subset (but not replicate) bkg_aes_args, bkg_identity_args:
+              if(exists("aes_args"))
+                if(length(aes_args) > 0L)
+                  .bkg_aes_args <- lapply(aes_args, function(arg)arg[!row_index])
+              if(exists("identity_args"))
+                if(length(aes_args) > 0L)
+                  .bkg_identity_args <- lapply(identity_args, function(arg)
+                    if(length(arg) == .n) arg[!row_index] else arg)
+              #### Subset .df_data_bkg
+              .df_data_bkg <- .df_data[
+                rep(!row_index, .n_frames),, drop = FALSE]
+            }
       
       ### Foreground case:
       #### Subset (but not replicate) aes_args, identity_args
