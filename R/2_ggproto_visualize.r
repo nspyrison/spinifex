@@ -188,9 +188,6 @@ facet_wrap_tour <- function(
   .ggt$df_data    <- .df_data
   .ggt$facet_var  <- facet_var
   .ggt$is_faceted <- TRUE
-  .ggt$map_to_density <- data.frame(x = range(.df_data$x), y = c(0L, 1L))
-  .ggt$map_to_data <- data.frame(x = range(.df_data$x),
-                                 y = range(.df_data$y))
   .set_last_ggtour(.ggt)
   
   ## Return
@@ -1182,8 +1179,7 @@ append_fixed_y <- function(
   ## BYPRODUCT: pass data back to .store
   # to calm some oddities; like proto_origin() complaining about y being missing
   .ggt$df_data <- .df_data
-  .ggt$map_to_data <- data.frame(x = range(.df_data$x),
-                                 y = range(.df_data$y))
+  .ggt$map_to_data$y <- range(.df_data$y)
   .ggt$d <- 2L
   .set_last_ggtour(.ggt)
   
