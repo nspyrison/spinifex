@@ -35,8 +35,8 @@ mt_path <- manual_tour(bas, manip_var = mv)
 message("facet_wrap_tour wants be called early, so that other proto's adopt the facet_var.")
 ggt <- ggtour(mt_path, dat, angle = .3) +
   facet_wrap_tour(facet_var = clas, ncol = 2, nrow = 2) +
-  proto_default(list(color = clas, shape = clas),
-                list(size = 1.5))
+  proto_default(aes_args = list(color = clas, shape = clas),
+                identity_args = list(size = 1.5))
 \dontrun{
 animate_gganimate(ggt) ## Faceting not likely to play well with `plotly`
 }

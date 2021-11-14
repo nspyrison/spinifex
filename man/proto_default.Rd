@@ -40,8 +40,7 @@ mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, mv)
 
 ggt <- ggtour(mt_path, dat) +
-  proto_default(aes_args = list(color = clas, shape = clas),
-                identity_args = list())
+  proto_default(aes_args = list(color = clas, shape = clas))
 \dontrun{
 animate_plotly(ggt)
 }

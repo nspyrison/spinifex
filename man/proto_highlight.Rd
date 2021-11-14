@@ -52,7 +52,7 @@ gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ## d = 2 case
 ggt <- ggtour(gt_path, dat, angle = .3) +
-  proto_default(list(color = clas, shape = clas)) +
+  proto_default(aes_args = list(color = clas, shape = clas)) +
   proto_highlight(row_index = 5)
 \dontrun{
 animate_plotly(ggt)
@@ -60,7 +60,7 @@ animate_plotly(ggt)
 
 ## Highlight multiple observations
 ggt2 <- ggtour(gt_path, dat, angle = .3) +
-  proto_default(list(color = clas, shape = clas)) +
+  proto_default(aes_args = list(color = clas, shape = clas)) +
   proto_highlight(row_index = c( 2, 6, 19),
                   identity_args = list(color = "blue", size = 4, shape = 4))
 \dontrun{
@@ -70,7 +70,7 @@ animate_plotly(ggt2)
 gt_path1d <- save_history(dat, grand_tour(d = 1), max_bases = 3)
 
 ggt <- ggtour(gt_path1d, dat, angle = .3) +
-  proto_default1d(list(fill = clas, color = clas)) +
+  proto_default1d(aes_args = list(fill = clas, color = clas)) +
   proto_highlight1d(row_index = 7)
 \dontrun{
 animate_plotly(ggt)
@@ -78,7 +78,7 @@ animate_plotly(ggt)
 
 ## Highlight multiple observations, mark_initial defaults to off
 ggt2 <- ggtour(gt_path1d, dat, angle = .3) +
-  proto_default1d(list(fill = clas, color = clas)) +
+  proto_default1d(aes_args = list(fill = clas, color = clas)) +
   proto_highlight1d(row_index = c(2, 6, 7),
                     identity_args = list(color = "green", linetype = 1))
 \dontrun{

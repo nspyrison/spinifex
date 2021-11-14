@@ -33,7 +33,7 @@ filmstrip(ggt)
 bas1d     <- basis_pca(dat, d = 1)
 mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
 ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
-  proto_default1d(list(fill = clas))
+  proto_default1d(aes_args = list(fill = clas))
 filmstrip(ggt1d)
 }
 \seealso{
