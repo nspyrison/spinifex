@@ -38,8 +38,8 @@ Animates the ggplot return of \code{ggtour()} and added \verb{proto_*()} functio
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(flea[, 1:6])
-clas    <- flea$species
+dat     <- scale_sd(penguins[, 1:4])
+clas    <- penguins$species
 bas     <- basis_pca(dat)
 mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)

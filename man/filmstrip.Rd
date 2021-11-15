@@ -16,8 +16,8 @@ number of frames is more than desired, try increasing the \code{angle} argument 
 the tour.
 }
 \examples{
-dat  <- scale_sd(flea[, 1:6])
-clas <- flea$species
+dat  <- scale_sd(penguins[, 1:4])
+clas <- penguins$species
 bas  <- basis_pca(dat)
 mv   <- manip_var_of(bas)
 

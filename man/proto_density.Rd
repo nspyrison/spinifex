@@ -47,6 +47,12 @@ Adds \code{geom_density()} and \code{geom_rug()} of the projected data. Density
 \code{postion = "stack"} does not work with \code{animate_plotly()}, GH issue is open.
 }
 \examples{
+library(spinifex)
+dat     <- scale_sd(penguins[, 1:4])
+clas    <- penguins$species
+bas     <- basis_pca(dat)
+mv      <- manip_var_of(bas)
+mt_path <- manual_tour(bas, manip_var = mv)
 
 ## append_fixed_y:
 # Fixed y values are useful for related values that are 
@@ -65,8 +71,8 @@ ggt <- ggtour(gt_path, dat, angle = .3) +
 animate_plotly(ggt)
 }
 library(spinifex)
-dat     <- scale_sd(flea[, 1:6])
-clas    <- flea$species
+dat     <- scale_sd(penguins[, 1:4])
+clas    <- penguins$species
 gt_path <- save_history(dat, grand_tour(), max = 3)
 
 ggt <- ggtour(gt_path, dat) +

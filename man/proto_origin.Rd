@@ -26,8 +26,8 @@ relative to the observations. Defaults to .05, 5\% of the projection space.}
 Adds a zero mark showing the location of the origin for the central data area.
 }
 \examples{
-dat  <- scale_sd(flea[, 1:6])
-clas <- flea$species
+dat  <- scale_sd(penguins[, 1:4])
+clas <- penguins$species
 
 ## 2D case:
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)

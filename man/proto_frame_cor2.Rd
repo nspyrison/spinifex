@@ -24,8 +24,8 @@ Adds text to the animation, the frame and its specified correlation.
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(flea[, 1:6])
-clas    <- flea$species
+dat     <- scale_sd(penguins[, 1:4])
+clas    <- penguins$species
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat, angle = .3) +

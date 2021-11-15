@@ -25,8 +25,8 @@ applied after \code{ggtour} and before any \verb{proto_*} functions.
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(flea[, 1:6])
-clas    <- flea$species
+dat     <- scale_sd(penguins[, 1:4])
+clas    <- penguins$species
 bas     <- basis_pca(dat)
 mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)

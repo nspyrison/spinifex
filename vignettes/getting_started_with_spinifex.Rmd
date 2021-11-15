@@ -68,29 +68,29 @@ library("dplyr")
 
 ## Example 1 - Rotate an arbitrary basis (& utility functions)
 
-For this example, we'll be using the flea data set. It consists of 74 observations of flea beetles across 6 numeric variables and a categorical variable of the species of flea beetle (with 3 levels).
+For this example, we'll be using the penguins data set. It consists of 333 observations of penguins near Palmer Station, Antarctica across 3 different species.
 
-The following example will explore how changing the contributions of the variable, `head`, will affect the structure of the projection. We'll initialize a random basis and then view the manipulation space.
+The following example will explore how changing the contributions of the variable, `bill_length_mm`, will affect the structure of the projection. We'll initialize a random basis and then view the manipulation space.
 
 
 ```{r view-basis}
-dat_std <- scale_sd(tourr::flea[,-7])
+dat_std <- scale_sd(penguins[, 1:4])
 bas_pca <- basis_pca(dat_std)
-clas <- tourr::flea[, 7]
+clas    <- penguins$species
 
 ggtour(basis_array = bas_pca, data = dat_std) +
-  proto_default(aes_args = list(color = clas))
+  proto_basis(aes_args = list(color = clas))
 ```
 
-We started from a random basis, that explains the orthogonal projection from $p$ to $d$ space. Use `view_frame()` to see the *reference axes*, a visual depiction of how the variables contributed to the xy directions of the 2D projection.
+We started from a random basis, that explains the orthogonal projection from $p$ to $d$ space. Use `proto_basis` to see the *reference axes*, a visual depiction of how the variables contributed to the xy directions of the 2D projection.
 
 We want to explore how the coefficients of `aede2` contribute to the structure in this projection, so we set the manip_var to its column number, 3. In order to change the contributions without breaking the orthogonality of the other variables, we need to add a dimension. We call this new space the manipulation space, which can be viewed with the function `view_manip_space()`. Note that the projection plane containing the reference frame is laid down on the surface, while the manipulation dimension is at a right angle out-of-plane, with a full contribution on the manip var.
 
 ```{r view-manip-space}
-view_manip_space(basis = bas_pca, manip_var = 3) 
+view_manip_space(basis = bas_pca, manip_var = 1) 
 ```
 
-Now we have the freedom to change the contributions of `aede2`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manip var.
+Now we have the freedom to change the contributions of `bill_length_mm`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manipulation variable.
 
 ```{r}
 mt_path <- manual_tour(basis = bas_pca, manip_var = 3)
@@ -162,8 +162,8 @@ ggplot(rot_xy, aes(x = x, y = y)) + geom_point(size = 0.3) +
 Radial tours are often employed after an interesting feature has been identified. How the contributions of each variable impact the structure of resulting PCA, for example, might be interesting to explore. Alternatively, we can perform projection pursuit to maximize an objective function within the projection and performing a hill-climbing algorithm and explore what effect the contributions of the variables have there. Let's do just that, optimizing a Holes indexed guided tour using the package `tourr`.
 
 ```{r}
-dat_std <- scale_sd(tourr::flea[, 1:6])
-holes_path <- tourr::save_history(dat_std, tourr::guided_tour(tourr::holes(), ))
+dat_std    <- scale_sd(penguins[, 1:4])
+holes_path <- save_history(dat_std, tourr::guided_tour(tourr::holes(), ))
 
 ggt <- ggtour(holes_path, dat_std) + proto_default()
 ```
@@ -191,7 +191,7 @@ ggt <- ggtour(mt_path, dat_std) +
   proto_default(aes_args = list(color = clas, shape = clas))
 ```
 ```{r, eval=FALSE}
-animate_plotly(ggt)
+animate_gganimate(ggt, renderer = gganimate::av_renderer())
 ```
 
 We can see that `aede2` is important in distinguishing between the purple cluster and the green cluster. However, even when its contribution is zeros the contribution of `tars1` is enough to keep the cluster from overlapping.

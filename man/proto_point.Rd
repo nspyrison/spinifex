@@ -26,7 +26,7 @@ for example, \code{geom_point(aes(color = myCol, shape = myCol))} becomes
 \item{row_index}{A numeric or logical index of rows to subset to.
 Defaults to NULL, all observations.}
 
-\item{bkg_color}{The character color by name or hexademical to display
+\item{bkg_color}{The character color by name or hexadecimal to display
 background observations, those not identified in \code{row_index}.
 Defaults to "grey80". Use FALSE or NULL to skip rendering background points.
 Other aesthetic values such as shape and alpha are set adopted from
@@ -37,8 +37,8 @@ Adds \code{geom_point()} of the projected data.
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(flea[, 1:6])
-clas    <- flea$species
+dat     <- scale_sd(penguins[, 1:4])
+clas    <- penguins$species
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat, angle = .3) +

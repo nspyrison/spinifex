@@ -35,6 +35,7 @@ ODP
 OLDA
 OLPP
 ONPP
+Orthonormality
 Orthonormalizes
 PARVUS
 PLoS
@@ -60,14 +61,17 @@ Wickham
 WindSpeed
 Wolberg
 abbriviation
+additively
 adeliae
 aes
 al
 antarcticus
 api
 au
+bkg
 bom
 bottomleft
+cbind
 cex
 cromatin
 csv
@@ -86,6 +90,7 @@ ggplots
 ggproto
 ggtour
 ggtours
+grey
 highlighing
 hpa
 http
@@ -98,6 +103,8 @@ lifecycle
 manip
 mellitus
 mlbench
+nd
+nrow
 oktas
 orginal
 orthonormal
@@ -120,12 +127,8 @@ tooltip
 topright
 tourr
 unevaluated
+unitbox
 util
 ver
 www
 xy
-Buja
-Spyrison
-Wickham
-al
-et

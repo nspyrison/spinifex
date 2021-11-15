@@ -22,8 +22,8 @@
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(flea[, 1:6])
-#' clas    <- flea$species
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -154,8 +154,8 @@ ggtour <- function(basis_array,
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(flea[, 1:6])
-#' clas    <- flea$species
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -208,6 +208,12 @@ facet_wrap_tour <- function(
 #' @export
 #' @family ggtour proto functions
 #' @examples
+#' library(spinifex)
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
+#' bas     <- basis_pca(dat)
+#' mv      <- manip_var_of(bas)
+#' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
 #' ## append_fixed_y:
 #' # Fixed y values are useful for related values that are 
@@ -444,8 +450,8 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' @family ggtour animator
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(flea[, 1:6])
-#' clas    <- flea$species
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -526,8 +532,8 @@ animate_gganimate <- function(
 #' @family ggtour animator
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(flea[, 1:6])
-#' clas    <- flea$species
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -628,8 +634,8 @@ animate_plotly <- function(
 # #' @export
 # #' @family ggtour animator
 # #' #' @examples
-# #' dat     <- scale_sd(flea[, 1:6])
-# #' clas    <- flea$species
+# #' dat     <- scale_sd(penguins[, 1:4])
+# #' clas    <- penguins$species
 # #' bas     <- basis_pca(dat)
 # #' mv      <- manip_var_of(bas)
 # #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -668,8 +674,8 @@ animate_plotly <- function(
 #' @export
 #' @family ggtour animator
 #' @examples
-#' dat  <- scale_sd(flea[, 1:6])
-#' clas <- flea$species
+#' dat  <- scale_sd(penguins[, 1:4])
+#' clas <- penguins$species
 #' bas  <- basis_pca(dat)
 #' mv   <- manip_var_of(bas)
 #' 
@@ -723,8 +729,8 @@ filmstrip <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat  <- scale_sd(flea[, 1:6])
-#' clas <- flea$species
+#' dat  <- scale_sd(penguins[, 1:4])
+#' clas <- penguins$species
 #' bas  <- basis_pca(dat)
 #' mv   <- manip_var_of(bas)
 #' 
@@ -913,7 +919,7 @@ proto_basis1d <- function(
 #' If facet is used cbind the facet variable to a specific facet level 
 #' (2nd example), otherwise the basis prints on all facet levels.
 #' @param map_to A data.frame to scale the basis to. 
-#' Defaults to a unitbox; data.frame(x=c(0,1), y=c(0,1)).
+#' Defaults to a unitbox; data.frame(x = c(0,1), y = c(0,1)).
 #' @param position The position, to place the basis axes relative to the centered 
 #' data. `_basis` Expects one of c("left", "center", "right", "bottomleft", 
 #' "topright", "off"), defaults to "left".
@@ -928,8 +934,8 @@ proto_basis1d <- function(
 #' @examples
 #' library(spinifex)
 #' library(ggplot2)
-#' dat  <- scale_sd(flea[, 1:6])
-#' clas <- flea$species
+#' dat  <- scale_sd(penguins[, 1:4])
+#' clas <- penguins$species
 #' bas  <- basis_pca(dat)
 #' proj <- as.data.frame(dat %*% bas)
 #' 
@@ -939,7 +945,7 @@ proto_basis1d <- function(
 #'   coord_fixed()
 #'   
 #' ## Aesthetics and facet
-#' proj <- cbind(proj, clas = flea$species)
+#' proj <- cbind(proj, clas = penguins$species)
 #' bas <- cbind(as.data.frame(bas), clas = levels(clas)[2])
 #' ggplot() +
 #'   facet_wrap(vars(clas)) +
@@ -1032,7 +1038,7 @@ draw_basis <- function(
 #' `identity_args = list(size = 2, alpha = .7)`.
 #' @param row_index A numeric or logical index of rows to subset to. 
 #' Defaults to NULL, all observations.
-#' @param bkg_color The character color by name or hexademical to display
+#' @param bkg_color The character color by name or hexadecimal to display
 #' background observations, those not identified in `row_index`. 
 #' Defaults to "grey80". Use FALSE or NULL to skip rendering background points.
 #' Other aesthetic values such as shape and alpha are set adopted from 
@@ -1042,8 +1048,8 @@ draw_basis <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(flea[, 1:6])
-#' clas    <- flea$species
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
@@ -1091,7 +1097,7 @@ proto_point <- function(
         .aes_func <- function(...)
           ggplot2::aes(x = x, y = y, frame = frame, ...) 
         .aes_call <- suppressWarnings(do.call(.aes_func, .bkg_aes_args))
-        ## do.call geom_point() over the bkg_identity_args
+        ## do.call geom_point() over the .bkg_identity_args
         .geom_func <- function(...) suppressWarnings(
           ggplot2::geom_point(mapping = .aes_call, data = .df_data_bkg,
                               color = bkg_color, ...)) ## Trumps color set in aes_args
@@ -1128,8 +1134,8 @@ proto_point <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(flea[, 1:6])
-#' clas    <- flea$species
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
@@ -1207,8 +1213,8 @@ proto_density <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(flea[, 1:6])
-#' clas    <- flea$species
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
@@ -1338,8 +1344,8 @@ proto_hex <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(flea[, 1:6])
-#' clas    <- flea$species
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ## d = 2 case
@@ -1482,8 +1488,8 @@ proto_highlight1d <- function(
 #' @export
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(flea[, 1:6])
-#' clas    <- flea$species
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
@@ -1551,8 +1557,8 @@ proto_frame_cor2 <- function(
 #' @aliases proto_origin2d
 #' @family ggtour proto functions
 #' @examples
-#' dat  <- scale_sd(flea[, 1:6])
-#' clas <- flea$species
+#' dat  <- scale_sd(penguins[, 1:4])
+#' clas <- penguins$species
 #' 
 #' ## 2D case:
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
@@ -1654,8 +1660,8 @@ proto_origin1d <- function(
 #' @aliases proto_default2d, proto_def, proto_def2d
 #' @family ggtour proto functions
 #' @examples
-#' dat  <- scale_sd(flea[, 1:6])
-#' clas <- flea$species
+#' dat  <- scale_sd(penguins[, 1:4])
+#' clas <- penguins$species
 #' 
 #' ## 2D case:
 #' bas     <- basis_pca(dat)

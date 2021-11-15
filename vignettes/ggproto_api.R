@@ -53,13 +53,13 @@ library("tourr")
 library("spinifex")
 
 ## Scale our numeric data
-dat <- scale_sd(tourr::flea[, 1:6])
+dat  <- scale_sd(penguins[, 1:4])
 ## Use species as a class to set color and shape with
-clas <- tourr::flea$species
+clas <- penguins$species
 
 ## Manual tour, manipulating the contribution of a selected variable 
 bas <- basis_pca(dat) ## Start basis
-mv <- manip_var_of(bas) ## Number of the variable to manipulate
+mv  <- manip_var_of(bas) ## Number of the variable to manipulate
 mt_path <- manual_tour(bas, manip_var = mv) ## Tour path
 
 ## Create a static ggplot2 plot with all frames of the tour
@@ -111,6 +111,18 @@ ggt <- ggt +
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  animate_gganimate(ggt)
+
+## -----------------------------------------------------------------------------
+dat     <- scale_sd(PimaIndiansDiabetes_wide[, -9])
+clas    <- PimaIndiansDiabetes_wide$diabetes
+gt_path <- save_history(dat, max = 10)
+
+ggt <- ggtour(gt_path, dat, angle = .15) +
+  facet_wrap_tour(facet_var = clas, nrow = 1) +
+  proto_point(list(color = clas, shape = clas)) +
+  proto_basis(position = "center") +
+  proto_origin()
+animate_gganimate(ggt, render = gganimate::av_renderer("./my_tour.mp4"))
 
 ## ---- echo = FALSE------------------------------------------------------------
 data.frame(

@@ -20,7 +20,7 @@ If facet is used cbind the facet variable to a specific facet level
 (2nd example), otherwise the basis prints on all facet levels.}
 
 \item{map_to}{A data.frame to scale the basis to.
-Defaults to a unitbox; data.frame(x=c(0,1), y=c(0,1)).}
+Defaults to a unitbox; data.frame(x = c(0,1), y = c(0,1)).}
 
 \item{position}{The position, to place the basis axes relative to the centered
 data. \verb{_basis} Expects one of c("left", "center", "right", "bottomleft",
@@ -45,8 +45,8 @@ Not a formal \code{geom}, nor does it use the setup from \code{ggtour} that
 \examples{
 library(spinifex)
 library(ggplot2)
-dat  <- scale_sd(flea[, 1:6])
-clas <- flea$species
+dat  <- scale_sd(penguins[, 1:4])
+clas <- penguins$species
 bas  <- basis_pca(dat)
 proj <- as.data.frame(dat \%*\% bas)
 
@@ -56,7 +56,7 @@ ggplot() +
   coord_fixed()
   
 ## Aesthetics and facet
-proj <- cbind(proj, clas = flea$species)
+proj <- cbind(proj, clas = penguins$species)
 bas <- cbind(as.data.frame(bas), clas = levels(clas)[2])
 ggplot() +
   facet_wrap(vars(clas)) +

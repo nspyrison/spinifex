@@ -7,11 +7,11 @@ docs/
 .Ruserdata
 .pdf
 
-vignettes/spinifex.html
 vignettes/introduction_files
 vignettes/introduction_cache
 *.txt
 *.gif
 /doc/
 /Meta/
-inst/doc
+
+

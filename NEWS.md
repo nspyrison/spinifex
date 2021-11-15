@@ -1,9 +1,9 @@
 # spinifex v0.3.2
 - New function: `facet_wrap_tour()`, for faceting tours!
 - New function: `proto_frame_cor2()`, adds text for the within-frame correlation squared.
-- New function: `append_fixed_y()`, add/overwride data y column to fixed values, such as for the height of predicted values or residuals of a model.
+- New function: `append_fixed_y()`, add/overwrite data y column to fixed values, such as for the height of predicted values or residuals of a model.
 - New function: `draw_basis()` static ggplot2 variant of `proto_basis`, that accepts a basis directly without requiring ggtour initialization.
-- Most data-oriented `proto_*` functions have `row_index` argument; allowing for subsetting that is compatiable with faceting and appending a fixed y! By default, `proto_point()` will plot unselected point in faint grey.
+- Most data-oriented `proto_*` functions have `row_index` argument; allowing for subsetting that is compatible with faceting and appending a fixed y! By default, `proto_point()` will plot non-selected points in faint grey, behind selected points.
 - Better examples for setting dimensions, resolution, and renders in `animate_*` functions.
 
 # spinifex v0.3.1

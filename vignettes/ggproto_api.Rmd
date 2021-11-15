@@ -31,6 +31,9 @@ knitr::opts_chunk$set(
 )
 ```
 
+*TL;DR: A proto is a list of `ggplot2` geoms. Proto can be used additively, and necessarily abstract away some of the fine details. We create functions to facilitate animations of linear projections, **tours**. We try to parallel the the workflow of creating ggplots.*
+
+## What is a proto?
 
 We are moving to a new '`ggproto`' API for constructing animated tours from `{ggplot2}` objects. This interface should feel more comfortable to people already familiar with `{ggplot2}`. Ggproto is the parent class of geoms, layers, and some other plotting elements.
 
@@ -87,13 +90,13 @@ library("tourr")
 library("spinifex")
 
 ## Scale our numeric data
-dat <- scale_sd(tourr::flea[, 1:6])
+dat  <- scale_sd(penguins[, 1:4])
 ## Use species as a class to set color and shape with
-clas <- tourr::flea$species
+clas <- penguins$species
 
 ## Manual tour, manipulating the contribution of a selected variable 
 bas <- basis_pca(dat) ## Start basis
-mv <- manip_var_of(bas) ## Number of the variable to manipulate
+mv  <- manip_var_of(bas) ## Number of the variable to manipulate
 mt_path <- manual_tour(bas, manip_var = mv) ## Tour path
 
 ## Create a static ggplot2 plot with all frames of the tour
@@ -142,7 +145,7 @@ ggt <- ggtour(guided_path, dat, angle = .1) + ## Include geodesic interpolation 
 animate_gganimate(ggt)
 ```
 
-### interation with ggplot2 functions
+### Interation with ggplot2 functions
 
 because the output of `ggtour() + proto_*` is a ggplot, users are encouraged to theme and setting functions as well.
 
@@ -156,8 +159,25 @@ ggt <- ggt +
 animate_gganimate(ggt)
 ```
 
+### Faceting
+
+```{r}
+dat     <- scale_sd(PimaIndiansDiabetes_wide[, -9])
+clas    <- PimaIndiansDiabetes_wide$diabetes
+gt_path <- save_history(dat, max = 10)
+
+ggt <- ggtour(gt_path, dat, angle = .15) +
+  facet_wrap_tour(facet_var = clas, nrow = 1) +
+  proto_point(list(color = clas, shape = clas)) +
+  proto_basis(position = "center") +
+  proto_origin()
+animate_gganimate(ggt, render = gganimate::av_renderer("./my_tour.mp4"))
+```
+
 
 ## Proto functions
+
+More protos will be added, especially as we find a use-case for them. Check the documentation for `ggtour`, all ggtour and proto related functions are linked in the See Also.
 
 ```{r, echo = FALSE}
 data.frame(
@@ -170,3 +190,6 @@ data.frame(
 ) %>%
   knitr::kable()
 ```
+
+Thanks for reading,
+Nick Spyrison

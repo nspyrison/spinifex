@@ -43,8 +43,8 @@ circle for 2D or rectangle of unit width for 1D.
 }
 \examples{
 library(spinifex)
-dat  <- scale_sd(flea[, 1:6])
-clas <- flea$species
+dat  <- scale_sd(penguins[, 1:4])
+clas <- penguins$species
 bas  <- basis_pca(dat)
 mv   <- manip_var_of(bas)
 
