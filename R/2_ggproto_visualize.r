@@ -1157,7 +1157,7 @@ proto_density <- function(
   if(any(c("color", "colour", "col") %in% .nms) & !("fill" %in% .nms))
     warning("proto_density: aes_args contains color without fill, did you mean to use fill to color below the curve?")
   density_position <- match.arg(density_position)
-  rug_shape <- rug_shape[1]
+  rug_shape <- rug_shape[1L]
   ## "identity" is the only position working in {plotly} right now.
   ## see: https://github.com/ropensci/plotly/issues/1544
   

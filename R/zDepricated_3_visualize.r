@@ -24,8 +24,7 @@
 #' clas <- wine$Type
 #' bas <- basis_pca(dat_std)
 #' 
-#' ## Tour history from tourr::save_history
-#' g_path <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
+#' gt_path <- save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 #' 
 #' \dontrun{
 #' play_tour_path(tour_path = g_path, data = dat_std)
@@ -76,7 +75,7 @@ play_tour_path <- function(tour_path,
 }
 
 
-#' Animate a manual tour
+#' Animate a manual tour. superseded
 #'
 #' @description
 #' `r lifecycle::badge('superseded')`, see \code{\link{ggtour}}.
@@ -168,7 +167,7 @@ play_manual_tour <- function(basis = NULL,
 ##
 
 
-#' Plot a single frame of a manual tour
+#' Plot a single frame of a manual tour.
 #'
 #' @description
 #' `r lifecycle::badge('superseded')`, see \code{\link{ggtour}}.

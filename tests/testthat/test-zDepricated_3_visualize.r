@@ -1,19 +1,19 @@
-library("spinifex")
-library("testthat")
-
-dat_std <- scale_sd(wine[1L:10L, 2L:5L]) ## small chunk for speed.
-bas <- basis_pca(dat_std)
-clas <- wine$Type
-mv <- manip_var_of(bas)
+{
+  library("spinifex")
+  library("testthat")
+  
+  dat_std <- scale_sd(wine[1L:10L, 2L:5L]) ## small chunk for speed.
+  bas <- basis_pca(dat_std)
+  clas <- wine$Type
+  mv <- manip_var_of(bas)
+}
 
 ##
 ## TARGET WRAPPER FUNCTIONS -----
 ##
 
 ### play_tour_path -------
-.mute <- capture.output(
-  tpath <- tourr::save_history(dat_std, tour_path = tourr::grand_tour(), max = 5L)
-)
+tpath <- save_history(dat_std, tour_path = tourr::grand_tour(), max = 5L)
 suppressWarnings( ## suppress 8hr deprecation warning
   ret_light <- play_tour_path(tour_path = tpath, data = dat_std, angle = 1)
 )
@@ -27,10 +27,10 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 
 test_that("play_tour_path: gganimate class and length", {
-  expect_is(ret_light, c("plotly", "htmlwidget"))
+  expect_equal(class(ret_light) , c("plotly", "htmlwidget"))
   expect_equal(length(ret_light), 9L)
-  expect_true(class(ret_heavy) %in% c("gif_image", "character"))
-  expect_true(length(ret_heavy) %in% c(1L, 99L, 100L))
+  expect_equal(class(ret_heavy) , c("gif_image"))
+  expect_equal(length(ret_heavy), 1L)
 })
 
 
@@ -49,10 +49,10 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 
 test_that("play_manual_tour: gganimate class and length", {
-  expect_is(ret_light, c("plotly", "htmlwidget"))
-  expect_true(class(ret_heavy) %in% c("gif_image", "character"))
+  expect_equal(class(ret_light), c("plotly", "htmlwidget"))
+  expect_equal(class(ret_heavy), c("gif_image"))
   expect_equal(length(ret_light), 9L)
-  expect_true(length(ret_heavy) %in% c(1L, 99L, 100L))
+  expect_equal(length(ret_heavy), 1L)
 })
 
 ##
@@ -77,8 +77,8 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 
 test_that("view_frame: gganimate class and length", {
-  expect_is(ret_light, c("gg", "ggplot"))
-  expect_is(ret_heavy, c("gg", "ggplot"))
+  expect_equal(class(ret_light), c("gg", "ggplot"))
+  expect_equal(class(ret_heavy), c("gg", "ggplot"))
   expect_equal(length(ret_light), 9L)
   expect_equal(length(ret_heavy), 9L)
 })
@@ -97,8 +97,8 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 
 test_that("view_manip_space: gganimate class and length", {
-  expect_is(ret_light, c("gg", "ggplot"))
-  expect_is(ret_heavy, c("gg", "ggplot"))
+  expect_equal(class(ret_light), c("gg", "ggplot"))
+  expect_equal(class(ret_heavy), c("gg", "ggplot"))
   expect_equal(length(ret_light), 9L)
   expect_equal(length(ret_heavy), 9L)
 })
