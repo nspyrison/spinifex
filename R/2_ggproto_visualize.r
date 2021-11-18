@@ -95,7 +95,7 @@ ggtour <- function(basis_array,
   if(is.null(.manip_var) == FALSE)
     ## Basis_array from manual tours is only 1 basis.
     .interpolated_basis_array <- interpolate_manual_tour(basis_array, angle)
-  ## df_basis related
+  ## list of: df_basis & df_data
   df_ls <- array2df(.interpolated_basis_array, data, basis_label, data_label)
   .df_basis <- df_ls$basis_frames
   attr(.df_basis, "manip_var") <- .manip_var ## NULL if not a manual tour
@@ -1669,7 +1669,7 @@ proto_hline0 <- function(
   if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_hline: data y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
-
+  
   ## Dataframe
   .df_zero <- map_relative(data.frame(x = c(0L, range(.df_data$x)),
                                       y = c(0L, range(.df_data$y))),
