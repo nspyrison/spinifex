@@ -7,7 +7,7 @@
 map_relative(
   x,
   position = c("center", "left", "right", "bottomleft", "topright", "off", "top1d",
-    "floor1d", "bottom1d"),
+    "floor1d", "bottom1d", "data"),
   to = NULL
 )
 }

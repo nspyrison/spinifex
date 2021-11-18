@@ -234,15 +234,8 @@ facet_wrap_tour <- function(
 append_fixed_y <- function(
   fixed_y
 ){
-  ## Minimal init4 proto
-  .ggt <- spinifex::last_ggtour() ## Self-explicit for use in cheem
-  if(is.null(.ggt)) stop(".init4proto: last_ggtour() is NULL, have you run ggtour() yet?")
-  ## Assign elements ggtour list as quiet .objects in the environment
-  .env <- environment()
-  .nms <- names(.ggt)
-  .m <- sapply(seq_along(.ggt), function(i){
-    assign(paste0(".", .nms[i]), .ggt[[i]], envir = .env)
-  })
+  ## Initialize
+  eval(.init4proto)
   
   ## Add fixed y
   .df_data$y <- rep_len(fixed_y, .nrow_df_data)
@@ -489,9 +482,6 @@ animate_gganimate <- function(
   end_pause = 1,
   ... ## Passed to gganimate::animate
 ){
-  ## Assumptions
-  requireNamespace("gifski")
-  requireNamespace("png")
   ## Early out, print ggplot if oonly 1 frame.
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
@@ -793,7 +783,7 @@ proto_basis <- function(
   .circle <- map_relative(.circle, position, .map_to_data)
   .df_basis <- map_relative(.df_basis, position, .map_to_data)
   if(.is_faceted){
-    position = "center"
+    position = "data"
     .circle <- .bind_elements2df(list(facet_var = "_basis_"), .circle)
   }
     
@@ -1437,8 +1427,7 @@ proto_highlight1d <- function(
   if(is.null(row_index)) return()
   eval(.init4proto)
   if(is.null(.df_data)) return()
-  .center <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
-  
+
   ## geom_segment do.calls, moving with frame
   .ymin <- min(.map_to_data$y)
   .ymax <- max(.map_to_data$y)
@@ -1476,8 +1465,9 @@ proto_highlight1d <- function(
 #'
 #' Adds text to the animation, the frame and its specified correlation.
 #'
-#' @param position Vector x and y position relative to the unit data position; 
-#' (0, 1) in each direction. Defaults to c(.7, -.1).
+#' @param xy_position Vector of the x and y position, the fraction of the 
+#' range of the data in each direction.;  0 is min, 1 is max. 
+#' Defaults to c(.7, -.1), in the bottom right.
 #' @param text_size Size of the text. defaults to 4.
 #' @param row_index A numeric or logical index of rows to subset to. 
 #' Defaults to NULL, all observations.
@@ -1502,7 +1492,7 @@ proto_frame_cor2 <- function(
   text_size = 4,
   row_index = TRUE,
   #stat2d = stats::cor, ## hardcoded stats::cor atm
-  position = c(.7, -.1),
+  xy_position = c(.7, -.1),
   ... ## passed to stats::cor
 ){
   ## Initialize
@@ -1563,24 +1553,24 @@ proto_frame_cor2 <- function(
 #' ## 2D case:
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' ggt <- ggtour(gt_path, dat, angle = .1) +
-#'   proto_origin() +
-#'   proto_point()
+#'   proto_point(list(color = clas, shape = clas)) +
+#'   proto_origin() + ## `+` in center showing (0, 0)
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
 proto_origin <- function(
   identity_args = list(color = "grey60", size = .5, alpha = .9),
-  tail_size = .05
-){
+  tail_size = .05){
   ## Initialize
   eval(.init4proto)
-  if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
-  if(is.null(.df_data$y))
-    stop("proto_origin: data y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
+  if(is.null(.df_data$y)) return()
   
   #### Setup origin, zero mark, 5% on each side.
-  .zero <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
-  .tail <- tail_size / 2L * diff(range(.map_to_data[, 1L:2L]))
+  .df_0range <- data.frame(x = c(0L, range(.df_data$x)),
+                           y = c(0L, range(.df_data$y)))
+  .zero <- map_relative(.df_0range, "data", .map_to_data)[1L,, drop = FALSE]
+  .tail <- tail_size / 2L * max(diff(range(.map_to_data$x)),
+                                diff(range(.map_to_data$y)))
   .df_origin <- data.frame(x     = c(.zero$x - .tail, .zero$x),
                            x_end = c(.zero$x + .tail, .zero$x),
                            y     = c(.zero$y, .zero$y - .tail),
@@ -1588,7 +1578,7 @@ proto_origin <- function(
   
   if(.is_faceted){
     .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
-    .df_origin <- merge(.df_origin, .df_u_facet_lvls)
+    .df_origin       <- merge(.df_origin, .df_u_facet_lvls)
   }
   
   ## do.call geom_point() over the identity_args
@@ -1610,8 +1600,8 @@ proto_origin <- function(
 #' gt_path1d <- save_history(dat, grand_tour(d = 1), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path1d, dat) +
-#'   proto_origin1d() +
-#'   proto_density(list(fill = clas, color = clas))
+#'   proto_density(list(fill = clas, color = clas)) +
+#'   proto_origin1d() ## Adds line at 0.
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1622,7 +1612,9 @@ proto_origin1d <- function(
   eval(.init4proto)
   if(is.null(.df_data)) return()
   
-  .zero <- map_relative(data.frame(x = 0L, y = 0L), "center", .map_to_data)
+  .df_0range <- data.frame(x = c(0L, range(.df_data$x)),
+                           y = c(0L, range(.df_data$y)))
+  .zero <- map_relative(.df_0range, "data", .map_to_data)[1L,, drop = FALSE]
   .tail <- diff(range(.map_to_data$y)) * .55
   .df_origin <- data.frame(
     x     = c(.zero$x, .zero$x),
@@ -1643,6 +1635,90 @@ proto_origin1d <- function(
   ## Return
   return(do.call(.geom_func, identity_args))
 }
+
+#' Tour proto adding a vertical/horizonatal line
+#'
+#' Adds a vertical/horizonatal line with an intercept of 0, scaled to the data 
+#' frame.
+#'
+#' @param identity_args A list of static, identity arguments passed into 
+#' `geom_point()`, but outside of `aes()`, for instance 
+#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`.
+#' @export
+#' @aliases proto_hline
+#' @family ggtour proto functions
+#' @examples
+#' dat  <- scale_sd(penguins[, 1:4])
+#' clas <- penguins$species
+#' 
+#' ## 2D case:
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
+#' ggt <- ggtour(gt_path, dat, angle = .1) +
+#'   proto_point(list(color = clas, shape = clas)) +
+#'   proto_hline0() + ## horizonatal line at 0
+#'   proto_vline0()   ## vertical line at 0
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+proto_hline0 <- function(
+  identity_args = list(color = "grey80", size = .5, alpha = .9)
+){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data$y))
+    stop("proto_hline: data y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
+
+  ## Dataframe
+  .df_zero <- map_relative(data.frame(x = c(0L, range(.df_data$x)),
+                                      y = c(0L, range(.df_data$y))),
+                           "center", .map_to_data)[1L,, drop = FALSE]
+  if(.is_faceted){
+    .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
+    .df_zero <- merge(.df_zero, .df_u_facet_lvls)
+  }
+  
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...)
+    ggplot2::geom_hline(
+      ggplot2::aes(yintercept = y),
+      data = .df_zero, ...)
+  ## Return
+  return(do.call(.geom_func, identity_args))
+}
+
+#' @rdname proto_hline0
+#' @export
+#' @aliases proto_vline
+#' @family ggtour proto functions
+proto_vline0 <- function(
+  identity_args = list(color = "grey80", size = .5, alpha = .9)
+){
+  ## Initialize
+  eval(.init4proto)
+  if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
+  if(is.null(.df_data$y))
+    stop("proto_hline: data y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
+  
+  ## dataframe
+  .df_zero <- map_relative(data.frame(x = c(0L, range(.df_data$x)),
+                                      y = c(0L, range(.df_data$y))),
+                           "center", .map_to_data)[1L,, drop = FALSE]
+  if(.is_faceted){
+    .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
+    .df_zero <- merge(.df_zero, .df_u_facet_lvls)
+  }
+  
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...)
+    ggplot2::geom_vline(
+      ggplot2::aes(xintercept = x),
+      data = .df_zero, ...)
+  ## Return
+  return(do.call(.geom_func, identity_args))
+}
+
 
 #' Wrapper function for default 2D/1D tours respectively.
 #' 

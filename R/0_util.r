@@ -8,8 +8,8 @@
 #' length of 1. This must be true for a projection to be linear.
 #'
 #' @param x Numeric matrix to test the orthonormality of.
-#' @param tol Max tolerance of floating point differences.
-#' Element-wise distance of t(x) %*% x from the identity matrix.
+#' @param tol Max tolerance of floating point differences of the
+#' element-wise distance of t(x) %*% x from the identity matrix.
 #' @return Single logical, whether or not the matrix is orthonormal.
 #' @export
 #' @examples 
@@ -141,7 +141,7 @@ map_relative <- function(
   x,
   position = c("center", "left", "right",
                "bottomleft", "topright", "off",
-               "top1d", "floor1d", "bottom1d"),
+               "top1d", "floor1d", "bottom1d", "data"),
   to = NULL
 ){
   ## Assumptions
@@ -162,6 +162,11 @@ map_relative <- function(
     scale <- .4 * min(xdiff, ydiff)
     xoff  <- xcenter
     yoff  <- ycenter
+  } else if(position == "data"){
+    xscale <- xdiff
+    yscale <- ydiff
+    xoff   <- xcenter
+    yoff   <- ycenter
   } else if(position == "left"){
     scale <- .4 * min(xdiff, ydiff)
     xoff  <- -.7 * xdiff + xcenter
@@ -173,18 +178,18 @@ map_relative <- function(
   } else if(position %in% c("top1d")){
     xscale <- .3 * xdiff
     yscale <- ydiff
-    xoff  <- xcenter
-    yoff  <- .5 * ydiff + ycenter
+    xoff   <- xcenter
+    yoff   <- .5 * ydiff + ycenter
   } else if(position %in% c("floor1d")){
     xscale <- .3 * xdiff
     yscale <- ydiff
-    xoff  <- xcenter
-    yoff  <- -.6 * ydiff + ycenter
+    xoff   <- xcenter
+    yoff   <- -.6 * ydiff + ycenter
   } else if(position %in% c("bottom1d")){
     xscale <- .3 * xdiff
     yscale <- ydiff
-    xoff  <- xcenter
-    yoff  <- -1.7 * ydiff + ycenter
+    xoff   <- xcenter
+    yoff   <- -1.7 * ydiff + ycenter
   } else if(position == "bottomleft"){
     scale <- .25 * min(xdiff, ydiff)
     xoff  <- -.25 * xdiff + xcenter
@@ -196,7 +201,7 @@ map_relative <- function(
   } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
-  if(position %in% c("top1d", "floor1d", "bottom1d")){
+  if(position %in% c("top1d", "floor1d", "bottom1d", "data")){
     ## 1d basis with x&y scales
     x[, 1L] <- xscale * x[, 1L] + xoff
     x[, 2L] <- yscale * x[, 2L] + yoff

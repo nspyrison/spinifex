@@ -4,7 +4,12 @@
 \alias{proto_frame_cor2}
 \title{Tour proto for frames square correlation}
 \usage{
-proto_frame_cor2(text_size = 4, row_index = TRUE, position = c(0.7, -0.1), ...)
+proto_frame_cor2(
+  text_size = 4,
+  row_index = TRUE,
+  xy_position = c(0.7, -0.1),
+  ...
+)
 }
 \arguments{
 \item{text_size}{Size of the text. defaults to 4.}
@@ -12,8 +17,9 @@ proto_frame_cor2(text_size = 4, row_index = TRUE, position = c(0.7, -0.1), ...)
 \item{row_index}{A numeric or logical index of rows to subset to.
 Defaults to NULL, all observations.}
 
-\item{position}{Vector x and y position relative to the unit data position;
-(0, 1) in each direction. Defaults to c(.7, -.1).}
+\item{xy_position}{Vector of the x and y position, the fraction of the
+range of the data in each direction.;  0 is min, 1 is max.
+Defaults to c(.7, -.1), in the bottom right.}
 
 \item{...}{Optionally, pass additional arguments to
 \code{\link[stats:cor]{stats::cor}}, specifying the type of

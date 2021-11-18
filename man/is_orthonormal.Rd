@@ -9,8 +9,8 @@ is_orthonormal(x, tol = 0.001)
 \arguments{
 \item{x}{Numeric matrix to test the orthonormality of.}
 
-\item{tol}{Max tolerance of floating point differences.
-Element-wise distance of t(x) \%*\% x from the identity matrix.}
+\item{tol}{Max tolerance of floating point differences of the
+element-wise distance of t(x) \%*\% x from the identity matrix.}
 }
 \value{
 Single logical, whether or not the matrix is orthonormal.
