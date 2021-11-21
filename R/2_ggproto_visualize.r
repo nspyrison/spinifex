@@ -400,7 +400,7 @@ last_ggtour <- function(){.store$ggtour_ls}
   
   ## Replicate argument lists, if they exist
   if(exists("row_index"))
-    if(sum(row_index) != .n){
+    if(sum(row_index) != length(row_index)){
       if(exists(".bkg_aes_args"))
         if(length(.bkg_aes_args) > 0L)
           .bkg_aes_args <- spinifex:::.lapply_rep_len(
@@ -1080,19 +1080,19 @@ proto_point <- function(
     ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
   ret <- do.call(.geom_func, identity_args)
   
-  if(is.null(bkg_color) == FALSE)
-    if(bkg_color != FALSE)
-      if(exists(".df_data_bkg")){
-        ## do.call aes() over the .bkg_aes_args
-        .aes_func <- function(...)
-          ggplot2::aes(x = x, y = y, frame = frame, ...) 
-        .aes_call <- suppressWarnings(do.call(.aes_func, .bkg_aes_args))
-        ## do.call geom_point() over the .bkg_identity_args
-        .geom_func <- function(...) suppressWarnings(
-          ggplot2::geom_point(mapping = .aes_call, data = .df_data_bkg,
-                              color = bkg_color, ...)) ## Trumps color set in aes_args
-        ret <- list(do.call(.geom_func, .bkg_identity_args), ret)
-      }
+  if(exists(".df_data_bkg"))
+     if(is.null(bkg_color) == FALSE)
+       if(bkg_color != FALSE){
+         ## do.call aes() over the .bkg_aes_args
+         .aes_func <- function(...)
+           ggplot2::aes(x = x, y = y, frame = frame, ...) 
+         .aes_call <- suppressWarnings(do.call(.aes_func, .bkg_aes_args))
+         ## do.call geom_point() over the .bkg_identity_args
+         .geom_func <- function(...) suppressWarnings(
+           ggplot2::geom_point(mapping = .aes_call, data = .df_data_bkg,
+                               color = bkg_color, ...)) ## Trumps color set in aes_args
+         ret <- list(do.call(.geom_func, .bkg_identity_args), ret)
+       }
   ## Return
   return(ret)
 }

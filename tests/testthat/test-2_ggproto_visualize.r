@@ -120,6 +120,36 @@ test_that("proto_:point/density", {
   expect_equal(length(pd_gt1d), 9L)
 })
 
+## proto_point & density with row_index & args-----
+pp_mt   <- ggtour(mt  , angle = 1L) +
+  proto_point(
+    list(color = clas, shape = clas),
+    list(alpha = .9, size = 2L), row_index = 1:3, "green")
+pp_gt   <- ggtour(gt  , angle = 1L) +
+  proto_point(
+    list(color = clas, shape = clas),
+    list(alpha = .9, size = 2L), row_index = 1:3, "green")
+pd_mt1d <- ggtour(mt1d, angle = 1L) +
+  proto_density(
+    list(fill = clas, color = clas),
+    list(alpha = .9, size = 2L), row_index = 1:3)
+pd_gt1d <- ggtour(gt1d, angle = 1L) +
+  proto_density(
+    list(fill = clas, color = clas),
+    list(alpha = .9, size = 2L), row_index = 1:3)
+test_that("proto_:point/density", {
+  expect_error(ggtour(gt1d, angle = 1L) + proto_point())
+  expect_equal(class(pp_mt  ), c("gg", "ggplot"))
+  expect_equal(class(pp_gt  ), c("gg", "ggplot"))
+  expect_equal(class(pd_mt1d), c("gg", "ggplot"))
+  expect_equal(class(pd_gt1d), c("gg", "ggplot"))
+  expect_equal(length(pp_mt  ), 9L)
+  expect_equal(length(pp_gt  ), 9L)
+  expect_equal(length(pd_mt1d), 9L)
+  expect_equal(length(pd_gt1d), 9L)
+})
+
+
 
 ## proto_origin -----
 po_mt   <- ggtour(mt,   angle = 1L) + proto_origin()
