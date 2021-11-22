@@ -68,12 +68,6 @@ test_that("array2df: length", {
   expect_equal(length(ret_mt)    , 2)
   expect_equal(length(ret_gt)    , 2)
 })
-test_that("array2df: dim", {
-  expect_equal(dim(ret_mt[[1]]),      c(5, 4))
-  expect_equal(dim(ret_single[[1]]),  c(5, 4))
-  expect_equal(dim(ret_gt[[1]]),      c(50, 4))
-})
-
 
 
 ### map_relative ------

@@ -70,14 +70,15 @@ array2df <- function(
   n_frames <- dim(basis_array)[3L]
   
   ## Basis condition handling
-  basis_frames <- NULL
+  #### duplicate first frame; does it help plotly anim?
+  basis_frames <- cbind(basis_array[,, 1L], 1L)
   .mute <- sapply(1L:n_frames, function(i){
-    basis_rows <- cbind(basis_array[,, i], i)
+    basis_rows <- cbind(basis_array[,, i], i + 1L)
     basis_frames <<- rbind(basis_frames, basis_rows)
   })
   basis_frames <- as.data.frame(basis_frames)
   .nms <- c("x", "y", "z", "w")
-  if(ncol(basis_array) > 4) .nms <- c(.nms, paste0("y"))
+  if(ncol(basis_array) > 4L) .nms <- c(.nms, paste0("y"))
   colnames(basis_frames) <- c(.nms[1L:ncol(basis_array)], "frame")
   ## Basis label and manip_var attribute.
   if(length(basis_label) > 0L)
@@ -86,15 +87,17 @@ array2df <- function(
   
   ## Data; if exists
   if(is.null(data) == FALSE){
-    data_frames <- NULL
-    data <- as.matrix(data)
     if(ncol(data) != nrow(basis_array))
       stop(paste0(
         "array2df: Non-conformable matrices; data has ", ncol(data),
         " columns while basis has ", nrow(basis_array), " rows."))
+    ## Duplicate first frame; see if it helps plotly.
+    .new_frame <- data %*% matrix(basis_array[,, 1L], nrow(basis_array), ncol(basis_array))
+    data_frames <- cbind(.new_frame, 1L) ## Init
+    data <- as.matrix(data)
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% matrix(basis_array[,, i], nrow(basis_array), ncol(basis_array))
-      new_frame <- cbind(new_frame, i) ## Append frame number
+      new_frame <- cbind(new_frame, i + 1L) ## Append frame number
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
     data_frames <- as.data.frame(data_frames)
@@ -123,7 +126,7 @@ array2df <- function(
 #' the `to` object.
 #' @param position Text specifying the position the axes should go to.
 #' Defaults to "center" expects one of: c("center", "left", "right", 
-#' "bottomleft", "topright", "off", "top1d", "floor1d", "bottom1d").
+#' "bottomleft", "topright", "full", "off", "top1d", "floor1d", "bottom1d").
 #' @param to Data.frame to scale to.
 #' Based on the min/max of the first 2 columns. If left NULL defaults to 
 #' data.frame(x = c(-1L, 1L), y = c(-1L, 1L).
@@ -140,8 +143,8 @@ array2df <- function(
 map_relative <- function(
   x,
   position = c("center", "left", "right",
-               "bottomleft", "topright", "off",
-               "top1d", "floor1d", "bottom1d", "data"),
+               "bottomleft", "topright", "full", "off",
+               "top1d", "floor1d", "bottom1d"),
   to = NULL
 ){
   ## Assumptions
@@ -162,11 +165,10 @@ map_relative <- function(
     scale <- .4 * min(xdiff, ydiff)
     xoff  <- xcenter
     yoff  <- ycenter
-  } else if(position == "data"){
-    xscale <- xdiff
-    yscale <- ydiff
-    xoff   <- xcenter
-    yoff   <- ycenter
+  } else if(position == "full"){
+    scale <- .5 * min(xdiff, ydiff)
+    xoff  <- xcenter
+    yoff  <- ycenter
   } else if(position == "left"){
     scale <- .4 * min(xdiff, ydiff)
     xoff  <- -.7 * xdiff + xcenter
@@ -189,7 +191,7 @@ map_relative <- function(
     xscale <- .3 * xdiff
     yscale <- ydiff
     xoff   <- xcenter
-    yoff   <- -1.7 * ydiff + ycenter
+    yoff   <- -1.8 * ydiff + ycenter
   } else if(position == "bottomleft"){
     scale <- .25 * min(xdiff, ydiff)
     xoff  <- -.25 * xdiff + xcenter
@@ -201,7 +203,7 @@ map_relative <- function(
   } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
-  if(position %in% c("top1d", "floor1d", "bottom1d", "data")){
+  if(position %in% c("top1d", "floor1d", "bottom1d")){
     ## 1d basis with x&y scales
     x[, 1L] <- xscale * x[, 1L] + xoff
     x[, 2L] <- yscale * x[, 2L] + yoff
@@ -223,6 +225,41 @@ scale_axes <- function(...) {
   map_relative(...)
 }
 
+#' Manually offset and scale the first 2 columns of a matrix or data.frame.
+#' 
+#' A manual variant of `map_relative()`. Can be used as the `axes` argument 
+#' to manually set the size and locations of the axes.
+#' 
+#' @param offset 2 Numeric values to offset/pan the first 2 dimensions of `x`.
+#' @param scale 2 Numeric values to scale/zoom to the first 2 dimensions of `x`.
+#' @param x Numeric data object with 2 columns to scale and offset.
+#' Defaults to NULL, passing arguments to scale_axes for use internally.
+#' @return Scaled and offset `x`.
+#' @seealso \code{\link{scale_axes}} for preset choices.
+#' @export
+#' @family linear mapping functions
+#' @examples 
+#' bas <- tourr::basis_random(4, 2)
+#' 
+#' map_absolute(bas, offset = c(-2, 0), scale = c(2/3, 2/3))
+map_absolute <- function(x,
+                         offset = c(0L, 0L),
+                         scale = c(1L, 1L)
+){
+  ret <- x
+  ret[, 1L] <- ret[, 1L] * offset[1L] + scale[1L]
+  ret[, 2L] <- ret[, 2L] * offset[2L] + scale[2L]
+  return(ret)
+}
+
+#' @rdname spinifex-deprecated
+#' @section \code{pan_zoom}:
+#' For \code{pan_zoom}, use \code{\link{map_absolute}}.
+#' @export
+pan_zoom <- function(x, pan = c(0L, 0L), zoom = c(1L, 1L)) {
+  .Deprecated("map_absolute")
+  map_absolute(x, pan, zoom)
+}
 
 #' Preprocess numeric variables
 #' 
@@ -264,41 +301,6 @@ scale_01 <- function(data){
 # }
 
 
-#' Manually offset and scale the first 2 columns of a matrix or data.frame.
-#' 
-#' A manual variant of `map_relative()`. Can be used as the `axes` argument 
-#' to manually set the size and locations of the axes.
-#' 
-#' @param offset 2 Numeric values to offset/pan the first 2 dimensions of `x`.
-#' @param scale 2 Numeric values to scale/zoom to the first 2 dimensions of `x`.
-#' @param x Numeric data object with 2 columns to scale and offset.
-#' Defaults to NULL, passing arguments to scale_axes for use internally.
-#' @return Scaled and offset `x`.
-#' @seealso \code{\link{scale_axes}} for preset choices.
-#' @export
-#' @family linear mapping functions
-#' @examples 
-#' bas <- tourr::basis_random(4, 2)
-#' 
-#' map_absolute(bas, offset = c(-2, 0), scale = c(2/3, 2/3))
-map_absolute <- function(x,
-                         offset = c(0L, 0L),
-                         scale = c(1L, 1L)
-){
-  ret <- x
-  ret[, 1L] <- ret[, 1L] * offset[1L] + scale[1L]
-  ret[, 2L] <- ret[, 2L] * offset[2L] + scale[2L]
-  return(ret)
-}
-
-#' @rdname spinifex-deprecated
-#' @section \code{pan_zoom}:
-#' For \code{pan_zoom}, use \code{\link{map_absolute}}.
-#' @export
-pan_zoom <- function(x, pan = c(0L, 0L), zoom = c(1L, 1L)) {
-  .Deprecated("map_absolute")
-  map_absolute(x, pan, zoom)
-}
 
 
 ## attempt 2 with %+replace%;
@@ -627,7 +629,7 @@ save_history <- function(..., verbose = FALSE){
 # #' as_history_array(mt_array, dat_std)
 # as_history_array <- function(basis_array, data = NULL){
 #   if(length(data) > 0L)
-#     attr(basis_array, "data") <- as.matrix(data)
+#     attr(basis_array, "full") <- as.matrix(data)
 #   class(basis_array) <- "history_array"
 #   return(basis_array)
 # }

@@ -240,7 +240,7 @@ manual_tour <- function(basis,
   }
   if(phi_start < -pi / 2L){
     message("phi_start < -pi / 2; phi_start <- phi_start + pi")
-    # phi_start <- phi_start + pi
+    phi_start <- phi_start + pi
   }
   ## Ensure correct order of phi_min, phi_start, phi_max
   if((phi_min < abs(phi_start)) == FALSE)

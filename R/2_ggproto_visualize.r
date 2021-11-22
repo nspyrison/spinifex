@@ -99,9 +99,9 @@ ggtour <- function(basis_array,
   df_ls <- array2df(.interpolated_basis_array, data, basis_label, data_label)
   .df_basis <- df_ls$basis_frames
   attr(.df_basis, "manip_var") <- .manip_var ## NULL if not a manual tour
-  .n_frames <- length(unique(.df_basis$frame))
+  .n_frames <- dim(.interpolated_basis_array)[3L] + 1L ## Duplicate first frame
   .d <- ncol(.interpolated_basis_array)
-  .p <- nrow(.df_basis) / .n_frames
+  .p <- nrow(.interpolated_basis_array)
   ## .df_data related
   .df_data <- df_ls$data_frames ## Can be NULL
   if(is.null(.df_data) == FALSE){
@@ -115,7 +115,7 @@ ggtour <- function(basis_array,
     }
   }
   .nrow_df_data <- nrow(.df_data) ## NULL if data is NULL
-  .n <- .nrow_df_data / .n_frames ## NULL if data is NULL
+  .n <- nrow(data) ## NULL if data is NULL
   ## BYPRODUCT: Assign list to last_ggtour().
   .set_last_ggtour(list(
     interpolated_basis_array = .interpolated_basis_array,
@@ -764,7 +764,7 @@ filmstrip <- function(
 #' animate_plotly(ggt1d)
 #' }
 proto_basis <- function(
-  position = c("left", "center", "right", "bottomleft", "topright", "off"),
+  position = c("left", "center", "right", "bottomleft", "topright", "full", "off"),
   manip_col = "blue",
   line_size = 1,
   text_size = 5
@@ -779,14 +779,15 @@ proto_basis <- function(
   ## Setup and transform
   .angles <- seq(0L, 2L * pi, length = 360L)
   .circle <- data.frame(x = cos(.angles), y = sin(.angles))
+  if(.is_faceted){
+    position = "full"
+    .circle <- .bind_elements2df(list(facet_var = "_basis_"), .circle)
+  }
+  ## Scale to data
   .center <- map_relative(data.frame(x = 0L, y = 0L), position, .map_to_data)
   .circle <- map_relative(.circle, position, .map_to_data)
   .df_basis <- map_relative(.df_basis, position, .map_to_data)
-  if(.is_faceted){
-    position = "data"
-    .circle <- .bind_elements2df(list(facet_var = "_basis_"), .circle)
-  }
-    
+  
   ## Aesthetics for the axes segments.
   .axes_col <- "grey50"
   .axes_siz <- line_size
@@ -826,7 +827,7 @@ proto_basis <- function(
 #' @export
 #' @family ggtour proto functions
 proto_basis1d <- function(
-  position = c("bottom1d", "floor1d",  "top1d", "off"),
+  position = c("bottom1d", "floor1d",  "top1d", "full", "off"),
   manip_col = "blue",
   segment_size = 2,
   text_size = 5
@@ -855,21 +856,12 @@ proto_basis1d <- function(
                          y = rep(.p:1L, .n_frames) / .p,
                          frame = .df_basis$frame,
                          label = .df_basis$label)
-  ## Do note replicate across frames, it won't work any better with plotly
   .df_txt <- data.frame(x = -1.2, y = .p:1L/.p, 
                         label = .df_basis[.df_basis$frame == 1L, "label"])
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5) / .p)
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5) / .p)
-  ## Scale them
-  #### if basis 1D map to density, else map to data (ie. cheem)
-  .df_zero <- map_relative(.df_zero, position, .map_to_data)
-  .df_seg  <- map_relative(.df_seg,  position, .map_to_data)
-  .df_txt  <- map_relative(.df_txt,  position, .map_to_data)
-  # browser()
-  # debugonce(map_relative)
-  .df_rect <- map_relative(.df_rect, position, .map_to_data)
-  .df_seg0 <- map_relative(.df_seg0, position, .map_to_data)
   if(.is_faceted){
+    position = "floor1d"
     .facet_var <- list(facet_var = "_basis_")
     .df_zero <- .bind_elements2df(.facet_var, .df_zero)
     .df_seg  <- .bind_elements2df(.facet_var, .df_seg)
@@ -877,6 +869,12 @@ proto_basis1d <- function(
     .df_rect <- .bind_elements2df(.facet_var, .df_rect)
     .df_seg0 <- .bind_elements2df(.facet_var, .df_seg0)
   }
+  ## Scale them
+  .df_zero <- map_relative(.df_zero, position, .map_to_data)
+  .df_seg  <- map_relative(.df_seg,  position, .map_to_data)
+  .df_txt  <- map_relative(.df_txt,  position, .map_to_data)
+  .df_rect <- map_relative(.df_rect, position, .map_to_data)
+  .df_seg0 <- map_relative(.df_seg0, position, .map_to_data)
   
   ## Return proto
   return(list(
@@ -1484,7 +1482,7 @@ proto_highlight1d <- function(
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_default(aes_args = list(color = clas, shape = clas)) +
-#'   proto_frame_cor2(position = c(.5, 1.1))
+#'   proto_frame_cor2(xy_position = c(.5, 1.1))
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1510,13 +1508,13 @@ proto_frame_cor2 <- function(
     dplyr::summarise(value = round(stats::cor(x, y, ...)^2L, 2L)) %>%
     dplyr::ungroup()
   
-  ## Set position
+  ## Set xy_position
   .x_ran <- range(.df_data$x)
   .x_dif <- diff(.x_ran)
   .y_ran <- range(.df_data$y)
   .y_dif <- diff(.y_ran)
-  .x <- .x_ran[1L] + position[1L] * .x_dif
-  .y <- .y_ran[1L] + position[2L] * .y_dif
+  .x <- .x_ran[1L] + xy_position[1L] * .x_dif
+  .y <- .y_ran[1L] + xy_position[2L] * .y_dif
   ## Prefix text:
   # ## Removes namespace; ie. 'stats::cor' to 'cor'
   # .stat_nm  <- substitute(stat2d)
@@ -1564,11 +1562,13 @@ proto_origin <- function(
   ## Initialize
   eval(.init4proto)
   if(is.null(.df_data$y)) return()
+  if(is.null(.df_data$y))
+    stop("proto_origin: data y not found, expects a 2D tour.")
   
   #### Setup origin, zero mark, 5% on each side.
   .df_0range <- data.frame(x = c(0L, range(.df_data$x)),
                            y = c(0L, range(.df_data$y)))
-  .zero <- map_relative(.df_0range, "data", .map_to_data)[1L,, drop = FALSE]
+  .zero <- map_relative(.df_0range, "full", .map_to_data)[1L,, drop = FALSE]
   .tail <- tail_size / 2L * max(diff(range(.map_to_data$x)),
                                 diff(range(.map_to_data$y)))
   .df_origin <- data.frame(x     = c(.zero$x - .tail, .zero$x),
@@ -1613,8 +1613,8 @@ proto_origin1d <- function(
   if(is.null(.df_data)) return()
   
   .df_0range <- data.frame(x = c(0L, range(.df_data$x)),
-                           y = c(0L, range(.df_data$y)))
-  .zero <- map_relative(.df_0range, "data", .map_to_data)[1L,, drop = FALSE]
+                           y = c(0L))
+  .zero <- map_relative(.df_0range, "full", .map_to_data)[1L,, drop = FALSE]
   .tail <- diff(range(.map_to_data$y)) * .55
   .df_origin <- data.frame(
     x     = c(.zero$x, .zero$x),
@@ -1668,7 +1668,7 @@ proto_hline0 <- function(
   eval(.init4proto)
   if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
-    stop("proto_hline: data y not found, expects a 2D tour. Did you mean to call `proto_origin1d`?")
+    stop("proto_hline: data y not found, expects a 2D tour.")
   
   ## Dataframe
   .df_zero <- map_relative(data.frame(x = c(0L, range(.df_data$x)),
@@ -1753,6 +1753,7 @@ proto_default <- function(
   position = c("left", "center", "right", "bottomleft", "topright", "off"),
   ...
 ){
+  position <- match.arg(position)
   return(list(
     proto_point(...),
     proto_basis(position),
@@ -1778,6 +1779,7 @@ proto_default1d <- function(
   position = c("bottom1d", "floor1d", "top1d", "off"),
   ...
 ){
+  position <- match.arg(position)
   return(list(
     proto_density(...),
     proto_basis1d(position),

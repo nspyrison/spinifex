@@ -122,7 +122,7 @@ server <- function(input, output, session) {
                 selected = input$proj_vars[1L])
   })
   
-  ##  Create "col_var_nm" from char or  projection variables
+  ## Create "col_var_nm" from char or  projection variables
   output$input__col_var_nm <- renderUI({
     req(char_fct_col_nms())
     opts <- char_fct_col_nms()

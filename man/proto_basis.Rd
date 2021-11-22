@@ -6,14 +6,14 @@
 \title{Tour proto for a 2D and 1D basis axes respectively}
 \usage{
 proto_basis(
-  position = c("left", "center", "right", "bottomleft", "topright", "off"),
+  position = c("left", "center", "right", "bottomleft", "topright", "full", "off"),
   manip_col = "blue",
   line_size = 1,
   text_size = 5
 )
 
 proto_basis1d(
-  position = c("bottom1d", "floor1d", "top1d", "off"),
+  position = c("bottom1d", "floor1d", "top1d", "full", "off"),
   manip_col = "blue",
   segment_size = 2,
   text_size = 5

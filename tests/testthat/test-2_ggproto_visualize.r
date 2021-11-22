@@ -4,15 +4,15 @@
   library("testthat")
   
   r_idx <- 1L:10L
-  dat <- scale_sd(wine[r_idx, 2L:5L]) ## small chunk for speed.
-  bas <- basis_pca(dat)
-  mv  <- manip_var_of(bas)
-  clas <- wine[r_idx, ]
+  dat   <- scale_sd(wine[r_idx, 2L:5L]) ## small chunk for speed.
+  bas   <- basis_pca(dat)
+  mv    <- manip_var_of(bas)
+  clas  <- wine$Type[r_idx]
   
-  mt     <- manual_tour(bas      , mv, data = dat)
-  mt1d   <- manual_tour(bas[, 1L], mv, data = dat)
+  mt   <- manual_tour(bas      , mv, data = dat)
+  mt1d <- manual_tour(bas[, 1L], mv, data = dat)
   .m <- capture.output(
-    gt   <- tourr::save_history(dat, guided_tour(holes()), max_bases = 3L)
+    gt <- tourr::save_history(dat, guided_tour(holes()), max_bases = 3L)
   )
   .m <- capture.output(
     gt1d <- tourr::save_history(dat, grand_tour(d = 1L),   max_bases = 3L)
@@ -157,7 +157,7 @@ po_gt   <- ggtour(gt,   angle = 1L) + proto_origin()
 po_mt1d <- ggtour(mt1d, angle = 1L) + proto_origin1d()
 po_gt1d <- ggtour(gt1d, angle = 1L) + proto_origin1d()
 test_that("proto_origin", {
-  expect_error(ggtour(gt1d, angle = 1L) + proto_origin())
+  expect_error(ggtour(gt1d, angle = 1L) + proto_default())
   expect_equal(class(po_mt  ), c("gg", "ggplot"))
   expect_equal(class(po_gt  ), c("gg", "ggplot"))
   expect_equal(class(po_mt1d), c("gg", "ggplot"))
