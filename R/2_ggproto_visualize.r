@@ -38,12 +38,12 @@
 #' 
 #' ## Finer control calling individual proto_* functions
 #' ggt <- ggtour(basis_array = mt_path, data = dat, angle = .3) +
-#'   proto_basis(position = "right", 
-#'               manip_col = "red",
-#'               text_size = 7L) +
 #'   proto_point(aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 1.5, alpha = .8),
 #'               row_index = which(clas == levels(clas)[1])) +
+#'   proto_basis(position = "right", 
+#'               manip_col = "red",
+#'               text_size = 7L) +
 #'   proto_origin()
 #' \dontrun{
 #' animate_plotly(ggt)
@@ -548,6 +548,9 @@ animate_plotly <- function(
 ){
   ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
   #### Adding many protos is liable to break plotly animations, see above url.
+  ggtour <- ggtour + ggplot2::theme(legend.position  = "right",
+                                    legend.direction = "vertical",   ## Levels within an aesthetic
+                                    legend.box       = "horizontal") ## Between aesthetics
   ## Assumptions
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
@@ -559,8 +562,8 @@ animate_plotly <- function(
       plotly::config(displayModeBar = FALSE,
                      modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d")) %>%
       ## Remove legends and axis lines
-      plotly::layout(showlegend = FALSE, dragmode = FALSE,
-                     #, fixedrange = TRUE ## This is a curse, do not use.
+      plotly::layout(dragmode = FALSE, legend = list(x = 100L, y = 0.5),
+                     #fixedrange = TRUE, ## This is a curse, do not use.
                      yaxis = list(showgrid = FALSE, showline = FALSE),
                      xaxis = list(showgrid = FALSE, showline = FALSE,
                                   scaleanchor = "y", scalaratio = 1L))
@@ -580,8 +583,8 @@ animate_plotly <- function(
       plotly::config(displayModeBar = FALSE,
                      modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d")) %>%
       ## Remove legends and axis lines
-      plotly::layout(showlegend = FALSE, dragmode = FALSE,
-                     #, fixedrange = TRUE ## This is a curse, do not use.
+      plotly::layout(dragmode = FALSE, legend = list(x = 100L, y = 0.5),
+                     #fixedrange = TRUE, ## This is a curse, do not use.
                      yaxis = list(showgrid = FALSE, showline = FALSE),
                      xaxis = list(showgrid = FALSE, showline = FALSE,
                                   scaleanchor = "y", scalaratio = 1L))
