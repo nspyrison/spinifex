@@ -542,7 +542,7 @@ theme_spinifex <- function(...){
        ggplot2::scale_color_brewer(palette = "Dark2"),
        ggplot2::scale_fill_brewer(palette = "Dark2"),
        ggplot2::coord_fixed(),
-       ggplot2::labs(x = "", y = ""),
+       ggplot2::labs(x = "", y = "", color = "", shape = "", fill = ""),
        ggplot2::theme(
          legend.position  = "bottom",
          legend.direction = "horizontal", ## Levels within an aesthetic

@@ -126,16 +126,10 @@ ggtour <- function(basis_array,
   ## Return ggplot head, theme, and facet if used
   return(ggplot2::ggplot(.df_basis) + spinifex::theme_spinifex())
 }
-# ## Print method for ggtours ?? using proto_default()
-# #### Was a good idea, but ggplot stops working when you change the first class, 
-# #### and doesn't effect if you change the last class.
-# print.ggtour <- function(x, ...){
-#   class(x) <- c("gg", "ggplot")
-#   x +
-#     proto_basis() +
-#     proto_origin(gridline_probs = FALSE) +
-#     proto_point()
-# }
+## Print method for ggtours ?? using proto_default()
+#### Was a good idea, but ggplot stops working when you change the first class, 
+#### and doesn't effect if you change the last class.
+
 
 #' Wrap a 1d ribbon of panels into 2d for animation
 #' 

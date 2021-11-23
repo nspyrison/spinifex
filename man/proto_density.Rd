@@ -45,7 +45,7 @@ dat     <- scale_sd(penguins[, 1:4])
 clas    <- penguins$species
 gt_path <- save_history(dat, grand_tour(), max = 3)
 
-ggt <- ggtour(gt_path, dat) +
+ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_density(aes_args = list(color = clas, fill = clas)) +
   proto_basis1d() +
   proto_origin1d()
