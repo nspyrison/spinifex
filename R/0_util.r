@@ -91,10 +91,10 @@ array2df <- function(
       stop(paste0(
         "array2df: Non-conformable matrices; data has ", ncol(data),
         " columns while basis has ", nrow(basis_array), " rows."))
+    data <- as.matrix(data)
     ## Duplicate first frame; see if it helps plotly.
     .new_frame <- data %*% matrix(basis_array[,, 1L], nrow(basis_array), ncol(basis_array))
     data_frames <- cbind(.new_frame, 1L) ## Init
-    data <- as.matrix(data)
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% matrix(basis_array[,, i], nrow(basis_array), ncol(basis_array))
       new_frame <- cbind(new_frame, i + 1L) ## Append frame number

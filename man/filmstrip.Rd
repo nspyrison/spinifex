@@ -4,11 +4,14 @@
 \alias{filmstrip}
 \title{Create a "filmstrip" of the frames of a ggtour.}
 \usage{
-filmstrip(ggtour)
+filmstrip(ggtour, ...)
 }
 \arguments{
 \item{ggtour}{A grammar of graphics tour with appended protos added.
-A return from \verb{ggtour() + proto_*()}.}
+A return from \verb{ggtour() + proto_*()}}
+
+\item{...}{optionally pass arguments to ggplot2::facet_wrap, such as
+nrow = 3, ncol = 2, scales = "free".}
 }
 \description{
 Appends \code{facet_wrap(vars(frame_number))} & minor themes to the ggtour. If the
@@ -34,7 +37,7 @@ bas1d     <- basis_pca(dat, d = 1)
 mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
 ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
   proto_default1d(aes_args = list(fill = clas))
-filmstrip(ggt1d)
+filmstrip(ggt1d, nrow = 2, ncol = 3)
 }
 \seealso{
 Other ggtour animator: 

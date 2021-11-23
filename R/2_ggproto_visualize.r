@@ -200,11 +200,16 @@ facet_wrap_tour <- function(
   ))
 }
 
-
+#' Append a fixed vertical height
+#' 
+#' Adds/overwrites the y of the projected data. Usefully for 1D projections and
+#' appending information related to, but independant from the projection; 
+#' model predictions or residuals for instance. 
+#' Wants to be called early so that the following proto calls adopt the changes.
+#' 
 #' @param fixed_y Vector of length of the data, values to fix vertical height.
 #' Typically related to but not an explanatory variable, for instance,
 #' predicted Y, or residuals.
-#' @rdname proto_density
 #' @export
 #' @family ggtour proto functions
 #' @examples
@@ -215,9 +220,8 @@ facet_wrap_tour <- function(
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
 #' 
-#' ## append_fixed_y:
-#' # Fixed y values are useful for related values that are 
-#' # not in the X variables, _eg_ predictions or residuals of you X space.
+#' # Fixed y height with related information, independent of a 1D tour 
+#' # _eg_ predictions or residuals.
 #' message("don't forget to scale your fixed_y.")
 #' dummy_y <- scale_sd(as.integer(clas) + rnorm(nrow(dat), 0, .5))
 #' gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 5)
@@ -516,8 +520,7 @@ animate_gganimate <- function(
 #' @param fps Scalar number of Frames Per Second, the speed the animation should 
 #' play at.
 #' @param ... Other arguments passed to 
-#' \code{\link[plotly:layout]{plotly::layout}}.
-#' @seealso \code{\link[plotly:ggplotly]{plotly::ggplotly}}
+#' \code{\link[plotly:ggplotly]{plotly::ggplotly}}.
 #' @export
 #' @family ggtour animator
 #' @examples
@@ -547,7 +550,7 @@ animate_gganimate <- function(
 animate_plotly <- function(
   ggtour,
   fps = 8,
-  ... ## Passed to plotly::layout().
+  ... ## Passed to plotly::ggplotly(). can always call layout/config again
 ){
   ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
   #### Adding many protos is liable to break plotly animations, see above url.
@@ -557,7 +560,7 @@ animate_plotly <- function(
   ## 1 Frame only:
   if(n_frames == 1L){
     warning("ggtour df_basis only has 1 frame, applying just plotly::ggplotly instead.")
-    anim <- plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
+    anim <- plotly::ggplotly(p = ggtour, tooltip = "tooltip", ...) %>%
       ## Remove button bar and zoom box
       plotly::config(displayModeBar = FALSE,
                      modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d")) %>%
@@ -566,31 +569,28 @@ animate_plotly <- function(
                      #, fixedrange = TRUE ## This is a curse, do not use.
                      yaxis = list(showgrid = FALSE, showline = FALSE),
                      xaxis = list(showgrid = FALSE, showline = FALSE,
-                                  scaleanchor = "y", scalaratio = 1L),
-                     ...)
+                                  scaleanchor = "y", scalaratio = 1L))
   }else{
     ## More than 1 frame:
     
     ## Block plotly.js warning: lack of support for horizontal legend;
     #### https://github.com/plotly/plotly.js/issues/53
-    anim <- suppressWarnings(
-      plotly::ggplotly(p = ggtour, tooltip = "tooltip") %>%
-        plotly::animation_opts(frame = 1L / fps * 1000L,
-                               transition = 0L, redraw = TRUE) %>%
-        plotly::animation_slider(
-          active = 0L, ## 0 indexed first frame
-          currentvalue = list(prefix = "Frame: ", font = list(color = "black"))
-        ) %>%
-        ## Remove button bar and zoom box
-        plotly::config(displayModeBar = FALSE,
-                       modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d"))) %>%
+    anim <-
+      plotly::ggplotly(p = ggtour, tooltip = "tooltip", ...) %>%
+      plotly::animation_opts(frame = 1L / fps * 1000L,
+                             transition = 0L, redraw = TRUE) %>%
+      plotly::animation_slider(
+        active = 0L, ## 0 indexed first frame
+        currentvalue = list(prefix = "Frame: ", font = list(color = "black"))) %>%
+      ## Remove button bar and zoom box
+      plotly::config(displayModeBar = FALSE,
+                     modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d")) %>%
       ## Remove legends and axis lines
       plotly::layout(showlegend = FALSE, dragmode = FALSE,
                      #, fixedrange = TRUE ## This is a curse, do not use.
                      yaxis = list(showgrid = FALSE, showline = FALSE),
                      xaxis = list(showgrid = FALSE, showline = FALSE,
-                                  scaleanchor = "y", scalaratio = 1L),
-                     ...)
+                                  scaleanchor = "y", scalaratio = 1L))
   }
   
   ## Clean up
@@ -660,7 +660,9 @@ animate_plotly <- function(
 #' the tour.
 #' 
 #' @param ggtour A grammar of graphics tour with appended protos added. 
-#' A return from `ggtour() + proto_*()`.
+#' A return from `ggtour() + proto_*()`
+#' @param ... optionally pass arguments to ggplot2::facet_wrap, such as
+#' nrow = 3, ncol = 2, scales = "free".
 #' @export
 #' @family ggtour animator
 #' @examples
@@ -682,13 +684,13 @@ animate_plotly <- function(
 #' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
 #' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
 #'   proto_default1d(aes_args = list(fill = clas))
-#' filmstrip(ggt1d)
+#' filmstrip(ggt1d, nrow = 2, ncol = 3)
 filmstrip <- function(
-  ggtour
+  ggtour, ...
 ){
   ret <- ggtour +
     ## Display level of previous facet (if applicable) next level of frame.
-    ggplot2::facet_wrap(c("frame", names(ggtour$facet$params$facets))) +
+    ggplot2::facet_wrap(c("frame", names(ggtour$facet$params$facets)), ...) +
     ggplot2::theme(strip.text = ggplot2::element_text(
       margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
       panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
@@ -1126,7 +1128,7 @@ proto_point <- function(
 #' clas    <- penguins$species
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
-#' ggt <- ggtour(gt_path, dat) +
+#' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_density(aes_args = list(color = clas, fill = clas)) +
 #'   proto_basis1d() +
 #'   proto_origin1d()

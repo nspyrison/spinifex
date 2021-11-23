@@ -14,7 +14,7 @@ A return from \verb{ggtour() + proto_*()}.}
 play at.}
 
 \item{...}{Other arguments passed to
-\code{\link[plotly:layout]{plotly::layout}}.}
+\code{\link[plotly:ggplotly]{plotly::ggplotly}}.}
 }
 \description{
 Animates the static \code{ggtour()} and added \verb{proto_*()} functions as a
@@ -47,8 +47,6 @@ if(F){
 }
 }
 \seealso{
-\code{\link[plotly:ggplotly]{plotly::ggplotly}}
-
 Other ggtour animator: 
 \code{\link{animate_gganimate}()},
 \code{\link{filmstrip}()}
