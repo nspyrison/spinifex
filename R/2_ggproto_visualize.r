@@ -99,7 +99,7 @@ ggtour <- function(basis_array,
   df_ls <- array2df(.interpolated_basis_array, data, basis_label, data_label)
   .df_basis <- df_ls$basis_frames
   attr(.df_basis, "manip_var") <- .manip_var ## NULL if not a manual tour
-  .n_frames <- dim(.interpolated_basis_array)[3L] + 1L ## Duplicate first frame
+  .n_frames <- dim(.interpolated_basis_array)[3L]# + 1L ## Duplicate first frame
   .d <- ncol(.interpolated_basis_array)
   .p <- nrow(.interpolated_basis_array)
   ## .df_data related

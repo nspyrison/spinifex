@@ -70,10 +70,11 @@ array2df <- function(
   n_frames <- dim(basis_array)[3L]
   
   ## Basis condition handling
-  #### duplicate first frame; does it help plotly anim?
-  basis_frames <- cbind(basis_array[,, 1L], 1L)
+  ##*duplicate first frame; does it help plotly anim?
+  #basis_frames <-cbind(basis_array[,, 1L], 1L)
+  basis_frames <- NULL 
   .mute <- sapply(1L:n_frames, function(i){
-    basis_rows <- cbind(basis_array[,, i], i + 1L)
+    basis_rows <- cbind(basis_array[,, i], i)#* + 1L)
     basis_frames <<- rbind(basis_frames, basis_rows)
   })
   basis_frames <- as.data.frame(basis_frames)
@@ -92,12 +93,13 @@ array2df <- function(
         "array2df: Non-conformable matrices; data has ", ncol(data),
         " columns while basis has ", nrow(basis_array), " rows."))
     data <- as.matrix(data)
-    ## Duplicate first frame; see if it helps plotly.
-    .new_frame <- data %*% matrix(basis_array[,, 1L], nrow(basis_array), ncol(basis_array))
-    data_frames <- cbind(.new_frame, 1L) ## Init
+    ##*Duplicate first frame; see if it helps plotly.
+    #*.new_frame <- data %*% matrix(basis_array[,, 1L], nrow(basis_array), ncol(basis_array))
+    #*data_frames <- cbind(.new_frame, 1L) ## Init
+    data_frames <- NULL
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% matrix(basis_array[,, i], nrow(basis_array), ncol(basis_array))
-      new_frame <- cbind(new_frame, i + 1L) ## Append frame number
+      new_frame <- cbind(new_frame, i) #*+ 1L) ## Append frame number
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
     data_frames <- as.data.frame(data_frames)
