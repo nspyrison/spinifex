@@ -526,6 +526,19 @@ basis_half_circle <- function(data){
 
 ## UTILITY ----
 
+#' Set default color & fill for discrete variables
+#' 
+#' Masks ggplot2's default color/fill color palette for discrete variables.
+#' 
+#' @seealso color_scale_of
+#' @export
+scale_colour_discrete <- function(...)
+  ggplot2::scale_colour_brewer(..., palette = "Dark2")
+#' @rdname scale_colour_discrete
+#' @export
+scale_fill_discrete <- function(...)
+  ggplot2::scale_fill_brewer(..., palette = "Dark2")
+
 
 #' A ggplot2 theme suggested for linear projections with spinifex.
 #' The default theme in spinifex functions.

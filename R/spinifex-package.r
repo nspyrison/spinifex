@@ -27,9 +27,9 @@ NULL
   packageStartupMessage("https://github.com/nspyrison/spinifex/issues/")
   packageStartupMessage("--------------------------------------------------------")
   scale_colour_discrete <- function(...)
-    scale_colour_brewer(..., palette = "Dark2")
+    ggplot2::scale_colour_brewer(..., palette = "Dark2")
   scale_fill_discrete <- function(...)
-    scale_fill_brewer(..., palette = "Dark2")
+    ggplot2::scale_fill_brewer(..., palette = "Dark2")
 }
 
 ## Exports ------
