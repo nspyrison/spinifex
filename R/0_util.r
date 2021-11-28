@@ -540,9 +540,8 @@ basis_half_circle <- function(data){
 #' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
 #'   geom_point() + theme_spinifex()
 theme_spinifex <- function(...){
+  ## Color/fill discrete set in spinifex-package.r; reduced messaging
   list(ggplot2::theme_void(),
-       ggplot2::scale_color_brewer(palette = "Dark2"),
-       ggplot2::scale_fill_brewer(palette = "Dark2"),
        ggplot2::coord_fixed(),
        ggplot2::labs(x = "", y = "", color = "", shape = "", fill = ""),
        ggplot2::theme(
