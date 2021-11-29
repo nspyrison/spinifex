@@ -7,8 +7,7 @@
 array2df(
   basis_array,
   data = NULL,
-  basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3) else
-    paste0("v", 1:nrow(basis_array)),
+  basis_label = NULL,
   data_label = rownames(data)
 )
 }
@@ -21,7 +20,8 @@ variables.}
 
 \item{basis_label}{Labels for basis display, a character
 vector with length equal to the number of variables.
-Defaults to the 3 character abbreviation of the original variables names.}
+Defaults to NULL; 3 character abbreviation from colnames of data or
+rownames of basis.}
 
 \item{data_label}{Labels for \code{plotly} tooltip display.
 Defaults to the rownames of data. If null, initializes to 1:nrow(data).}
@@ -40,8 +40,8 @@ mv <- manip_var_of(bas)
 
 ## Radial tour array to long df, as used in play_manual_tour()
 mt_array <- manual_tour(basis = bas, manip_var = mv)
-ls_df_frames <- array2df(basis_array = mt_array, data = dat_std,
-                         basis_label = paste0("MyLabs", 1:nrow(bas)))
+ls_df_frames <- array2df(basis_array = mt_array, data = dat_std)#,
+                         #basis_label = paste0("MyLabs", 1:nrow(bas)))
 str(ls_df_frames)
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()

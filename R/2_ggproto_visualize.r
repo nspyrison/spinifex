@@ -14,7 +14,8 @@
 #' `tour::save_history()` generated `basis_array`. Defaults to .05.
 #' @param basis_label Labels for basis display, a character 
 #' vector with length equal to the number of variables.
-#' Defaults to the 3 character abbreviation of the original variables names.
+#' Defaults to NULL; 3 character abbreviation from colnames of data or
+#' rownames of basis.
 #' @param data_label Labels for `plotly` tooltip display. 
 #' Defaults to the row number, (and rownames of the data if they contain 
 #' characters).
@@ -69,14 +70,19 @@
 ggtour <- function(basis_array,
                    data = NULL,
                    angle = .05,
-                   ##TESTING:
-                   basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("v", 1:nrow(basis_array)),
+                   basis_label = NULL,
                    data_label = 1:nrow(basis_array)
 ){
   ## If data missing, check if data is passed to the basis_array
   if(is.null(data)) data <- attr(basis_array, "data") ## Could be NULL
   .manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
-  
+  .map_to_data <- data.frame(x = 0L:1L, y = 0L:1L) ## Init for null data
+  if(is.null(basis_label)){
+    if(is.null(data) == FALSE){
+      basis_label <- abbreviate(colnames(data), 3)
+    }else basis_label <- abbreviate(rownames(basis), 3)
+    if(is.null(basis_label)) basis_label <- paste0("v", 1:nrow(basis_array))
+  }
   ## If characters are used in the rownames, add them to tooltip
   if(is.null(data) == FALSE &
      suppressWarnings(any(is.na(as.numeric(as.character(rownames(data)))))))
@@ -170,8 +176,9 @@ facet_wrap_tour <- function(
   
   ## Append facet_var to df_basis and df_data if needed.
   if(is.null(facet_var) == FALSE){
-    .df_data <- .bind_elements2df(
-      list(facet_var = rep_len(facet_var, .nrow_df_data)), .df_data)
+    if(is.null(.df_data) == FALSE)
+      .df_data <- .bind_elements2df(
+        list(facet_var = rep_len(facet_var, .nrow_df_data)), .df_data)
     ## "_basis_" becomes an honorary level of facet_var
     .df_basis <- .bind_elements2df(list(facet_var = "_basis_"), .df_basis)
   }

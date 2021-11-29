@@ -36,7 +36,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' variables.
 #' @param basis_label Labels for basis display, a character 
 #' vector with length equal to the number of variables.
-#' Defaults to the 3 character abbreviation of the original variables names.
+#' Defaults to NULL; 3 character abbreviation from colnames of data or
+#' rownames of basis.
 #' @param data_label Labels for `plotly` tooltip display. 
 #' Defaults to the rownames of data. If null, initializes to 1:nrow(data).
 #' @export
@@ -49,8 +50,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' 
 #' ## Radial tour array to long df, as used in play_manual_tour()
 #' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' ls_df_frames <- array2df(basis_array = mt_array, data = dat_std,
-#'                          basis_label = paste0("MyLabs", 1:nrow(bas)))
+#' ls_df_frames <- array2df(basis_array = mt_array, data = dat_std)#,
+#'                          #basis_label = paste0("MyLabs", 1:nrow(bas)))
 #' str(ls_df_frames)
 #' 
 #' ## tourr::save_history tour array to long df, as used in play_tour_path()
@@ -60,9 +61,16 @@ is_orthonormal <- function(x, tol = 0.001) {
 array2df <- function(
   basis_array,
   data = NULL,
-  basis_label = if(is.null(data) == FALSE) abbreviate(colnames(data), 3) else paste0("v", 1:nrow(basis_array)),
+  basis_label = NULL,
   data_label = rownames(data)
 ){
+  ## Condition handle basis labels.
+  if(is.null(basis_label)){
+    if(is.null(data) == FALSE){
+      basis_label <- abbreviate(colnames(data), 3)
+    }else basis_label <- abbreviate(rownames(basis), 3)
+    if(is.null(basis_label)) basis_label <- paste0("v", 1:nrow(basis_array))
+  }
   ## Initialize
   if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
   manip_var <- attributes(basis_array)$manip_var ## NULL means tourr tour

@@ -8,8 +8,7 @@ ggtour(
   basis_array,
   data = NULL,
   angle = 0.05,
-  basis_label = if (is.null(data) == FALSE) abbreviate(colnames(data), 3) else
-    paste0("v", 1:nrow(basis_array)),
+  basis_label = NULL,
   data_label = 1:nrow(basis_array)
 )
 }
@@ -25,7 +24,8 @@ stored as an attribute of the the \code{basis_array}.}
 
 \item{basis_label}{Labels for basis display, a character
 vector with length equal to the number of variables.
-Defaults to the 3 character abbreviation of the original variables names.}
+Defaults to NULL; 3 character abbreviation from colnames of data or
+rownames of basis.}
 
 \item{data_label}{Labels for \code{plotly} tooltip display.
 Defaults to the row number, (and rownames of the data if they contain
