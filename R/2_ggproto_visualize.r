@@ -79,9 +79,9 @@ ggtour <- function(basis_array,
   .map_to_data <- data.frame(x = 0L:1L, y = 0L:1L) ## Init for null data
   if(is.null(basis_label)){
     if(is.null(data) == FALSE){
-      basis_label <- abbreviate(colnames(data), 3)
-    }else basis_label <- abbreviate(rownames(basis), 3)
-    if(is.null(basis_label)) basis_label <- paste0("v", 1:nrow(basis_array))
+      basis_label <- abbreviate(colnames(data), 3L)
+    }else basis_label <- abbreviate(rownames(basis_array), 3L)
+    if(is.null(basis_label)) basis_label <- paste0("v", 1L:nrow(basis_array))
   }
   ## If characters are used in the rownames, add them to tooltip
   if(is.null(data) == FALSE &
@@ -553,18 +553,23 @@ animate_plotly <- function(
   fps = 8,
   ... ## Passed to plotly::ggplotly(). can always call layout/config again
 ){
-  ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
-  #### Adding many protos is liable to break plotly animations, see above url.
-  ggtour <- ggtour + ggplot2::theme(legend.position  = "right",
-                                    legend.direction = "vertical",   ## Levels within an aesthetic
-                                    legend.box       = "horizontal") ## Between aesthetics
-  ## Assumptions
-  if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
+  ## COndition handling for ggplot (as opposed to plotly::subplot())
+  if(class(ggtour)[1L] == "gg"){
+    ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
+    #### Adding many protos is liable to break plotly animations, see above url.
+    ggtour <- ggtour + ggplot2::theme(legend.position  = "right",
+                                      legend.direction = "vertical",   ## Levels within an aesthetic
+                                      legend.box       = "horizontal") ## Between aesthetics
+    ## Assumptions
+    if(length(ggtour$layers) == 0L) ## plotly subplots, have NULL layers
+      stop("No layers found, did you forget to add a proto_*?")
+    ggtour <- plotly::ggplotly(p = ggtour, tooltip = "tooltip", ...)
+  }
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
   ## 1 Frame only:
   if(n_frames == 1L){
     warning("ggtour df_basis only has 1 frame, applying just plotly::ggplotly instead.")
-    anim <- plotly::ggplotly(p = ggtour, tooltip = "tooltip", ...) %>%
+    anim <- ggtour %>%
       ## Remove button bar and zoom box
       plotly::config(displayModeBar = FALSE,
                      modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d")) %>%
@@ -579,8 +584,7 @@ animate_plotly <- function(
     
     ## Block plotly.js warning: lack of support for horizontal legend;
     #### https://github.com/plotly/plotly.js/issues/53
-    anim <-
-      plotly::ggplotly(p = ggtour, tooltip = "tooltip", ...) %>%
+    anim <- ggtour %>%
       plotly::animation_opts(frame = 1L / fps * 1000L,
                              transition = 0L, redraw = TRUE) %>%
       plotly::animation_slider(

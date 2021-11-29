@@ -67,9 +67,9 @@ array2df <- function(
   ## Condition handle basis labels.
   if(is.null(basis_label)){
     if(is.null(data) == FALSE){
-      basis_label <- abbreviate(colnames(data), 3)
-    }else basis_label <- abbreviate(rownames(basis), 3)
-    if(is.null(basis_label)) basis_label <- paste0("v", 1:nrow(basis_array))
+      basis_label <- abbreviate(colnames(data), 3L)
+    }else basis_label <- abbreviate(rownames(basis_array), 3L)
+    if(is.null(basis_label)) basis_label <- paste0("v", 1L:nrow(basis_array))
   }
   ## Initialize
   if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
