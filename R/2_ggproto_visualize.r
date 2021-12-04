@@ -81,7 +81,7 @@ ggtour <- function(basis_array,
     if(is.null(data) == FALSE){
       basis_label <- abbreviate(colnames(data), 3L)
     }else basis_label <- abbreviate(rownames(basis_array), 3L)
-    if(is.null(basis_label)) basis_label <- paste0("v", 1L:nrow(basis_array))
+    if(length(basis_label) == 0L) basis_label <- paste0("v", 1L:nrow(basis_array))
   }
   ## If characters are used in the rownames, add them to tooltip
   if(is.null(data) == FALSE &
@@ -1743,7 +1743,7 @@ proto_vline0 <- function(
 #' @param ... Optionally pass additional arguments to `proto_point` or 
 #' `proto_density`.
 #' @export
-#' @aliases proto_default2d, proto_def, proto_def2d
+#' @aliases proto_default2d proto_def proto_def2d
 #' @family ggtour proto functions
 #' @examples
 #' dat  <- scale_sd(penguins[, 1:4])

@@ -2,8 +2,8 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{proto_default}
 \alias{proto_default}
-\alias{proto_default2d,}
-\alias{proto_def,}
+\alias{proto_default2d}
+\alias{proto_def}
 \alias{proto_def2d}
 \alias{proto_default1d}
 \alias{proto_def1d}
