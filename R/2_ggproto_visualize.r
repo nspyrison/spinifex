@@ -475,7 +475,7 @@ last_ggtour <- function(){.store$ggtour_ls}
 #'   ## Alternative renderer saving directly as an .mp4
 #'   animate_gganimate(ggt,
 #'     height = 10, width = 18, units = "cm", ## "px", "in", "cm", or "mm."
-#'     res = 150, ## resolution in dpi (dots per inch)
+#'     res = 150, ## resolution, not the same as dpi, 100 seems about 1x zoom 
 #'     render = gganimate::av_renderer("./my_tour.mp4")) ## Alternative render
 #'   }
 #' }
@@ -542,7 +542,8 @@ animate_gganimate <- function(
 #' 
 #' ## Example saving to a .html widget, may require additional setup.
 #' if(F){
-#'   anim <- animate_plotly(ggt, fps = 10, width = 700, height = 450)
+#'   anim <- animate_plotly(ggt, fps = 10,
+#'                          width = 700, height = 450) ## in pixels
 #'   
 #'   htmlwidgets::saveWidget(widget = anim,
 #'                           file = "./figures/my_tour.html",

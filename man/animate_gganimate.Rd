@@ -65,7 +65,7 @@ if(F){ ## Don't accidentally save file
   ## Alternative renderer saving directly as an .mp4
   animate_gganimate(ggt,
     height = 10, width = 18, units = "cm", ## "px", "in", "cm", or "mm."
-    res = 150, ## resolution in dpi (dots per inch)
+    res = 150, ## resolution, not the same as dpi, 100 seems about 1x zoom 
     render = gganimate::av_renderer("./my_tour.mp4")) ## Alternative render
   }
 }

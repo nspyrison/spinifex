@@ -39,7 +39,8 @@ animate_plotly(ggt, width = 700, height = 450) ## pixels only, no resolution arg
 
 ## Example saving to a .html widget, may require additional setup.
 if(F){
-  anim <- animate_plotly(ggt, fps = 10, width = 700, height = 450)
+  anim <- animate_plotly(ggt, fps = 10,
+                         width = 700, height = 450) ## in pixels
   
   htmlwidgets::saveWidget(widget = anim,
                           file = "./figures/my_tour.html",

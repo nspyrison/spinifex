@@ -540,12 +540,16 @@ basis_half_circle <- function(data){
 #' 
 #' @seealso color_scale_of
 #' @export
-scale_colour_discrete <- function(...)
+scale_colour_discrete <- function(...){
   ggplot2::scale_colour_brewer(..., palette = "Dark2")
+}
 #' @rdname scale_colour_discrete
 #' @export
-scale_fill_discrete <- function(...)
+scale_fill_discrete <- function(...){
   ggplot2::scale_fill_brewer(..., palette = "Dark2")
+}
+### continuous cases is not clear what you would have to do, 
+##### also see cheem::color_scale_of
 
 
 #' A ggplot2 theme suggested for linear projections with spinifex.
@@ -561,17 +565,20 @@ scale_fill_discrete <- function(...)
 #' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
 #'   geom_point() + theme_spinifex()
 theme_spinifex <- function(...){
-  ## Color/fill discrete set in spinifex-package.r; reduced messaging
-  list(ggplot2::theme_void(),
+  ## Color/fill discrete also masked to reduced warnings/messages
+  list(ggplot2::theme_minimal() %+replace%
+         ggplot2::theme(
+           panel.grid.major = ggplot2::element_blank(),
+           panel.grid.minor = ggplot2::element_blank(),
+           axis.text        = ggplot2::element_blank(),
+           axis.title       = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
+           legend.position  = "bottom",
+           legend.direction = "horizontal", ## Levels within an aesthetic
+           legend.box       = "vertical",   ## Between aesthetics
+           legend.margin    = ggplot2::margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
+           ...), ## ... applied over defaults.
        ggplot2::coord_fixed(),
-       ggplot2::labs(x = "", y = "", color = "", shape = "", fill = ""),
-       ggplot2::theme(
-         legend.position  = "bottom",
-         legend.direction = "horizontal", ## Levels within an aesthetic
-         legend.box       = "vertical",   ## Between aesthetics
-         legend.margin    = ggplot2::margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
-         axis.title       = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
-         ...) ## ... applied over defaults.
+       ggplot2::labs(x = "", y = "", color = "", shape = "", fill = "")
   )
 }
 
