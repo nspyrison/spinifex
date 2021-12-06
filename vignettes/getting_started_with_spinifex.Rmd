@@ -79,12 +79,12 @@ bas_pca <- basis_pca(dat_std)
 clas    <- penguins$species
 
 ggtour(basis_array = bas_pca, data = dat_std) +
-  proto_basis(aes_args = list(color = clas))
+  proto_basis()
 ```
 
 We started from a random basis, that explains the orthogonal projection from $p$ to $d$ space. Use `proto_basis` to see the *reference axes*, a visual depiction of how the variables contributed to the xy directions of the 2D projection.
 
-We want to explore how the coefficients of `aede2` contribute to the structure in this projection, so we set the manip_var to its column number, 3. In order to change the contributions without breaking the orthogonality of the other variables, we need to add a dimension. We call this new space the manipulation space, which can be viewed with the function `view_manip_space()`. Note that the projection plane containing the reference frame is laid down on the surface, while the manipulation dimension is at a right angle out-of-plane, with a full contribution on the manip var.
+We want to explore how the coefficients of `aede2` contribute to the structure in this projection, so we set the manipulation variable to its column number, 3. To change the contributions without breaking the orthogonality of the other variables, we need to add a dimension. We call this new space the manipulation space, which can be viewed with the function `view_manip_space()`. Note that the projection plane containing the reference frame is laid down on the surface, while the manipulation dimension is at a right angle out-of-plane, with a full contribution on the manip var.
 
 ```{r view-manip-space}
 view_manip_space(basis = bas_pca, manip_var = 1) 
