@@ -19,7 +19,7 @@ or "v", for vertical by columns. Defaults to "h"}
 }
 \description{
 Create and wrap a 1d ribbon of panels in 2d.
-Because of byproducts of \code{ggtour} and \code{facet_wrap_tour} this wants to be
+Because of the side effects of \code{ggtour} and \code{facet_wrap_tour} this wants to be
 applied after \code{ggtour} and before any \verb{proto_*} functions.
 \code{plotly} may not display well with with faceting.
 }

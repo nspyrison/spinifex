@@ -5,7 +5,7 @@
 \alias{proto_hline}
 \alias{proto_vline0}
 \alias{proto_vline}
-\title{Tour proto adding a vertical/horizonatal line}
+\title{Tour proto adding a vertical/horizontal line}
 \usage{
 proto_hline0(identity_args = list(color = "grey80", size = 0.5, alpha = 0.9))
 
@@ -18,7 +18,7 @@ proto_vline0(identity_args = list(color = "grey80", size = 0.5, alpha = 0.9))
 \code{identity_args = list(size = 2, alpha = .7)}.}
 }
 \description{
-Adds a vertical/horizonatal line with an intercept of 0, scaled to the data
+Adds a vertical/horizontal line with an intercept of 0, scaled to the data
 frame.
 }
 \examples{
@@ -36,19 +36,6 @@ animate_plotly(ggt)
 }
 }
 \seealso{
-Other ggtour proto functions: 
-\code{\link{append_fixed_y}()},
-\code{\link{facet_wrap_tour}()},
-\code{\link{ggtour}()},
-\code{\link{proto_basis}()},
-\code{\link{proto_default}()},
-\code{\link{proto_density}()},
-\code{\link{proto_hex}()},
-\code{\link{proto_highlight}()},
-\code{\link{proto_origin}()},
-\code{\link{proto_point}()},
-\code{\link{proto_text}()}
-
 Other ggtour proto functions: 
 \code{\link{append_fixed_y}()},
 \code{\link{facet_wrap_tour}()},

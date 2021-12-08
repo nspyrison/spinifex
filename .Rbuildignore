@@ -16,3 +16,4 @@
 ^inst/shiny_apps/.*\.txt$
 ^inst/shiny_apps/primary/.*$
 
+^doc$

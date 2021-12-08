@@ -13,7 +13,7 @@ predicted Y, or residuals.}
 }
 \description{
 Adds/overwrites the y of the projected data. Usefully for 1D projections and
-appending information related to, but independant from the projection;
+appending information related to, but independent from the projection;
 model predictions or residuals for instance.
 Wants to be called early so that the following proto calls adopt the changes.
 }

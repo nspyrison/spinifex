@@ -56,7 +56,7 @@ create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
   if(is.null(rn) == TRUE)
     rn <- 1L:nrow(basis)
   rownames(manip_space) <- rn
-  return(manip_space)
+  manip_space
 }
 
 
@@ -139,7 +139,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
     cn <- c(paste0("y", 1L:(ncol(manip_space) - 1L)), "manip_sp")
   colnames(rotated_space) <- cn
   
-  return(rotated_space)
+  rotated_space
 }
 
 
@@ -258,7 +258,7 @@ manual_tour <- function(basis,
   attr(basis_array, "phi_min")   <- phi_min
   attr(basis_array, "phi_max")   <- phi_max
   attr(basis_array, "data")      <- data ## Can be NULL
-  return(basis_array)
+  basis_array
 }
 
 
@@ -299,7 +299,7 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
     basis_array <- array(basis_array, dim = c(dim(basis_array), 1L),
                          dimnames = c(dn, list("frame1")))
     attr(basis_array, "data") <- dat
-    return(basis_array)
+    basis_array
   }
   
   ## if mv_x <0, phi_start <- pi/2 - phi_start
@@ -317,7 +317,7 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
     if(abs(.end - .seq[length(.seq)]) / .by >= .3)
       .seq <- c(.seq, .end)
     ## Sequence of phi values for this segment of the walk.
-    return(.seq)
+    .seq
   }
   ## Find the phi values for the animation frames
   phi_path <- c(phi_delta(start = phi_start, end = phi_min),
@@ -344,6 +344,6 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
   
   ## Return
   attr(interp_array, "data") <- attr(basis_array, "data")
-  return(interp_array)
+  interp_array
 }
 

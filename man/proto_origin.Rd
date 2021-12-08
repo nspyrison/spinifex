@@ -26,6 +26,7 @@ relative to the observations. Defaults to .05, 5\% of the projection space.}
 Adds a zero mark showing the location of the origin for the central data area.
 }
 \examples{
+library(spinifex)
 dat  <- scale_sd(penguins[, 1:4])
 clas <- penguins$species
 
@@ -33,7 +34,7 @@ clas <- penguins$species
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_point(list(color = clas, shape = clas)) +
-  proto_origin() + ## `+` in center showing (0, 0)
+  proto_origin() ## `+` in center
 \dontrun{
 animate_plotly(ggt)
 }
@@ -49,19 +50,6 @@ animate_plotly(ggt)
 }
 }
 \seealso{
-Other ggtour proto functions: 
-\code{\link{append_fixed_y}()},
-\code{\link{facet_wrap_tour}()},
-\code{\link{ggtour}()},
-\code{\link{proto_basis}()},
-\code{\link{proto_default}()},
-\code{\link{proto_density}()},
-\code{\link{proto_hex}()},
-\code{\link{proto_highlight}()},
-\code{\link{proto_hline0}()},
-\code{\link{proto_point}()},
-\code{\link{proto_text}()}
-
 Other ggtour proto functions: 
 \code{\link{append_fixed_y}()},
 \code{\link{facet_wrap_tour}()},

@@ -42,7 +42,7 @@
 #'   proto_point(aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 1.5, alpha = .8),
 #'               row_index = which(clas == levels(clas)[1])) +
-#'   proto_basis(position = "right", 
+#'   proto_basis(position = "right",
 #'               manip_col = "red",
 #'               text_size = 7L) +
 #'   proto_origin()
@@ -122,7 +122,7 @@ ggtour <- function(basis_array,
   }
   .nrow_df_data <- nrow(.df_data) ## NULL if data is NULL
   .n <- nrow(data) ## NULL if data is NULL
-  ## BYPRODUCT: Assign list to last_ggtour().
+  ## SIDE EFFECT: Assign list to last_ggtour().
   .set_last_ggtour(list(
     interpolated_basis_array = .interpolated_basis_array,
     df_basis = .df_basis, df_data = .df_data, map_to_data = .map_to_data,
@@ -130,7 +130,7 @@ ggtour <- function(basis_array,
     d = .d, manip_var = .manip_var, is_faceted = FALSE))
   
   ## Return ggplot head, theme, and facet if used
-  return(ggplot2::ggplot(.df_basis) + spinifex::theme_spinifex())
+  ggplot2::ggplot(.df_basis) + spinifex::theme_spinifex()
 }
 ## Print method for ggtours ?? using proto_default()
 #### Was a good idea, but ggplot stops working when you change the first class, 
@@ -140,7 +140,7 @@ ggtour <- function(basis_array,
 #' Wrap a 1d ribbon of panels into 2d for animation
 #' 
 #' Create and wrap a 1d ribbon of panels in 2d. 
-#' Because of byproducts of `ggtour` and `facet_wrap_tour` this wants to be 
+#' Because of the side effects of `ggtour` and `facet_wrap_tour` this wants to be 
 #' applied after `ggtour` and before any `proto_*` functions.
 #' `plotly` may not display well with with faceting.
 #' 
@@ -183,7 +183,7 @@ facet_wrap_tour <- function(
     .df_basis <- .bind_elements2df(list(facet_var = "_basis_"), .df_basis)
   }
   
-  ## BYPRODUCT:
+  ## SIDE EFFECT:
   #### Changes: .df_basis & .df_data have facet_var bound, is_faceted = TRUE
   .ggt$df_basis   <- .df_basis
   .ggt$df_data    <- .df_data
@@ -192,19 +192,19 @@ facet_wrap_tour <- function(
   .set_last_ggtour(.ggt)
   
   ## Return
-  return(list(
+  list(
     ggplot2::facet_wrap(facets = ggplot2::vars(facet_var),
                         nrow = nrow, ncol = ncol, dir = dir),
     ggplot2::theme(strip.text = ggplot2::element_text(
       margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
       panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
-  ))
+  )
 }
 
 #' Append a fixed vertical height
 #' 
 #' Adds/overwrites the y of the projected data. Usefully for 1D projections and
-#' appending information related to, but independant from the projection; 
+#' appending information related to, but independent from the projection; 
 #' model predictions or residuals for instance. 
 #' Wants to be called early so that the following proto calls adopt the changes.
 #' 
@@ -246,7 +246,7 @@ append_fixed_y <- function(
   .df_data$y <- rep_len(fixed_y, .nrow_df_data)
   .df_data$y <- .df_data$y - min(.df_data$y)
   
-  ## BYPRODUCT: pass data back to .store
+  ## SIDE EFFECT: pass data back to .store
   # to calm some oddities; like proto_origin() complaining about y being missing
   .ggt$df_data <- .df_data
   .ggt$map_to_data$y <- range(.df_data$y)
@@ -666,7 +666,7 @@ animate_plotly <- function(
 #'
 #' Appends `facet_wrap(vars(frame_number))` & minor themes to the ggtour. If the
 #' number of frames is more than desired, try increasing the `angle` argument on
-#' the tour.
+#' the tour. Is very demanding on the plots pane, works better with ggsave().
 #' 
 #' @param ggtour A grammar of graphics tour with appended protos added. 
 #' A return from `ggtour() + proto_*()`
@@ -688,12 +688,12 @@ animate_plotly <- function(
 #'   proto_basis()
 #' filmstrip(ggt)
 #' 
-#' ## Keep select frames, d = 1 case
+#' ## d = 1 case & specify facet dim
 #' bas1d     <- basis_pca(dat, d = 1)
 #' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
-#' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
+#' ggt1d <- ggtour(mt_path1d, dat, angle = 10) +
 #'   proto_default1d(aes_args = list(fill = clas))
-#' filmstrip(ggt1d, nrow = 2, ncol = 3)
+#' filmstrip(ggt1d, nrow = 12, ncol = 3)
 filmstrip <- function(
   ggtour, ...
 ){
@@ -836,7 +836,6 @@ proto_basis <- function(
 #' @param segment_size (1D bases only) the width thickness of the rectangle bar
 #' showing variable magnitude on the axes. Defaults to 2.
 #' @export
-#' @family ggtour proto functions
 proto_basis1d <- function(
   position = c("bottom1d", "floor1d",  "top1d", "full", "off"),
   manip_col = "blue",
@@ -1103,7 +1102,7 @@ proto_point <- function(
          ret <- list(do.call(.geom_func, .bkg_identity_args), ret)
        }
   ## Return
-  return(ret)
+  ret
 }
 
 
@@ -1190,7 +1189,7 @@ proto_density <- function(
   }
   
   ## Return
-  return(ret)
+  ret
 }
 
 
@@ -1251,7 +1250,7 @@ proto_text <- function(aes_args = list(),
     ggplot2::geom_text(mapping = .aes_call, data = .df_data, ...))
   
   ## Return proto
-  return(do.call(.geom_func, identity_args))
+  do.call(.geom_func, identity_args)
 }
 
 #' Tour proto for data, hexagonal heatmap
@@ -1313,7 +1312,7 @@ proto_hex <- function(
   )
   
   ## Return proto
-  return(do.call(.geom_func, identity_args))
+  do.call(.geom_func, identity_args)
 }
 
 
@@ -1400,13 +1399,12 @@ proto_highlight <- function(
   }
   
   ## Return proto
-  return(ret)
+  ret
 }
 
 
 #' @rdname proto_highlight
 #' @export
-#' @family ggtour proto functions
 #' @examples
 #' ## 1D case:
 #' gt_path1d <- save_history(dat, grand_tour(d = 1), max_bases = 3)
@@ -1465,7 +1463,7 @@ proto_highlight1d <- function(
   }
   
   ## Return
-  return(ret)
+  ret
 }
 
 
@@ -1537,9 +1535,9 @@ proto_frame_cor2 <- function(
     label = paste0("cor^2: ", sprintf("%3.2f", .agg$value)))
   
   ## Return
-  return(suppressWarnings(ggplot2::geom_text(
+  suppressWarnings(ggplot2::geom_text(
     ggplot2::aes(x = x, y = y, frame = frame, label = label),
-    data = .txt_df, ...)))
+    data = .txt_df, ...))
 }
 
 #' Tour proto for data origin zero mark
@@ -1556,6 +1554,7 @@ proto_frame_cor2 <- function(
 #' @aliases proto_origin2d
 #' @family ggtour proto functions
 #' @examples
+#' library(spinifex)
 #' dat  <- scale_sd(penguins[, 1:4])
 #' clas <- penguins$species
 #' 
@@ -1563,7 +1562,7 @@ proto_frame_cor2 <- function(
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' ggt <- ggtour(gt_path, dat, angle = .1) +
 #'   proto_point(list(color = clas, shape = clas)) +
-#'   proto_origin() + ## `+` in center showing (0, 0)
+#'   proto_origin() ## `+` in center
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
@@ -1598,13 +1597,12 @@ proto_origin <- function(
       ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end),
       data = .df_origin, ...)
   ## Return
-  return(do.call(.geom_func, identity_args))
+  do.call(.geom_func, identity_args)
 }
 
 
 #' @rdname proto_origin
 #' @export
-#' @family ggtour proto functions
 #' @examples
 #' 
 #' ## 1D case:
@@ -1644,12 +1642,12 @@ proto_origin1d <- function(
       ggplot2::aes(x = x, y = y, xend = x_end, yend = y_end),
       data = .df_origin, ...)
   ## Return
-  return(do.call(.geom_func, identity_args))
+  do.call(.geom_func, identity_args)
 }
 
-#' Tour proto adding a vertical/horizonatal line
+#' Tour proto adding a vertical/horizontal line
 #'
-#' Adds a vertical/horizonatal line with an intercept of 0, scaled to the data 
+#' Adds a vertical/horizontal line with an intercept of 0, scaled to the data 
 #' frame.
 #'
 #' @param identity_args A list of static, identity arguments passed into 
@@ -1696,13 +1694,12 @@ proto_hline0 <- function(
       ggplot2::aes(yintercept = y),
       data = .df_zero, ...)
   ## Return
-  return(do.call(.geom_func, identity_args))
+  do.call(.geom_func, identity_args)
 }
 
 #' @rdname proto_hline0
 #' @export
 #' @aliases proto_vline
-#' @family ggtour proto functions
 proto_vline0 <- function(
   identity_args = list(color = "grey80", size = .5, alpha = .9)
 ){
@@ -1727,7 +1724,7 @@ proto_vline0 <- function(
       ggplot2::aes(xintercept = x),
       data = .df_zero, ...)
   ## Return
-  return(do.call(.geom_func, identity_args))
+  do.call(.geom_func, identity_args)
 }
 
 
@@ -1765,18 +1762,17 @@ proto_default <- function(
   ...
 ){
   position <- match.arg(position)
-  return(list(
+  list(
     proto_point(...),
     proto_basis(position),
     proto_origin()
-  ))
+  )
 }
 
 
 #' @rdname proto_default
 #' @export
 #' @aliases proto_def1d
-#' @family ggtour proto functions
 #' @examples
 #' ## 1D case:
 #' gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 3)
@@ -1791,11 +1787,11 @@ proto_default1d <- function(
   ...
 ){
   position <- match.arg(position)
-  return(list(
+  list(
     proto_density(...),
     proto_basis1d(position),
     proto_origin1d()
-  ))
+  )
 }
 
 
@@ -1835,6 +1831,6 @@ if(FALSE){ ## DONT RUN
       ggplot2::geom_point(mapping = .aes_call, data = .df_data, ...))
     
     ## Return proto
-    return(do.call(.geom_func, identity_args))
+    do.call(.geom_func, identity_args)
   }
 }

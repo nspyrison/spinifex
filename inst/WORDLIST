@@ -6,6 +6,7 @@ Anscomb's
 Biscoe
 Buja
 Codecov
+colour
 Dimitriadou
 Dimorphism
 Elsevier
@@ -15,6 +16,7 @@ Flavanoids
 Forina
 GH
 Ggproto
+ggsave
 Gorman
 Horst
 IDCJDW
@@ -28,6 +30,7 @@ Malic
 Marg
 MaxTemp
 MinTemp
+ncol
 Neurocomputing
 Nonflavanoid
 Nonflavanoids
@@ -118,6 +121,7 @@ pos
 proto
 protos
 rds
+rescale
 scalable
 sd
 shtml

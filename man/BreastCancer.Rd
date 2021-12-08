@@ -58,12 +58,12 @@ BreastCancer <- d
 \examples{
 library("spinifex")
 str(spinifex::BreastCancer)
-dat <- scale_sd(spinifex::BreastCancer[, 1:8])
+dat  <- scale_sd(spinifex::BreastCancer[, 1:8])
 clas <- spinifex::BreastCancer$Class
 
 bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
-mt <- manual_tour(bas, mv)
+mv  <- manip_var_of(bas)
+mt  <- manual_tour(bas, mv)
 
 ggt <- ggtour(mt, dat, angle = .2) +
   proto_default(aes_args = list(color = clas, shape = clas))

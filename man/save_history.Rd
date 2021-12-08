@@ -2,25 +2,74 @@
 % Please edit documentation in R/0_util.r
 \name{save_history}
 \alias{save_history}
-\title{A wrapper muting the text byproduct of
-\code{\link[tourr:save_history]{tourr::save_history}}}
+\title{Save a tour basis array.}
 \usage{
-save_history(..., verbose = FALSE)
+save_history(
+  data,
+  tour_path = tourr::grand_tour(),
+  max_bases = 10,
+  start = NULL,
+  rescale = FALSE,
+  sphere = FALSE,
+  step_size = Inf,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
-\item{...}{additional arguments passed to tour path}
+\item{data}{Matrix, or data frame containing complete numeric columns}
 
-\item{verbose}{Whether or not to suppress the text output byproduct from
-\code{tourr::save_history()}. Defaults to FALSE.}
+\item{tour_path}{Tour path generator.
+Defaults to \code{\link[tourr:grand_tour]{tourr::grand_tour}}.}
+
+\item{max_bases}{The maximum number of new bases to generate.
+Some tour paths (like the guided tour) may generate less than the maximum.
+Defaults to 10.}
+
+\item{start}{First basis, is appended as first frame grand tour if possible.}
+
+\item{rescale}{Whether or not to rescale all variables to range (0,1).
+Defaults to FALSE.}
+
+\item{sphere}{Whether or not to sphere (whiten) covariance matrix to the
+identity matrix. Defaults to FALSE.}
+
+\item{step_size}{Distance (in radians) between target frames (not
+interpolated frames). Defaults to Inf, forcing new basis generation at each
+step.}
+
+\item{verbose}{Whether or not to suppress the text output side effects from
+\code{\link[tourr:save_history]{tourr::save_history}}. Defaults to FALSE.}
+
+\item{...}{Additional arguments passed to
+\code{\link[tourr:new_tour]{tourr::new_tour}}.}
 }
 \description{
-A wrapper muting the text byproduct of
-\code{\link[tourr:save_history]{tourr::save_history}}
+Save a tour path so it can later be displayed in many different ways.
+A wrapper function can mute the noisy text side effects of
+\code{\link[tourr:save_history]{tourr::save_history}}. Changes a few argument
+defaults differ: doesn't scale data columns to (0, 1), max_bases = 10,
+appends the start basis if tour_path is grand, it isn't already there,
+and has correct dim.
 }
 \examples{
-tour_path <- save_history(data = wine[, 2:6], grand_tour(), max_bases = 10)
-dim(tour_path)
+library(spinifex)
+
+dat <- scale_sd(penguins[, 1:4])
+## A grand tour path
+gt_path <- save_history(data = dat, tour_path = grand_tour(), max_bases = 10)
+dim(gt_path)
+
+## A 1d grand tour path
+gt1d_path <- save_history(dat, grand_tour(d = 1), 10)
+dim(gt1d_path)
+
+## A holes guided tour path
+holes_path <- save_history(dat, guided_tour(holes(), max.tries = 100))
+dim(holes_path)
 }
 \seealso{
 \code{\link[tourr:save_history]{tourr::save_history}}
+\code{\link[tourr:new_tour]{tourr::new_tour}}
+\code{\link[tourr:grand_tour]{tourr::grand_tour}}
 }

@@ -16,7 +16,7 @@ nrow = 3, ncol = 2, scales = "free".}
 \description{
 Appends \code{facet_wrap(vars(frame_number))} & minor themes to the ggtour. If the
 number of frames is more than desired, try increasing the \code{angle} argument on
-the tour.
+the tour. Is very demanding on the plots pane, works better with ggsave().
 }
 \examples{
 dat  <- scale_sd(penguins[, 1:4])
@@ -32,12 +32,12 @@ ggt <- ggtour(mt_path, dat, angle = .3) +
   proto_basis()
 filmstrip(ggt)
 
-## Keep select frames, d = 1 case
+## d = 1 case & specify facet dim
 bas1d     <- basis_pca(dat, d = 1)
 mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
-ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
+ggt1d <- ggtour(mt_path1d, dat, angle = 10) +
   proto_default1d(aes_args = list(fill = clas))
-filmstrip(ggt1d, nrow = 2, ncol = 3)
+filmstrip(ggt1d, nrow = 12, ncol = 3)
 }
 \seealso{
 Other ggtour animator: 

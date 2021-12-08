@@ -113,10 +113,8 @@ animate_plotly(ggt, fps = 5) ## As a plotly .html widget.
 
 ### Tours from `{tourr}`
 ```{r}
-## (Quietly create) a grand tour, projecting through randomly selected bases
-.mute <- utils::capture.output(
-  gt_path <- tourr::save_history(dat, grand_tour(), max_bases = 3)
-)
+## Save a grand tour basis path, projecting through randomly selected bases
+gt_path <- save_history(dat, grand_tour(), max_bases = 3)
 
 ## Static ggplot of all frames in the tour
 ggt <- ggtour(gt_path, dat, angle = .1) + ## Include geodesic interpolation angle between the selected bases.
@@ -137,8 +135,7 @@ guided_path <- save_history(dat, guided_tour(holes(), d = 1))
 ## Static ggplot of all frames in the tour
 ggt <- ggtour(guided_path, dat, angle = .1) + ## Include geodesic interpolation angle between the selected bases.
   proto_basis1d() +
-  proto_density(list(fill = clas), density_position = "stack")
-## Note that proto_density(density_position = "stack") does not work with animate_plotly().
+  proto_density(list(fill = clas), rug_shape = 124L)
 ```
 ```{r, eval=FALSE}
 ## Animate
@@ -171,7 +168,9 @@ ggt <- ggtour(gt_path, dat, angle = .15) +
   proto_point(list(color = clas, shape = clas)) +
   proto_basis(position = "center") +
   proto_origin()
-animate_gganimate(ggt, render = gganimate::av_renderer("./my_tour.mp4"))
+```
+```{r, eval=FALSE}
+animate_plotly(ggt)
 ```
 
 

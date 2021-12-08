@@ -58,7 +58,7 @@ ggt <- ggtour(basis_array = mt_path, data = dat, angle = .3) +
   proto_point(aes_args = list(color = clas, shape = clas),
               identity_args = list(size = 1.5, alpha = .8),
               row_index = which(clas == levels(clas)[1])) +
-  proto_basis(position = "right", 
+  proto_basis(position = "right",
               manip_col = "red",
               text_size = 7L) +
   proto_origin()

@@ -20,7 +20,7 @@ is_orthonormal <- function(x, tol = 0.001) {
   x <- as.matrix(x)
   actual <- t(x) %*% x ## Collapses to identity matrix IFF x is orthonormal
   expected <- diag(ncol(x))
-  if(max(abs(actual - expected)) < tol){return(TRUE)}else{return(FALSE)}
+  if(max(abs(actual - expected)) < tol) TRUE else FALSE
 }
 
 
@@ -223,7 +223,7 @@ map_relative <- function(
     x[, 2L] <- scale * x[, 2L] + yoff
   }
   
-  return(x)
+  x
 }
 
 #' @rdname spinifex-deprecated
@@ -259,7 +259,7 @@ map_absolute <- function(x,
   ret <- x
   ret[, 1L] <- ret[, 1L] * offset[1L] + scale[1L]
   ret[, 2L] <- ret[, 2L] * offset[2L] + scale[2L]
-  return(ret)
+  ret
 }
 
 #' @rdname spinifex-deprecated
@@ -282,7 +282,7 @@ pan_zoom <- function(x, pan = c(0L, 0L), zoom = c(1L, 1L)) {
 #' scale_sd(data = wine[, 2:6])
 scale_sd <- function(data){
   if(is.null(dim(data))) data <- matrix(data) ## As columnar matrix
-  return(apply(data, 2L, function(c){(c - mean(c)) / stats::sd(c)}))
+  apply(data, 2L, function(c){(c - mean(c)) / stats::sd(c)})
 }
 
 #' @rdname scale_sd
@@ -292,7 +292,7 @@ scale_sd <- function(data){
 scale_01 <- function(data){
   if(is.null(dim(data))) data <- matrix(data) ## As columnar matrix
   if(nrow(data) == 1L) return(matrix(0L, ncol = ncol(data)))
-  return(apply(data, 2L, function(c) (c - min(c)) / diff(range(c))))
+  apply(data, 2L, function(c) (c - min(c)) / diff(range(c)))
 }
 
 # ## <<experimental>> Mutes verbose functions, without suppressing warnings or error,
@@ -359,7 +359,7 @@ basis_pca <- function(data, d = 2){
   ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
   rownames(ret) <- colnames(data)
   colnames(ret) <- paste0("PC", 1:d)
-  return(ret)
+  ret
 }
 
 
@@ -392,8 +392,8 @@ basis_olda <- function(data, class, d = 2){
                             label = as.factor(class),
                              ndim = d)$projection
   rownames(ret) <- colnames(data)
-  colnames(ret) <- paste0("OLD", 1:d)
-  return(ret)
+  colnames(ret) <- paste0("oLD", 1:d)
+  ret
 }
 
 #' The basis of Orthogonal Discriminant Projection (ODP)
@@ -433,7 +433,7 @@ basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
                            ...)$projection
   rownames(ret) <- colnames(data)
   colnames(ret) <- paste0("ODP", 1L:d)
-  return(ret)
+  ret
 }
 
 #' The basis of Orthogonal Neighborhood Preserving Projection (OLPP)
@@ -470,7 +470,7 @@ basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
                             type = type)$projection
   rownames(ret) <- colnames(data)
   colnames(ret) <- paste0("ONPP", 1L:d)
-  return(ret)
+  ret
 }
 
 
@@ -505,7 +505,7 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2, ...){
   )
   ret <- matrix(hist[,, length(hist)], ncol = d)
   rownames(ret) <- colnames(data)
-  return(ret)
+  ret
 }
 
 
@@ -528,7 +528,7 @@ basis_half_circle <- function(data){
   bas <- tourr::orthonormalise(u_circ)
   rownames(bas) <- colnames(data)
   colnames(bas) <- paste0("half_circ", 1L:2L)
-  return(bas)
+  bas
 }
 
 
@@ -538,7 +538,7 @@ basis_half_circle <- function(data){
 #' 
 #' Masks ggplot2's default color/fill color palette for discrete variables.
 #' 
-#' @seealso color_scale_of
+#' @param ... Passes arguments to ggplot2::scale_colour/fill_brewer.
 #' @export
 scale_colour_discrete <- function(...){
   ggplot2::scale_colour_brewer(..., palette = "Dark2")
@@ -558,6 +558,7 @@ scale_fill_discrete <- function(...){
 #' @param ... Optionally pass arguments to `ggplot2::theme()`.
 #' @seealso \code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
 #' @export
+#' @import ggplot2
 #' @examples 
 #' theme_spinifex()
 #' 
@@ -566,19 +567,19 @@ scale_fill_discrete <- function(...){
 #'   geom_point() + theme_spinifex()
 theme_spinifex <- function(...){
   ## Color/fill discrete also masked to reduced warnings/messages
-  list(ggplot2::theme_minimal() %+replace%
-         ggplot2::theme(
-           panel.grid.major = ggplot2::element_blank(),
-           panel.grid.minor = ggplot2::element_blank(),
-           axis.text        = ggplot2::element_blank(),
-           axis.title       = ggplot2::element_text(), ## Allow axis titles, though defaulted to blank
-           legend.position  = "bottom",
-           legend.direction = "horizontal", ## Levels within an aesthetic
-           legend.box       = "vertical",   ## Between aesthetics
-           legend.margin    = ggplot2::margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
-           ...), ## ... applied over defaults.
-       ggplot2::coord_fixed(),
-       ggplot2::labs(x = "", y = "", color = "", shape = "", fill = "")
+  list(theme_minimal(),
+       theme(
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.text        = element_blank(),
+         axis.title       = element_text(), ## Allow axis titles, though defaulted to blank
+         legend.position  = "bottom",
+         legend.direction = "horizontal", ## Levels within an aesthetic
+         legend.box       = "vertical",   ## Between aesthetics
+         legend.margin    = margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
+         ...), ## ... applied over defaults.
+       coord_fixed(clip = "off"),
+       labs(x = "", y = "", color = "", shape = "", fill = "")
   )
 }
 
@@ -609,29 +610,85 @@ manip_var_of <- function(basis, rank = 1){
   row_norm <- sqrt(apply(basis, 1L, function(c) {sum(c^2L)}))
   ret <- order(abs(row_norm), decreasing = TRUE)[rank]
   names(ret) <- rownames(basis)[rank]
-  return(ret)
+  ret
 }
 
 
 
-#' A wrapper muting the text byproduct of 
-#' \code{\link[tourr:save_history]{tourr::save_history}}
+#' Save a tour basis array.
+#' 
+#' Save a tour path so it can later be displayed in many different ways.
+#' A wrapper function can mute the noisy text side effects of 
+#' \code{\link[tourr:save_history]{tourr::save_history}}. Changes a few argument 
+#' defaults differ: doesn't scale data columns to (0, 1), max_bases = 10, 
+#' appends the start basis if tour_path is grand, it isn't already there, 
+#' and has correct dim.
 #'
-#' @inheritParams tourr::save_history
-#' @param verbose Whether or not to suppress the text output byproduct from 
-#' `tourr::save_history()`. Defaults to FALSE.
-#' @seealso \code{\link[tourr:save_history]{tourr::save_history}}
+#' @param data Matrix, or data frame containing complete numeric columns
+#' @param tour_path Tour path generator. 
+#' Defaults to \code{\link[tourr:grand_tour]{tourr::grand_tour}}.
+#' @param max_bases The maximum number of new bases to generate. 
+#' Some tour paths (like the guided tour) may generate less than the maximum. 
+#' Defaults to 10.
+#' @param start First basis, is appended as first frame grand tour if possible.
+#' @param rescale Whether or not to rescale all variables to range (0,1). 
+#' Defaults to FALSE.
+#' @param sphere Whether or not to sphere (whiten) covariance matrix to the 
+#' identity matrix. Defaults to FALSE. 
+#' @param step_size Distance (in radians) between target frames (not 
+#' interpolated frames). Defaults to Inf, forcing new basis generation at each 
+#' step.
+#' @param verbose Whether or not to suppress the text output side effects from 
+#' \code{\link[tourr:save_history]{tourr::save_history}}. Defaults to FALSE.
+#' @param ... Additional arguments passed to 
+#' \code{\link[tourr:new_tour]{tourr::new_tour}}.
+#' @seealso \code{\link[tourr:save_history]{tourr::save_history}} 
+#' \code{\link[tourr:new_tour]{tourr::new_tour}}
+#' \code{\link[tourr:grand_tour]{tourr::grand_tour}}
 #' @export
 #' @examples 
-#' tour_path <- save_history(data = wine[, 2:6], grand_tour(), max_bases = 10)
-#' dim(tour_path)
-save_history <- function(..., verbose = FALSE){
+#' library(spinifex)
+#' 
+#' dat <- scale_sd(penguins[, 1:4])
+#' ## A grand tour path
+#' gt_path <- save_history(data = dat, tour_path = grand_tour(), max_bases = 10)
+#' dim(gt_path)
+#' 
+#' ## A 1d grand tour path
+#' gt1d_path <- save_history(dat, grand_tour(d = 1), 10)
+#' dim(gt1d_path)
+#' 
+#' ## A holes guided tour path
+#' holes_path <- save_history(dat, guided_tour(holes(), max.tries = 100))
+#' dim(holes_path)
+save_history <- function(
+  data,
+  tour_path = tourr::grand_tour(),
+  max_bases = 10,
+  start = NULL,
+  rescale = FALSE,
+  sphere = FALSE,
+  step_size = Inf,
+  verbose = FALSE,
+  ...){
+  ## Mutable version of tourr::save_history, with slightly different arg defaults
   if(verbose == FALSE){
     .mute <- utils::capture.output(
-      ret <- tourr::save_history(...))
-  } else ret <- tourr::save_history(...)
+      ret <- tourr::save_history(
+        data, tour_path, max_bases, start, rescale, sphere, step_size, ...)
+    )
+  } else ret <- tourr::save_history(
+    data, tour_path, max_bases, start, rescale, sphere, step_size, ...)
   
-  return(ret)
+  ## Append start as first target basis
+  #### if tour_path is a grand tour, start isn't first frame, and dim match
+  if(is.null(start) == FALSE)
+    if(attr(tour_path, "name") == "grand" &
+       ret[,, 1L] != start &
+       dim(start) == dim(ret)[1L:2L])
+      ret <- array(c(start, ret), dim = dim(ret) + c(0L, 0L, 1L))
+  
+  ret
 }
 
 # ### as_history_array ----
@@ -660,5 +717,5 @@ save_history <- function(..., verbose = FALSE){
 #   if(length(data) > 0L)
 #     attr(basis_array, "full") <- as.matrix(data)
 #   class(basis_array) <- "history_array"
-#   return(basis_array)
+#   basis_array
 # }

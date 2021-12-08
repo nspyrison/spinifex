@@ -9,9 +9,9 @@ scale_colour_discrete(...)
 
 scale_fill_discrete(...)
 }
+\arguments{
+\item{...}{Passes arguments to ggplot2::scale_colour/fill_brewer.}
+}
 \description{
 Masks ggplot2's default color/fill color palette for discrete variables.
-}
-\seealso{
-color_scale_of
 }
