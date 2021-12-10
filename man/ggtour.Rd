@@ -9,7 +9,7 @@ ggtour(
   data = NULL,
   angle = 0.05,
   basis_label = NULL,
-  data_label = 1:nrow(basis_array)
+  data_label = NULL
 )
 }
 \arguments{
@@ -28,8 +28,7 @@ Defaults to NULL; 3 character abbreviation from colnames of data or
 rownames of basis.}
 
 \item{data_label}{Labels for \code{plotly} tooltip display.
-Defaults to the row number, (and rownames of the data if they contain
-characters).}
+Defaults to the NULL, rownames and/or nornumber of data.}
 }
 \description{
 \code{ggtour()} initializes a ggplot object for a tour. \verb{proto_*} functions are
@@ -90,6 +89,7 @@ Other ggtour proto functions:
 \code{\link{facet_wrap_tour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
+\code{\link{proto_density2d}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},

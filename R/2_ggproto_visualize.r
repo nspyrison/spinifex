@@ -17,8 +17,7 @@
 #' Defaults to NULL; 3 character abbreviation from colnames of data or
 #' rownames of basis.
 #' @param data_label Labels for `plotly` tooltip display. 
-#' Defaults to the row number, (and rownames of the data if they contain 
-#' characters).
+#' Defaults to the NULL, rownames and/or nornumber of data.
 #' @export
 #' @family ggtour proto functions
 #' @examples
@@ -71,19 +70,20 @@ ggtour <- function(basis_array,
                    data = NULL,
                    angle = .05,
                    basis_label = NULL,
-                   data_label = 1:nrow(basis_array)
+                   data_label  = NULL
 ){
   ## If data missing, check if data is passed to the basis_array
   if(is.null(data)) data <- attr(basis_array, "data") ## Could be NULL
   .manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
   .map_to_data <- data.frame(x = 0L:1L, y = 0L:1L) ## Init for null data
+  ## Basis label, handling
   if(is.null(basis_label)){
     if(is.null(data) == FALSE){
       basis_label <- abbreviate(colnames(data), 3L)
     }else basis_label <- abbreviate(rownames(basis_array), 3L)
     if(length(basis_label) == 0L) basis_label <- paste0("v", 1L:nrow(basis_array))
   }
-  ## If characters are used in the rownames, add them to tooltip
+  ## Data label handling
   if(is.null(data) == FALSE &
      suppressWarnings(any(is.na(as.numeric(as.character(rownames(data)))))))
     data_label <- paste0("row: ", 1L:nrow(data), ", ", rownames(data))
@@ -825,7 +825,7 @@ proto_basis <- function(
       data = .df_basis,
       color = .axes_col, size = text_size,
       vjust = "outward", hjust = "outward",
-      mapping = ggplot2::aes(x = x, y = y, frame = frame, label = label)
+      mapping = ggplot2::aes(x = x, y = y, frame = frame, label = tooltip)
     ))
   ))
 }
@@ -864,9 +864,9 @@ proto_basis1d <- function(
   .df_seg  <- data.frame(x = .df_basis$x,
                          y = rep(.p:1L, .n_frames) / .p,
                          frame = .df_basis$frame,
-                         label = .df_basis$label)
+                         tooltip = .df_basis$tooltip)
   .df_txt <- data.frame(x = -1.2, y = .p:1L/.p, 
-                        label = .df_basis[.df_basis$frame == 1L, "label"])
+                        tooltip = .df_basis[.df_basis$frame == 1L, "tooltip"])
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5) / .p)
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5) / .p)
   if(.is_faceted){
@@ -897,7 +897,7 @@ proto_basis1d <- function(
       .df_rect, fill = NA, color = "grey60"),
     ## Variable abbreviation text
     ggplot2::geom_text(
-      ggplot2::aes(x, y, label = label), .df_txt,
+      ggplot2::aes(x, y, label = tooltip), .df_txt,
       size = text_size, color = "grey60", hjust = 1L),
     ## Contribution segments of current basis, changing with frame
     suppressWarnings(ggplot2::geom_segment(
@@ -1011,7 +1011,7 @@ draw_basis <- function(
       data = .df_basis,
       color = .axes_col, size = text_size,
       vjust = "outward", hjust = "outward",
-      mapping = ggplot2::aes(x = x, y = y, label = label)
+      mapping = ggplot2::aes(x = x, y = y, label = tooltip)
     ))
   ))
 }
@@ -1025,18 +1025,20 @@ draw_basis <- function(
 #'
 #' Adds `geom_point()` of the projected data.
 #'
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param aes_args A list of arguments to call inside of aes().
+#' aesthetic mapping of the primary geom. For example,
+#' `geom_point(aes(color = my_fct, shape = my_fct))` becomes
+#' `aes_args = list(color = my_fct, shape = my_fct)`.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
+#' the primary geom. For instance,
+#' `geom_point(size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`. 
+#' Also passes more foundational arguments such as stat and position, though 
+#' these have been tested less.
 #' @param row_index A numeric or logical index of rows to subset to. 
 #' Defaults to NULL, all observations.
 #' @param bkg_color The character color by name or hexadecimal to display
-#' background observations, those not identified in `row_index`. 
+#' background observations, those not in the `row_index`. 
 #' Defaults to "grey80". Use FALSE or NULL to skip rendering background points.
 #' Other aesthetic values such as shape and alpha are set adopted from 
 #' `aes_args` and `identity_args`.
@@ -1080,7 +1082,7 @@ proto_point <- function(
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
-    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tolltip for plotly hover tt.
+    ggplot2::aes(x = x, y = y, frame = frame, tooltip = tooltip, ...) ## tooltip for plotly hover tt.
   .aes_call <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(
@@ -1110,14 +1112,16 @@ proto_point <- function(
 #' Adds `geom_density()` and `geom_rug()` of the projected data. Density 
 #' `postion = "stack"` does not work with `animate_plotly()`, GH issue is open. 
 #' 
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param aes_args A list of arguments to call inside of aes().
+#' aesthetic mapping of the primary geom. For example,
+#' `geom_point(aes(color = my_fct, shape = my_fct))` becomes
+#' `aes_args = list(color = my_fct, shape = my_fct)`.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
+#' the primary geom. For instance,
+#' `geom_point(size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`. 
+#' Also passes more foundational arguments such as stat and position, though 
+#' these have been tested less.
 #' @param row_index A numeric or logical index of rows to subset to. 
 #' Defaults to NULL, all observations.
 #' @param density_position The `ggplot2` position of `geom_density()`. Either 
@@ -1193,18 +1197,87 @@ proto_density <- function(
 }
 
 
+
+#' Tour proto for data, 1D density, with rug marks
+#'
+#' Adds `geom_density_2d()` of the projected data.
+#' 
+#' @param aes_args A list of arguments to call inside of aes().
+#' aesthetic mapping of the primary geom. For example,
+#' `geom_point(aes(color = my_fct, shape = my_fct))` becomes
+#' `aes_args = list(color = my_fct, shape = my_fct)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' the primary geom. For instance,
+#' `geom_point(size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`. 
+#' Also passes more foundational arguments such as stat and position, though 
+#' these have been tested less.
+#' @param row_index A numeric or logical index of rows to subset to. 
+#' Defaults to NULL, all observations.
+#' @param ... Optionally pass addition argument to the primary geom.
+#' @param bins Number of contour bins. Overridden by binwidth. Defaults to 3.
+#' @param binwidth The width of the contour bins. Overridden by breaks.
+#' @param breaks Numeric vector to set the contour breaks. Overrides binwidth and bins. By default, this is a vector of length ten with pretty() breaks.
+#' @export
+#' @aliases proto_density2d
+#' @family ggtour proto functions
+#' @examples
+#' library(spinifex)
+#' dat     <- scale_sd(penguins[, 1:4])
+#' clas    <- penguins$species
+#' gt_path <- save_history(dat, grand_tour(), max = 3)
+#' 
+#' ## geom_density_2d args can be passed in identity_args (bins, binwidth, breaks) 
+#' ggt <- ggtour(gt_path, dat, angle = .3) +
+#'   proto_density2d(aes_args = list(color = clas, fill = clas),
+#'                   identity_args = list(binwidth = .3)) +
+#'   proto_point(aes_args = list(color = clas, shape = clas),
+#'               identity_args = list(alpha = .2)) +
+#'   proto_basis()
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+proto_density2d <- function(
+  aes_args = list(),
+  identity_args = list(bins = 4),
+  row_index = NULL
+){
+  ## Initialize
+  eval(.init4proto)
+  
+  if(is.null(.df_data))
+    stop("proto_point: Data is NULL. Was data passed to the basis array or ggtour?")
+  if(is.null(.df_data$y))
+    stop("proto_point: Projection y not found, expected a 2D tour.")
+  
+  ## do.call aes() over the aes_args
+  .aes_func <- function(...)
+    ggplot2::aes(x = x, y = y, frame = frame, ...)
+  .aes_call <- do.call(.aes_func, aes_args)
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...) suppressWarnings(
+    ggplot2::geom_density_2d(
+      mapping = .aes_call, data = .df_data, contour_var = "ndensity",
+      #bins = bins, binwidth = binwidth, breaks = breaks, 
+       ...))
+  do.call(.geom_func, identity_args)
+}
+
+
 #' Tour proto for data, text labels
 #'
 #' Adds `geom_text()` of the projected data.
 #'
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param aes_args A list of arguments to call inside of aes().
+#' aesthetic mapping of the primary geom. For example,
+#' `geom_point(aes(color = my_fct, shape = my_fct))` becomes
+#' `aes_args = list(color = my_fct, shape = my_fct)`.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
+#' the primary geom. For instance,
+#' `geom_point(size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`. 
+#' Also passes more foundational arguments such as stat and position, though 
+#' these have been tested less.
 #' @param row_index A numeric or logical index of rows to subset to. 
 #' Defaults to NULL, all observations.
 #' @export
@@ -1243,7 +1316,7 @@ proto_text <- function(aes_args = list(),
   
   ## do.call aes() over the aes_args
   .aes_func  <- function(...)
-    ggplot2::aes(x = x, y = y, frame = frame, label = label, ...)
+    ggplot2::aes(x = x, y = y, frame = frame, label = tooltip, ...)
   .aes_call  <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...)suppressWarnings(
@@ -1258,14 +1331,16 @@ proto_text <- function(aes_args = list(),
 #' Adds `geom_hex()` of the projected data. Does not display hexagons in plotly
 #' animations; will not work with `animate_plotly()`.
 #'
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param aes_args A list of arguments to call inside of aes().
+#' aesthetic mapping of the primary geom. For example,
+#' `geom_point(aes(color = my_fct, shape = my_fct))` becomes
+#' `aes_args = list(color = my_fct, shape = my_fct)`.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
+#' the primary geom. For instance,
+#' `geom_point(size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`. 
+#' Also passes more foundational arguments such as stat and position, though 
+#' these have been tested less.
 #' @param row_index A numeric or logical index of rows to subset to. 
 #' Defaults to NULL, all observations.
 #' @param bins Numeric vector giving number of bins in both vertical and 
@@ -1324,10 +1399,10 @@ proto_hex <- function(
 #' of the `row_index` argument on data protos, still helpful in the 1d case and
 #' for `mark_initial`, does not use bkg_row_color
 #'
-#' @param aes_args A list of aesthetic arguments to passed to 
-#' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
-#' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
-#' `aes_args = list(color = myCol, shape = myCol)`.
+#' @param aes_args A list of arguments to call inside of aes().
+#' aesthetic mapping of the primary geom. For example,
+#' `geom_point(aes(color = my_fct, shape = my_fct))` becomes
+#' `aes_args = list(color = my_fct, shape = my_fct)`.
 #' @param identity_args A list of static, identity arguments passed into 
 #' `geom_point()`, but outside of `aes()`, for instance 
 #' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
@@ -1374,11 +1449,10 @@ proto_highlight <- function(
   if(is.null(.df_data)) stop("Data is NULL, proto not applicable.")
   if(is.null(.df_data$y))
     stop("proto_highlight: Projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
-
   
   ## do.call aes() over the aes_args
   .aes_func <- function(...)
-    ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## rownum for tooltip
+    ggplot2::aes(x = x, y = y, frame = frame, tooltip = tooltip, ...) ## rownum for tooltip
   .aes_call <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...) suppressWarnings(ggplot2::geom_point(
@@ -1442,7 +1516,7 @@ proto_highlight1d <- function(
   .aes_func <- function(...)
     ggplot2::aes(x = x, xend = x,  y = .ymin - .segment_tail,
                  yend = .ymax + .segment_tail,
-                 frame = frame, tooltip = label, ...) ## rownum for tooltip
+                 frame = frame, tooltip = tooltip, ...)
   .aes_call <- do.call(.aes_func, aes_args)
   .geom_func <- function(...) suppressWarnings(
     ggplot2::geom_segment(.aes_call, .df_data, ...))
@@ -1536,7 +1610,7 @@ proto_frame_cor2 <- function(
   
   ## Return
   suppressWarnings(ggplot2::geom_text(
-    ggplot2::aes(x = x, y = y, frame = frame, label = label),
+    ggplot2::aes(x = x, y = y, frame = frame, label = tooltip),
     data = .txt_df, ...))
 }
 
@@ -1547,9 +1621,11 @@ proto_frame_cor2 <- function(
 #' @param tail_size How long the origin mark should extended
 #' relative to the observations. Defaults to .05, 5% of the projection space.
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
+#' the primary geom. For instance,
+#' `geom_point(size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`. 
+#' Also passes more foundational arguments such as stat and position, though 
+#' these have been tested less.
 #' @export
 #' @aliases proto_origin2d
 #' @family ggtour proto functions
@@ -1651,9 +1727,11 @@ proto_origin1d <- function(
 #' frame.
 #'
 #' @param identity_args A list of static, identity arguments passed into 
-#' `geom_point()`, but outside of `aes()`, for instance 
-#' `geom_point(aes(...), size = 2, alpha = .7)` becomes 
-#' `identity_args = list(size = 2, alpha = .7)`.
+#' the primary geom. For instance,
+#' `geom_point(size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`. 
+#' Also passes more foundational arguments such as stat and position, though 
+#' these have been tested less.
 #' @export
 #' @aliases proto_hline
 #' @family ggtour proto functions
@@ -1824,7 +1902,7 @@ if(FALSE){ ## DONT RUN
     
     ## do.call aes() over the aes_args
     .aes_func <- function(...)
-      ggplot2::aes(x = x, y = y, frame = frame, tooltip = label, ...) ## tooltip for plotly on hover tip
+      ggplot2::aes(x = x, y = y, frame = frame, tooltip = tooltip, ...) ## tooltip for plotly on hover tip
     .aes_call <- do.call(.aes_func, aes_args)
     ## do.call geom_point() over the identity_args
     .geom_func <- function(...) suppressWarnings(

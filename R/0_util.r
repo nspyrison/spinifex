@@ -91,7 +91,7 @@ array2df <- function(
   colnames(basis_frames) <- c(.nms[1L:ncol(basis_array)], "frame")
   ## Basis label and manip_var attribute.
   if(length(basis_label) > 0L)
-    basis_frames$label <- rep_len(basis_label, nrow(basis_frames))
+    basis_frames$tooltip <- rep_len(basis_label, nrow(basis_frames))
   attr(basis_frames, "manip_var") <- manip_var
   
   ## Data; if exists
@@ -113,9 +113,9 @@ array2df <- function(
     data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c(.nms[1L:ncol(basis_array)], "frame")
     ## Data label rep if applicable
-    if(is.null(data_label) == TRUE) data_label <- 1L:nrow(data)
+    if(is.null(data_label)) data_label <- 1L:nrow(data)
     if(length(data_label) > 0L)
-      data_frames$label <- rep_len(data_label, nrow(data_frames))
+      data_frames$tooltip <- rep_len(data_label, nrow(data_frames))
   }
   
   ## Return, include data if it exists.

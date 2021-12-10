@@ -13,9 +13,11 @@ proto_vline0(identity_args = list(color = "grey80", size = 0.5, alpha = 0.9))
 }
 \arguments{
 \item{identity_args}{A list of static, identity arguments passed into
-\code{geom_point()}, but outside of \code{aes()}, for instance
-\code{geom_point(aes(...), size = 2, alpha = .7)} becomes
-\code{identity_args = list(size = 2, alpha = .7)}.}
+the primary geom. For instance,
+\code{geom_point(size = 2, alpha = .7)} becomes
+\code{identity_args = list(size = 2, alpha = .7)}.
+Also passes more foundational arguments such as stat and position, though
+these have been tested less.}
 }
 \description{
 Adds a vertical/horizontal line with an intercept of 0, scaled to the data
@@ -42,6 +44,7 @@ Other ggtour proto functions:
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
+\code{\link{proto_density2d}()},
 \code{\link{proto_density}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},
