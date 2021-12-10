@@ -1,4 +1,12 @@
+## This case was on found in static GGPLOT2, not using spinifex protos.
+#### It seemed to be an interaction with theme_void, and coord_fixed.
+#### theme_spinifex was changed adjusting theme_minimal rather than theme_void.
+#### This issue seems indepentent with plotly pressence issue and was 
+#### never observed directly from proto calls, but should be resolved in 
+#### spinifex none the less.
+
 # Original case ----
+
 ## Setup -----
 {
   require("ggplot2")

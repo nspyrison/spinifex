@@ -554,7 +554,7 @@ animate_plotly <- function(
   fps = 8,
   ... ## Passed to plotly::ggplotly(). can always call layout/config again
 ){
-  ## COndition handling for ggplot (as opposed to plotly::subplot())
+  ## Condition handling for ggplot (as opposed to plotly::subplot())
   if(class(ggtour)[1L] == "gg"){
     ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
     #### Adding many protos is liable to break plotly animations, see above url.
@@ -582,7 +582,6 @@ animate_plotly <- function(
                                   scaleanchor = "y", scalaratio = 1L))
   }else{
     ## More than 1 frame:
-    
     ## Block plotly.js warning: lack of support for horizontal legend;
     #### https://github.com/plotly/plotly.js/issues/53
     anim <- ggtour %>%
@@ -1125,8 +1124,8 @@ proto_point <- function(
 #' c("identity", "stack"), defaults to "identity". Warning: "stack" does not 
 #' work with `animate_plotly()` at the moment.
 #' @param rug_shape Numeric, the number of the shape to make rug marks.
-#' Expects either 142, 124 or NULL, `|` for plotly, ggplot2 and off respectively.
-#' defaults to 142.
+#' Expects either 3 142, 124 or NULL, '+', '|' (plotly), '|' (ggplot2) 
+#' respectively. Defaults to 3.
 #' @export
 #' @aliases proto_density1d
 #' @family ggtour proto functions
@@ -1148,7 +1147,8 @@ proto_density <- function(
   identity_args = list(alpha = .7),
   row_index = NULL,
   density_position = c("identity", "stack", "fill"),
-  rug_shape = c(142, 124, NULL)
+  ## plotly only renders position = "identity" atm.
+  rug_shape = c(3, 142, 124, NULL)
 ){
   ## Initialize
   eval(.init4proto)
@@ -1162,7 +1162,7 @@ proto_density <- function(
     warning("proto_density: aes_args contains color without fill, did you mean to use fill to color below the curve?")
   density_position <- match.arg(density_position)
   rug_shape <- rug_shape[1L]
-  ## "identity" is the only position working in {plotly} right now.
+  ## plotly only renders position = "identity" atm.
   ## see: https://github.com/ropensci/plotly/issues/1544
   
   ## geom_density do.call
