@@ -18,8 +18,8 @@ proto_frame_cor2(
 Defaults to NULL, all observations.}
 
 \item{xy_position}{Vector of the x and y position, the fraction of the
-range of the data in each direction.;  0 is min, 1 is max.
-Defaults to c(.7, -.1), in the bottom right.}
+range of the data in each direction. The projection data is contained in
+(0, 1) in each direction. Defaults to c(.7, -.1), in the bottom right.}
 
 \item{...}{Optionally, pass additional arguments to
 \code{\link[stats:cor]{stats::cor}}, specifying the type of

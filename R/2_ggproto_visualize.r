@@ -906,6 +906,54 @@ proto_basis1d <- function(
   ))
 }
 
+
+#' @rdname proto_basis
+#' @param segment_size (1D bases only) the width thickness of the rectangle bar
+#' showing variable magnitude on the axes. Defaults to 2.
+# #' @export
+#' @examples
+#' ## basis_table
+#' ggt <- ggtour(mt_path, dat, angle = .3) +
+#'   proto_default(aes_args = list(color = clas, shape = clas)) +
+#'   proto_basis_text()
+#' \dontrun{
+#' animate_plotly(ggt)
+#' }
+proto_basis_text <- function(
+  position = c("right"),
+  text_size = 5
+){
+  ## Initialize
+  eval(.init4proto)
+  browser()
+  
+  ## make positions to be joined to .df_basis
+  .u_frame <- data.frame(frame = unique(.df_basis$frame))
+  d <- 0L:.d; p <- 1L:.p
+  .pos <- merge(d, p) %>%
+    map_relative(position, .map_to_data) %>%
+    merge(.u_frame)
+  colnames(.pos) <- c("d", "p", "frame")
+  ## round basis contributions
+  .df_basis[, c("x", "y")] <- round(.df_basis[, c("x", "y")], 2L)
+  .bas_longer <- .df_basis %>%
+    tidyr::pivot_longer(!c(frame, tooltip), names_to = "element", values_to = "text")
+  ## Note this is the dynamic part of the text, 
+  ##also need a static geom_text for min(.pos$p) for the static header column
+  .df_pos_frames <- dplyr::left_join(.df_basis, .pos[.pos$p != min(.pos$p),], by = "frame")
+  .df_pos_frames
+  
+  .pos[.pos$p == min(.pos$p), ]
+
+  ## Return proto
+  return(list(
+    geom_table(data = .df_pos_frames, aes(x = .pos$x, y = .pos$y, label = .ltbl),
+               table.rownames = TRUE, table.theme = ttheme_gtstripes)
+    
+  ))
+}
+
+
 #' draw a basis on a static ggplot
 #' 
 #' additively draws a basis on a static ggplot.
@@ -1547,8 +1595,8 @@ proto_highlight1d <- function(
 #' Adds text to the animation, the frame and its specified correlation.
 #'
 #' @param xy_position Vector of the x and y position, the fraction of the 
-#' range of the data in each direction.;  0 is min, 1 is max. 
-#' Defaults to c(.7, -.1), in the bottom right.
+#' range of the data in each direction. The projection data is contained in
+#' (0, 1) in each direction. Defaults to c(.7, -.1), in the bottom right.
 #' @param text_size Size of the text. defaults to 4.
 #' @param row_index A numeric or logical index of rows to subset to. 
 #' Defaults to NULL, all observations.

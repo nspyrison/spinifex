@@ -3,6 +3,7 @@
 \name{proto_basis}
 \alias{proto_basis}
 \alias{proto_basis1d}
+\alias{proto_basis_text}
 \title{Tour proto for a 2D and 1D basis axes respectively}
 \usage{
 proto_basis(
@@ -18,6 +19,8 @@ proto_basis1d(
   segment_size = 2,
   text_size = 5
 )
+
+proto_basis_text(position = c("right"), text_size = 5)
 }
 \arguments{
 \item{position}{The position, to place the basis axes relative to the
@@ -86,6 +89,13 @@ ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
                 text_size = 5)
 \dontrun{
 animate_plotly(ggt1d)
+}
+## basis_table
+ggt <- ggtour(mt_path, dat, angle = .3) +
+  proto_default(aes_args = list(color = clas, shape = clas)) +
+  proto_basis_text()
+\dontrun{
+animate_plotly(ggt)
 }
 }
 \seealso{
