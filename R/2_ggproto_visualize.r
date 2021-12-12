@@ -954,11 +954,10 @@ proto_basis_text <- function(
 }
 
 
-#' draw a basis on a static ggplot
+#' Draw a basis on a static ggplot
 #' 
-#' additively draws a basis on a static ggplot.
-#' Not a formal `geom`, nor does it use the setup from `ggtour` that 
-#' `proto_*` functions expect.
+#' Additively draws a basis on a static ggplot.
+#' Not a `geom` or `proto`. Expects 
 #' 
 #' @param basis A (p*d) basis to draw. Draws the first two components. 
 #' If facet is used cbind the facet variable to a specific facet level 
@@ -989,7 +988,7 @@ proto_basis_text <- function(
 #'   draw_basis(bas, proj, "left") +
 #'   coord_fixed()
 #'   
-#' ## Aesthetics and facet
+#' ## Aesthetics and basis on specific facet levels
 #' proj <- cbind(proj, clas = penguins$species)
 #' bas <- cbind(as.data.frame(bas), clas = levels(clas)[2])
 #' ggplot() +
@@ -998,7 +997,7 @@ proto_basis_text <- function(
 #'   draw_basis(bas, proj, "left") +
 #'   theme_bw() +
 #'   coord_fixed()
-#' # To repeat basis in all facet levels don't cbind a facet variable.
+#' ## To repeat basis in all facet levels don't cbind a facet variable.
 draw_basis <- function(
   basis, ## WITH APPENDED FACET LEVEL
   map_to = data.frame(x = c(0, 1), y = c(0, 1)),
@@ -1006,7 +1005,7 @@ draw_basis <- function(
   manip_col = "blue",
   line_size = 1,
   text_size = 5,
-  label = abbreviate(rownames(basis), 3L)
+  basis_label = abbreviate(rownames(basis), 3L)
 ){
   ## Initialize
   d <- ncol(basis)
@@ -1030,6 +1029,12 @@ draw_basis <- function(
   }
   .df_basis <- as.data.frame(map_relative(basis, position, map_to))
   colnames(.df_basis)[1L:2L] <- c("x", "y")
+  
+  if(is.null(.df_basis$tooltip)){
+    tooltip <- abbreviate(rownames(basis), 3L)
+    if(is.null(tooltip)) tooltip <- paste0("v", 1L:nrow(basis_array))
+    .df_basis$tooltip <- tooltip
+  }
   
   ## Aesthetics for the axes segments.
   .axes_col <- "grey50"
@@ -1059,7 +1064,7 @@ draw_basis <- function(
       data = .df_basis,
       color = .axes_col, size = text_size,
       vjust = "outward", hjust = "outward",
-      mapping = ggplot2::aes(x = x, y = y, label = tooltip)
+      mapping = ggplot2::aes(x = x, y = y, label = basis_label)
     ))
   ))
 }

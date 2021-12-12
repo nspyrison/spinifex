@@ -2,7 +2,7 @@
 % Please edit documentation in R/2_ggproto_visualize.r
 \name{draw_basis}
 \alias{draw_basis}
-\title{draw a basis on a static ggplot}
+\title{Draw a basis on a static ggplot}
 \usage{
 draw_basis(
   basis,
@@ -11,7 +11,7 @@ draw_basis(
   manip_col = "blue",
   line_size = 1,
   text_size = 5,
-  label = abbreviate(rownames(basis), 3L)
+  basis_label = abbreviate(rownames(basis), 3L)
 )
 }
 \arguments{
@@ -38,9 +38,8 @@ axes and unit circle. Defaults to 1.}
 Defaults to the 3 character abbreviation of the rownames of the basis.}
 }
 \description{
-additively draws a basis on a static ggplot.
-Not a formal \code{geom}, nor does it use the setup from \code{ggtour} that
-\verb{proto_*} functions expect.
+Additively draws a basis on a static ggplot.
+Not a \code{geom} or \code{proto}. Expects
 }
 \examples{
 library(spinifex)
@@ -55,7 +54,7 @@ ggplot() +
   draw_basis(bas, proj, "left") +
   coord_fixed()
   
-## Aesthetics and facet
+## Aesthetics and basis on specific facet levels
 proj <- cbind(proj, clas = penguins$species)
 bas <- cbind(as.data.frame(bas), clas = levels(clas)[2])
 ggplot() +
@@ -64,5 +63,5 @@ ggplot() +
   draw_basis(bas, proj, "left") +
   theme_bw() +
   coord_fixed()
-# To repeat basis in all facet levels don't cbind a facet variable.
+## To repeat basis in all facet levels don't cbind a facet variable.
 }
