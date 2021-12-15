@@ -1,3 +1,8 @@
+message("Idea is to remove variables with low contributions, basically want to 
+        append several manual tours that zero these variable outs.
+        This is very old dev from before ggproto.")
+
+
 #' Creates the array of target basis for a stepwise tour
 #' 
 #' The basis array starts with the supplied `basis` and removes the variable 
@@ -78,22 +83,3 @@ stepwise_history <- function(basis = NULL,
   class(basis_array) <- c(class(basis_array), "stepwise_array")
   return(basis_array)
 }
-
-##TODO, WHEN THERE IS EXCLUSIVELY 1 NEG PROJ COMPONENT IS DOESN"T GET ZEROED CORRECTLY.
-### MANUAL TESTING ------
-if(F){ 
-  library(spinifex);
-  dat = tourr::flea[, 2:6];
-  bas = basis_pca(dat);
-  sw_hist <- stepwise_history(basis = bas, data = dat)
-  ?play_tour_path(sw_hist, data = dat)
-  
-  ## aede2(+/+) zeros,
-  ## head(-/+) doesn't zero (which then causes an issue)
-  ## tars2(-/+ !?!) zeros, why? may not be as simple as quadrant.
-  
-  ###TODO need to look at phi and theta
-  ## consider .$basis_set[,, 2]; head didn't 0 out correctly;
-  tgt <- as.data.frame(sw_hist$basis_set[,, 2])
-}
-

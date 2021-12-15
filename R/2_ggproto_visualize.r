@@ -972,7 +972,7 @@ proto_basis_text <- function(
 #' @param line_size (2D bases only) the thickness of the lines used to make the 
 #' axes and unit circle. Defaults to 1.
 #' @param text_size Size of the text label of the variables.
-#' @param label The text labels of the data variables. 
+#' @param basis_label The text labels of the data variables. 
 #' Defaults to the 3 character abbreviation of the rownames of the basis.
 #' @export
 #' @examples
@@ -1237,8 +1237,8 @@ proto_density <- function(
   
   ## geom_rug do.call
   if(is.null(rug_shape) == FALSE){
-    .aes_func <- function(...)
-      ggplot2::aes(x = x, y = -.02 * y_coef, frame = frame, ...)
+    .aes_func <- function(...)ggplot2::aes(
+      x = x, y = -.02 * y_coef, frame = frame, tooltip = tooltip,  ...)
     .aes_call <- do.call(.aes_func, aes_args)
     .geom_func <- function(...) suppressWarnings(
       ggplot2::geom_point(.aes_call, .df_data, shape = rug_shape, ...))

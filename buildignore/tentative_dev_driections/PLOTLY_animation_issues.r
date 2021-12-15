@@ -37,7 +37,10 @@ if(F){
 library(ggplot2)
 library(plotly)
 
-
+df_txt <- data.frame(x=1, y=1, label="No tooltip here, please", frame = 1:2)
+df_pts <- data.frame(x=rep(c(1, 1), each=2), y=c(.9, .95, .8, .85),
+                     tooltip=paste("obs_num: ", 1:2, "tooltip exclusively for points with different dim"),
+                     frame = rep(1:2, each=2))
 
 ## animation, aes has frame, NO ids
 g_anim1 <- ggplot() +
@@ -49,6 +52,7 @@ plotly::ggplotly(g_anim1, tooltip = "tooltip")
 ## Adding aes(`ids`) doesn't seem to help
 library(ggplot2)
 library(plotly)
+
 df_txt <- data.frame(x=1, y=1, label="No tooltip here, please", frame = 1:2, id = 1)
 df_pts <- data.frame(x=rep(c(1, 1), each=2), y=c(.9, .95, .8, .85),
                      tooltip=paste("obs_num: ", 1:2, "tooltip exclusively for points with different dim"),
@@ -61,7 +65,7 @@ g_anim2 <- ggplot() +
 plotly::ggplotly(g_anim2, tooltip = "tooltip")
 
 
-## plotly improve performance?? -----
+## plotly performance benchmarking -----
 ### _ie:_ try passing plotly obj to toWebGL() and/or partial_bundle()?
 if(F){
   browseURL("https://linking.plotly-r.com/performance.html")
@@ -99,17 +103,34 @@ system.time(
 )[3L]
 mbm
 ggplot2::autoplot(mbm)
-## mbm:
+
+### Orignal -----
+#R> mbm:
 # Unit: milliseconds
 # expr            mean median
-# redraw_T        1318 1412
+### RENDER WITHOUT PRINT
+# redraw_T        1318 1412 redraw == TRUE, less than 10% gain
 # redraw_F        1423 1455
 # redraw_F_webgl  1396 1467
 # redraw_F_bundle 1395 1466
-# baseline 1494   1506 1703
-# webgl 1398      1316 1693
-# bundle 1450     1472 1747
+## RENDER AND PRINT
+# baseline        1494 1506
+# webgl           1398 1316
+# bundle          1450 1472
 # bundle_webgl    1662 1683
+
+### Recent, ~30 gains from somewhere ---- 
+# Unit: milliseconds
+# expr               mean median 
+# redraw_T          944.7  945.2 ## check if redraw is on
+# redraw_F          953.4  918.7 
+# redraw_F_webgl    971.0  958.1 
+# redraw_F_bundle  1012.1  937.1 
+# baseline         1251.4 1152.5 
+# webgl            1142.0 1147.4 
+# bundle           1125.0 1158.7 
+# bundle_webgl     1436.1 1132.3 
+
 
 ## takeaways:
 #-inconsistent display: some of the non-animate_plotly have more, but still wrong display.
@@ -148,10 +169,9 @@ ggt_pts_1st <- ggtour(mt_path, dat, angle = .5) +
   proto_origin() + proto_point() + proto_basis()
 animate_plotly(ggt_pts_1st) ## WTF, working?
 ggt_def <- ggtour(mt_path, dat, angle = .2) +
-  proto_default(list(color = clas, shape = clas),
-                list(size = 1.5)) ## frame 13 choked
+  proto_default(aes_args = list(color = clas, shape = clas),
+                identity_args = list(size = 1.5)) ## frame 13 choked
 animate_plotly(ggt_def) ## WTF, working?
-
 
 ggt <- ggtour(mt_path, dat, angle = .2) +
   proto_point(list(color = clas, shape = clas),
@@ -159,13 +179,3 @@ ggt <- ggtour(mt_path, dat, angle = .2) +
   proto_basis() +
   proto_origin()
 animate_plotly(ggt)
-
-system.time(
-  print(mbm <- microbenchmark::microbenchmark(
-    times = 25L,
-    print(animate_plotly(ggt)), ## baseline: 1.892  2.023
-    print(partial_bundle(toWebGL(animate_plotly(ggt)))) ## best: 1.586  1.459, ~ 16-28% gains
-  ))
-)[3L]
-mbm
-ggplot2::autoplot(mbm)

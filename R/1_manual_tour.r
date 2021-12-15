@@ -228,18 +228,18 @@ manual_tour <- function(basis,
   
   if(is.na(theta) == FALSE)
     if(theta < 0L)
-      message("theta is negative")
+      devMessage("theta is negative")
   if(phi_start < 0L)
-    message("phi_start is negative")
+    devMessage("phi_start is negative")
   
   ### Shift phi start in be in-phase between [-pi/2, pi/2]
   if(phi_start > pi / 2L){
-    message("phi_start > pi / 2; phi_start <- phi_start - pi & phi_max <- -phi_max")
+    devMessage("phi_start > pi / 2; phi_start <- phi_start - pi & phi_max <- -phi_max")
     phi_start <- phi_start - pi
     # phi_max   <- phi_max - pi ## being removed didn't effect 4 cases.
   }
   if(phi_start < -pi / 2L){
-    message("phi_start < -pi / 2; phi_start <- phi_start + pi")
+    devMessage("phi_start < -pi / 2; phi_start <- phi_start + pi")
     phi_start <- phi_start + pi
   }
   ## Ensure correct order of phi_min, phi_start, phi_max

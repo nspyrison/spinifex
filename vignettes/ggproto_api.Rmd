@@ -95,8 +95,8 @@ dat  <- scale_sd(penguins[, 1:4])
 clas <- penguins$species
 
 ## Manual tour, manipulating the contribution of a selected variable 
-bas <- basis_pca(dat) ## Start basis
-mv  <- manip_var_of(bas) ## Number of the variable to manipulate
+bas     <- basis_pca(dat)    ## Start basis
+mv      <- manip_var_of(bas) ## Number of the variable to manipulate
 mt_path <- manual_tour(bas, manip_var = mv) ## Tour path
 
 ## Create a static ggplot2 plot with all frames of the tour

@@ -691,6 +691,19 @@ save_history <- function(
   ret
 }
 
+
+#' Development message
+#' 
+#' Send a message if the 4th chunk of the package version is 9000.
+#' @param text A character string to message() if package version is _9000.
+devMessage <- function(text){
+  version = packageVersion(pkg = "spinifex")[1L, 4L]
+  if(is.na(version) == FALSE)
+    if(version[1L, 4L] == 9000L)
+      message(paste0("devMessage: ", text))
+}
+
+
 # ### as_history_array ----
 # #' Changes an array of bases into a "history_array" class for use 
 # #' in `tourr::interpolate()`.
