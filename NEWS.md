@@ -4,7 +4,9 @@
 - New function: `append_fixed_y()`, add/overwrite data y column to fixed values, such as for the height of predicted values or residuals of a model.
 - New function: `draw_basis()` static ggplot2 variant of `proto_basis`, that accepts a basis directly without requiring ggtour initialization.
 - Most data-oriented `proto_*` functions have `row_index` argument; allowing for subsetting that is compatible with faceting and appending a fixed y! By default, `proto_point()` will plot non-selected points in faint grey, behind selected points.
+- `theme_spinifex()` changed removing the duplicate legend display, fewer warnings, and less frame oddities (geom existence issues) with `animate_plotly`.
 - Better examples for setting dimensions, resolution, and renders in `animate_*` functions.
+- Refreshed readme.
 
 # spinifex v0.3.1
 

@@ -135,7 +135,7 @@ render_ <- function(frames,
       do.call(geom_point_func, c(list(aes_call), identity_args_out))
   }else{ ## Else, no data exists
     geom_point_call <- suppressWarnings( ## Suppressed unknown args: frame
-      ggplot2::geom_point(ggplot2::aes(x = x, y = y, frame = frame, label = label),
+      ggplot2::geom_point(ggplot2::aes(x = x, y = y, frame = frame, tooltip = tooltip),
                           data_frames))
   } ## End if data exist
   
@@ -164,7 +164,7 @@ render_ <- function(frames,
         ggplot2::geom_text(
           data = basis_frames,
           mapping = ggplot2::aes(x = x, y = y,
-                                 frame = frame, label = label),
+                                 frame = frame, label = tooltip),
           vjust = "outward", hjust = "outward",
           colour = axes_col, size = text_size)
       )
@@ -318,7 +318,7 @@ render_plotly <- function(
                    legend.direction = "vertical", ## With-in aesthetic
                    legend.box = "horizontal")     ## Between aesthetic
     
-  ggp <- plotly::ggplotly(p = gg, tooltip = "label")
+  ggp <- plotly::ggplotly(p = gg, tooltip = "tooltip")
   ggp <- plotly::animation_opts(p = ggp,
                                 frame = 1L / fps * 1000L,
                                 transition = 0L,

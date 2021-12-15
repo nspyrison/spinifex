@@ -25,14 +25,6 @@ these have been tested less.}
 
 \item{row_index}{A numeric or logical index of rows to subset to.
 Defaults to NULL, all observations.}
-
-\item{...}{Optionally pass addition argument to the primary geom.}
-
-\item{bins}{Number of contour bins. Overridden by binwidth. Defaults to 3.}
-
-\item{binwidth}{The width of the contour bins. Overridden by breaks.}
-
-\item{breaks}{Numeric vector to set the contour breaks. Overrides binwidth and bins. By default, this is a vector of length ten with pretty() breaks.}
 }
 \description{
 Adds \code{geom_density_2d()} of the projected data.

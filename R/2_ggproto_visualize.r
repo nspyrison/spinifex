@@ -17,7 +17,7 @@
 #' Defaults to NULL; 3 character abbreviation from colnames of data or
 #' rownames of basis.
 #' @param data_label Labels for `plotly` tooltip display. 
-#' Defaults to the NULL, rownames and/or nornumber of data.
+#' Defaults to the NULL, rownames and/or numbers of data.
 #' @export
 #' @family ggtour proto functions
 #' @examples
@@ -907,51 +907,6 @@ proto_basis1d <- function(
 }
 
 
-#' @rdname proto_basis
-#' @param segment_size (1D bases only) the width thickness of the rectangle bar
-#' showing variable magnitude on the axes. Defaults to 2.
-# #' @export
-#' @examples
-#' ## basis_table
-#' ggt <- ggtour(mt_path, dat, angle = .3) +
-#'   proto_default(aes_args = list(color = clas, shape = clas)) +
-#'   proto_basis_text()
-#' \dontrun{
-#' animate_plotly(ggt)
-#' }
-proto_basis_text <- function(
-  position = c("right"),
-  text_size = 5
-){
-  ## Initialize
-  eval(.init4proto)
-  browser()
-  
-  ## make positions to be joined to .df_basis
-  .u_frame <- data.frame(frame = unique(.df_basis$frame))
-  d <- 0L:.d; p <- 1L:.p
-  .pos <- merge(d, p) %>%
-    map_relative(position, .map_to_data) %>%
-    merge(.u_frame)
-  colnames(.pos) <- c("d", "p", "frame")
-  ## round basis contributions
-  .df_basis[, c("x", "y")] <- round(.df_basis[, c("x", "y")], 2L)
-  .bas_longer <- .df_basis %>%
-    tidyr::pivot_longer(!c(frame, tooltip), names_to = "element", values_to = "text")
-  ## Note this is the dynamic part of the text, 
-  ##also need a static geom_text for min(.pos$p) for the static header column
-  .df_pos_frames <- dplyr::left_join(.df_basis, .pos[.pos$p != min(.pos$p),], by = "frame")
-  .df_pos_frames
-  
-  .pos[.pos$p == min(.pos$p), ]
-
-  ## Return proto
-  return(list(
-    geom_table(data = .df_pos_frames, aes(x = .pos$x, y = .pos$y, label = .ltbl),
-               table.rownames = TRUE, table.theme = ttheme_gtstripes)
-    
-  ))
-}
 
 
 #' Draw a basis on a static ggplot
@@ -972,7 +927,7 @@ proto_basis_text <- function(
 #' @param line_size (2D bases only) the thickness of the lines used to make the 
 #' axes and unit circle. Defaults to 1.
 #' @param text_size Size of the text label of the variables.
-#' @param label The text labels of the data variables. 
+#' @param basis_label The text labels of the data variables. 
 #' Defaults to the 3 character abbreviation of the rownames of the basis.
 #' @export
 #' @examples
@@ -1032,7 +987,7 @@ draw_basis <- function(
   
   if(is.null(.df_basis$tooltip)){
     tooltip <- abbreviate(rownames(basis), 3L)
-    if(is.null(tooltip)) tooltip <- paste0("v", 1L:nrow(basis_array))
+    if(is.null(tooltip)) tooltip <- paste0("v", 1L:nrow(basis))
     .df_basis$tooltip <- tooltip
   }
   
@@ -1237,8 +1192,8 @@ proto_density <- function(
   
   ## geom_rug do.call
   if(is.null(rug_shape) == FALSE){
-    .aes_func <- function(...)
-      ggplot2::aes(x = x, y = -.02 * y_coef, frame = frame, ...)
+    .aes_func <- function(...)ggplot2::aes(
+      x = x, y = -.02 * y_coef, frame = frame, tooltip = tooltip,  ...)
     .aes_call <- do.call(.aes_func, aes_args)
     .geom_func <- function(...) suppressWarnings(
       ggplot2::geom_point(.aes_call, .df_data, shape = rug_shape, ...))
@@ -1267,10 +1222,6 @@ proto_density <- function(
 #' these have been tested less.
 #' @param row_index A numeric or logical index of rows to subset to. 
 #' Defaults to NULL, all observations.
-#' @param ... Optionally pass addition argument to the primary geom.
-#' @param bins Number of contour bins. Overridden by binwidth. Defaults to 3.
-#' @param binwidth The width of the contour bins. Overridden by breaks.
-#' @param breaks Numeric vector to set the contour breaks. Overrides binwidth and bins. By default, this is a vector of length ten with pretty() breaks.
 #' @export
 #' @aliases proto_density2d
 #' @family ggtour proto functions
@@ -1930,7 +1881,58 @@ proto_default1d <- function(
 
 ### UNAPPLIED IDEA DRAFTS -----
 if(FALSE){ ## DONT RUN
-  proto_basis_table <- function(){}
+  ## Geom_table won't work with plotly or gganimate animation frames.
+  #### Recreate manually with geom_text...
+  if(F){
+    # #' @rdname proto_basis
+    # #' @param segment_size (1D bases only) the width thickness of the rectangle bar
+    # #' showing variable magnitude on the axes. Defaults to 2.
+    # # #' @export
+    # #' @examples
+    # #' ## basis_table
+    # #' ggt <- ggtour(mt_path, dat, angle = .3) +
+    # #'   proto_default(aes_args = list(color = clas, shape = clas)) +
+    # #'   proto_basis_text()
+    # #' \dontrun{
+    # #' animate_plotly(ggt)
+    # #' }
+    proto_basis_text <- function(
+      position = c("right"),
+      text_size = 5
+    ){
+      ## Initialize
+      eval(.init4proto)
+      browser()
+      
+      ## make positions to be joined to .df_basis
+      .u_frame <- data.frame(frame = unique(.df_basis$frame))
+      d <- 0L:.d; p <- 1L:.p
+      .pos <- merge(d, p) %>%
+        map_relative(position, .map_to_data) %>%
+        merge(.u_frame)
+      colnames(.pos) <- c("d", "p", "frame")
+      ## round basis contributions
+      .df_basis[, c("x", "y")] <- round(.df_basis[, c("x", "y")], 2L)
+      .bas_longer <- .df_basis %>%
+        tidyr::pivot_longer(!c(frame, tooltip), names_to = "element", values_to = "text")
+      ## Note this is the dynamic part of the text, 
+      ## also need a static geom_text for min(.pos$p) for the static header column
+      .df_pos_frames <- dplyr::left_join(.df_basis, .pos[.pos$p != min(.pos$p),], by = "frame")
+      .df_pos_frames
+      
+      .pos[.pos$p == min(.pos$p), ]
+      
+      ## Return proto
+      return(list(
+        ggpp::geom_table(
+          data = .df_pos_frames, 
+          aes(x = .pos$x, y = .pos$y, label = rownames(.df_basis)),
+          table.rownames = TRUE)
+      ))
+    }
+    
+  }
+  
   proto_chull <- function(){}
   proto_ahull <- function(){}
   

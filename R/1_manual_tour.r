@@ -228,18 +228,18 @@ manual_tour <- function(basis,
   
   if(is.na(theta) == FALSE)
     if(theta < 0L)
-      message("theta is negative")
+      devMessage("theta is negative")
   if(phi_start < 0L)
-    message("phi_start is negative")
+    devMessage("phi_start is negative")
   
   ### Shift phi start in be in-phase between [-pi/2, pi/2]
   if(phi_start > pi / 2L){
-    message("phi_start > pi / 2; phi_start <- phi_start - pi & phi_max <- -phi_max")
+    devMessage("phi_start > pi / 2; phi_start <- phi_start - pi & phi_max <- -phi_max")
     phi_start <- phi_start - pi
     # phi_max   <- phi_max - pi ## being removed didn't effect 4 cases.
   }
   if(phi_start < -pi / 2L){
-    message("phi_start < -pi / 2; phi_start <- phi_start + pi")
+    devMessage("phi_start < -pi / 2; phi_start <- phi_start + pi")
     phi_start <- phi_start + pi
   }
   ## Ensure correct order of phi_min, phi_start, phi_max
@@ -305,7 +305,7 @@ interpolate_manual_tour <- function(basis_array, angle = .05){
   ## if mv_x <0, phi_start <- pi/2 - phi_start
   is_mv_x_neg <- basis_array[manip_var, 1L, 1L] <= 0L
   if(is_mv_x_neg == TRUE){
-    message("manual_tour: is_mv_x_neg == TRUE; phi_start <- pi / 2L - abs(phi_start); phi_path <- rev(phi_path)")
+    devMessage("manual_tour: is_mv_x_neg == TRUE; phi_start <- pi / 2L - abs(phi_start); phi_path <- rev(phi_path)")
     phi_start <- pi / 2L - abs(phi_start)
   }
   phi_delta <- function(start, end){

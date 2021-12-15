@@ -28,7 +28,7 @@ Defaults to NULL; 3 character abbreviation from colnames of data or
 rownames of basis.}
 
 \item{data_label}{Labels for \code{plotly} tooltip display.
-Defaults to the NULL, rownames and/or nornumber of data.}
+Defaults to the NULL, rownames and/or numbers of data.}
 }
 \description{
 \code{ggtour()} initializes a ggplot object for a tour. \verb{proto_*} functions are

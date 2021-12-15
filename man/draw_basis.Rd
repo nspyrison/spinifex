@@ -34,7 +34,7 @@ axes and unit circle. Defaults to 1.}
 
 \item{text_size}{Size of the text label of the variables.}
 
-\item{label}{The text labels of the data variables.
+\item{basis_label}{The text labels of the data variables.
 Defaults to the 3 character abbreviation of the rownames of the basis.}
 }
 \description{
