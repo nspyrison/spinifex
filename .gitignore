@@ -1,6 +1,7 @@
-Meta/
 doc/
 docs/
+Meta/
+
 .Rproj.user
 .Rhistory
 .RData
@@ -11,5 +12,5 @@ docs/
 *.gif
 *.mp4
 
-doc
-Meta
+## Allow gifs for readme.
+!buildignore/readme_img/*.gif

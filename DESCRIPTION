@@ -3,8 +3,10 @@ Title: Manual Tours, Manual Control of Dynamic Projections of Numeric Multivaria
 Version: 0.3.2
 Authors@R: c(
   person("Nicholas", "Spyrison", role = c("aut", "cre"),
-    email = "spyrison@gmail.com"),
-  person("Dianne", "Cook", role = c("aut", "ths"))
+    email = "spyrison@gmail.com",
+    comment = c(ORCID = "https://orcid.org/0000-0002-8417-0212")),
+  person("Dianne", "Cook", role = c("aut", "ths"),
+    comment = c(ORCID = "https://orcid.org/0000-0002-3813-7155"))
   )
 Description: Data visualization tours animates linear projection 
   of multivariate data as its basis (ie. orientation) changes. The 'spinifex' 

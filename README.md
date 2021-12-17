@@ -1,4 +1,4 @@
-[![Travis build status](https://travis-ci.org/nspyrison/spinifex.svg?branch=master)](https://travis-ci.org/nspyrison/spinifex) [![CRAN Status Badge](http://www.r-pkg.org/badges/version/spinifex)](https://cran.r-project.org/package=spinifex) [![Codecov test coverage](https://codecov.io/gh/nspyrison/spinifex/branch/master/graph/badge.svg)](https://codecov.io/gh/nspyrison/spinifex?branch=master) [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing) [![CRAN Downloads Each Month](http://cranlogs.r-pkg.org/badges/spinifex)](https://cran.r-project.org/package=spinifex)
+[![Travis build status](https://travis-ci.org/nspyrison/spinifex.svg?branch=master)](https://travis-ci.org/nspyrison/spinifex) [![CRAN Status Badge](http://www.r-pkg.org/badges/version/spinifex)](https://cran.r-project.org/package=spinifex) [![Codecov test coverage](https://app.codecov.io/gh/nspyrison/spinifex/branch/master/graph/badge.svg)](https://codecov.io/gh/nspyrison/spinifex?branch=master) [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing) [![CRAN Downloads Each Month](http://cranlogs.r-pkg.org/badges/spinifex)](https://cran.r-project.org/package=spinifex)
 
 # spinifex <img src="man/figures/spinifex_hex.png" alt="spinifex R package!" align="right"/>
 
@@ -12,9 +12,11 @@ This extends the number of dimensions that we can view in data-space! This is ap
 <img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/Anscombe%27s_quartet_3.svg" alt="Anscomb's quartet, Wikipedia" style="width:70%;height:70%;">
 -->
 
+
 ## Scope
 
 Such visualizations are applicable to numeric matrices which could be approximations of component spaces or feature decomposition of non-tabular data. Continuous quantitative variables are preferred, although ordinal discrete variables can also be used. Mapping color and/or shape to a (supervised) class tends to be helpful.
+
 
 ## Description
 
@@ -32,12 +34,14 @@ We see that bill length is important for separating the orange and green species
 __Manual tour__
 ![](https://github.com/nspyrison/spinifex/blob/main/buildignore/readme_img/penguins_mt.gif?raw=true)
 
+
 ## Installation
 
 ``` r
 install.packages("spinifex") ## Download from CRAN
 #remotes::install_github("nspyrison/spinifex") ## Dev version
 ```
+
 
 ## Getting started
 ```
@@ -48,6 +52,8 @@ vignette("ggproto api")                   ## Introduction to the new ggproto api
 ?ggtour                                   ## Examples and links to ggproto functions
 help(package = "spinifex")                ## Review the package contents and documentation
 ```
+
+
 ## Reporting issues
 
 Please submit bug reports, errors, and feature requests to <https://github.com/nspyrison/spinifex/issues>
