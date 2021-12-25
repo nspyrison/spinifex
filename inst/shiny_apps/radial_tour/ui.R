@@ -1,8 +1,10 @@
 ### "radial_tour" ui.R -----
+options(show.error.locations = TRUE) #, warn = 2L, error = browser)
 require("spinifex")
 require("shinythemes")     ## Themes for shiny, think css files.
 require("shinycssloaders") ## shinycssloaders::withSpinner()
 require("plotly")
+
 
 ##### Initialize ----
 ## Create contextLine, a string containing App name, spinifex version, and sys date.
@@ -57,7 +59,7 @@ tabRadial <- tabPanel(
     ),
     mainPanel(width = 9L,
               shinycssloaders::withSpinner(
-                plotly::plotlyOutput("plotly_anim", height = "600px"), type = 8L)
+                plotly::plotlyOutput("plotly_anim", height = "600px"), type = 8L),
     )
   )
 ) ## Assign tab

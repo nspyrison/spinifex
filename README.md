@@ -35,14 +35,6 @@ __Manual tour__
 ![](https://github.com/nspyrison/spinifex/blob/main/buildignore/readme_img/penguins_mt.gif?raw=true)
 
 
-## Installation
-
-``` r
-install.packages("spinifex") ## Download from CRAN
-#remotes::install_github("nspyrison/spinifex") ## Dev version
-```
-
-
 ## Getting started
 ```
 library("spinifiex")                      ## Load into session
@@ -53,6 +45,31 @@ vignette("ggproto api")                   ## Introduction to the new ggproto api
 help(package = "spinifex")                ## Review the package contents and documentation
 ```
 
+
+## ggproto API
+
+The ggproto API is a layered approach to the composition of animated tours, it should feel similar to the composition of ggplots. 
+
+| Family     | Function           | Related to          | Description                                             |
+|------------|--------------------|---------------------|---------------------------------------------------------|
+| processing | scale_01/sd        | -                   | scale each column to [01]/std dev away from the mean    |
+| processing | basis_pca/olda/... | Rdimtools::do.*     | basis of orthogonal component spaces                    |
+| processing | basis_half_circle  | -                   | basis with uniform contribution across half of a circle |
+| processing | basis_guided       | tourr::guided_tour  | silently return the basis from a guided tour            |
+| tour path  | manual_tour        | -                   | basis and interpolation information for a manual tour   |
+| tour path  | save_history       | tourr::save_history | silent extended wrapper returning other tour arrays     |
+| display    | ggtour             | ggplot2::ggplot     | canvas and initialization for a tour animation          |
+| display    | proto_point/text   | geom_point/text     | adds observation points/text                            |
+| display    | proto_density/2d   | geom_density/2d     | adds density curve/2d contours                          |
+| display    | proto_hex          | geom_hex            | adds hexagonal heatmap of observations                  |
+| display    | proto_basis/1d     | -                   | adds adding basis visual in a unit-circle/-rectangle    |
+| display    | proto_origin/1d    | -                   | adds reference mark in the center of the data           |
+| display    | proto_default/1d   | -                   | wrapper for proto_* point + basis + origin              |
+| display    | facet_wrap_tour    | ggplot2::facet_wrap | facets on the levels of variable                        |
+| display    | append_fixed_y     | -                   | add/overwrite a fixed vertical position                 |
+| animation  | animate_plotly     | plotly::ggplotly    | render as an interactive hmtl widget                    |
+| animation  | animate_gganimate  | gganimate::animate  | render as a .gif .mp4 or other video format             |
+| animation  | filmstrip          | -                   | static gpplot faceting on the frames of the animation   |
 
 ## Reporting issues
 

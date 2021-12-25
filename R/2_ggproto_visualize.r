@@ -74,7 +74,8 @@ ggtour <- function(basis_array,
 ){
   ## If data missing, check if data is passed to the basis_array
   if(is.null(data)) data <- attr(basis_array, "data") ## Could be NULL
-  .manip_var <- attr(basis_array, "manip_var") ## NULL if not a manual tour
+  .phi_start <- attr(basis_array,"phi_start")  ## NULL if not a manual tour
+  .manip_var <- attr(basis_array, "manip_var")
   .map_to_data <- data.frame(x = 0L:1L, y = 0L:1L) ## Init for null data
   ## Basis label, handling
   if(is.null(basis_label)){
@@ -88,17 +89,16 @@ ggtour <- function(basis_array,
      suppressWarnings(any(is.na(as.numeric(as.character(rownames(data)))))))
     data_label <- paste0("row: ", 1L:nrow(data), ", ", rownames(data))
   
-  ## Single basis, no manip var as a matrix coerce to array.
-  if(is.null(.manip_var)) ## if manip_var is null; IE. single basis, not tour
-    if(length(dim(basis_array)) == 2L) ## AND 1 basis.
-      basis_array <- array(
-        as.matrix(basis_array), dim = c(dim(basis_array), 1L))
+  ## Single basis, coerce to array.
+  if(length(dim(basis_array)) == 2L) ## AND 1 basis.
+    basis_array <- array(
+      as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   ## Interpolate {tourr} tours
-  if(is.null(.manip_var)) ## if manip_var is null; IE. from tourr
+  if(is.null(.phi_start)) ## if manip_var is null; IE. from tourr
     .m <- utils::capture.output(
       .interpolated_basis_array <- tourr::interpolate(basis_array, angle))
   ## Interpolate manual tours
-  if(is.null(.manip_var) == FALSE)
+  if(is.null(.phi_start) == FALSE)
     ## Basis_array from manual tours is only 1 basis.
     .interpolated_basis_array <- interpolate_manual_tour(basis_array, angle)
   ## list of: df_basis & df_data
