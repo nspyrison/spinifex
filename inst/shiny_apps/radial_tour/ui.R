@@ -1,5 +1,5 @@
 ### "radial_tour" ui.R -----
-options(show.error.locations = TRUE) #, warn = 2L, error = browser)
+#options(show.error.locations = TRUE) #, warn = 2L, error = browser)
 require("spinifex")
 require("shinythemes")     ## Themes for shiny, think css files.
 require("shinycssloaders") ## shinycssloaders::withSpinner()
