@@ -12,7 +12,7 @@ save_history(
   rescale = FALSE,
   sphere = FALSE,
   step_size = Inf,
-  verbose = FALSE,
+  verbose = getOption("verbose"),
   ...
 )
 }

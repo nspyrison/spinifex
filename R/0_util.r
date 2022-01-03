@@ -665,20 +665,20 @@ save_history <- function(
   data,
   tour_path = tourr::grand_tour(),
   max_bases = 10,
-  start = NULL,
-  rescale = FALSE,
-  sphere = FALSE,
+  start     = NULL,
+  rescale   = FALSE,
+  sphere    = FALSE,
   step_size = Inf,
-  verbose = FALSE,
+  verbose   = getOption("verbose"),
   ...){
+  .expr <- expression(tourr::save_history(
+    data, tour_path, max_bases, start, rescale, sphere, step_size, ...))
   ## Mutable version of tourr::save_history, with slightly different arg defaults
   if(verbose == FALSE){
     .mute <- utils::capture.output(
-      ret <- tourr::save_history(
-        data, tour_path, max_bases, start, rescale, sphere, step_size, ...)
+      ret <- eval(.expr)
     )
-  } else ret <- tourr::save_history(
-    data, tour_path, max_bases, start, rescale, sphere, step_size, ...)
+  } else ret <- eval(.expr)
   
   ## Append start as first target basis
   #### if tour_path is a grand tour, start isn't first frame, and dim match

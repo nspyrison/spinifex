@@ -7,11 +7,12 @@ dat <- tourr::rescale(tourr::flea[, 1:6])
 
 
 #levels(tourr::flea$species) # Note: class names are odd.
-class_tour <- function(data = tourr::rescale(tourr::flea[, 1:6]),
-                       basis = prcomp(data)$rotation[, 1:2],
-                       class = tourr::flea$species,
+class_tour <- function(data       = tourr::rescale(tourr::flea[, 1:6]),
+                       basis      = prcomp(data)$rotation[, 1:2],
+                       class      = tourr::flea$species,
                        level_nums = c(1, 2),
-                       top_n_var = 3
+                       top_n_var  = 3,
+                       verbose    = getOption("verbose")
 ){
   stopifnot(is.matrix(data) & is.numeric(data))
   stopifnot(is.matrix(basis) & is.numeric(basis))
