@@ -198,7 +198,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 manual_tour <- function(basis,
                         manip_var,
                         theta   = NULL,
-                        phi_min = 0L,
+                        phi_min = 0,
                         phi_max = pi / 2,
                         data = NULL
 ){
@@ -206,8 +206,10 @@ manual_tour <- function(basis,
   basis <- as.matrix(basis)
   p <- nrow(basis)
   d <- ncol(basis)
-  if(length(manip_var) != 1L | manip_var < 1L | manip_var > p)
-    stop("manip_var expected as a single integer between 1 and nrow(basis).")
+  if(length(manip_var) != 1L)
+    stop(paste0("manip_var expected with length 1, was ", length(manip_var), "."))
+  if(manip_var < 1L | manip_var > p)
+    stop("manip_var expected to be between 1 and nrow(basis).")
   if(spinifex::is_orthonormal(basis) == FALSE){
     warning("Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
     basis <- tourr::orthonormalise(basis)

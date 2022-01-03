@@ -63,9 +63,11 @@
 #' ggt <- ggtour(basis_array = bas, data = dat) +
 #'   proto_default(aes_args = list(fill= clas, color = clas))
 #' ## ggtour() returns a static ggplot2 plot
+#' \dontrun{
 #' ggt
 #' ### or as html widget with tooltips
 #' animate_plotly(ggt)
+#' }
 ggtour <- function(basis_array,
                    data = NULL,
                    angle = .05,
@@ -491,7 +493,7 @@ animate_gganimate <- function(
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- length(unique(last_ggtour()$df_basis$frame))
   if(n_frames == 1L){
-    warning("ggtour df_basis only has 1 frame, printing ggtour ggplot2 object instead.")
+    message("ggtour df_basis only has 1 frame, printing ggtour ggplot2 object instead.")
     return(print(ggtour))
   }
   

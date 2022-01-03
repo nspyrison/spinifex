@@ -9,7 +9,7 @@ manual_tour(
   basis,
   manip_var,
   theta = NULL,
-  phi_min = 0L,
+  phi_min = 0,
   phi_max = pi/2,
   data = NULL
 )

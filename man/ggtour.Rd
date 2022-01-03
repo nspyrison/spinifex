@@ -79,9 +79,11 @@ animate_plotly(ggt1d)
 ggt <- ggtour(basis_array = bas, data = dat) +
   proto_default(aes_args = list(fill= clas, color = clas))
 ## ggtour() returns a static ggplot2 plot
+\dontrun{
 ggt
 ### or as html widget with tooltips
 animate_plotly(ggt)
+}
 }
 \seealso{
 Other ggtour proto functions: 
