@@ -1,4 +1,4 @@
-[![Travis build status](https://travis-ci.org/nspyrison/spinifex.svg?branch=master)](https://travis-ci.org/nspyrison/spinifex) [![CRAN Status Badge](http://www.r-pkg.org/badges/version/spinifex)](https://cran.r-project.org/package=spinifex) [![Codecov test coverage](https://app.codecov.io/gh/nspyrison/spinifex/branch/master/graph/badge.svg)](https://codecov.io/gh/nspyrison/spinifex?branch=master) [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing) [![CRAN Downloads Each Month](http://cranlogs.r-pkg.org/badges/spinifex)](https://cran.r-project.org/package=spinifex)
+[![Travis build status](https://travis-ci.org/nspyrison/spinifex.svg?branch=master)](https://travis-ci.org/nspyrison/spinifex) [![CRAN Status Badge](http://www.r-pkg.org/badges/version/spinifex)](https://cran.r-project.org/package=spinifex) [![Codecov test coverage](https://app.codecov.io/gh/nspyrison/spinifex/branch/master/graph/badge.svg)](https://app.codecov.io/gh/nspyrison/spinifex?branch=master) [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing) [![CRAN Downloads Each Month](http://cranlogs.r-pkg.org/badges/spinifex)](https://cran.r-project.org/package=spinifex)
 
 # spinifex <img src="man/figures/spinifex_hex.png" alt="spinifex R package!" align="right"/>
 
@@ -24,7 +24,7 @@ The `tourr` R package implements grand tours (constrained random walks in the ba
 
 __Grand tour__
 
-![](https://github.com/nspyrison/spinifex/blob/main/buildignore/readme_img/penguins_gt.gif?raw=true)
+![](https://github.com/nspyrison/spinifex/blob/master/buildignore/readme_img/penguins_gt.gif?raw=true)
 
 
 The work and contribution of `spinifex` are primarily two-fold. The addition of manual tours which allow for user defined (and interactive!) control of the basis. Secondly, a layered API to create tour elements that mirrors the additive creation of `ggplot2` visuals. The extension to `gganimate` and `plotly` graphics packages, which allow for more control over display and exporting .gif, .mp4, and .html widgets of tours. The later can also consume tours produced in `tourr`!
@@ -32,7 +32,7 @@ The work and contribution of `spinifex` are primarily two-fold. The addition of 
 We see that bill length is important for separating the orange and green species. Let's change its contribution with a manual tour:
 
 __Manual tour__
-![](https://github.com/nspyrison/spinifex/blob/main/buildignore/readme_img/penguins_mt.gif?raw=true)
+![](https://github.com/nspyrison/spinifex/blob/master/buildignore/readme_img/penguins_mt.gif?raw=true)
 
 
 ## Getting started
@@ -48,7 +48,7 @@ help(package = "spinifex")                ## Review the package contents and doc
 
 ## ggproto API
 
-The ggproto API is a layered approach to the composition of animated tours, it should feel similar to the composition of ggplots. 
+The ggproto API is a layered approach to the composition of animated tours, it should feel similar to the composition of ggplots.
 
 | Family     | Function           | Related to          | Description                                             |
 |------------|--------------------|---------------------|---------------------------------------------------------|
