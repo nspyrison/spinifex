@@ -572,11 +572,10 @@ theme_spinifex <- function(...){
          panel.grid.major = element_blank(),
          panel.grid.minor = element_blank(),
          axis.text        = element_blank(),
-         axis.title       = element_text(), ## Allow axis titles, though defaulted to blank
          legend.position  = "bottom",
-         legend.direction = "horizontal", ## Levels within an aesthetic
-         legend.box       = "vertical",   ## Between aesthetics
-         legend.margin    = margin(1L,1L,1L,1L, "mm"), ## Tighter legend margin
+         legend.direction = "horizontal",        ## Levels within an aesthetic
+         legend.box       = "vertical",          ## Between aesthetics
+         legend.margin    = margin(0L,0L,0L,0L), ## Tighter legend margin
          ...), ## ... applied over defaults.
        coord_fixed(clip = "off"),
        labs(x = "", y = "", color = "", shape = "", fill = "")

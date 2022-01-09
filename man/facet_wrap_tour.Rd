@@ -4,18 +4,18 @@
 \alias{facet_wrap_tour}
 \title{Wrap a 1d ribbon of panels into 2d for animation}
 \usage{
-facet_wrap_tour(facet_var = NULL, nrow = NULL, ncol = NULL, dir = "h")
+facet_wrap_tour(facet_var, nrow = NULL, ncol = NULL, dir = "h")
 }
 \arguments{
 \item{facet_var}{Expects a single variable to facet the levels of.
-Should be a vector not formula, \code{~cyl}, or \code{ggplot2::vars()} call.}
+Should be a vector, not a formula (\code{~cyl}) or \code{ggplot2::vars()} call.}
 
 \item{nrow}{Number of rows. Defaults to NULL; set by display dim.}
 
 \item{ncol}{Number of columns. Defaults to NULL; set by display dim.}
 
 \item{dir}{Direction of wrapping: either "h" horizontal by rows,
-or "v", for vertical by columns. Defaults to "h"}
+or "v", for vertical by columns. Defaults to "h".}
 }
 \description{
 Create and wrap a 1d ribbon of panels in 2d.

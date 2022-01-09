@@ -29,13 +29,11 @@ server <- function(input, output, session) {
       ext <- tolower(substr(path, nchar(path) - 4L + 1L, nchar(path)))
       ## Assumptions
       if((is.null(path) | length(path) == 0L)) stop("Error in filepath length.")
-      if(!(ext %in% c(".csv", ".rda"))) stop("unexpected filepath extension.")
+      if(!(ext %in% c(".csv", ".rds"))) stop("unexpected filepath extension.")
       if(ext == ".csv")
         return(read.csv(path, stringsAsFactors = TRUE, sep = ","))
-      if(ext == ".rda")
-        return(load(file = path))
       if(ext == ".rds")
-        return(load(file = path))
+        return(readRDS(file = path))
     }
     stop("Unexpected data selection.")
   })

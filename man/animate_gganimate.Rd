@@ -17,8 +17,7 @@ animate_gganimate(
 \item{ggtour}{A grammar of graphics tour with appended protos added.
 A return from \verb{ggtour() + proto_*()}.}
 
-\item{fps}{Scalar number of Frames Per Second, the speed the animation should
-play at.}
+\item{fps}{Number of Frames Per Second, the speed resulting animation.}
 
 \item{rewind}{Whether or not the animation should play backwards,
 in reverse order once reaching the end. Defaults to FALSE.}

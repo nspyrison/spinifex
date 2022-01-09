@@ -19,8 +19,9 @@ with \code{manual_tour()} or \code{tour::save_history()}, or a single basis.}
 \item{data}{Numeric data to project. If left NULL, will check if it data is
 stored as an attribute of the the \code{basis_array}.}
 
-\item{angle}{Target angle (in radians) for interpolation for
-\code{tour::save_history()} generated \code{basis_array}. Defaults to .05.}
+\item{angle}{Target angle (radians) for interpolation frames between
+frames of the \code{basis_array}. Defaults to .05.
+To opt out of interpolation set to NA or 0.}
 
 \item{basis_label}{Labels for basis display, a character
 vector with length equal to the number of variables.

@@ -28,8 +28,8 @@ tabData <- tabPanel(
                   "flea"),
       conditionalPanel("input.dat == 'Upload file'",
                        fileInput("data_file", "Data file",
-                                 placeholder = "<Select a .csv, .rda, or .rds file>",
-                                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv", ".rda", ".rds")
+                                 placeholder = "<Select a .csv or .rds file>",
+                                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv",  ".rds")
                        ),
                        verbatimTextOutput("data_msg")),
       ## Select the projection variables
