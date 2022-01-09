@@ -24,6 +24,7 @@ Adds a vertical/horizontal line with an intercept of 0, scaled to the data
 frame.
 }
 \examples{
+library(spinifex)
 dat  <- scale_sd(penguins[, 1:4])
 clas <- penguins$species
 

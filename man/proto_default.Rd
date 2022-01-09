@@ -31,6 +31,7 @@ Returns a list of proto_origin(), proto_point(...), proto_basis() for 2D.
 Returns a list of proto_origin1d(), proto_density(...), proto_basis1d() for 1D.
 }
 \examples{
+library(spinifex)
 dat  <- scale_sd(penguins[, 1:4])
 clas <- penguins$species
 

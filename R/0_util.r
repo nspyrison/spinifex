@@ -40,9 +40,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' rownames of basis.
 #' @param data_label Labels for `plotly` tooltip display. 
 #' Defaults to the rownames of data. If null, initializes to 1:nrow(data).
-#' @param do_scale_in_frame Whether or not to scale by standard deviations
-#' away from the mean within each frame or not. 
-#' Defaults to TRUE, helping to keep the animation centered.
+#' @param do_center_frame Whether or not to center the mean within each 
+#' animation frame. Defaults to TRUE.
 #' @export
 #' @examples
 #' ## !!This function is not meant for external use!!
@@ -53,8 +52,8 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' 
 #' ## Radial tour array to long df, as used in play_manual_tour()
 #' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' ls_df_frames <- array2df(basis_array = mt_array, data = dat_std)#,
-#'                          #basis_label = paste0("MyLabs", 1:nrow(bas)))
+#' ls_df_frames <- array2df(basis_array = mt_array, data = dat_std,
+#'                          basis_label = paste0("MyLabs", 1:nrow(bas)))
 #' str(ls_df_frames)
 #' 
 #' ## tourr::save_history tour array to long df, as used in play_tour_path()
@@ -63,10 +62,10 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' str(ls_df_frames2)
 array2df <- function(
   basis_array,
-  data = NULL,
-  basis_label = NULL,
-  data_label = rownames(data),
-  do_scale_in_frame = TRUE
+  data            = NULL,
+  basis_label     = NULL,
+  data_label      = rownames(data),
+  do_center_frame = TRUE
 ){
   ## Initialize
   p <- nrow(basis_array)
@@ -112,10 +111,12 @@ array2df <- function(
     data_frames <- NULL
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% matrix(basis_array[,, i], p, d)
-      if(do_scale_in_frame) new_frame <- scale_sd(new_frame)
+      if(do_center_frame)
+        new_frame <- apply(new_frame, 2L, function(c){(c - mean(c))})
       new_frame <- cbind(new_frame, i) #*+ 1L) ## Append frame number
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
+    data_frames[, 1L:d] <- data_frames[, 1L:d] %>% scale_01()
     data_frames <- as.data.frame(data_frames)
     colnames(data_frames) <- c(.nms[1L:ncol(basis_array)], "frame")
     ## Data label rep if applicable
@@ -126,10 +127,10 @@ array2df <- function(
   
   ## Return, include data if it exists.
   if(exists("data_frames")){
-    return(list(basis_frames = basis_frames,
-                data_frames  = data_frames))
+    ret <- list(basis_frames = basis_frames, data_frames = data_frames)
   } else
-    return(list(basis_frames = basis_frames))
+    ret <- list(basis_frames = basis_frames)
+  ret
 }
 
 
@@ -164,9 +165,9 @@ map_relative <- function(
   to = NULL
 ){
   ## Assumptions
-  if(is.null(to)) to <- data.frame(x = c(-1L, 1L), y = c(-1L, 1L))
   position <- match.arg(position)
-  if(position == "off") return()
+  if(position == "off" | is.null(x)) return()
+  if(is.null(to)) to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))
   
   ## Initialize
   xrange  <- range(to[, 1L])

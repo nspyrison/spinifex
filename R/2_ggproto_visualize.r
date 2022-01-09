@@ -17,9 +17,8 @@
 #' vector with length equal to the number of variables.
 #' Defaults to NULL; 3 character abbreviation from colnames of data or
 #' rownames of basis.
-#' @param do_scale_in_frame Whether or not to scale by standard deviations
-#' away from the mean within each frame or not. Default to TRUE, helping to
-#' keep data centered.
+#' @param do_center_frame Whether or not to center the mean within each 
+#' animation frame. Defaults to TRUE.
 #' @param data_label Labels for `plotly` tooltip display. 
 #' Defaults to the NULL, rownames and/or numbers of data.
 #' @export
@@ -74,17 +73,16 @@
 #' }
 ggtour <- function(
   basis_array,
-  data              = NULL,
-  angle             = .05,
-  basis_label       = NULL,
-  data_label        = NULL,
-  do_scale_in_frame = TRUE
+  data            = NULL,
+  angle           = .05,
+  basis_label     = NULL,
+  data_label      = NULL,
+  do_center_frame = TRUE
 ){
   ## If data missing, check if data is passed to the basis_array
   if(is.null(data)) data <- attr(basis_array, "data") ## Could be NULL
   .phi_start <- attr(basis_array,"phi_start")  ## NULL if not a manual tour
   .manip_var <- attr(basis_array, "manip_var") ## For highlighting indepentant of 
-  .map_to_data <- data.frame(x = 0L:1L, y = 0L:1L) ## Init for null data
   ## Basis label condition handling
   if(is.null(basis_label)){
     if(is.null(data) == FALSE){
@@ -101,7 +99,7 @@ ggtour <- function(
     basis_array <- array(
       as.matrix(basis_array), dim = c(dim(basis_array), 1L))
   # Interpolation frames
-  if(is.null(angle) | is.na(angle) | angle == 0){
+  if(is.null(angle) | is.na(angle) | angle == 0L){
     ## Opt out of interpolate, angle was na, null, or 0, esp for 
     .interpolated_basis_array <- basis_array
   }else if(is.null(.phi_start) == FALSE){
@@ -115,33 +113,23 @@ ggtour <- function(
   
   ## df_basis & df_data list
   .df_ls <- array2df(
-    .interpolated_basis_array, data, basis_label, data_label, do_scale_in_frame)
+    .interpolated_basis_array, data, basis_label, data_label, do_center_frame)
   .df_basis <- .df_ls$basis_frames
   attr(.df_basis, "manip_var") <- .manip_var ## NULL if not a manual tour
   .n_frames <- dim(.interpolated_basis_array)[3L]# + 1L ## Duplicate first frame
   .d <- ncol(.interpolated_basis_array)
   .p <- nrow(.interpolated_basis_array)
-  ## .df_data related
+  .map_to <- data.frame(x = c(0L, 1L), y = c(0L, 1L))
   .df_data <- .df_ls$data_frames ## Can be NULL
-  if(is.null(.df_data) == FALSE){
-    .map_to_data <- data.frame(x = range(.df_data$x),
-                               y = c(0L, 1L)) ## init dummy y for just map_to
-    if(ncol(.interpolated_basis_array) > 1L){
-      ## Raise data y so density floor isn't the middle.
-      .df_data$y <- .df_data$y - min(.df_data$y)
-      ## If 2D map data to density shape
-      .map_to_data$y <- range(.df_data$y)
-    }
-  }
   .nrow_df_data <- nrow(.df_data) ## NULL if data is NULL
   .n <- nrow(data) ## NULL if data is NULL
-  ## SIDE EFFECT: Assign list to last_ggtour().
-  .set_last_ggtour(list(
+  
+  ## SIDE EFFECT: Assign list to last_ggtour_env().
+  spinifex:::.set_last_ggtour_env(list(
     interpolated_basis_array = .interpolated_basis_array,
-    df_basis = .df_basis, df_data = .df_data, map_to_data = .map_to_data,
+    df_basis = .df_basis, df_data = .df_data, map_to = .map_to,
     n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p,
     d = .d, manip_var = .manip_var, is_faceted = FALSE))
-  
   ## Return ggplot head, theme, and facet if used
   ggplot2::ggplot(.df_basis) + spinifex::theme_spinifex()
 }
@@ -201,7 +189,7 @@ facet_wrap_tour <- function(
   .ggt$df_data    <- .df_data
   .ggt$facet_var  <- facet_var
   .ggt$is_faceted <- TRUE
-  .set_last_ggtour(.ggt)
+  spinifex:::.set_last_ggtour_env(.ggt)
   
   ## Return
   list(
@@ -261,9 +249,9 @@ append_fixed_y <- function(
   ## SIDE EFFECT: pass data back to .store
   # to calm some oddities; like proto_origin() complaining about y being missing
   .ggt$df_data <- .df_data
-  .ggt$map_to_data$y <- range(.df_data$y)
+  .ggt$map_to$y <- range(.df_data$y)
   .ggt$d <- 2L
-  .set_last_ggtour(.ggt)
+  spinifex:::.set_last_ggtour_env(.ggt)
   
   ## Return
   NULL
@@ -271,16 +259,18 @@ append_fixed_y <- function(
 
 
 .store <- new.env(parent = emptyenv())
-#' Retrieve/set a list from the last `ggtour()`, required for the use 
-#' of `proto_*` functions.
+#' Retrieve/set last `ggtour()` information
+#' 
+#' Internal information, not related to the ggplot2 object, but used in ggtour
+#' composition by the `proto_*` functions to share/set changes.
 #'
 #' @seealso [ggtour()]
-#' @export
+# #' @export
 #' @keywords internal
-last_ggtour <- function(){.store$ggtour_ls}
-#' @rdname last_ggtour
-#' @export
-.set_last_ggtour <- function(ggtour_list) .store$ggtour_ls <- ggtour_list
+last_ggtour_env <- function(){.store$ggtour_ls}
+#' @rdname last_ggtour_env
+# #' @export
+.set_last_ggtour_env <- function(ggtour_list) .store$ggtour_ls <- ggtour_list
 
 
 #' Replicate all vector elements of a list
@@ -355,8 +345,8 @@ last_ggtour <- function(){.store$ggtour_ls}
 #' ## This expression. is not meant for external use.
 ## _.init4proto expression -----
 .init4proto <- expression({ ## An expression, not a function
-  .ggt <- spinifex::last_ggtour() ## Self-explicit for use in cheem
-  if(is.null(.ggt)) stop(".init4proto: last_ggtour() is NULL, have you run ggtour() yet?")
+  .ggt <- spinifex:::last_ggtour_env() ## Self-explicit for use in cheem
+  if(is.null(.ggt)) stop(".init4proto: spinifex:::last_ggtour_env() is NULL, have you run ggtour() yet?")
   
   ## Assign elements ggtour list as quiet .objects in the environment
   .env <- environment()
@@ -500,15 +490,18 @@ animate_gganimate <- function(
 ){
   ## Early out, print ggplot if only 1 frame.
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
-  u_frames <- unique(last_ggtour()$df_basis$frame)
-  if(length(u_frames) < 2L){
+  n_frames <- spinifex:::last_ggtour_env()$n_frames
+  if(n_frames == 1L){
     ## Static ggplot2, 1 frame
     message("ggtour df_basis only has 1 frame, returning ggplot2 object instead.")
-    ret <- ggtour
+    ret <- ggtour 
+    ## Don't try to send to clean up; 
+    ### transition_states will think frame is the graphics::frame and not vars(frame)
   }else{
     # Animate
     ## Discrete jump between frames, no linear interpolation.
-    gga <- ggtour + gganimate::transition_states(frame, transition_length = 0L)
+    gga <- ggtour + gganimate::transition_states(
+      ggtour$data$frame, transition_length = 0L)
     ## Normal animation, with applied options, knit_pdf_anim == FALSE
     ret <- gganimate::animate(gga, fps = fps, rewind = rewind, 
                               start_pause = fps * start_pause,
@@ -516,9 +509,7 @@ animate_gganimate <- function(
   }
   
   ## Clean up
-  .set_last_ggtour(list(df_basis = data.frame(
-    frame = u_frames))) ## Minimal, works with animate_*, but not ggtour composition
-  .m <- gc()            ## Mute garbage collection
+  .m <- gc() ## Mute garbage collection
   ret
 }
 
@@ -579,11 +570,11 @@ animate_plotly <- function(
     if(length(ggtour$layers) == 0L) ## plotly subplots, have NULL layers
       stop("No layers found, did you forget to add a proto_*?")
     ## ggplotly without animation settings
-    ggtour <- plotly::ggplotly(ggtour, tooltip = "tooltip", ...)
+    ggp <- plotly::ggplotly(ggtour, tooltip = "tooltip", ...)
   }
   
   ## ggplotly settings, animated or static from ggplot or subplot
-  ggtour <- ggtour %>%
+  ggp <- ggp %>%
     ## Remove button bar and zoom box
     plotly::config(displayModeBar = FALSE,
                    modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d")) %>%
@@ -594,25 +585,24 @@ animate_plotly <- function(
                    xaxis = list(showgrid = FALSE, showline = FALSE,
                                 scaleanchor = "y", scalaratio = 1L))
   
-  u_frames <- unique(last_ggtour()$df_basis$frame)
-  if(length(u_frames) < 2L){
-    ## Static ggplot, 1 Frame only or possibly last_ggtour missing:
+  ## Multiple frames/animation condition handling
+  n_frames <- spinifex:::last_ggtour_env()$n_frames
+  if(n_frames == 1L){
+    ## Static ggplot, 1 Frame only or possibly last_ggtour_env missing:
     message("ggtour df_basis only has 1 frame, no animation options.")
-    ret <- ggtour
+    ret <- ggp
   }else{
     ## Animation options, more than 1 frame
     ## Block plotly.js warning: lack of support for horizontal legend;
     #### https://github.com/plotly/plotly.js/issues/53
-    ret <- ggtour %>% plotly::animation_opts(
+    ret <- ggp %>% plotly::animation_opts(
       frame = 1L / fps * 1000L, transition = 0L, redraw = TRUE) %>%
       plotly::animation_slider(
         active = 0L, ## 0 indexed first frame
         currentvalue = list(prefix = "Frame: ", font = list(color = "black")))
   }
   ## Clean up
-  .set_last_ggtour(list(df_basis = data.frame(
-    frame = u_frames))) ## Minimal, works with animate_*, but not ggtour composition
-  .m <- gc()           ## Mute garbage collection
+  .m <- gc() ## Mute garbage collection
   ret
 }
   
@@ -656,7 +646,7 @@ animate_plotly <- function(
 # animate_gganimate_knit2pdf <- function(ggtour,
 #                                        ... ## Passed gganimate::knit_print.gganim
 # ){
-#   n_frames <- length(unique(last_ggtour()$df_basis$frame))
+#   n_frames <- length(unique(last_ggtour_env()$df_basis$frame))
 #   if(n_frames == 1L) stop("df_basis only has 1 frame, stopping animation.")
 #   
 #   ## Discrete jump between frames, no linear interpolation.
@@ -680,6 +670,7 @@ animate_plotly <- function(
 #' @export
 #' @family ggtour animator
 #' @examples
+#' library(spinifex)
 #' dat  <- scale_sd(penguins[, 1:4])
 #' clas <- penguins$species
 #' bas  <- basis_pca(dat)
@@ -800,9 +791,9 @@ proto_basis <- function(
     .circle <- .bind_elements2df(list(facet_var = "_basis_"), .circle)
   }
   ## Scale to data
-  .center <- map_relative(data.frame(x = 0L, y = 0L), position, .map_to_data)
-  .circle <- map_relative(.circle, position, .map_to_data)
-  .df_basis <- map_relative(.df_basis, position, .map_to_data)
+  .center   <- map_relative(data.frame(x = 0L, y = 0L), position, .map_to)
+  .circle   <- map_relative(.circle, position, .map_to)
+  .df_basis <- map_relative(.df_basis, position, .map_to)
   
   ## Aesthetics for the axes segments.
   .axes_col <- "grey50"
@@ -884,11 +875,11 @@ proto_basis1d <- function(
     .df_seg0 <- .bind_elements2df(.facet_var, .df_seg0)
   }
   ## Scale them
-  .df_zero <- map_relative(.df_zero, position, .map_to_data)
-  .df_seg  <- map_relative(.df_seg,  position, .map_to_data)
-  .df_txt  <- map_relative(.df_txt,  position, .map_to_data)
-  .df_rect <- map_relative(.df_rect, position, .map_to_data)
-  .df_seg0 <- map_relative(.df_seg0, position, .map_to_data)
+  .df_zero <- map_relative(.df_zero, position, .map_to)
+  .df_seg  <- map_relative(.df_seg,  position, .map_to)
+  .df_txt  <- map_relative(.df_txt,  position, .map_to)
+  .df_rect <- map_relative(.df_rect, position, .map_to)
+  .df_seg0 <- map_relative(.df_seg0, position, .map_to)
   
   ## Return proto
   list(
@@ -1181,7 +1172,7 @@ proto_density <- function(
   ## see: https://github.com/ropensci/plotly/issues/1544
   
   ## geom_density do.call
-  y_coef <- diff(range(.map_to_data$y))
+  y_coef <- diff(range(.map_to$y))
   .aes_func <- function(...)
     ggplot2::aes(x = x, y = y_coef * ..ndensity.., frame = frame, ...)
   .aes_call <- do.call(.aes_func, aes_args)
@@ -1452,9 +1443,9 @@ proto_highlight <- function(
   mark_initial = FALSE
 ){
   ## Initialize
-  if(is.null(row_index)) return()
+  if(is.null(row_index)) return() ## Must be handle this NULL gracefully
   eval(.init4proto) ## aes_args/identity_args/df_data subset in .init4proto.
-  if(is.null(.df_data)) 
+  if(is.null(.df_data))
     stop("proto_highlight: Data is NULL. Was data passed to the basis array or ggtour?")
   if(is.null(.df_data$y))
     stop("proto_highlight: Projection y not found, expecting a 2D tour. Did you mean to call `proto_highlight1d`?")
@@ -1485,7 +1476,6 @@ proto_highlight <- function(
   ret
 }
 
-
 #' @rdname proto_highlight
 #' @export
 #' @examples
@@ -1514,15 +1504,14 @@ proto_highlight1d <- function(
   mark_initial = FALSE
 ){
   ## Initialize
-  if(is.null(row_index)) return()
+  if(is.null(row_index)) return() ## Must be handle this NULL gracefully.
   eval(.init4proto)
   if(is.null(.df_data))
     stop("proto_highlight1d: Data is NULL. Was data passed to the basis array or ggtour?")
   
-
   ## geom_segment do.calls, moving with frame
-  .ymin <- min(.map_to_data$y)
-  .ymax <- max(.map_to_data$y)
+  .ymin <- min(.map_to$y)
+  .ymax <- max(.map_to$y)
   .segment_tail <- diff(c(.ymin, .ymax)) * .05
   .aes_func <- function(...)
     ggplot2::aes(x = x, xend = x,  y = .ymin - .segment_tail,
@@ -1661,9 +1650,9 @@ proto_origin <- function(
   #### Setup origin, zero mark, 5% on each side.
   .df_0range <- data.frame(x = c(0L, range(.df_data$x)),
                            y = c(0L, range(.df_data$y)))
-  .zero <- map_relative(.df_0range, "full", .map_to_data)[1L,, drop = FALSE]
-  .tail <- tail_size / 2L * max(diff(range(.map_to_data$x)),
-                                diff(range(.map_to_data$y)))
+  .zero <- map_relative(.df_0range, "full", .map_to)[1L,, drop = FALSE]
+  .tail <- tail_size / 2L * max(diff(range(.map_to$x)),
+                                diff(range(.map_to$y)))
   .df_origin <- data.frame(x     = c(.zero$x - .tail, .zero$x),
                            x_end = c(.zero$x + .tail, .zero$x),
                            y     = c(.zero$y, .zero$y - .tail),
@@ -1707,8 +1696,8 @@ proto_origin1d <- function(
   
   .df_0range <- data.frame(x = c(0L, range(.df_data$x)),
                            y = c(0L))
-  .zero <- map_relative(.df_0range, "full", .map_to_data)[1L,, drop = FALSE]
-  .tail <- diff(range(.map_to_data$y)) * .55
+  .zero <- map_relative(.df_0range, "full", .map_to)[1L,, drop = FALSE]
+  .tail <- diff(range(.map_to$y)) * .55
   .df_origin <- data.frame(
     x     = c(.zero$x, .zero$x),
     x_end = c(.zero$x, .zero$x),
@@ -1744,6 +1733,7 @@ proto_origin1d <- function(
 #' @aliases proto_hline
 #' @family ggtour proto functions
 #' @examples
+#' library(spinifex)
 #' dat  <- scale_sd(penguins[, 1:4])
 #' clas <- penguins$species
 #' 
@@ -1769,7 +1759,7 @@ proto_hline0 <- function(
   ## Dataframe
   .df_zero <- map_relative(data.frame(x = c(0L, range(.df_data$x)),
                                       y = c(0L, range(.df_data$y))),
-                           "center", .map_to_data)[1L,, drop = FALSE]
+                           "center", .map_to)[1L,, drop = FALSE]
   if(.is_faceted){
     .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
     .df_zero <- merge(.df_zero, .df_u_facet_lvls)
@@ -1800,7 +1790,7 @@ proto_vline0 <- function(
   ## dataframe
   .df_zero <- map_relative(data.frame(x = c(0L, range(.df_data$x)),
                                       y = c(0L, range(.df_data$y))),
-                           "center", .map_to_data)[1L,, drop = FALSE]
+                           "center", .map_to)[1L,, drop = FALSE]
   if(.is_faceted){
     .df_u_facet_lvls <- data.frame(facet_var = factor(unique(.facet_var)))
     .df_zero <- merge(.df_zero, .df_u_facet_lvls)
@@ -1832,6 +1822,7 @@ proto_vline0 <- function(
 #' @aliases proto_default2d proto_def proto_def2d
 #' @family ggtour proto functions
 #' @examples
+#' library(spinifex)
 #' dat  <- scale_sd(penguins[, 1:4])
 #' clas <- penguins$species
 #' 
@@ -1914,7 +1905,7 @@ if(FALSE){ ## DONT RUN
       .u_frame <- data.frame(frame = unique(.df_basis$frame))
       d <- 0L:.d; p <- 1L:.p
       .pos <- merge(d, p) %>%
-        map_relative(position, .map_to_data) %>%
+        map_relative(position, .map_to) %>%
         merge(.u_frame)
       colnames(.pos) <- c("d", "p", "frame")
       ## round basis contributions

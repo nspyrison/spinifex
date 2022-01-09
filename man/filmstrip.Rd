@@ -19,6 +19,7 @@ number of frames is more than desired, try increasing the \code{angle} argument 
 the tour. Is very demanding on the plots pane, works better with ggsave().
 }
 \examples{
+library(spinifex)
 dat  <- scale_sd(penguins[, 1:4])
 clas <- penguins$species
 bas  <- basis_pca(dat)
