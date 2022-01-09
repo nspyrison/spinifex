@@ -17,6 +17,9 @@
 #' vector with length equal to the number of variables.
 #' Defaults to NULL; 3 character abbreviation from colnames of data or
 #' rownames of basis.
+#' @param do_scale_in_frame Whether or not to scale by standard deviations
+#' away from the mean within each frame or not. Default to TRUE, helping to
+#' keep data centered.
 #' @param data_label Labels for `plotly` tooltip display. 
 #' Defaults to the NULL, rownames and/or numbers of data.
 #' @export
@@ -69,11 +72,13 @@
 #' ### or as html widget with tooltips
 #' animate_plotly(ggt)
 #' }
-ggtour <- function(basis_array,
-                   data = NULL,
-                   angle = .05,
-                   basis_label = NULL,
-                   data_label  = NULL
+ggtour <- function(
+  basis_array,
+  data              = NULL,
+  angle             = .05,
+  basis_label       = NULL,
+  data_label        = NULL,
+  do_scale_in_frame = TRUE
 ){
   ## If data missing, check if data is passed to the basis_array
   if(is.null(data)) data <- attr(basis_array, "data") ## Could be NULL
@@ -109,7 +114,8 @@ ggtour <- function(basis_array,
   }
   
   ## df_basis & df_data list
-  .df_ls <- array2df(.interpolated_basis_array, data, basis_label, data_label)
+  .df_ls <- array2df(
+    .interpolated_basis_array, data, basis_label, data_label, do_scale_in_frame)
   .df_basis <- .df_ls$basis_frames
   attr(.df_basis, "manip_var") <- .manip_var ## NULL if not a manual tour
   .n_frames <- dim(.interpolated_basis_array)[3L]# + 1L ## Duplicate first frame
@@ -495,18 +501,19 @@ animate_gganimate <- function(
   ## Early out, print ggplot if only 1 frame.
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   u_frames <- unique(last_ggtour()$df_basis$frame)
-  if(length(u_frames) > 1L){
+  if(length(u_frames) < 2L){
     ## Static ggplot2, 1 frame
     message("ggtour df_basis only has 1 frame, returning ggplot2 object instead.")
     ret <- ggtour
+  }else{
+    # Animate
+    ## Discrete jump between frames, no linear interpolation.
+    gga <- ggtour + gganimate::transition_states(frame, transition_length = 0L)
+    ## Normal animation, with applied options, knit_pdf_anim == FALSE
+    ret <- gganimate::animate(gga, fps = fps, rewind = rewind, 
+                              start_pause = fps * start_pause,
+                              end_pause = fps * end_pause, ...)
   }
-  
-  ## Discrete jump between frames, no linear interpolation.
-  gga <- ggtour + gganimate::transition_states(frame, transition_length = 0L)
-  ## Normal animation, with applied options, knit_pdf_anim == FALSE
-  ret <- gganimate::animate(gga, fps = fps, rewind = rewind, 
-                            start_pause = fps * start_pause,
-                            end_pause = fps * end_pause, ...)
   
   ## Clean up
   .set_last_ggtour(list(df_basis = data.frame(
@@ -572,7 +579,7 @@ animate_plotly <- function(
     if(length(ggtour$layers) == 0L) ## plotly subplots, have NULL layers
       stop("No layers found, did you forget to add a proto_*?")
     ## ggplotly without animation settings
-    ggptour <- plotly::ggplotly(ggtour, tooltip = "tooltip", ...)
+    ggtour <- plotly::ggplotly(ggtour, tooltip = "tooltip", ...)
   }
   
   ## ggplotly settings, animated or static from ggplot or subplot
@@ -582,13 +589,13 @@ animate_plotly <- function(
                    modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d")) %>%
     ## Remove legends and axis lines
     plotly::layout(dragmode = FALSE, legend = list(x = 100L, y = 0.5),
-                   #fixedrange = TRUE, ## This is a curse, do not use.
+                   #fixedrange = TRUE, ## This is a curse, never use this.
                    yaxis = list(showgrid = FALSE, showline = FALSE),
                    xaxis = list(showgrid = FALSE, showline = FALSE,
                                 scaleanchor = "y", scalaratio = 1L))
   
   u_frames <- unique(last_ggtour()$df_basis$frame)
-  if(length(u_frames) > 1L){
+  if(length(u_frames) < 2L){
     ## Static ggplot, 1 Frame only or possibly last_ggtour missing:
     message("ggtour df_basis only has 1 frame, no animation options.")
     ret <- ggtour

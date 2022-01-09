@@ -8,7 +8,8 @@ array2df(
   basis_array,
   data = NULL,
   basis_label = NULL,
-  data_label = rownames(data)
+  data_label = rownames(data),
+  do_scale_in_frame = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,10 @@ rownames of basis.}
 
 \item{data_label}{Labels for \code{plotly} tooltip display.
 Defaults to the rownames of data. If null, initializes to 1:nrow(data).}
+
+\item{do_scale_in_frame}{Whether or not to scale by standard deviations
+away from the mean within each frame or not.
+Defaults to TRUE, helping to keep the animation centered.}
 }
 \description{
 Internal function, many end users will not need this. Takes the result of

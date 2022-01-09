@@ -206,27 +206,25 @@ manual_tour <- function(basis,
   basis <- as.matrix(basis)
   p <- nrow(basis)
   d <- ncol(basis)
-  if(length(manip_var) != 1L)
-    stop(paste0("manip_var expected with length 1, was ", length(manip_var), "."))
+  if(length(manip_var) != 1L) stop("manual_tour: manip_var expected with length 1.")
   if(manip_var < 1L | manip_var > p)
-    stop("manip_var expected to be between 1 and nrow(basis).")
+    stop("manual_tour: manip_var expected to be between 1 and nrow(basis).")
   if(spinifex::is_orthonormal(basis) == FALSE){
-    warning("Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
+    warning("manual_tour: Basis was not orthonormal. Coereced to othronormal with tourr::orthonormalise(basis).")
     basis <- tourr::orthonormalise(basis)
   }
   
   ## Initialize
-  ### d = 2 case
   if(d == 2L){
+    ### d = 2 case
     if(is.null(theta))
       theta <- atan(basis[manip_var, 2L] / basis[manip_var, 1L])
     phi_start <- acos(sqrt(basis[manip_var, 1L]^2L + basis[manip_var, 2L]^2L))
-  }
-  ### d = 1 case
-  if(d == 1L){
+  }else if(d == 1L){
+    ### d = 1 case
     phi_start <- acos(basis[manip_var, 1L])
     theta <- NA
-  }
+  }else{stop("manual_tour only defined for 1- or 2-D projections.")}
   
   if(is.na(theta) == FALSE)
     if(theta < 0L)

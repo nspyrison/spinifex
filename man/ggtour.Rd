@@ -9,7 +9,8 @@ ggtour(
   data = NULL,
   angle = 0.05,
   basis_label = NULL,
-  data_label = NULL
+  data_label = NULL,
+  do_scale_in_frame = TRUE
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ rownames of basis.}
 
 \item{data_label}{Labels for \code{plotly} tooltip display.
 Defaults to the NULL, rownames and/or numbers of data.}
+
+\item{do_scale_in_frame}{Whether or not to scale by standard deviations
+away from the mean within each frame or not.
+Defaults to TRUE, helping to keep the animation centered.}
 }
 \description{
 \code{ggtour()} initializes a ggplot object for a tour. \verb{proto_*} functions are

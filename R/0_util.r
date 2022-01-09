@@ -40,6 +40,9 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' rownames of basis.
 #' @param data_label Labels for `plotly` tooltip display. 
 #' Defaults to the rownames of data. If null, initializes to 1:nrow(data).
+#' @param do_scale_in_frame Whether or not to scale by standard deviations
+#' away from the mean within each frame or not. 
+#' Defaults to TRUE, helping to keep the animation centered.
 #' @export
 #' @examples
 #' ## !!This function is not meant for external use!!
@@ -62,22 +65,24 @@ array2df <- function(
   basis_array,
   data = NULL,
   basis_label = NULL,
-  data_label = rownames(data)
+  data_label = rownames(data),
+  do_scale_in_frame = TRUE
 ){
+  ## Initialize
+  p <- nrow(basis_array)
+  d <- ncol(basis_array)
+  n_frames <- dim(basis_array)[3L]
+  if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
+  manip_var <- attributes(basis_array)$manip_var ## NULL means tourr tour
   ## Condition handle basis labels.
   if(is.null(basis_label)){
     if(is.null(data) == FALSE){
       basis_label <- abbreviate(colnames(data), 3L)
     }else basis_label <- abbreviate(rownames(basis_array), 3L)
-    if(is.null(basis_label)) basis_label <- paste0("v", 1L:nrow(basis_array))
+    if(is.null(basis_label)) basis_label <- paste0("v", 1L:p)
   }
-  ## Initialize
-  if("history_array" %in% class(basis_array)) class(basis_array) <- "array"
-  manip_var <- attributes(basis_array)$manip_var ## NULL means tourr tour
-  p <- dim(basis_array)[1L]
-  n_frames <- dim(basis_array)[3L]
   
-  ## Basis condition handling
+  ## Basis frames df
   ##*duplicate first frame; does it help plotly anim?
   #basis_frames <-cbind(basis_array[,, 1L], 1L)
   basis_frames <- NULL 
@@ -87,26 +92,27 @@ array2df <- function(
   })
   basis_frames <- as.data.frame(basis_frames)
   .nms <- c("x", "y", "z", "w")
-  if(ncol(basis_array) > 4L) .nms <- c(.nms, paste0("y"))
-  colnames(basis_frames) <- c(.nms[1L:ncol(basis_array)], "frame")
+  if(d > 4L) .nms <- c(.nms, paste0("y"))
+  colnames(basis_frames) <- c(.nms[1L:d], "frame")
   ## Basis label and manip_var attribute.
   if(length(basis_label) > 0L)
     basis_frames$tooltip <- rep_len(basis_label, nrow(basis_frames))
   attr(basis_frames, "manip_var") <- manip_var
   
-  ## Data; if exists
+  ## Basis frames df; if exists
   if(is.null(data) == FALSE){
-    if(ncol(data) != nrow(basis_array))
+    if(ncol(data) != p)
       stop(paste0(
         "array2df: Non-conformable matrices; data has ", ncol(data),
-        " columns while basis has ", nrow(basis_array), " rows."))
+        " columns while basis has ", p, " rows."))
     data <- as.matrix(data)
     ##*Duplicate first frame; see if it helps plotly.
-    #*.new_frame <- data %*% matrix(basis_array[,, 1L], nrow(basis_array), ncol(basis_array))
+    #*.new_frame <- data %*% matrix(basis_array[,, 1L], p, d)
     #*data_frames <- cbind(.new_frame, 1L) ## Init
     data_frames <- NULL
     .mute <- sapply(1L:n_frames, function(i){
-      new_frame <- data %*% matrix(basis_array[,, i], nrow(basis_array), ncol(basis_array))
+      new_frame <- data %*% matrix(basis_array[,, i], p, d)
+      if(do_scale_in_frame) new_frame <- scale_sd(new_frame)
       new_frame <- cbind(new_frame, i) #*+ 1L) ## Append frame number
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
