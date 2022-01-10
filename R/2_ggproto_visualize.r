@@ -168,7 +168,7 @@ ggtour <- function(
 #'   proto_default(aes_args = list(color = clas, shape = clas),
 #'                 identity_args = list(size = 1.5))
 #' \dontrun{
-#' animate_gganimate(ggt) ## Faceting not likely to play well with `plotly`
+#' animate_gganimate(ggt) ## May not always play well with plotly
 #' }
 facet_wrap_tour <- function(
   facet_var, nrow = NULL, ncol = NULL, dir = "h"
@@ -494,19 +494,19 @@ animate_gganimate <- function(
   if(n_frames == 1L){
     ## Static ggplot2, 1 frame
     message("ggtour df_basis only has 1 frame, returning ggplot2 object instead.")
-    ret <- ggtour 
-    ## Don't try to send to clean up; 
-    ### transition_states will think frame is the graphics::frame and not vars(frame)
-  }else{
-    # Animate
-    ## Discrete jump between frames, no linear interpolation.
-    gga <- ggtour + gganimate::transition_states(
-      ggtour$data$frame, transition_length = 0L)
-    ## Normal animation, with applied options, knit_pdf_anim == FALSE
-    ret <- gganimate::animate(gga, fps = fps, rewind = rewind, 
-                              start_pause = fps * start_pause,
-                              end_pause = fps * end_pause, ...)
+    return(ggtour)
+    ## return(), don't try to send to clean up; 
+    #### Being in if/else env makes transition_states think frame is
+    #### graphics::frame (causes error) and not vars(frame). 
+    #### Using ggtour$data$frame runs, but all data points show in each frame.
   }
+  # Animate
+  ## Discrete jump between frames, no linear interpolation.
+  gga <- ggtour + gganimate::transition_states(frame, transition_length = 0L)
+  ## Normal animation, with applied options, knit_pdf_anim == FALSE
+  ret <- gganimate::animate(gga, fps = fps, rewind = rewind, 
+                            start_pause = fps * start_pause,
+                            end_pause = fps * end_pause, ...)
   
   ## Clean up
   .m <- gc() ## Mute garbage collection
@@ -557,8 +557,7 @@ animate_plotly <- function(
   fps = 8,
   ... ## Passed to plotly::ggplotly(). can always call layout/config again
 ){
-  ## Condition handling for ggplot
-  #### (as opposed to experimental dev for plotly::subplot())
+  ## ggplot or plotly::subplot?
   if(class(ggtour)[1L] == "gg"){
     ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
     #### Adding many protos is liable to break plotly animations, see above url.
@@ -571,7 +570,7 @@ animate_plotly <- function(
       stop("No layers found, did you forget to add a proto_*?")
     ## ggplotly without animation settings
     ggp <- plotly::ggplotly(ggtour, tooltip = "tooltip", ...)
-  }
+  }else ggp <- ggtour ## plotly::subplot
   
   ## ggplotly settings, animated or static from ggplot or subplot
   ggp <- ggp %>%

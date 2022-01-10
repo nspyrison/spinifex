@@ -38,7 +38,7 @@ ggt <- ggtour(mt_path, dat, angle = .3) +
   proto_default(aes_args = list(color = clas, shape = clas),
                 identity_args = list(size = 1.5))
 \dontrun{
-animate_gganimate(ggt) ## Faceting not likely to play well with `plotly`
+animate_gganimate(ggt) ## May not always play well with plotly
 }
 }
 \seealso{
