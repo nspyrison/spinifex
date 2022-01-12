@@ -47,10 +47,10 @@ penguins_na.rm <- as.data.frame(d) ## Remove \{tibble\} dependency
 }
 \examples{
 library(spinifex)
-str(spinifex::penguins_na.rm)
-dat   <- scale_sd(spinifex::penguins_na.rm[, 1:4])
-clas1 <- spinifex::penguins_na.rm$species
-clas2 <- spinifex::penguins_na.rm$sex
+str(penguins_na.rm)
+dat   <- scale_sd(penguins_na.rm[, 1:4])
+clas1 <- penguins_na.rm$species
+clas2 <- penguins_na.rm$sex
 
 bas <- basis_pca(dat)
 mv  <- manip_var_of(bas)

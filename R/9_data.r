@@ -1,4 +1,4 @@
-##### BreastCancer -----
+##### BreastCancer_na.rm -----
 #' Wisconsin Breast Cancer Database
 #'
 #' The objective is to identify each of a number of benign or malignant classes.
@@ -39,18 +39,18 @@
 #' d <- raw[idx, 3:10]
 #' d <- apply(d, 2L, as.integer)
 #' d <- data.frame(d, Class = as.factor(raw$Class[idx]))
-#' BreastCancer <- d
-#' ## save(BreastCancer, file = "./data/BreastCancer.rda")
+#' BreastCancer_na.rm <- d
+#' ## save(BreastCancer_na.rm, file = "./data/BreastCancer_na.rm.rda")
 #' ```
-#' @name BreastCancer
+#' @name BreastCancer_na.rm
 #' @docType data
 #' @source {J.W. Smith., el al. 1988. Using the ADAP learning algorithm to forecast the onset of diabetes mellitus. In Proceedings of the Symposium on Computer Applications and Medical Care (pp. 261--265). IEEE Computer Society Press.}
 #' @source {mlbench, R package. F. Leisch & E. Dimitriadou, 2021. mlbench: Machine Learning Benchmark Problems} \url{https://CRAN.R-project.org/package=mlbench}
 #' @examples
-#' library("spinifex")
-#' str(spinifex::BreastCancer)
-#' dat  <- scale_sd(spinifex::BreastCancer[, 1:8])
-#' clas <- spinifex::BreastCancer$Class
+#' library(spinifex)
+#' str(BreastCancer_na.rm)
+#' dat  <- scale_sd(BreastCancer_na.rm[, 1:8])
+#' clas <- BreastCancer_na.rm$Class
 #' 
 #' bas <- basis_pca(dat)
 #' mv  <- manip_var_of(bas)
@@ -61,7 +61,7 @@
 #' \dontrun{
 #' animate_plotly(ggt)
 #' }
-"BreastCancer"
+"BreastCancer_na.rm"
 
 ##### PimaIndiansDiabetes_wide -----
 #' Pima Indians Diabetes Dataset, wide
@@ -104,14 +104,14 @@
 #' @docType data
 
 #' @examples
-#' library("spinifex")
+#' library(spinifex)
 #' str(PimaIndiansDiabetes_wide)
-#' dat <- scale_sd(PimaIndiansDiabetes_wide[, 1:8])
+#' dat  <- scale_sd(PimaIndiansDiabetes_wide[, 1:8])
 #' clas <- PimaIndiansDiabetes_wide$diabetes
 #' 
 #' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
-#' mt <- manual_tour(bas, mv)
+#' mv  <- manip_var_of(bas)
+#' mt  <- manual_tour(bas, mv)
 #' 
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(aes_args = list(color = clas, shape = clas))
@@ -160,14 +160,14 @@
 #' @source {J.W. Smith., el al. 1988. Using the ADAP learning algorithm to forecast the onset of diabetes mellitus. In Proceedings of the Symposium on Computer Applications and Medical Care (pp. 261--265). IEEE Computer Society Press.}
 #' @source {mlbench, R package. F. Leisch & E. Dimitriadou, 2021. mlbench: Machine Learning Benchmark Problems} \url{https://CRAN.R-project.org/package=mlbench}
 #' @examples
-#' library("spinifex")
+#' library(spinifex)
 #' str(PimaIndiansDiabetes_long)
-#' dat <- scale_sd(PimaIndiansDiabetes_long[, 1:6])
+#' dat  <- scale_sd(PimaIndiansDiabetes_long[, 1:6])
 #' clas <- PimaIndiansDiabetes_long$diabetes
 #' 
 #' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
-#' mt <- manual_tour(bas, mv)
+#' mv  <- manip_var_of(bas)
+#' mt  <- manual_tour(bas, mv)
 #' 
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(aes_args = list(color = clas, shape = clas))
@@ -175,7 +175,7 @@
 #' animate_plotly(ggt)}
 "PimaIndiansDiabetes_long"
 
-##### weather -----
+##### weather_na.rm -----
 #' Sample dataset of daily weather observations from Canberra airport in Australia.
 #' 
 #' One year of daily weather observations collected from the Canberra airport 
@@ -223,28 +223,28 @@
 #' d <- rattle::weather[, c(1, 3:7, 9, 12:21, 23, 22, 24)]
 #' d <- d[complete.cases(d), ] ## Remove ~12 row-wise incomplete rows
 #' d <- as.data.frame(d)  ## Remove tibble dependency
-#' weather <- d
-#' ## save(weather, file = "./data/weather.rda")
+#' weather_na.rm <- d
+#' ## save(weather_na.rm, file = "./data/weather_na.rm.rda")
 #' ```
 #' @name weather
 #' @docType data
 #' @source {Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data/}
 #' @source {rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
 #' @examples
-#' library("spinifex")
-#' str(spinifex::weather)
-#' dat <- scale_sd(spinifex::weather[, 2:18])
-#' clas <- spinifex::weather$RainTomorrow
+#' library(spinifex)
+#' str(weather_na.rm)
+#' dat  <- scale_sd(weather_na.rm[, 2:18])
+#' clas <- weather_na.rm$RainTomorrow
 #' 
 #' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
-#' mt <- manual_tour(bas, mv)
+#' mv  <- manip_var_of(bas)
+#' mt  <- manual_tour(bas, mv)
 #' 
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(aes_args = list(color = clas, shape = clas))
 #' \dontrun{
 #' animate_plotly(ggt)}
-"weather"
+"weather_na.rm"
 
 ##### wine -----
 #' The wine dataset from the UCI Machine Learning Repository.
@@ -288,14 +288,14 @@
 #' @name wine
 #' @docType data
 #' @examples
-#' library("spinifex")
+#' library(spinifex)
 #' str(wine)
-#' dat <- scale_sd(wine[, 2:6])
+#' dat  <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
 #' 
 #' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
-#' mt <- manual_tour(bas, mv)
+#' mv  <- manip_var_of(bas)
+#' mt  <- manual_tour(bas, mv)
 #' 
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(aes_args = list(color = clas, shape = clas))
@@ -338,10 +338,10 @@
 #' ```
 #' @examples
 #' library(spinifex)
-#' str(spinifex::penguins_na.rm)
-#' dat   <- scale_sd(spinifex::penguins_na.rm[, 1:4])
-#' clas1 <- spinifex::penguins_na.rm$species
-#' clas2 <- spinifex::penguins_na.rm$sex
+#' str(penguins_na.rm)
+#' dat   <- scale_sd(penguins_na.rm[, 1:4])
+#' clas1 <- penguins_na.rm$species
+#' clas2 <- penguins_na.rm$sex
 #' 
 #' bas <- basis_pca(dat)
 #' mv  <- manip_var_of(bas)

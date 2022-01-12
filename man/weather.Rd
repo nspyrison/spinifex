@@ -3,6 +3,7 @@
 \docType{data}
 \name{weather}
 \alias{weather}
+\alias{weather_na.rm}
 \title{Sample dataset of daily weather observations from Canberra airport in Australia.}
 \format{
 A data frame of 354 observations of 20 variables. One year of
@@ -37,7 +38,7 @@ Definitions adapted from http://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml
 {rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
 }
 \usage{
-weather
+weather_na.rm
 }
 \description{
 One year of daily weather observations collected from the Canberra airport
@@ -58,19 +59,19 @@ Replicating this dataset:\preformatted{require("rattle")
 d <- rattle::weather[, c(1, 3:7, 9, 12:21, 23, 22, 24)]
 d <- d[complete.cases(d), ] ## Remove ~12 row-wise incomplete rows
 d <- as.data.frame(d)  ## Remove tibble dependency
-weather <- d
-## save(weather, file = "./data/weather.rda")
+weather_na.rm <- d
+## save(weather_na.rm, file = "./data/weather_na.rm.rda")
 }
 }
 \examples{
-library("spinifex")
-str(spinifex::weather)
-dat <- scale_sd(spinifex::weather[, 2:18])
-clas <- spinifex::weather$RainTomorrow
+library(spinifex)
+str(weather_na.rm)
+dat  <- scale_sd(weather_na.rm[, 2:18])
+clas <- weather_na.rm$RainTomorrow
 
 bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
-mt <- manual_tour(bas, mv)
+mv  <- manip_var_of(bas)
+mt  <- manual_tour(bas, mv)
 
 ggt <- ggtour(mt, dat, angle = .2) +
   proto_default(aes_args = list(color = clas, shape = clas))

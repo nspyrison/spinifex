@@ -48,14 +48,14 @@ PimaIndiansDiabetes_long <- d
 }
 }
 \examples{
-library("spinifex")
+library(spinifex)
 str(PimaIndiansDiabetes_long)
-dat <- scale_sd(PimaIndiansDiabetes_long[, 1:6])
+dat  <- scale_sd(PimaIndiansDiabetes_long[, 1:6])
 clas <- PimaIndiansDiabetes_long$diabetes
 
 bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
-mt <- manual_tour(bas, mv)
+mv  <- manip_var_of(bas)
+mt  <- manual_tour(bas, mv)
 
 ggt <- ggtour(mt, dat, angle = .2) +
   proto_default(aes_args = list(color = clas, shape = clas))

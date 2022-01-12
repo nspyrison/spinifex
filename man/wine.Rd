@@ -49,14 +49,14 @@ str(rattle::wine)
 }
 }
 \examples{
-library("spinifex")
+library(spinifex)
 str(wine)
-dat <- scale_sd(wine[, 2:6])
+dat  <- scale_sd(wine[, 2:6])
 clas <- wine$Type
 
 bas <- basis_pca(dat)
-mv <- manip_var_of(bas)
-mt <- manual_tour(bas, mv)
+mv  <- manip_var_of(bas)
+mt  <- manual_tour(bas, mv)
 
 ggt <- ggtour(mt, dat, angle = .2) +
   proto_default(aes_args = list(color = clas, shape = clas))
