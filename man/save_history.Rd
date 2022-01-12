@@ -55,7 +55,7 @@ and has correct dim.
 \examples{
 library(spinifex)
 
-dat <- scale_sd(penguins[, 1:4])
+dat <- scale_sd(penguins_na.rm[, 1:4])
 ## A grand tour path
 gt_path <- save_history(data = dat, tour_path = grand_tour(), max_bases = 10)
 dim(gt_path)

@@ -24,8 +24,8 @@
 lp_proto_highlight <- lineprof::lineprof({
   tictoc::tic("proto_highlight")
   library(spinifex)
-  dat     <- scale_sd(penguins[, 1:4])
-  clas    <- penguins$species
+  dat     <- scale_sd(penguins_na.rm[, 1:4])
+  clas    <- penguins_na.rm$species
   gt_path <- save_history(dat, grand_tour(), max_bases = 5)
   
   ## d = 2 case
@@ -74,8 +74,8 @@ lineprof::shine(lp_proto_highlight)
 lp_ggtour <- lineprof::lineprof({
   tictoc::tic("ggtour")
   library(spinifex)
-  dat     <- scale_sd(penguins[, 1:4])
-  clas    <- penguins$species
+  dat     <- scale_sd(penguins_na.rm[, 1:4])
+  clas    <- penguins_na.rm$species
   bas     <- basis_pca(dat)
   mv      <- manip_var_of(bas)
   mt_path <- manual_tour(bas, manip_var = mv)

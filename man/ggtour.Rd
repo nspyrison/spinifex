@@ -43,8 +43,8 @@ then animated with \code{animate_plotly()} or \code{animate_ggtour()}, or passed
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(penguins[, 1:4])
-clas    <- penguins$species
+dat     <- scale_sd(penguins_na.rm[, 1:4])
+clas    <- penguins_na.rm$species
 bas     <- basis_pca(dat)
 mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)

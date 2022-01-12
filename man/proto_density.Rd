@@ -43,8 +43,8 @@ Adds \code{geom_density()} and \code{geom_rug()} of the projected data. Density
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(penguins[, 1:4])
-clas    <- penguins$species
+dat     <- scale_sd(penguins_na.rm[, 1:4])
+clas    <- penguins_na.rm$species
 gt_path <- save_history(dat, grand_tour(), max = 3)
 
 ggt <- ggtour(gt_path, dat, angle = .3) +

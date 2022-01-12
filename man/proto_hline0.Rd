@@ -25,8 +25,8 @@ frame.
 }
 \examples{
 library(spinifex)
-dat  <- scale_sd(penguins[, 1:4])
-clas <- penguins$species
+dat  <- scale_sd(penguins_na.rm[, 1:4])
+clas <- penguins_na.rm$species
 
 ## 2D case:
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)

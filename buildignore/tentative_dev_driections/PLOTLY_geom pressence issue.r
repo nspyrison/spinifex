@@ -17,8 +17,8 @@ library(plotly)
 # Original case setup ----
 ## direct from ?ggtour, 1d case working fine, but 2d from basis is wrong. 
 ## Seems less likely to be dimenions though to me.
-dat     <- scale_sd(penguins[, 1:4])
-clas    <- penguins$species
+dat     <- scale_sd(penguins_na.rm[, 1:4])
+clas    <- penguins_na.rm$species
 bas     <- basis_pca(dat)
 mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)
@@ -146,8 +146,8 @@ library(spinifex)
 #library(ggplot2)
 #library(plotly)
 
-dat     <- scale_sd(penguins[, 1:4])
-clas    <- penguins$species
+dat     <- scale_sd(penguins_na.rm[, 1:4])
+clas    <- penguins_na.rm$species
 bas     <- basis_pca(dat)
 mv      <- manip_var_of(bas)
 mt_path <- manual_tour(bas, manip_var = mv)

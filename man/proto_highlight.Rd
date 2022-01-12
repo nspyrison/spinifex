@@ -46,8 +46,8 @@ for \code{mark_initial}, does not use bkg_row_color
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(penguins[, 1:4])
-clas    <- penguins$species
+dat     <- scale_sd(penguins_na.rm[, 1:4])
+clas    <- penguins_na.rm$species
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ## d = 2 case

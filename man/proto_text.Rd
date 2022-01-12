@@ -31,8 +31,8 @@ Adds \code{geom_text()} of the projected data.
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(penguins[, 1:4])
-clas    <- penguins$species
+dat     <- scale_sd(penguins_na.rm[, 1:4])
+clas    <- penguins_na.rm$species
 bas     <- basis_pca(dat)
 mv      <- manip_var_of(bas)
 gt_path <- save_history(dat, grand_tour(), max_bases = 5)

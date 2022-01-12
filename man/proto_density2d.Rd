@@ -31,8 +31,8 @@ Adds \code{geom_density_2d()} of the projected data.
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(penguins[, 1:4])
-clas    <- penguins$species
+dat     <- scale_sd(penguins_na.rm[, 1:4])
+clas    <- penguins_na.rm$species
 gt_path <- save_history(dat, grand_tour(), max = 3)
 
 ## geom_density_2d args can be passed in identity_args (bins, binwidth, breaks) 

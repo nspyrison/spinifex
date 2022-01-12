@@ -2,8 +2,8 @@
 ?ggtour
 
 library(spinifex)
-dat     <- scale_sd(penguins[, 1:4])
-clas    <- penguins$species
+dat     <- scale_sd(penguins_na.rm[, 1:4])
+clas    <- penguins_na.rm$species
 gt_path <- save_history(dat, tour_path = grand_tour(), max_bases = 8)
 
 ggt <- ggtour(basis_array = gt_path, angle = .15) +

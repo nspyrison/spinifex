@@ -303,7 +303,7 @@
 #' animate_plotly(ggt)}
 "wine"
 
-##### penguins -----
+##### penguins_na.rm -----
 #' Size measurements for adult foraging penguins near Palmer Station, Antarctica
 #' 
 #' Includes measurements for penguin species, island in Palmer Archipelago,
@@ -329,26 +329,26 @@
 #' @details 
 #' Replicating this dataset:
 #' ```
-#' require("palmerpenguins")
+#' require(palmerpenguins)
 #' d <- palmerpenguins::penguins
-#' d <- d[!is.na(d$sex), ] ## Remove missing
-#' d <- d[, c(3:6, 1, 7, 2)] ## Numeric to front, group factors, remove year
-#' penguins <- as.data.frame(d) ## Remove {tibble} dependency
-#' ## save(penguins, file = "./data/penguins.rda")
+#' d <- d[complete.cases(d), ] ## Remove missing, 2 obs of numeric and several in sex
+#' d <- d[, c(3:6, 1, 7, 2)]   ## Numeric to front, group factors, remove year
+#' penguins_na.rm <- as.data.frame(d) ## Remove {tibble} dependency
+#' ## save(penguins_na.rm, file = "./data/penguins_na.rm.rda")
 #' ```
 #' @examples
-#' library("spinifex")
-#' str(spinifex::penguins)
-#' dat <- scale_sd(spinifex::penguins[, 1:4])
-#' clas1 <- spinifex::penguins$species
-#' clas2 <- spinifex::penguins$sex
+#' library(spinifex)
+#' str(spinifex::penguins_na.rm)
+#' dat   <- scale_sd(spinifex::penguins_na.rm[, 1:4])
+#' clas1 <- spinifex::penguins_na.rm$species
+#' clas2 <- spinifex::penguins_na.rm$sex
 #' 
 #' bas <- basis_pca(dat)
-#' mv <- manip_var_of(bas)
-#' mt <- manual_tour(bas, mv)
+#' mv  <- manip_var_of(bas)
+#' mt  <- manual_tour(bas, mv)
 #' 
 #' ggt <- ggtour(mt, dat, angle = .2) +
 #'   proto_default(aes_args = list(color = clas1, shape = clas2))
 #' \dontrun{
 #' animate_plotly(ggt)}
-"penguins"
+"penguins_na.rm"

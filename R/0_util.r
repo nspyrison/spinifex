@@ -143,10 +143,11 @@ array2df <- function(
 #' the `to` object.
 #' @param position Text specifying the position the axes should go to.
 #' Defaults to "center" expects one of: c("center", "left", "right", 
-#' "bottomleft", "topright", "full", "off", "top1d", "floor1d", "bottom1d").
+#' "bottomleft", "topright", "off", "full", "top1d", "floor1d", "bottom1d",
+#' "full", "facetleft", "facetright", "facettop", "facetbottom").
 #' @param to Data.frame to scale to.
 #' Based on the min/max of the first 2 columns. If left NULL defaults to 
-#' data.frame(x = c(-1L, 1L), y = c(-1L, 1L).
+#' data.frame(x = c(0, 1), y = c(0L, 1).
 #' @return Transformed values of `x`, dimension and class unchanged.
 #' @seealso \code{\link{map_absolute}} for more manual control.
 #' @export
@@ -160,8 +161,10 @@ array2df <- function(
 map_relative <- function(
   x,
   position = c("center", "left", "right",
-               "bottomleft", "topright", "full", "off",
-               "top1d", "floor1d", "bottom1d"),
+               "bottomleft", "topright", "off",
+               "top1d", "floor1d", "bottom1d",
+               "full", "facetleft", "facetright",
+               "facettop", "facetbottom"),
   to = NULL
 ){
   ## Assumptions
@@ -180,10 +183,6 @@ map_relative <- function(
   ## Condition handling of position
   if(position == "center"){
     scale <- .4 * min(xdiff, ydiff)
-    xoff  <- xcenter
-    yoff  <- ycenter
-  } else if(position == "full"){
-    scale <- .5 * min(xdiff, ydiff)
     xoff  <- xcenter
     yoff  <- ycenter
   } else if(position == "left"){
@@ -217,6 +216,26 @@ map_relative <- function(
     scale <- .25 * min(xdiff, ydiff)
     xoff  <- .25 * xdiff + xcenter
     yoff  <- .5 * ydiff + ycenter
+  } else if(position == "full"){
+    scale <- .5 * min(xdiff, ydiff)
+    xoff  <- xcenter
+    yoff  <- ycenter
+  } else if(position == "facetleft"){
+    scale <- .5 * min(xdiff, ydiff)
+    xoff  <- xcenter - .5025 * xdiff
+    yoff  <- ycenter
+  } else if(position == "facetright"){
+    scale <- .5 * min(xdiff, ydiff)
+    xoff  <- xcenter + .5025 * xdiff
+    yoff  <- ycenter
+  } else if(position == "facettop"){
+    scale <- .5 * min(xdiff, ydiff)
+    xoff  <- xcenter
+    yoff  <- ycenter + .5025 * ydiff
+  } else if(position == "facetbottom"){
+    scale <- .5 * min(xdiff, ydiff)
+    xoff  <- xcenter
+    yoff  <- ycenter - .5025 * ydiff
   } else stop(paste0("position: ", position, " not defined."))
   
   ## Apply scale and return
@@ -330,7 +349,7 @@ scale_01 <- function(data){
 #     theme(legend.position = "bottom",
 #           legend.direction = "horizontal", ## Levels within aesthetic
 #           legend.box = "vertical",         ## Between aesthetic
-#           legend.margin = margin(0L,0L,0L,0L, "mm"), ## Tighter legend margin
+#           legend.margin = margin(0L,0L,0L,0L), ## Tighter legend margin
 #           axis.title = element_text() ## Allow axis titles, though defaulted to blank
 #     )
 #   list(.theme,
@@ -583,7 +602,7 @@ theme_spinifex <- function(...){
          legend.direction = "horizontal",        ## Levels within an aesthetic
          legend.box       = "vertical",          ## Between aesthetics
          legend.margin    = margin(0L,0L,0L,0L), ## Tighter legend margin
-         ...), ## ... applied over defaults.
+         ...), ## Elipsis trumps defaults.
        coord_fixed(clip = "off"),
        labs(x = "", y = "", color = "", shape = "", fill = "")
   )
@@ -655,7 +674,7 @@ manip_var_of <- function(basis, rank = 1){
 #' @examples 
 #' library(spinifex)
 #' 
-#' dat <- scale_sd(penguins[, 1:4])
+#' dat <- scale_sd(penguins_na.rm[, 1:4])
 #' ## A grand tour path
 #' gt_path <- save_history(data = dat, tour_path = grand_tour(), max_bases = 10)
 #' dim(gt_path)

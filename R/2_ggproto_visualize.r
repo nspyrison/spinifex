@@ -25,8 +25,8 @@
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -155,8 +155,8 @@ ggtour <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -215,8 +215,8 @@ facet_wrap_tour <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -449,8 +449,8 @@ last_ggtour_env <- function(){.store$ggtour_ls}
 #' @family ggtour animator
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -529,8 +529,8 @@ animate_gganimate <- function(
 #' @family ggtour animator
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -627,8 +627,8 @@ animate_plotly <- function(
 # #' @export
 # #' @family ggtour animator
 # #' #' @examples
-# #' dat     <- scale_sd(penguins[, 1:4])
-# #' clas    <- penguins$species
+# #' dat     <- scale_sd(penguins_na.rm[, 1:4])
+# #' clas    <- penguins_na.rm$species
 # #' bas     <- basis_pca(dat)
 # #' mv      <- manip_var_of(bas)
 # #' mt_path <- manual_tour(bas, manip_var = mv)
@@ -670,8 +670,8 @@ animate_plotly <- function(
 #' @family ggtour animator
 #' @examples
 #' library(spinifex)
-#' dat  <- scale_sd(penguins[, 1:4])
-#' clas <- penguins$species
+#' dat  <- scale_sd(penguins_na.rm[, 1:4])
+#' clas <- penguins_na.rm$species
 #' bas  <- basis_pca(dat)
 #' mv   <- manip_var_of(bas)
 #' 
@@ -725,8 +725,8 @@ filmstrip <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat  <- scale_sd(penguins[, 1:4])
-#' clas <- penguins$species
+#' dat  <- scale_sd(penguins_na.rm[, 1:4])
+#' clas <- penguins_na.rm$species
 #' bas  <- basis_pca(dat)
 #' mv   <- manip_var_of(bas)
 #' 
@@ -928,8 +928,8 @@ proto_basis1d <- function(
 #' @examples
 #' library(spinifex)
 #' library(ggplot2)
-#' dat  <- scale_sd(penguins[, 1:4])
-#' clas <- penguins$species
+#' dat  <- scale_sd(penguins_na.rm[, 1:4])
+#' clas <- penguins_na.rm$species
 #' bas  <- basis_pca(dat)
 #' proj <- as.data.frame(dat %*% bas)
 #' 
@@ -939,7 +939,7 @@ proto_basis1d <- function(
 #'   coord_fixed()
 #'   
 #' ## Aesthetics and basis on specific facet levels
-#' proj <- cbind(proj, clas = penguins$species)
+#' proj <- cbind(proj, clas = penguins_na.rm$species)
 #' bas <- cbind(as.data.frame(bas), clas = levels(clas)[2])
 #' ggplot() +
 #'   facet_wrap(vars(clas)) +
@@ -1049,8 +1049,8 @@ draw_basis <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
@@ -1137,8 +1137,8 @@ proto_point <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
@@ -1220,8 +1220,8 @@ proto_density <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' 
 #' ## geom_density_2d args can be passed in identity_args (bins, binwidth, breaks) 
@@ -1281,8 +1281,8 @@ proto_density2d <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' bas     <- basis_pca(dat)
 #' mv      <- manip_var_of(bas)
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
@@ -1415,8 +1415,8 @@ proto_hex <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ## d = 2 case
@@ -1558,8 +1558,8 @@ proto_highlight1d <- function(
 #' @export
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins[, 1:4])
-#' clas    <- penguins$species
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
@@ -1627,8 +1627,8 @@ proto_frame_cor2 <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat  <- scale_sd(penguins[, 1:4])
-#' clas <- penguins$species
+#' dat  <- scale_sd(penguins_na.rm[, 1:4])
+#' clas <- penguins_na.rm$species
 #' 
 #' ## 2D case:
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
@@ -1733,8 +1733,8 @@ proto_origin1d <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat  <- scale_sd(penguins[, 1:4])
-#' clas <- penguins$species
+#' dat  <- scale_sd(penguins_na.rm[, 1:4])
+#' clas <- penguins_na.rm$species
 #' 
 #' ## 2D case:
 #' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
@@ -1822,8 +1822,8 @@ proto_vline0 <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat  <- scale_sd(penguins[, 1:4])
-#' clas <- penguins$species
+#' dat  <- scale_sd(penguins_na.rm[, 1:4])
+#' clas <- penguins_na.r$species
 #' 
 #' ## 2D case:
 #' bas     <- basis_pca(dat)
@@ -1892,13 +1892,12 @@ if(FALSE){ ## DONT RUN
     # #' \dontrun{
     # #' animate_plotly(ggt)
     # #' }
-    proto_basis_text <- function(
+    proto_basis_table <- function(
       position = c("right"),
       text_size = 5
     ){
       ## Initialize
       eval(.init4proto)
-      browser()
       
       ## make positions to be joined to .df_basis
       .u_frame <- data.frame(frame = unique(.df_basis$frame))

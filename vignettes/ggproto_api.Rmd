@@ -90,9 +90,9 @@ library("tourr")
 library("spinifex")
 
 ## Scale our numeric data
-dat  <- scale_sd(penguins[, 1:4])
+dat  <- scale_sd(penguins_na.rm[, 1:4])
 ## Use species as a class to set color and shape with
-clas <- penguins$species
+clas <- penguins_na.rm$species
 
 ## Manual tour, manipulating the contribution of a selected variable 
 bas     <- basis_pca(dat)    ## Start basis

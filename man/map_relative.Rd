@@ -6,8 +6,8 @@
 \usage{
 map_relative(
   x,
-  position = c("center", "left", "right", "bottomleft", "topright", "full", "off",
-    "top1d", "floor1d", "bottom1d"),
+  position = c("center", "left", "right", "bottomleft", "topright", "off", "top1d",
+    "floor1d", "bottom1d", "full", "facetleft", "facetright", "facettop", "facetbottom"),
   to = NULL
 )
 }
@@ -17,11 +17,12 @@ the \code{to} object.}
 
 \item{position}{Text specifying the position the axes should go to.
 Defaults to "center" expects one of: c("center", "left", "right",
-"bottomleft", "topright", "full", "off", "top1d", "floor1d", "bottom1d").}
+"bottomleft", "topright", "off", "full", "top1d", "floor1d", "bottom1d",
+"full", "facetleft", "facetright", "facettop", "facetbottom").}
 
 \item{to}{Data.frame to scale to.
 Based on the min/max of the first 2 columns. If left NULL defaults to
-data.frame(x = c(-1L, 1L), y = c(-1L, 1L).}
+data.frame(x = c(0, 1), y = c(0L, 1).}
 }
 \value{
 Transformed values of \code{x}, dimension and class unchanged.
