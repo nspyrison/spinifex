@@ -4,7 +4,7 @@
 \alias{render_plotly}
 \title{Animation the frames as a HTML widget.}
 \usage{
-render_plotly(fps = 8L, html_filename = NULL, save_widget_args = list(), ...)
+render_plotly(fps = 8, html_filename = NULL, save_widget_args = list(), ...)
 }
 \arguments{
 \item{fps}{Frames animated per second. Defaults to 8.}

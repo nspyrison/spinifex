@@ -61,7 +61,6 @@ ggplot() +
   facet_wrap(vars(clas)) +
   geom_point(aes(PC1, PC2, color = clas, shape = clas), proj) +
   draw_basis(bas, proj, "left") +
-  theme_bw() +
-  coord_fixed()
+  theme_spinifex()
 ## To repeat basis in all facet levels don't cbind a facet variable.
 }

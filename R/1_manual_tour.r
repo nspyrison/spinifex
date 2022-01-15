@@ -227,10 +227,8 @@ manual_tour <- function(basis,
   }else{stop("manual_tour only defined for 1- or 2-D projections.")}
   
   if(is.na(theta) == FALSE)
-    if(theta < 0L)
-      devMessage("theta is negative")
-  if(phi_start < 0L)
-    devMessage("phi_start is negative")
+    if(theta < 0L)   devMessage("theta is negative")
+  if(phi_start < 0L) devMessage("phi_start is negative")
   
   ### Shift phi start in be in-phase between [-pi/2, pi/2]
   if(phi_start > pi / 2L){

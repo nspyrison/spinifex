@@ -562,9 +562,9 @@ animate_plotly <- function(
     ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
     #### Adding many protos is liable to break plotly animations, see above url.
     ggtour <- ggtour + ggplot2::theme(
-      legend.position  = "right",
-      legend.direction = "vertical",   ## Levels within an aesthetic
-      legend.box       = "horizontal") ## Between aesthetics
+      ## Circumvent plotly warnings
+      legend.direction = "vertical", ## horizontal legenda not supported
+      aspect.ratio     = NULL)       ## aspect.ratio not supported
     ## Assumptions
     if(length(ggtour$layers) == 0L) ## plotly subplots, have NULL layers
       stop("No layers found, did you forget to add a proto_*?")
@@ -945,8 +945,7 @@ proto_basis1d <- function(
 #'   facet_wrap(vars(clas)) +
 #'   geom_point(aes(PC1, PC2, color = clas, shape = clas), proj) +
 #'   draw_basis(bas, proj, "left") +
-#'   theme_bw() +
-#'   coord_fixed()
+#'   theme_spinifex()
 #' ## To repeat basis in all facet levels don't cbind a facet variable.
 draw_basis <- function(
   basis, ## WITH APPENDED FACET LEVEL
@@ -959,8 +958,7 @@ draw_basis <- function(
 ){
   ## Initialize
   d <- ncol(basis)
-  if(d < 2L)
-    stop("draw_basis: expects a basis of 2 or more columns.")
+  if(d < 2L) stop("draw_basis: expects a basis of 2 or more columns.")
   position = match.arg(position)
   if(position == "off") return()
   
@@ -987,9 +985,9 @@ draw_basis <- function(
   }
   
   ## Aesthetics for the axes segments.
-  .axes_col <- "grey50"
-  .axes_siz <- line_size
-  .manip_var <- attr(basis, "manip_var")
+  .axes_col   <- "grey50"
+  .axes_siz   <- line_size
+  .manip_var  <- attr(basis, "manip_var")
   if(is.null(.manip_var) == FALSE){
     .axes_col <- rep("grey50", .p)
     .axes_col[.manip_var] <- manip_col
@@ -1015,7 +1013,8 @@ draw_basis <- function(
       color = .axes_col, size = text_size,
       vjust = "outward", hjust = "outward",
       mapping = ggplot2::aes(x = x, y = y, label = basis_label)
-    )))
+    ))
+  )
 }
 
 

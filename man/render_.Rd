@@ -8,8 +8,8 @@ render_(
   frames,
   axes = "center",
   manip_col = "blue",
-  line_size = 1L,
-  text_size = 5L,
+  line_size = 1,
+  text_size = 5,
   aes_args = list(),
   identity_args = list(),
   ggproto = list(theme_spinifex())

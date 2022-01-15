@@ -8,11 +8,11 @@ view_manip_space(
   basis,
   manip_var,
   tilt = 0.1 * pi,
-  basis_label = abbreviate(row.names(basis), 3L),
+  basis_label = abbreviate(row.names(basis), 3),
   manip_col = "blue",
   manip_sp_col = "red",
-  line_size = 1L,
-  text_size = 5L,
+  line_size = 1,
+  text_size = 5,
   ggproto = list(theme_spinifex())
 )
 }

@@ -5,10 +5,10 @@
 \title{Render the frames as a \emph{gganimate} animation.}
 \usage{
 render_gganimate(
-  fps = 8L,
+  fps = 8,
   rewind = FALSE,
   start_pause = 0.5,
-  end_pause = 1L,
+  end_pause = 1,
   gif_filename = NULL,
   gif_path = NULL,
   gganimate_args = list(),

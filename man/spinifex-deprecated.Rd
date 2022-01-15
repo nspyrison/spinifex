@@ -11,7 +11,7 @@
 \usage{
 scale_axes(...)
 
-pan_zoom(x, pan = c(0L, 0L), zoom = c(1L, 1L))
+pan_zoom(x, pan = c(0, 0), zoom = c(1, 1))
 
 view_basis(...)
 

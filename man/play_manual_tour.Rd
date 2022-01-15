@@ -9,7 +9,7 @@ play_manual_tour(
   data,
   manip_var,
   theta = NULL,
-  phi_min = 0L,
+  phi_min = 0,
   phi_max = 0.5 * pi,
   angle = 0.05,
   render_type = render_plotly,

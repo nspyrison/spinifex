@@ -58,8 +58,8 @@
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
-                    line_size = 1L,
-                    text_size = 5L,
+                    line_size = 1,
+                    text_size = 5,
                     aes_args = list(),
                     identity_args = list(),
                     ggproto = list(theme_spinifex())
@@ -229,10 +229,10 @@ render_ <- function(frames,
 #'   render_gganimate(frames = mt_df_ls, axes = "bottomleft",
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")}
 render_gganimate <- function(
-  fps = 8L,
+  fps = 8,
   rewind = FALSE,
   start_pause = .5,
-  end_pause = 1L,
+  end_pause = 1,
   gif_filename = NULL,
   gif_path = NULL,
   gganimate_args = list(),
@@ -305,7 +305,7 @@ render_gganimate <- function(
 #'   render_plotly(frames = mt_df_ls, axes = "bottomleft", fps = 10,
 #'                 html_filename = "myRadialTour.html")}
 render_plotly <- function(
-  fps = 8L,
+  fps = 8,
   html_filename = NULL,
   save_widget_args = list(),
   ...

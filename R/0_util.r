@@ -147,7 +147,7 @@ array2df <- function(
 #' "full", "facetleft", "facetright", "facettop", "facetbottom").
 #' @param to Data.frame to scale to.
 #' Based on the min/max of the first 2 columns. If left NULL defaults to 
-#' data.frame(x = c(0, 1), y = c(0L, 1).
+#' data.frame(x = c(0, 1), y = c(0, 1).
 #' @return Transformed values of `x`, dimension and class unchanged.
 #' @seealso \code{\link{map_absolute}} for more manual control.
 #' @export
@@ -279,8 +279,8 @@ scale_axes <- function(...) {
 #' 
 #' map_absolute(bas, offset = c(-2, 0), scale = c(2/3, 2/3))
 map_absolute <- function(x,
-                         offset = c(0L, 0L),
-                         scale = c(1L, 1L)
+                         offset = c(0, 0),
+                         scale  = c(1, 1)
 ){
   ret <- x
   ret[, 1L] <- ret[, 1L] * offset[1L] + scale[1L]
@@ -292,7 +292,7 @@ map_absolute <- function(x,
 #' @section \code{pan_zoom}:
 #' For \code{pan_zoom}, use \code{\link{map_absolute}}.
 #' @export
-pan_zoom <- function(x, pan = c(0L, 0L), zoom = c(1L, 1L)) {
+pan_zoom <- function(x, pan = c(0, 0), zoom = c(1, 1)) {
   .Deprecated("map_absolute")
   map_absolute(x, pan, zoom)
 }
@@ -594,16 +594,17 @@ scale_fill_discrete <- function(...){
 theme_spinifex <- function(...){
   ## Color/fill discrete also masked to reduced warnings/messages
   list(theme_minimal(),
+       coord_fixed(clip = "off"), ## aspect.ratio = 1L fixes unit size, not axes size
        theme(
+         axis.text        = element_blank(),
          panel.grid.major = element_blank(),
          panel.grid.minor = element_blank(),
-         axis.text        = element_blank(),
          legend.position  = "bottom",
          legend.direction = "horizontal",        ## Levels within an aesthetic
          legend.box       = "vertical",          ## Between aesthetics
          legend.margin    = margin(0L,0L,0L,0L), ## Tighter legend margin
          ...), ## Elipsis trumps defaults.
-       coord_fixed(clip = "off"),
+
        labs(x = "", y = "", color = "", shape = "", fill = "")
   )
 }

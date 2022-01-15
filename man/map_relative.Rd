@@ -22,7 +22,7 @@ Defaults to "center" expects one of: c("center", "left", "right",
 
 \item{to}{Data.frame to scale to.
 Based on the min/max of the first 2 columns. If left NULL defaults to
-data.frame(x = c(0, 1), y = c(0L, 1).}
+data.frame(x = c(0, 1), y = c(0, 1).}
 }
 \value{
 Transformed values of \code{x}, dimension and class unchanged.

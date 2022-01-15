@@ -4,7 +4,7 @@
 \alias{map_absolute}
 \title{Manually offset and scale the first 2 columns of a matrix or data.frame.}
 \usage{
-map_absolute(x, offset = c(0L, 0L), scale = c(1L, 1L))
+map_absolute(x, offset = c(0, 0), scale = c(1, 1))
 }
 \arguments{
 \item{x}{Numeric data object with 2 columns to scale and offset.

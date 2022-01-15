@@ -8,9 +8,9 @@ view_frame(
   basis = NULL,
   data = NULL,
   manip_var = NULL,
-  theta = 0L,
-  phi = 0L,
-  basis_label = abbreviate(row.names(basis), 3L),
+  theta = 0,
+  phi = 0,
+  basis_label = abbreviate(row.names(basis), 3),
   rescale_data = FALSE,
   ...
 )
