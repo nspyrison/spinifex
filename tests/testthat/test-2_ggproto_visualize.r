@@ -30,10 +30,6 @@ test_that("ggtourr", {
   expect_equal(class(gg_gt  ), c("gg", "ggplot"))
   expect_equal(class(gg_mt1d), c("gg", "ggplot"))
   expect_equal(class(gg_gt1d), c("gg", "ggplot"))
-  # expect_equal(length(gg_mt  ), 9L)
-  # expect_equal(length(gg_gt  ), 9L)
-  # expect_equal(length(gg_mt1d), 9L)
-  # expect_equal(length(gg_gt1d), 9L)
 })
 
 ## lapply_rep_len and eval(.init4proto)
@@ -49,10 +45,6 @@ test_that("animate_gganimate", {
   expect_equal(class(ag_gt  ) , "gif_image")
   expect_equal(class(ag_mt1d) , "gif_image")
   expect_equal(class(ag_gt1d) , "gif_image")
-  # expect_equal(length(ag_mt)  , 1L)
-  # expect_equal(length(ag_gt)  , 1L)
-  # expect_equal(length(ag_mt1d), 1L)
-  # expect_equal(length(ag_gt1d), 1L)
 })
 
 ## animate_plotly -----
@@ -65,10 +57,6 @@ test_that("animate_plotly", {
   expect_equal(class(ap_gt  ), c("plotly", "htmlwidget"))
   expect_equal(class(ap_mt1d), c("plotly", "htmlwidget"))
   expect_equal(class(ap_gt1d), c("plotly", "htmlwidget"))
-  # expect_equal(length(ap_mt  ), 9L)
-  # expect_equal(length(ap_gt  ), 9L)
-  # expect_equal(length(ap_mt1d), 9L)
-  # expect_equal(length(ap_gt1d), 9L)
 })
 
 ## filmstrip -----
@@ -97,11 +85,27 @@ test_that("proto_basis/1d", {
   expect_equal(class(pb_gt  ), c("gg", "ggplot"))
   expect_equal(class(pb_mt1d), c("gg", "ggplot"))
   expect_equal(class(pb_gt1d), c("gg", "ggplot"))
-  expect_equal(length(pb_mt  ), 9L)
-  expect_equal(length(pb_gt  ), 9L)
-  expect_equal(length(pb_mt1d), 9L)
-  expect_equal(length(pb_gt1d), 9L)
 })
+
+## draw_basis -----
+proj <- as.data.frame(dat %*% bas)
+db <- ggplot() +
+  geom_point(aes(PC1, PC2), proj) +
+  draw_basis(bas, proj, "left") +
+  coord_fixed()
+
+test_that("draw_basis", {
+  expect_equal(class(db), c("gg", "ggplot"))
+})
+
+## Aesthetics and basis on specific facet levels
+proj <- cbind(proj, clas = clas)
+bas  <- cbind(as.data.frame(bas), clas = levels(clas)[2])
+ggplot() +
+  facet_wrap(vars(clas)) +
+  geom_point(aes(PC1, PC2, color = clas, shape = clas), proj) +
+  draw_basis(bas, proj, "left") +
+  theme_spinifex()
 
 ## proto_point & density-----
 pp_mt   <- ggtour(mt  , angle = 1L) + proto_point()
@@ -114,10 +118,6 @@ test_that("proto_:point/density", {
   expect_equal(class(pp_gt  ), c("gg", "ggplot"))
   expect_equal(class(pd_mt1d), c("gg", "ggplot"))
   expect_equal(class(pd_gt1d), c("gg", "ggplot"))
-  # expect_equal(length(pp_mt  ), 9L)
-  # expect_equal(length(pp_gt  ), 9L)
-  # expect_equal(length(pd_mt1d), 9L)
-  # expect_equal(length(pd_gt1d), 9L)
 })
 
 ## proto_point & density with row_index & args-----
@@ -143,10 +143,6 @@ test_that("proto_:point/density", {
   expect_equal(class(pp_gt  ), c("gg", "ggplot"))
   expect_equal(class(pd_mt1d), c("gg", "ggplot"))
   expect_equal(class(pd_gt1d), c("gg", "ggplot"))
-  # expect_equal(length(pp_mt  ), 9L)
-  # expect_equal(length(pp_gt  ), 9L)
-  # expect_equal(length(pd_mt1d), 9L)
-  # expect_equal(length(pd_gt1d), 9L)
 })
 
 
@@ -162,10 +158,6 @@ test_that("proto_origin", {
   expect_equal(class(po_gt  ), c("gg", "ggplot"))
   expect_equal(class(po_mt1d), c("gg", "ggplot"))
   expect_equal(class(po_gt1d), c("gg", "ggplot"))
-  # expect_equal(length(po_mt  ), 9L)
-  # expect_equal(length(po_gt  ), 9L)
-  # expect_equal(length(po_mt1d), 9L)
-  # expect_equal(length(po_gt1d), 9L)
 })
 
 ## proto_text -----
@@ -175,8 +167,6 @@ test_that("proto_text", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_text())
   expect_equal(class(pt_mt), c("gg", "ggplot"))
   expect_equal(class(pt_gt), c("gg", "ggplot"))
-  # expect_equal(length(pt_mt), 9L)
-  # expect_equal(length(pt_gt), 9L)
 })
 
 ## proto_hex -----
@@ -186,8 +176,6 @@ test_that("proto_hex", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_hex())
   expect_equal(class(ph_mt), c("gg", "ggplot"))
   expect_equal(class(ph_gt), c("gg", "ggplot"))
-  # expect_equal(length(ph_mt), 9L)
-  # expect_equal(length(ph_gt), 9L)
 })
 
 ## proto_default -----
@@ -201,10 +189,6 @@ test_that("proto_default/1d", {
   expect_equal(class(pd_gt  ), c("gg", "ggplot"))
   expect_equal(class(pd_mt1d), c("gg", "ggplot"))
   expect_equal(class(pd_gt1d), c("gg", "ggplot"))
-  # expect_equal(length(pd_mt  ), 9L)
-  # expect_equal(length(pd_gt  ), 9L)
-  # expect_equal(length(pd_mt1d), 9L)
-  # expect_equal(length(pd_gt1d), 9L)
 })
 
 ## proto_highlight -----
@@ -218,10 +202,6 @@ test_that("proto_highlight/1d", {
   expect_equal(class(ph_gt  ), c("gg", "ggplot"))
   expect_equal(class(ph_mt1d), c("gg", "ggplot"))
   expect_equal(class(ph_gt1d), c("gg", "ggplot"))
-  # expect_equal(length(ph_mt  ), 9L)
-  # expect_equal(length(ph_gt  ), 9L)
-  # expect_equal(length(ph_mt1d), 9L)
-  # expect_equal(length(ph_gt1d), 9L)
 })
 
 ## proto_frame_cor2 -----
@@ -232,8 +212,6 @@ test_that("proto_frame_cor2", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_frame_cor2(row_index = 1L))
   expect_equal(class(pfc_mt), c("gg", "ggplot"))
   expect_equal(class(pfc_gt), c("gg", "ggplot"))
-  # expect_equal(length(pfc_mt), 9L)
-  # expect_equal(length(pfc_gt), 9L)
 })
 
 ## append_fixed_y -----
@@ -246,10 +224,6 @@ test_that("append_fixed_y", {
   expect_equal(class(afy_gt  ), c("gg", "ggplot"))
   expect_equal(class(afy_mt1d), c("gg", "ggplot"))
   expect_equal(class(afy_gt1d), c("gg", "ggplot"))
-  # expect_equal(length(afy_mt  ), 9L)
-  # expect_equal(length(afy_gt  ), 9L)
-  # expect_equal(length(afy_mt1d), 9L)
-  # expect_equal(length(afy_gt1d), 9L)
 })
 
 
@@ -263,8 +237,4 @@ test_that("facet_wrap_tour", {
   expect_equal(class(fwt_gt  ), c("gg", "ggplot"))
   expect_equal(class(fwt_mt1d), c("gg", "ggplot"))
   expect_equal(class(fwt_gt1d), c("gg", "ggplot"))
-  # expect_equal(length(fwt_mt  ), 9L)
-  # expect_equal(length(fwt_gt  ), 9L)
-  # expect_equal(length(fwt_mt1d), 9L)
-  # expect_equal(length(fwt_gt1d), 9L)
 })

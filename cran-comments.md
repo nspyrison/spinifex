@@ -5,10 +5,12 @@
     Platform: x86_64-w64-mingw32/x64 (64-bit)
     Running under: Windows 10 x64 (build 19042)
 - rhub::check:
-    "debian-gcc-release",
-    "macos-highsierra-release-cran",
-    "solaris-x86-patched",
-    "windows-x86_64-release"
+    "debian-clang-devel"
+    "macos-highsierra-release-cran"
+    "macos-m1-bigsur-release"
+    "ubuntu-rchk"
+    "windows-x86_64-devel"
+    "windows-x86_64-oldrel"
 
 ## R CMD check results
 

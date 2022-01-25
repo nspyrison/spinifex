@@ -67,7 +67,7 @@ The ggproto API is a layered approach to the composition of animated tours, it s
 | display    | proto_default/1d   | -                   | wrapper for proto_* point + basis + origin              |
 | display    | facet_wrap_tour    | ggplot2::facet_wrap | facets on the levels of variable                        |
 | display    | append_fixed_y     | -                   | add/overwrite a fixed vertical position                 |
-| animation  | animate_plotly     | plotly::ggplotly    | render as an interactive hmtl widget                    |
+| animation  | animate_plotly     | plotly::ggplotly    | render as an interactive html widget                    |
 | animation  | animate_gganimate  | gganimate::animate  | render as a .gif .mp4 or other video format             |
 | animation  | filmstrip          | -                   | static gpplot faceting on the frames of the animation   |
 

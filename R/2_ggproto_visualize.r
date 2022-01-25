@@ -125,13 +125,13 @@ ggtour <- function(
   .n <- nrow(data) ## NULL if data is NULL
   
   ## SIDE EFFECT: Assign list to last_ggtour_env().
-  spinifex:::.set_last_ggtour_env(list(
+  .set_last_ggtour_env(list(
     interpolated_basis_array = .interpolated_basis_array,
     df_basis = .df_basis, df_data = .df_data, map_to = .map_to,
     n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p,
     d = .d, manip_var = .manip_var, is_faceted = FALSE))
   ## Return ggplot head, theme, and facet if used
-  ggplot2::ggplot(.df_basis) + spinifex::theme_spinifex()
+  ggplot2::ggplot(.df_basis) + theme_spinifex()
 }
 ## Print method for ggtours ?? using proto_default()
 #### Was a good idea, but ggplot stops working when you change the first class, 
@@ -189,7 +189,7 @@ facet_wrap_tour <- function(
   .ggt$df_data    <- .df_data
   .ggt$facet_var  <- facet_var
   .ggt$is_faceted <- TRUE
-  spinifex:::.set_last_ggtour_env(.ggt)
+  .set_last_ggtour_env(.ggt)
   
   ## Return
   list(
@@ -251,7 +251,7 @@ append_fixed_y <- function(
   .ggt$df_data <- .df_data
   .ggt$map_to$y <- range(.df_data$y)
   .ggt$d <- 2L
-  spinifex:::.set_last_ggtour_env(.ggt)
+  .set_last_ggtour_env(.ggt)
   
   ## Return
   NULL
@@ -345,7 +345,7 @@ last_ggtour_env <- function(){.store$ggtour_ls}
 #' ## This expression. is not meant for external use.
 ## _.init4proto expression -----
 .init4proto <- expression({ ## An expression, not a function
-  .ggt <- spinifex:::last_ggtour_env() ## Self-explicit for use in cheem
+  .ggt <- last_ggtour_env() ## Self-explicit for use in cheem
   if(is.null(.ggt)) stop(".init4proto: spinifex:::last_ggtour_env() is NULL, have you run ggtour() yet?")
   
   ## Assign elements ggtour list as quiet .objects in the environment
@@ -410,19 +410,19 @@ last_ggtour_env <- function(){.store$ggtour_ls}
     if(sum(row_index) != length(row_index)){
       if(exists(".bkg_aes_args"))
         if(length(.bkg_aes_args) > 0L)
-          .bkg_aes_args <- spinifex:::.lapply_rep_len(
+          .bkg_aes_args <- .lapply_rep_len(
             .bkg_aes_args, nrow(.df_data_bkg), sum(!row_index))
       if(exists(".bkg_identity_args"))
         if(length(identity_args) > 0L)
-          .bkg_identity_args <- spinifex:::.lapply_rep_len(
+          .bkg_identity_args <- .lapply_rep_len(
             .bkg_identity_args, nrow(.df_data_bkg), sum(!row_index))
     }
   if(exists("aes_args"))
     if(length(aes_args) > 0L)
-      aes_args <- spinifex:::.lapply_rep_len(aes_args, .nrow_df_data, .n)
+      aes_args <- .lapply_rep_len(aes_args, .nrow_df_data, .n)
   if(exists("identity_args"))
     if(length(identity_args) > 0L)
-      identity_args <- spinifex:::.lapply_rep_len(identity_args, .nrow_df_data, .n)
+      identity_args <- .lapply_rep_len(identity_args, .nrow_df_data, .n)
   .m <- gc() ## Mute garbage collection
 })
 
@@ -490,7 +490,7 @@ animate_gganimate <- function(
 ){
   ## Early out, print ggplot if only 1 frame.
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
-  n_frames <- spinifex:::last_ggtour_env()$n_frames
+  n_frames <- last_ggtour_env()$n_frames
   if(n_frames == 1L){
     ## Static ggplot2, 1 frame
     message("ggtour df_basis only has 1 frame, returning ggplot2 object instead.")
@@ -585,7 +585,7 @@ animate_plotly <- function(
                                 scaleanchor = "y", scalaratio = 1L))
   
   ## Multiple frames/animation condition handling
-  n_frames <- spinifex:::last_ggtour_env()$n_frames
+  n_frames <- last_ggtour_env()$n_frames
   if(n_frames == 1L){
     ## Static ggplot, 1 Frame only or possibly last_ggtour_env missing:
     message("ggtour df_basis only has 1 frame, no animation options.")
@@ -1822,7 +1822,7 @@ proto_vline0 <- function(
 #' @examples
 #' library(spinifex)
 #' dat  <- scale_sd(penguins_na.rm[, 1:4])
-#' clas <- penguins_na.r$species
+#' clas <- penguins_na.rm$species
 #' 
 #' ## 2D case:
 #' bas     <- basis_pca(dat)

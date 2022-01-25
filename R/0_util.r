@@ -377,7 +377,7 @@ scale_01 <- function(data){
 #' @seealso \code{\link[Rdimtools:do.pca]{Rdimtools::do.pca}}
 #' @export
 #' @family basis producing functions
-#' @examples 
+#' @examples
 #' dat_std <- scale_sd(wine[, 2:6])
 #' basis_pca(data = dat_std)
 basis_pca <- function(data, d = 2){
@@ -408,15 +408,14 @@ basis_pca <- function(data, d = 2){
 #' @family basis producing functions
 #' @examples 
 #' dat_std <- scale_sd(wine[, 2:6])
-#' clas <- wine$Type
+#' clas    <- wine$Type
 #' basis_olda(data = dat_std, class = clas)
 basis_olda <- function(data, class, d = 2){
   #lda <- MASS::lda(class ~ ., data = data.frame(data, class))$scaling
   #ret <- tourr::orthonormalise(lda)[, 1L:d, drop = FALSE]
-  #colnames(ret) <- paste0("OLD", 1:d)
   ret <- Rdimtools::do.olda(X = as.matrix(data),
                             label = as.factor(class),
-                             ndim = d)$projection
+                            ndim = d)$projection
   rownames(ret) <- colnames(data)
   colnames(ret) <- paste0("oLD", 1:d)
   ret

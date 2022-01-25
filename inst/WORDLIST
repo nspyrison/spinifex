@@ -141,5 +141,15 @@ binwidth
 github
 nspyrison
 readme
+Rdimtools
+dev
+facetbottom
+facetleft
+facetright
+facettop
+ggplotly
+gpplot
+olda
+pca
 
 ## Last line needs to be blank

@@ -23,7 +23,7 @@ vectors are orthogonal to each other.
 }
 \examples{
 dat_std <- scale_sd(wine[, 2:6])
-clas <- wine$Type
+clas    <- wine$Type
 basis_olda(data = dat_std, class = clas)
 }
 \references{
