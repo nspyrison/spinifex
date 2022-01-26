@@ -602,9 +602,8 @@ theme_spinifex <- function(...){
          legend.direction = "horizontal",        ## Levels within an aesthetic
          legend.box       = "vertical",          ## Between aesthetics
          legend.margin    = margin(0L,0L,0L,0L), ## Tighter legend margin
-         ...), ## Elipsis trumps defaults.
-
-       labs(x = "", y = "", color = "", shape = "", fill = "")
+         ...), ## Ellipsis trumps defaults.
+       labs(x = NULL, y = NULL, color = NULL, shape = NULL, fill = NULL)
   )
 }
 

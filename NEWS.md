@@ -1,3 +1,7 @@
+# spinifex v0.3.3
+- Add do_center_frame = TRUE argument to ggtour, such that tours don't want too far to the sides as they were in cheem radial tours.
+- Adjust theme_spinifex() tightening margins.
+
 # spinifex v0.3.2
 - New function: `facet_wrap_tour()`, for faceting tours!
 - New function: `proto_frame_cor2()`, adds text for the within-frame correlation squared.
