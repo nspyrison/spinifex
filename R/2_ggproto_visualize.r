@@ -131,7 +131,9 @@ ggtour <- function(
     n_frames = .n_frames, nrow_df_data = .nrow_df_data, n = .n, p = .p,
     d = .d, manip_var = .manip_var, is_faceted = FALSE))
   ## Return ggplot head, theme, and facet if used
-  ggplot2::ggplot(.df_basis) + theme_spinifex()
+  ggplot2::ggplot(.df_basis) + theme_spinifex() +
+    ggplot2::labs(x = NULL, y = NULL, color = NULL, shape = NULL, fill = NULL) +
+    ggplot2::coord_fixed(clip = "off") ## aspect.ratio = 1L fixes unit size, not axes size
 }
 ## Print method for ggtours ?? using proto_default()
 #### Was a good idea, but ggplot stops working when you change the first class, 
@@ -345,7 +347,7 @@ last_ggtour_env <- function(){.store$ggtour_ls}
 #' ## This expression. is not meant for external use.
 ## _.init4proto expression -----
 .init4proto <- expression({ ## An expression, not a function
-  .ggt <- last_ggtour_env() ## Self-explicit for use in cheem
+  .ggt <- spinifex:::last_ggtour_env() ## Self-explicit for use in cheem
   if(is.null(.ggt)) stop(".init4proto: spinifex:::last_ggtour_env() is NULL, have you run ggtour() yet?")
   
   ## Assign elements ggtour list as quiet .objects in the environment
@@ -393,8 +395,8 @@ last_ggtour_env <- function(){.store$ggtour_ls}
             if(length(arg) == .n) arg[row_index] else arg)
       
       #### Subset .df_data, update .n & .nrow_df_data
-      .df_data <- .df_data[rep(row_index, .n_frames),, drop = FALSE]
-      .n <- sum(row_index) ## n rows _slecected_
+      .df_data      <- .df_data[rep(row_index, .n_frames),, drop = FALSE]
+      .n            <- sum(row_index) ## n rows _slecected_
       .nrow_df_data <- nrow(.df_data)
     }
   } ## end row_index, if exists
@@ -410,19 +412,19 @@ last_ggtour_env <- function(){.store$ggtour_ls}
     if(sum(row_index) != length(row_index)){
       if(exists(".bkg_aes_args"))
         if(length(.bkg_aes_args) > 0L)
-          .bkg_aes_args <- .lapply_rep_len(
+          .bkg_aes_args <- spinifex:::.lapply_rep_len(
             .bkg_aes_args, nrow(.df_data_bkg), sum(!row_index))
       if(exists(".bkg_identity_args"))
         if(length(identity_args) > 0L)
-          .bkg_identity_args <- .lapply_rep_len(
+          .bkg_identity_args <- spinifex:::.lapply_rep_len(
             .bkg_identity_args, nrow(.df_data_bkg), sum(!row_index))
     }
   if(exists("aes_args"))
     if(length(aes_args) > 0L)
-      aes_args <- .lapply_rep_len(aes_args, .nrow_df_data, .n)
+      aes_args      <- spinifex:::.lapply_rep_len(aes_args, .nrow_df_data, .n)
   if(exists("identity_args"))
     if(length(identity_args) > 0L)
-      identity_args <- .lapply_rep_len(identity_args, .nrow_df_data, .n)
+      identity_args <- spinifex:::.lapply_rep_len(identity_args, .nrow_df_data, .n)
   .m <- gc() ## Mute garbage collection
 })
 
@@ -459,25 +461,27 @@ last_ggtour_env <- function(){.store$ggtour_ls}
 #'   proto_default(aes_args = list(color = clas, shape = clas),
 #'                 identity_args = list(size = 1.5, alpha = .7))
 #' \dontrun{
+#' ## Default .gif rendering
 #' animate_gganimate(ggt)
 #' 
 #' if(F){ ## Don't accidentally save file
-#'   ## Alternative arguments storing to a variable for saving
+#'   ## Option arguments, rendering to default .gif
 #'   anim <- animate_gganimate(
 #'     ggt, fps = 10, rewind = TRUE,
 #'     start_pause = 1, end_pause = 2,
-#'     height = 6, width = 10, units = "cm", ## "px", "in", "cm", or "mm."
-#'     res = 150)
-#'   ## Save rendered animation as .gif
+#'     height = 10, width = 15, units = "cm", ## "px", "in", "cm", or "mm."
+#'     res = 200 ## resolution, pixels per dimension unit I think
+#'   )
+#'   ## Save rendered animation
 #'   gganimate::anim_save("my_tour.gif",
 #'                        animation = anim,
 #'                        path = "./figures")
 #'   
-#'   ## Alternative renderer saving directly as an .mp4
-#'   animate_gganimate(ggt,
-#'     height = 10, width = 18, units = "cm", ## "px", "in", "cm", or "mm."
-#'     res = 150, ## resolution, not the same as dpi, 100 seems about 1x zoom 
-#'     render = gganimate::av_renderer("./my_tour.mp4")) ## Alternative render
+#'   ## Alternative renderer saving directly to .mp4
+#'   animate_gganimate(ggt, fps = 5,
+#'     height = 4, width = 6, units = "in", ## "px", "in", "cm", or "mm."
+#'     res = 200, ## resolution, pixels per dimension unit I think
+#'     renderer = gganimate::av_renderer("./my_tour.mp4"))
 #'   }
 #' }
 animate_gganimate <- function(
@@ -694,10 +698,7 @@ filmstrip <- function(
 ){
   ret <- ggtour +
     ## Display level of previous facet (if applicable) next level of frame.
-    ggplot2::facet_wrap(c("frame", names(ggtour$facet$params$facets)), ...) +
-    ggplot2::theme(strip.text = ggplot2::element_text(
-      margin = ggplot2::margin(b = 0L, t = 0L)),  ## tighter facet labels
-      panel.spacing = ggplot2::unit(0L, "lines")) ## tighter facet spacing
+    ggplot2::facet_wrap(c("frame", names(ggtour$facet$params$facets)), ...)
   ## filmstrip does NOT clear last tour
   .m <- gc() ## Mute garbage collection
   ret

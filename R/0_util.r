@@ -593,17 +593,19 @@ scale_fill_discrete <- function(...){
 theme_spinifex <- function(...){
   ## Color/fill discrete also masked to reduced warnings/messages
   list(theme_minimal(),
-       coord_fixed(clip = "off"), ## aspect.ratio = 1L fixes unit size, not axes size
        theme(
          axis.text        = element_blank(),
          panel.grid.major = element_blank(),
          panel.grid.minor = element_blank(),
          legend.position  = "bottom",
-         legend.direction = "horizontal",        ## Levels within an aesthetic
-         legend.box       = "vertical",          ## Between aesthetics
-         legend.margin    = margin(0L,0L,0L,0L), ## Tighter legend margin
-         ...), ## Ellipsis trumps defaults.
-       labs(x = NULL, y = NULL, color = NULL, shape = NULL, fill = NULL)
+         legend.direction = "horizontal",             ## Levels within an aesthetic
+         legend.box       = "vertical",               ## Between aesthetics
+         legend.margin    = margin(0L, 0L, 0L, 0L),   ## Tighter legend margin
+         panel.spacing    = unit(4L, "points"),       ## Facet spacing
+         strip.background = element_rect(size = .6, color = "grey80"),
+         #strip.text       = element_text(
+         #  margin = margin(b = 0L, t = 0L)),          ## Tighter facet strips
+         ...)                                         ## Ellipsis trumps defaults
   )
 }
 

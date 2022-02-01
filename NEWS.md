@@ -1,6 +1,6 @@
 # spinifex v0.3.3
 - Add do_center_frame = TRUE argument to ggtour, such that tours don't want too far to the sides as they were in cheem radial tours.
-- Adjust theme_spinifex() tightening margins.
+- Adjust theme_spinifex(): tightening margins, facet strip outlines, and better separating theme elements from ggtour default settings.
 
 # spinifex v0.3.2
 - New function: `facet_wrap_tour()`, for faceting tours!

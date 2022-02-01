@@ -47,25 +47,27 @@ ggt <- ggtour(mt_path, dat, angle = .3) +
   proto_default(aes_args = list(color = clas, shape = clas),
                 identity_args = list(size = 1.5, alpha = .7))
 \dontrun{
+## Default .gif rendering
 animate_gganimate(ggt)
 
 if(F){ ## Don't accidentally save file
-  ## Alternative arguments storing to a variable for saving
+  ## Option arguments, rendering to default .gif
   anim <- animate_gganimate(
     ggt, fps = 10, rewind = TRUE,
     start_pause = 1, end_pause = 2,
-    height = 6, width = 10, units = "cm", ## "px", "in", "cm", or "mm."
-    res = 150)
-  ## Save rendered animation as .gif
+    height = 10, width = 15, units = "cm", ## "px", "in", "cm", or "mm."
+    res = 200 ## resolution, pixels per dimension unit I think
+  )
+  ## Save rendered animation
   gganimate::anim_save("my_tour.gif",
                        animation = anim,
                        path = "./figures")
   
-  ## Alternative renderer saving directly as an .mp4
-  animate_gganimate(ggt,
-    height = 10, width = 18, units = "cm", ## "px", "in", "cm", or "mm."
-    res = 150, ## resolution, not the same as dpi, 100 seems about 1x zoom 
-    render = gganimate::av_renderer("./my_tour.mp4")) ## Alternative render
+  ## Alternative renderer saving directly to .mp4
+  animate_gganimate(ggt, fps = 5,
+    height = 4, width = 6, units = "in", ## "px", "in", "cm", or "mm."
+    res = 200, ## resolution, pixels per dimension unit I think
+    renderer = gganimate::av_renderer("./my_tour.mp4"))
   }
 }
 }
