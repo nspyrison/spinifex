@@ -10,7 +10,7 @@ require("plotly")
 ## Create contextLine; App name, spinifex version, and sys date.
 .wd         <- getwd()
 .regex      <- regexpr("\\/[^\\/]*$", .wd)
-.local_path <- substr(.wd, .regex + 1L, nchar(.wd))
+.local_path <- gsub("_", " ", substr(.wd, .regex + 1L, nchar(.wd)))
 .title      <- paste0("spinifex --- ", .local_path)
 contextLine <- paste0(.local_path, " app, ",
                       " --- spinifex (v", packageVersion("spinifex"), ")",
@@ -18,7 +18,7 @@ contextLine <- paste0(.local_path, " app, ",
 
 ### tabData -----
 tabData <- tabPanel(
-  "Process projection data",
+  "Process data",
   fluidPage(
     sidebarPanel(
       width = 3L,
@@ -50,7 +50,7 @@ tabData <- tabPanel(
 
 ### tabRadial ----
 tabRadial <- tabPanel(
-  "Radial manual tour",
+  "Radial tour",
   fluidPage(
     sidebarPanel(
       width = 3L,

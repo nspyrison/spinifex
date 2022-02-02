@@ -425,7 +425,6 @@ last_ggtour_env <- function(){.store$ggtour_ls}
   if(exists("identity_args"))
     if(length(identity_args) > 0L)
       identity_args <- spinifex:::.lapply_rep_len(identity_args, .nrow_df_data, .n)
-  .m <- gc() ## Mute garbage collection
 })
 
 ### ANIMATE_* ------
@@ -508,13 +507,9 @@ animate_gganimate <- function(
   ## Discrete jump between frames, no linear interpolation.
   gga <- ggtour + gganimate::transition_states(frame, transition_length = 0L)
   ## Normal animation, with applied options, knit_pdf_anim == FALSE
-  ret <- gganimate::animate(gga, fps = fps, rewind = rewind, 
-                            start_pause = fps * start_pause,
-                            end_pause = fps * end_pause, ...)
-  
-  ## Clean up
-  .m <- gc() ## Mute garbage collection
-  ret
+  gganimate::animate(gga, fps = fps, rewind = rewind, 
+                     start_pause = fps * start_pause,
+                     end_pause = fps * end_pause, ...)
 }
 
 
@@ -561,20 +556,26 @@ animate_plotly <- function(
   fps = 8,
   ... ## Passed to plotly::ggplotly(). can always call layout/config again
 ){
-  ## ggplot or plotly::subplot?
   if(class(ggtour)[1L] == "gg"){
+    ## If ggplot
+    if(length(ggtour$layers) == 0L) ## plotly subplots, have NULL layers
+      stop("No layers found, did you forget to add a proto_*?")
     ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
     #### Adding many protos is liable to break plotly animations, see above url.
     ggtour <- ggtour + ggplot2::theme(
-      ## Circumvent plotly warnings
-      legend.direction = "vertical", ## horizontal legenda not supported
+      ## Avoid plotly warnings
+      legend.direction = "vertical", ## horizontal legends not supported
       aspect.ratio     = NULL)       ## aspect.ratio not supported
-    ## Assumptions
-    if(length(ggtour$layers) == 0L) ## plotly subplots, have NULL layers
-      stop("No layers found, did you forget to add a proto_*?")
     ## ggplotly without animation settings
     ggp <- plotly::ggplotly(ggtour, tooltip = "tooltip", ...)
-  }else ggp <- ggtour ## plotly::subplot
+    browser()
+    ## If density used widen
+    if(is_any_layer_class(ggtour, class_nm = "GeomDensity"))
+      #<add plotly aspect ratio to ggp>
+      ggp <- plotly::layout(
+        ggp, xaxis = list(scaleratio = 4))
+    ## else plotly::subplot
+  }else ggp <- ggtour
   
   ## ggplotly settings, animated or static from ggplot or subplot
   ggp <- ggp %>%
@@ -583,10 +584,10 @@ animate_plotly <- function(
                    modeBarButtonsToRemove = c("zoomIn2d", "zoomOut2d")) %>%
     ## Remove legends and axis lines
     plotly::layout(dragmode = FALSE, legend = list(x = 100L, y = 0.5),
-                   #fixedrange = TRUE, ## This is a curse, never use this.
+                   #fixedrange = TRUE, ## This is a curse, never use it.
                    yaxis = list(showgrid = FALSE, showline = FALSE),
-                   xaxis = list(showgrid = FALSE, showline = FALSE,
-                                scaleanchor = "y", scalaratio = 1L))
+                   xaxis = list(showgrid = FALSE, showline = FALSE))
+                                #scaleanchor = "y", scalaratio = 1L
   
   ## Multiple frames/animation condition handling
   n_frames <- last_ggtour_env()$n_frames
@@ -604,8 +605,6 @@ animate_plotly <- function(
         active = 0L, ## 0 indexed first frame
         currentvalue = list(prefix = "Frame: ", font = list(color = "black")))
   }
-  ## Clean up
-  .m <- gc() ## Mute garbage collection
   ret
 }
   
@@ -696,12 +695,10 @@ animate_plotly <- function(
 filmstrip <- function(
   ggtour, ...
 ){
-  ret <- ggtour +
+  ggtour +
     ## Display level of previous facet (if applicable) next level of frame.
     ggplot2::facet_wrap(c("frame", names(ggtour$facet$params$facets)), ...)
-  ## filmstrip does NOT clear last tour
-  .m <- gc() ## Mute garbage collection
-  ret
+  ## filmstrip() does NOT clear last tour
 }
 
 
@@ -1181,7 +1178,8 @@ proto_density <- function(
   ret <- list(do.call(.geom_func, identity_args),
               ggplot2::theme(legend.position  = "right",
                              legend.direction = "vertical",
-                             legend.box       = "vertical"))
+                             legend.box       = "vertical",
+                             aspect.ratio     = 1L / 4L)) ## y/x
   
   ## geom_rug do.call
   if(is.null(rug_shape) == FALSE){

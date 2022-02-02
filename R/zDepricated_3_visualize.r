@@ -291,10 +291,6 @@ oblique_basis <- function(...) {
 #' contributions of the basis. Defaults to 1.
 #' @param text_size The size of the text labels of the variable 
 #' contributions of the basis. Defaults to 5.
-#' @param ggproto A list of ggplot2 function calls.
-#' Anything that would be "added" to ggplot(); in the case of applying a theme,
-#' `ggplot() + theme_bw()` becomes `ggproto = list(theme_bw())`.
-#' Intended for aesthetic ggplot2 functions (not geom_* family).
 #' @return ggplot object of the basis.
 #' @export
 #' @examples
@@ -315,10 +311,7 @@ view_manip_space <- function(basis,
                              manip_col = "blue",
                              manip_sp_col = "red",
                              line_size = 1,
-                             text_size = 5,
-                             ggproto = list(
-                               theme_spinifex()
-                             )
+                             text_size = 5
 ){
   ## NOT DEPRICATED, don't get this with the ggtour api.
   
@@ -376,7 +369,9 @@ view_manip_space <- function(basis,
   theta_curve_r <- as.data.frame(theta_curve_r)
   ## Render & return
   ggplot2::ggplot() +
-    ggproto +
+    theme_spinifex() +
+    ggplot2::labs(x = NULL, y = NULL, color = NULL, shape = NULL, fill = NULL) +
+    ggplot2::coord_fixed(clip = "off") +
     ## Axes circle
     ggplot2::geom_path(
       data = circ_r,

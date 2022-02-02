@@ -2,9 +2,10 @@
 ?ggtour
 
 library(spinifex)
-dat     <- scale_sd(penguins_na.rm[, 1:4])
-clas    <- penguins_na.rm$species
-gt_path <- save_history(dat, tour_path = grand_tour(), max_bases = 8)
+dat           <- scale_sd(penguins_na.rm[, 1:4])
+colnames(dat) <- c("b_l", "b_d", "f_l", "b_m")
+clas          <- penguins_na.rm$species
+gt_path       <- save_history(dat, tour_path = grand_tour(), max_bases = 8)
 
 ggt <- ggtour(basis_array = gt_path, angle = .15) +
   proto_default(aes_args = list(color = clas, shape = clas),
@@ -17,7 +18,7 @@ gganimate::anim_save("penguins_gt.gif",
                      animation = anim,
                      path = "./buildignore/readme_img/")
 
-bas <- basis_olda(dat, clas)
+bas     <- basis_olda(dat, clas)
 mt_path <- manual_tour(bas, 1, data = dat)
 
 ggt <- ggtour(basis_array = mt_path, angle = .15) +

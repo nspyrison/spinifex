@@ -17,7 +17,7 @@ https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-nani
 knitr::opts_chunk$set(
   echo       = TRUE,   # code
   include    = TRUE,   # plots
-  results    = "hide", # text: "hide", "show"
+  results    = "show", # text/html widgets: "hide", "show"
   eval       = TRUE,   # chunk
   message    = FALSE,
   warning    = FALSE,
@@ -33,27 +33,19 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Numeric multivariate data is ubiquitous and viewing data within data-space (rather than summarized as parameters or statistics) is a critical part of exploratory data analysis and the data analysis workflow in general. Viewing data that exists in more than 3 numeric dimensions quickly becomes complex. Linear projections of high dimensional spaces offer a scalable way to extend viewing these data-spaces as the dimension of the data increases. The dynamic viewing of many linear projections encompasses a class of techniques collectively known as *tours*.
+Numeric multivariate data is ubiquitous and viewing data within data-space (rather than summarized as parameters or statistics) is a critical part of exploratory data analysis and the data analysis workflow in general. Viewing multivariate quickly becomes complex. Linear projections of high dimensional spaces offer a scalable way to extend viewing these data-spaces as the dimension of the data increases. Traditionally, these are viewed as static orthogonal pairs. Alternatively, _tours_, are a class of linear projections that animate many frames over small changes in the projection basis. 
 
-The package `spinifex` allows the application of manual tours, where a selected variable is rotated fully into and out of the give projection basis. It's also compatible with other tours from the `tourr` package and extends graphics display to `plotly` and `gganimate`.
+The package __spinifex__ allows the application of manual tours, where a selected variable is rotated fully into and out of the give projection basis. Its also facilitates a layered composition of tours interoperably with __tourr__. These composition can then be animated to interactive html widget with __plotly__ or to .gif/.mp4 format with __gganimate__.
 
 
 ## Dynamic projections of high dimensional data, tours
 
-*Tours* are a class of dynamic orthogonal (linear) projections that embed $p-$dimensional (Euclidean) space into a $d-$dimensional subspace and animates many such projections as the projection basis (orientation) is rotated. Tours are useful in identify clustering, outliers, and structure held within numeric multivariate data. 
+Tours are a class of dynamic orthogonal (linear) projections that embed $p-$dimensional space into a $d-$dimensional subspace and animates many such projections over small changes to the projection basis (essesentially the orientation of the data). Tours are useful in identify clustering, outliers, and structure held within numeric multivariate data. 
 
-This concept is illustrated well with the anecdote of shadow puppets. Suppose a bar stool is held in front of a light source. This is a linear projection of a 3D object (bar stool) down to 2D (its shadow). If we observe the shadow change over time as the bar stool is rotated, we are watching a 3- to 2D tour. Some projections may not convey much information (the seat may only cast a circular shadow), but as we watch the stool rotate our visual interpretation quickly understands the geometry of the object. The same is true for tours, each view holds some information, and a better understanding of the structure is gained over time.
+This concept is analogous to shadows. Suppose a bar stool is held in front of a light source. This is a linear projection of a 3D object casting a 2D shadow.  Some projections may not convey much information (the seat may only cast a circular shadow). If we observe the shadow change over as the barstool is rotated, we quickly understand the shape of the object. The same is true for tours; watching the permanence of observations between frames conveys more information than unlinked orthognal views.
 
 We focus on the application of the *manual tours* in this document. In a manual tour, the contributions of one variable are manipulated to show the impact that it has on the structure of the projection. Controlling the coefficients of a single variable can be insightful after finding a projection of interest, perhaps with the use of a *guided tour*. A wider application of tours can be accomplished with with the package `tourr`, [CRAN.R-project.org/package=tourr](https://CRAN.R-project.org/package=tourr).
 
-## Notation
-
-- *n* - the number of observations in the data
-- *p* - the number of variables/dimensions in the data
-- *d* - number of dimensions in the projection, $d \leq p$, typically 2
-- *basis* - $[p,~d]$ orthonormal matrix, orientation of the variables projecting from $p-$ to $d-$space
-- *reference axes/frame* - graphical display of the basis, line segments on a unit circle, showing how each variable contributes to the projection space
-- *manip var* - the selected variable to manipulate into and out of the projection, highlighted in blue below
 
 # Usage
 
@@ -93,16 +85,18 @@ view_manip_space(basis = bas_pca, manip_var = 1)
 Now we have the freedom to change the contributions of `bill_length_mm`, we do so by controlling the values of the in-plane angle, $\theta$, and the out of plane angle, $\phi$. in this example we'll perform a radial manual tour, holding $\theta$ constant while we vary the values of $\phi$ to remove and maximize the contribution of the manipulation variable.
 
 ```{r}
+## Save a tour path
 mt_path <- manual_tour(basis = bas_pca, manip_var = 3)
 
-my_ggtour <- ggtour(basis_array = mt_path, data = dat_std) +
+## Compose the display
+my_ggtour <- ggtour(basis_array = mt_path, data = dat_std, angle = .2) +
+  ## angle is the distance between (geodesically) interpolated frames
   proto_default(aes_args = list(color = clas, shape = clas))
-```
-```{r, eval=FALSE}
-animate_plotly(ggtour = my_ggtour)
+
+## Animate
+animate_plotly(ggtour = my_ggtour, fps = 5)
 ```
 
-*plotly animation not rendered in this vignette, but will display in viewer*
 
 ## Example 2 - Rotating a glyph map
 
@@ -112,13 +106,13 @@ Another of the *manual tour* is the creation a *glyph-maps*, where time series c
 nasa <- select(GGally::nasa, lat, long, day, surftemp)
 
 temp.gly <- GGally::glyphs(nasa, "long", "day", "lat", "surftemp", height = 2.5)
-glyph <-
+glyphmap <-
   ggplot(temp.gly, aes(gx, gy, group = gid)) +
   GGally::add_ref_lines(temp.gly, color = "grey90") +
   GGally::add_ref_boxes(temp.gly, color = "grey90") +
   geom_path() + theme_bw() + labs(x = "", y = "")
 
-glyph
+glyphmap
 ```
 
 We'll perform a horizontal rotation and followed by the vertical rotation before bringing them together. we apply the horizontal rotation ($\theta$` = 0`) on the `day` values (`manip_var = 3`). Pre-multiply the data with the rotation matrix to project the data.
@@ -162,52 +156,51 @@ ggplot(rot_xy, aes(x = x, y = y)) + geom_point(size = 0.3) +
 Radial tours are often employed after an interesting feature has been identified. How the contributions of each variable impact the structure of resulting PCA, for example, might be interesting to explore. Alternatively, we can perform projection pursuit to maximize an objective function within the projection and performing a hill-climbing algorithm and explore what effect the contributions of the variables have there. Let's do just that, optimizing a Holes indexed guided tour using the package `tourr`.
 
 ```{r}
+## Transform data
 dat_std    <- scale_sd(penguins_na.rm[, 1:4])
-holes_path <- save_history(dat_std, tourr::guided_tour(tourr::holes(), ))
+## Save holes indexed guided tour
+holes_path <- save_history(dat_std, tourr::guided_tour(tourr::holes()))
 
-ggt <- ggtour(holes_path, dat_std) + proto_default()
-```
-```{r, eval=FALSE}
-animate_plotly(ggt)
+## Compose display
+ggt <- ggtour(holes_path, dat_std, angle = .2) +
+  proto_default(aes_args = list(color = clas, shape = clas))
+## Animate
+animate_plotly(ggt) ## As interactive .html widget
+#animate_gganimate(my_ggtour, fps = 5) ## As .gif
+#animate_gganimate(ggt, renderer = gganimate::av_renderer()) ## As .mp4
 ```
 
 This shows the optimization path of the holes index. We'll grab the reference axes from the last frame and used that a starting orientation for a manual tour.
 
 ```{r}
-## We added the basis_* functions, including basis_guided() to help:
+## Save only the final holes frame
 holes_bas <- basis_guided(dat_std, index_f = tourr::holes(), d = 2)
 
-ggtour(holes_bas, dat_std) +
+## Print a single frame composition, a ggplot
+ggtour(holes_bas, dat_std, angle = .2) +
   proto_default(aes_args = list(color = clas, shape = clas))
 ```
 
 We'll select `aede2` as the manip_var, as it is mostly orthogonal to four of the other variables and often has a larger contribution than `tars1`.
 
 ```{r}
-## Alternatively, ask for the variable by rank of the magnitude in the basis:
+## Alternatively, ask for the variable by rank of the magnitude contributed:
 (mv <- manip_var_of(holes_bas, rank = 1))
+## A radial, manual tour from the resulting holes basis
 mt_path <- manual_tour(holes_bas, mv)
+## Compose tour
 ggt <- ggtour(mt_path, dat_std) +
-  proto_default(aes_args = list(color = clas, shape = clas))
-```
-```{r, eval=FALSE}
-animate_gganimate(ggt, renderer = gganimate::av_renderer())
+  proto_point(aes_args = list(color = clas, shape = clas)) +
+  proto_basis() +
+  proto_origin()
+## Animate
+animate_plotly(ggt)
 ```
 
 We can see that `aede2` is important in distinguishing between the purple cluster and the green cluster. However, even when its contribution is zeros the contribution of `tars1` is enough to keep the cluster from overlapping.
 
-# Summary
 
-Dynamic linear projection of numeric data, collectively known as $tours$ is an important tool for visualizing data space as dimensionality increases. This package, `spinifex`, extends the `tourr` package and allows for manual tours. It also allows tours to be rendered by the animation packages `plotly` and `gganimate`. 
-
-## Namesake 
+# Namesake 
 
 The name 'spinifex' comes from the [spinifex hopping mouse (wiki)](https://en.wikipedia.org/wiki/Spinifex_hopping_mouse), a nocturnal dessert mouse common to arid zones in central and western Australia. As to its relation to this work, in the words of Di Cook "It spins, it hops and needs a mouse."
-
-
-## Acknowledgements
-
-This package and vignette were made in *R* with much support from `devtools` and `roxygen2`.
-
-Thanks to Prof. Dianne Cook for providing focus, namesake, and the groundwork underpinning this work. Thanks to Dr. Ursula Laa for use-cases and applications.
 

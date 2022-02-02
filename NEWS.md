@@ -1,16 +1,25 @@
+# spinifex v0.3.4
+
+- Clean up both vignettes; include plotly output & removed scroll bars from wide code chunks.
+- `proto_density()` now changes the aspect ratio to 1/3 (y/x)
+- `animate_plotly()` will change the x scaleratio to 3 (for non `plotly::subplot` animations)
+- Removed `gc()` calls, too expensive for the minor issues it tried to mitigate
+
 # spinifex v0.3.3
-- Add do_center_frame = TRUE argument to ggtour, such that tours don't want too far to the sides as they were in cheem radial tours.
-- Adjust theme_spinifex(): tightening margins, facet strip outlines, and better separating theme elements from ggtour default settings.
+
+- Add do_center_frame = TRUE argument to `ggtour()`, such that tours don't want too far to the sides as they were in cheem radial tours
+- Adjust `theme_spinifex()`: tightening margins, facet strip outlines, and better separating theme elements from ggtour default settings
 
 # spinifex v0.3.2
-- New function: `facet_wrap_tour()`, for faceting tours!
-- New function: `proto_frame_cor2()`, adds text for the within-frame correlation squared.
-- New function: `append_fixed_y()`, add/overwrite data y column to fixed values, such as for the height of predicted values or residuals of a model.
-- New function: `draw_basis()` static ggplot2 variant of `proto_basis`, that accepts a basis directly without requiring ggtour initialization.
-- Most data-oriented `proto_*` functions have `row_index` argument; allowing for subsetting that is compatible with faceting and appending a fixed y! By default, `proto_point()` will plot non-selected points in faint grey, behind selected points.
-- `theme_spinifex()` changed removing the duplicate legend display, fewer warnings, and less frame oddities (geom existence issues) with `animate_plotly`.
-- Better examples for setting dimensions, resolution, and renders in `animate_*` functions.
-- Refreshed readme.
+
+- New function: `facet_wrap_tour()`, for faceting tours
+- New function: `proto_frame_cor2()`, adds text for the within-frame correlation squared
+- New function: `append_fixed_y()`, add/overwrite data y column to fixed values, such as for the height of predicted values or residuals of a model
+- New function: `draw_basis()` static ggplot2 variant of `proto_basis`, that accepts a basis directly without requiring ggtour initialization
+- Most data-oriented `proto_*` functions have `row_index` argument; allowing for subsetting that is compatible with faceting and appending a fixed y! By default, `proto_point()` will plot non-selected points in faint grey, behind selected points
+- `theme_spinifex()` changed removing the duplicate legend display, fewer warnings, and less frame oddities (geom existence issues) with `animate_plotly`
+- Better examples for setting dimensions, resolution, and renders in `animate_*` functions
+- Refreshed readme
 
 # spinifex v0.3.1
 
@@ -52,7 +61,7 @@ Basis_* functions to find features of interest, powered by `{Rdimtools}`.
 New util functions:
 - `scale_sd()` center and scale each variable by it's standard deviation
 - `scale_01()` center and scale each variable to be between [0, 1]
-- `basis_half_circle()`, variable agnostic basis with minimal variable dependence.
+- `basis_half_circle()`, variable agnostic basis with minimal variable dependence
 - `as_history_array()`, coerces an array of bases into the same attributes and class as returns of `tourr::save_history()`
 
 

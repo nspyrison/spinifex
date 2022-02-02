@@ -557,58 +557,6 @@ basis_half_circle <- function(data){
 }
 
 
-## UTILITY ----
-
-#' Set default color & fill for discrete variables
-#' 
-#' Masks ggplot2's default color/fill color palette for discrete variables.
-#' 
-#' @param ... Passes arguments to ggplot2::scale_colour/fill_brewer.
-#' @export
-scale_colour_discrete <- function(...){
-  ggplot2::scale_colour_brewer(..., palette = "Dark2")
-}
-#' @rdname scale_colour_discrete
-#' @export
-scale_fill_discrete <- function(...){
-  ggplot2::scale_fill_brewer(..., palette = "Dark2")
-}
-### continuous cases is not clear what you would have to do, 
-##### also see cheem::color_scale_of
-
-
-#' A ggplot2 theme suggested for linear projections with spinifex.
-#' The default theme in spinifex functions.
-#' 
-#' @param ... Optionally pass arguments to `ggplot2::theme()`.
-#' @seealso \code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
-#' @export
-#' @import ggplot2
-#' @examples 
-#' theme_spinifex()
-#' 
-#' require("ggplot2")
-#' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
-#'   geom_point() + theme_spinifex()
-theme_spinifex <- function(...){
-  ## Color/fill discrete also masked to reduced warnings/messages
-  list(theme_minimal(),
-       theme(
-         axis.text        = element_blank(),
-         panel.grid.major = element_blank(),
-         panel.grid.minor = element_blank(),
-         legend.position  = "bottom",
-         legend.direction = "horizontal",             ## Levels within an aesthetic
-         legend.box       = "vertical",               ## Between aesthetics
-         legend.margin    = margin(0L, 0L, 0L, 0L),   ## Tighter legend margin
-         panel.spacing    = unit(4L, "points"),       ## Facet spacing
-         strip.background = element_rect(size = .6, color = "grey80"),
-         #strip.text       = element_text(
-         #  margin = margin(b = 0L, t = 0L)),          ## Tighter facet strips
-         ...)                                         ## Ellipsis trumps defaults
-  )
-}
-
 #' Suggest a manipulation variable.
 #' 
 #' Find the column number of the variable with the `rank`-ith largest 
@@ -715,6 +663,88 @@ save_history <- function(
       ret <- array(c(start, ret), dim = dim(ret) + c(0L, 0L, 1L))
   
   ret
+}
+
+
+
+## UTILITY ----
+
+#' Set default color & fill for discrete variables
+#' 
+#' Masks ggplot2's default color/fill color palette for discrete variables.
+#' 
+#' @param ... Passes arguments to ggplot2::scale_colour/fill_brewer.
+#' @export
+scale_colour_discrete <- function(...){
+  ggplot2::scale_colour_brewer(..., palette = "Dark2")
+}
+#' @rdname scale_colour_discrete
+#' @export
+scale_fill_discrete <- function(...){
+  ggplot2::scale_fill_brewer(..., palette = "Dark2")
+}
+### continuous cases is not clear what you would have to do, 
+##### also see cheem::color_scale_of
+
+#' Theme spinifex
+#' 
+#' A ggplot2 theme suggested for linear projections with spinifex.
+#' The default theme in spinifex functions.
+#' 
+#' @param ... Optionally pass arguments to `ggplot2::theme()`.
+#' @seealso \code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
+#' @export
+#' @import ggplot2
+#' @examples 
+#' theme_spinifex()
+#' 
+#' require("ggplot2")
+#' ggplot(mtcars, aes(wt, mpg, color = as.factor(cyl))) +
+#'   geom_point() + theme_spinifex()
+theme_spinifex <- function(...){
+  ## Color/fill discrete also masked to reduced warnings/messages
+  list(theme_minimal(),
+       theme(
+         axis.text        = element_blank(),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         legend.position  = "bottom",
+         legend.direction = "horizontal",             ## Levels within an aesthetic
+         legend.box       = "vertical",               ## Between aesthetics
+         legend.margin    = margin(0L, 0L, 0L, 0L),   ## Tighter legend margin
+         panel.spacing    = unit(4L, "points"),       ## Facet spacing
+         strip.background = element_rect(size = .6, color = "grey80"),
+         #strip.text       = element_text(
+         #  margin = margin(b = 0L, t = 0L)),          ## Tighter facet strips
+         ...)                                         ## Ellipsis trumps defaults
+  )
+}
+
+
+#' Check ggplot layers for use of a specific geom
+#' 
+#' Checks if any of the layers of a ggplot contain a specific class.
+#' 
+#' @param ggplot Check the layers of this ggplot object
+#' @param class_nm The class name to check, note this differs slightly from
+#' the name of the geom function. Defaults to "GeomDensity", checking to see if
+#' geom_density was used in any of the layers.
+#' @seealso \code{\link[ggplot2:theme]{ggplot2::theme}} for all theme options.
+#' @export
+#' @examples 
+#' library(ggplot2)
+#' library(spinifex)
+#' 
+#' g <- ggplot(mtcars, aes(disp, color = factor(cyl))) + 
+#'   geom_density() + geom_histogram()
+#' is_any_layer_class(g, "GeomDensity")
+#' is_any_layer_class(g, "GeomPoint")
+is_any_layer_class <- function(ggplot, class_nm = "GeomDensity"){
+  any(
+    sapply(seq_along(ggplot$layers), function(i){
+      class_nm %in% class(ggplot$layers[[i]]$geom)
+    })
+  )
 }
 
 

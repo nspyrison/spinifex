@@ -2,8 +2,7 @@
 % Please edit documentation in R/0_util.r
 \name{theme_spinifex}
 \alias{theme_spinifex}
-\title{A ggplot2 theme suggested for linear projections with spinifex.
-The default theme in spinifex functions.}
+\title{Theme spinifex}
 \usage{
 theme_spinifex(...)
 }
