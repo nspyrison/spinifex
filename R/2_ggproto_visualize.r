@@ -568,7 +568,6 @@ animate_plotly <- function(
       aspect.ratio     = NULL)       ## aspect.ratio not supported
     ## ggplotly without animation settings
     ggp <- plotly::ggplotly(ggtour, tooltip = "tooltip", ...)
-    browser()
     ## If density used widen
     if(is_any_layer_class(ggtour, class_nm = "GeomDensity"))
       #<add plotly aspect ratio to ggp>
