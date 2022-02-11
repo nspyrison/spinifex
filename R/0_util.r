@@ -186,12 +186,13 @@ map_relative <- function(
     xoff  <- xcenter
     yoff  <- ycenter
   } else if(position == "left"){
-    scale <- .4 * min(xdiff, ydiff)
-    xoff  <- -.7 * xdiff + xcenter
+    scale <- .3   * min(xdiff, ydiff)
+    ## .5 + scale coef will have the circle touch lower range
+    xoff  <- -.85 * xdiff + xcenter 
     yoff  <- ycenter
   } else if(position == "right"){
-    scale <- .4 * min(xdiff, ydiff)
-    xoff  <- .7 * xdiff + xcenter
+    scale <- .3  * min(xdiff, ydiff)
+    xoff  <- .85 * xdiff + xcenter
     yoff  <- ycenter
   } else if(position %in% c("top1d")){
     xscale <- .3 * xdiff
@@ -209,13 +210,13 @@ map_relative <- function(
     xoff   <- xcenter
     yoff   <- -1.8 * ydiff + ycenter
   } else if(position == "bottomleft"){
-    scale <- .25 * min(xdiff, ydiff)
+    scale <- .25  * min(xdiff, ydiff)
     xoff  <- -.25 * xdiff + xcenter
-    yoff  <- -.5 * ydiff + ycenter
+    yoff  <- -.5  * ydiff + ycenter
   } else if(position == "topright"){
     scale <- .25 * min(xdiff, ydiff)
     xoff  <- .25 * xdiff + xcenter
-    yoff  <- .5 * ydiff + ycenter
+    yoff  <- .5  * ydiff + ycenter
   } else if(position == "full"){
     scale <- .5 * min(xdiff, ydiff)
     xoff  <- xcenter

@@ -1,6 +1,8 @@
 # spinifex v0.3.4
 
-- Clean up both vignettes; include plotly output & removed scroll bars from wide code chunks.
+- Change defaults to `map_relative()`; position = "left" or "right" is fully off outside of the data
+- Changes defaults to `proto_basis*()`; decreasing the text size and line size a bit
+- Clean up both vignettes; include plotly output & removed scroll bars from wide code chunks
 - `proto_density()` now changes the aspect ratio to 1/3 (y/x)
 - `animate_plotly()` will change the x scaleratio to 3 (for non `plotly::subplot` animations)
 - Removed `gc()` calls, too expensive for the minor issues it tried to mitigate

@@ -715,8 +715,8 @@ filmstrip <- function(
 #' @param manip_col The color to highlight the manipulation variable with. Not
 #' applied if the tour isn't a manual tour. Defaults to "blue".
 #' @param line_size (2D bases only) the thickness of the lines used to make the 
-#' axes and unit circle. Defaults to 1.
-#' @param text_size Size of the text label of the variables.
+#' axes and unit circle. Defaults to .6.
+#' @param text_size Size of the text label of the variables. Defaults to 4.
 #' @export
 #' @aliases proto_basis
 #' @family ggtour proto functions
@@ -762,15 +762,15 @@ filmstrip <- function(
 #'   proto_basis1d(position = "bottom",
 #'                 manip_col = "pink",
 #'                 segment_size = 3,
-#'                 text_size = 5)
+#'                 text_size = 6)
 #' \dontrun{
 #' animate_plotly(ggt1d)
 #' }
 proto_basis <- function(
   position = c("left", "center", "right", "bottomleft", "topright", "full", "off"),
   manip_col = "blue",
-  line_size = 1,
-  text_size = 5
+  line_size = .6,
+  text_size = 4
 ){
   ## Initialize
   eval(.init4proto)
