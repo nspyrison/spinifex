@@ -14,3 +14,5 @@ Meta/
 
 ## Allow gifs for readme.
 !buildignore/readme_img/*.gif
+/doc/
+/Meta/

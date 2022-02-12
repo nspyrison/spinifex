@@ -656,8 +656,8 @@ save_history <- function(
   #### if tour_path is a grand tour, start isn't first frame, and dim match
   if(is.null(start) == FALSE)
     if(attr(tour_path, "name") == "grand" &
-       ret[,, 1L] != start &
-       dim(start) == dim(ret)[1L:2L])
+       #any(matrix(ret[,, 1L], ncol = 2) != start) & ## Check for same
+       all(dim(start) == dim(ret)[1L:2L]))
       ret <- array(c(start, ret), dim = dim(ret) + c(0L, 0L, 1L))
   
   ret

@@ -1,9 +1,10 @@
 ### Create gifs for readme
-?ggtour
+if(F)
+  ?ggtour
 
 library(spinifex)
 dat           <- scale_sd(penguins_na.rm[, 1:4])
-colnames(dat) <- c("b_l", "b_d", "f_l", "b_m")
+colnames(dat) <- c("bl", "bd", "fl", "bm")
 clas          <- penguins_na.rm$species
 gt_path       <- save_history(dat, tour_path = grand_tour(), max_bases = 8)
 
