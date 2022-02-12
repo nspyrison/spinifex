@@ -8,15 +8,15 @@
 proto_basis(
   position = c("left", "center", "right", "bottomleft", "topright", "full", "off"),
   manip_col = "blue",
-  line_size = 1,
-  text_size = 5
+  line_size = 0.6,
+  text_size = 4
 )
 
 proto_basis1d(
   position = c("bottom1d", "floor1d", "top1d", "full", "off"),
   manip_col = "blue",
   segment_size = 2,
-  text_size = 5
+  text_size = 4
 )
 }
 \arguments{
@@ -29,9 +29,9 @@ c("bottom1d", "floor1d", "top1d", "off"). Defaults to "bottom1d".}
 applied if the tour isn't a manual tour. Defaults to "blue".}
 
 \item{line_size}{(2D bases only) the thickness of the lines used to make the
-axes and unit circle. Defaults to 1.}
+axes and unit circle. Defaults to .6.}
 
-\item{text_size}{Size of the text label of the variables.}
+\item{text_size}{Size of the text label of the variables. Defaults to 4.}
 
 \item{segment_size}{(1D bases only) the width thickness of the rectangle bar
 showing variable magnitude on the axes. Defaults to 2.}
@@ -83,7 +83,7 @@ ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
   proto_basis1d(position = "bottom",
                 manip_col = "pink",
                 segment_size = 3,
-                text_size = 5)
+                text_size = 6)
 \dontrun{
 animate_plotly(ggt1d)
 }

@@ -1,11 +1,13 @@
 # spinifex v0.3.4
 
-- Change defaults to `map_relative()`; position = "left" or "right" is fully off outside of the data
-- Changes defaults to `proto_basis*()`; decreasing the text size and line size a bit
-- Clean up both vignettes; include plotly output & removed scroll bars from wide code chunks
-- `proto_density()` now changes the aspect ratio to 1/3 (y/x)
-- `animate_plotly()` will change the x scaleratio to 3 (for non `plotly::subplot` animations)
-- Removed `gc()` calls, too expensive for the minor issues it tried to mitigate
+- Cleaned up both vignettes; include plotly output & removed scroll bars from wide code chunks
+- Removed forced garbage collection `gc()` calls, too expensive for the minor issues it tried to mitigate
+- `proto_density()` now changes the aspect ratio to 1/2 (y/x), twice as wide
+- `animate_plotly()` will change the x scaleratio to 2 (for non `plotly::subplot` animations)
+- Changed defaults to `map_relative()`; position = "left" or "right" is fully off outside of the data
+- Changed defaults to related `proto_*()`; decreasing the text size (5 -> 4) and line size a (1 -> .6)
+- Adjust `filmstrip & facet_wrap_tour()`: adds theme for borders to help distinguish facets
+
 
 # spinifex v0.3.3
 
@@ -30,7 +32,7 @@
 - `manual_tour()` and related functions now handle 1D projections
 - New functions: `proto_highlight/1d()` for highlighting specific points in ggtours
 - New function: `filmstrip()`, creates a ggplot faceting the frames of a ggtour for a static output
-- New dataset: `penguins`, from `palmerpenguins::penguins`, removed NA
+- New dataset: `penguins_na.rm`, from `palmerpenguins::penguins`, removed NA
 rows & reordered columns
 - Added argument `rownum_index` to `proto_text`, for labeling subsets
 - Experimental wrapper function `spinifex::save_history`, muting the noisy execution of `tourr::save_history`
@@ -46,7 +48,7 @@ basis/1d, point, origin/1d, density, text, hex, default/1d.
 - New vignette demonstrating this api `vignette("ggproto_api", "spinifex")`
 - Shiny app now imports .csv & .rds,  code improved, uses new ggproto api
 -- `run
-- Fixed a format issue with the `BeastCancer` dataset
+- Fixed a format issue with the `BeastCancer_na.rm` dataset
 
 
 # spinifex v0.2.8

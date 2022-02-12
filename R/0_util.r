@@ -76,17 +76,17 @@ array2df <- function(
   ## Condition handle basis labels.
   if(is.null(basis_label)){
     if(is.null(data) == FALSE){
-      basis_label <- abbreviate(colnames(data), 3L)
-    }else basis_label <- abbreviate(rownames(basis_array), 3L)
+      basis_label <- abbreviate(
+        gsub("[^[:alnum:]=]", "", colnames(data)), 3L)
+    }else basis_label <- abbreviate(
+      gsub("[^[:alnum:]=]", "", rownames(basis_array)), 3L)
     if(is.null(basis_label)) basis_label <- paste0("v", 1L:p)
   }
   
   ## Basis frames df
-  ##*duplicate first frame; does it help plotly anim?
-  #basis_frames <-cbind(basis_array[,, 1L], 1L)
   basis_frames <- NULL 
   .mute <- sapply(1L:n_frames, function(i){
-    basis_rows <- cbind(basis_array[,, i], i)#* + 1L)
+    basis_rows <- cbind(basis_array[,, i], i)
     basis_frames <<- rbind(basis_frames, basis_rows)
   })
   basis_frames <- as.data.frame(basis_frames)
@@ -105,15 +105,12 @@ array2df <- function(
         "array2df: Non-conformable matrices; data has ", ncol(data),
         " columns while basis has ", p, " rows."))
     data <- as.matrix(data)
-    ##*Duplicate first frame; see if it helps plotly.
-    #*.new_frame <- data %*% matrix(basis_array[,, 1L], p, d)
-    #*data_frames <- cbind(.new_frame, 1L) ## Init
     data_frames <- NULL
     .mute <- sapply(1L:n_frames, function(i){
       new_frame <- data %*% matrix(basis_array[,, i], p, d)
       if(do_center_frame)
         new_frame <- apply(new_frame, 2L, function(c){(c - mean(c))})
-      new_frame <- cbind(new_frame, i) #*+ 1L) ## Append frame number
+      new_frame <- cbind(new_frame, i)
       data_frames <<- rbind(data_frames, new_frame) ## Add rows to df
     })
     data_frames[, 1L:d] <- data_frames[, 1L:d] %>% scale_01()
@@ -125,7 +122,7 @@ array2df <- function(
       data_frames$tooltip <- rep_len(data_label, nrow(data_frames))
   }
   
-  ## Return, include data if it exists.
+  ## Return, include data if it exists
   if(exists("data_frames")){
     ret <- list(basis_frames = basis_frames, data_frames = data_frames)
   } else
@@ -710,14 +707,15 @@ theme_spinifex <- function(...){
          panel.grid.major = element_blank(),
          panel.grid.minor = element_blank(),
          legend.position  = "bottom",
-         legend.direction = "horizontal",             ## Levels within an aesthetic
-         legend.box       = "vertical",               ## Between aesthetics
-         legend.margin    = margin(0L, 0L, 0L, 0L),   ## Tighter legend margin
-         panel.spacing    = unit(4L, "points"),       ## Facet spacing
-         strip.background = element_rect(size = .6, color = "grey80"),
-         #strip.text       = element_text(
-         #  margin = margin(b = 0L, t = 0L)),          ## Tighter facet strips
-         ...)                                         ## Ellipsis trumps defaults
+         legend.direction = "horizontal",           ## Levels within an aesthetic
+         legend.box       = "vertical",             ## Between aesthetics
+         legend.margin    = margin(0L, 0L, 0L, 0L), ## Tighter legend margin
+         panel.spacing    = unit(0L, "points"),     ## Facet spacing
+         strip.text       = element_text(           ## Facet strip spacing
+               margin = margin(b = 3L, t = 3L)),
+         strip.background =                         ## Facet strip
+           element_rect(size = .6, color = "grey80", fill = NA),
+         ...)                                       ## Ellipsis trumps defaults
   )
 }
 

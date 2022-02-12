@@ -1,11 +1,11 @@
 {
-  library("spinifex")
-  library("testthat")
+  library(spinifex)
+  library(testthat)
   
   dat_std <- scale_sd(wine[1L:10L, 2L:5L]) ## small chunk for speed.
-  bas <- basis_pca(dat_std)
-  clas <- wine$Type
-  mv <- manip_var_of(bas)
+  bas     <- basis_pca(dat_std)
+  clas    <- wine$Type
+  mv      <- manip_var_of(bas)
 }
 
 ##
@@ -92,8 +92,7 @@ suppressWarnings( ## suppress 8hr deprecation warning
 suppressWarnings( ## suppress 8hr deprecation warning
   ret_heavy <- view_manip_space(basis = bas, manip_var = mv,
                                 tilt = 2L / 12L * pi, basis_label = paste0("MyNm", 1L:ncol(dat_std)),
-                                manip_col = "purple", manip_sp_col = "orange", 
-                                ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+                                manip_col = "purple", manip_sp_col = "orange")
 )
 
 test_that("view_manip_space: gganimate class and length", {

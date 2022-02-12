@@ -11,7 +11,7 @@ draw_basis(
   manip_col = "blue",
   line_size = 1,
   text_size = 5,
-  basis_label = abbreviate(rownames(basis), 3L)
+  basis_label = abbreviate(gsub("[^[:alnum:]=]", "", rownames(basis), 3L))
 )
 }
 \arguments{

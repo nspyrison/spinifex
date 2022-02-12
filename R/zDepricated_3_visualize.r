@@ -294,16 +294,16 @@ oblique_basis <- function(...) {
 #' @return ggplot object of the basis.
 #' @export
 #' @examples
+#' library(spinifex)
 #' dat_std <- scale_sd(wine[, 2:6])
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
+#' bas     <- basis_pca(dat_std)
+#' mv      <- manip_var_of(bas)
 #' 
 #' view_manip_space(basis = bas, manip_var = mv)
 #' 
 #' view_manip_space(basis = bas, manip_var = mv,
 #'                  tilt = 2/12 * pi, basis_label = paste0("MyNm", 1:ncol(dat_std)),
-#'                  manip_col = "purple", manip_sp_col = "orange", 
-#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")))
+#'                  manip_col = "purple", manip_sp_col = "orange")
 view_manip_space <- function(basis,
                              manip_var,
                              tilt = .1 * pi,

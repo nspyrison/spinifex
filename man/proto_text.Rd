@@ -5,7 +5,7 @@
 \title{Tour proto for data, text labels}
 \usage{
 proto_text(
-  aes_args = list(),
+  aes_args = list(vjust = "outward", hjust = "outward"),
   identity_args = list(nudge_x = 0.05),
   row_index = TRUE
 )
