@@ -201,7 +201,7 @@ facet_wrap_tour <- function(
                         nrow = nrow, ncol = ncol, dir = dir),
     ggplot2::theme( ## Note; strip spacing and position in theme_spinifex()
       ## Border introduced only with facet. 
-      panel.border = element_rect(size = .6, color = "grey60", fill = NA))
+      panel.border = element_rect(size = .4, color = "grey20", fill = NA))
   )
 }
 
@@ -690,8 +690,8 @@ animate_plotly <- function(
 #' ## d = 1 case & specify facet dim
 #' bas1d     <- basis_pca(dat, d = 1)
 #' mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
-#' ggt1d <- ggtour(mt_path1d, dat, angle = 10) +
-#'   proto_default1d(aes_args = list(fill = clas))
+#' ggt1d <- ggtour(mt_path1d, dat, angle = 99) +
+#'   proto_default1d(aes_args = list(fill = clas, color = clas))
 #' filmstrip(ggt1d, nrow = 12, ncol = 3)
 filmstrip <- function(
   ggtour, ...
@@ -701,7 +701,7 @@ filmstrip <- function(
     ggplot2::facet_wrap(c("frame", names(ggtour$facet$params$facets)), ...) +
     ggplot2::theme( ## Note; strip spacing and position in theme_spinifex()
       ## Border introduced only with facet.
-      panel.border = element_rect(size = .6, color = "grey60", fill = NA))
+      panel.border = element_rect(size = .4, color = "grey20", fill = NA))
 }
 
 
@@ -922,8 +922,8 @@ proto_basis1d <- function(
 #' @param manip_col The color to highlight the manipulation variable with. Not
 #' applied if the tour isn't a manual tour. Defaults to "blue".
 #' @param line_size (2D bases only) the thickness of the lines used to make the 
-#' axes and unit circle. Defaults to 1.
-#' @param text_size Size of the text label of the variables.
+#' axes and unit circle. Defaults to 0.6.
+#' @param text_size Size of the text label of the variables. Defaults to 4.
 #' @param basis_label The text labels of the data variables. 
 #' Defaults to the 3 character abbreviation of the rownames of the basis.
 #' @export
@@ -954,8 +954,8 @@ draw_basis <- function(
   map_to = data.frame(x = c(0, 1), y = c(0, 1)),
   position = c("left", "center", "right", "bottomleft", "topright", "off"),
   manip_col = "blue",
-  line_size = 1,
-  text_size = 5,
+  line_size = .6,
+  text_size = 4,
   basis_label = abbreviate(gsub("[^[:alnum:]=]", "", rownames(basis), 3L))
 ){
   ## Initialize

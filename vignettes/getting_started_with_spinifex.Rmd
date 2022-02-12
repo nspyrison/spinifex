@@ -35,14 +35,14 @@ knitr::opts_chunk$set(
 
 Numeric multivariate data is ubiquitous and viewing data within data-space (rather than summarized as parameters or statistics) is a critical part of exploratory data analysis and the data analysis workflow in general. Viewing multivariate quickly becomes complex. Linear projections of high dimensional spaces offer a scalable way to extend viewing these data-spaces as the dimension of the data increases. Traditionally, these are viewed as static orthogonal pairs. Alternatively, _tours_, are a class of linear projections that animate many frames over small changes in the projection basis. 
 
-The package __spinifex__ allows the application of manual tours, where a selected variable is rotated fully into and out of the give projection basis. Its also facilitates a layered composition of tours interoperably with __tourr__. These composition can then be animated to interactive html widget with __plotly__ or to .gif/.mp4 format with __gganimate__.
+The package __spinifex__ allows the application of manual tours, where a selected variable is rotated fully into and out of the give projection basis. Its also facilitates a layered composition of tours interoperable with __tourr__. These composition can then be animated to interactive html widget with __plotly__ or to .gif/.mp4 format with __gganimate__.
 
 
 ## Dynamic projections of high dimensional data, tours
 
 Tours are a class of dynamic orthogonal (linear) projections that embed $p-$dimensional space into a $d-$dimensional subspace and animates many such projections over small changes to the projection basis (essesentially the orientation of the data). Tours are useful in identify clustering, outliers, and structure held within numeric multivariate data. 
 
-This concept is analogous to shadows. Suppose a bar stool is held in front of a light source. This is a linear projection of a 3D object casting a 2D shadow.  Some projections may not convey much information (the seat may only cast a circular shadow). If we observe the shadow change over as the barstool is rotated, we quickly understand the shape of the object. The same is true for tours; watching the permanence of observations between frames conveys more information than unlinked orthognal views.
+This concept is analogous to shadows. Suppose a bar stool is held in front of a light source. This is a linear projection of a 3D object casting a 2D shadow.  Some projections may not convey much information (the seat may only cast a circular shadow). If we observe the shadow change over as the barstool is rotated, we quickly understand the shape of the object. The same is true for tours; watching the permanence of observations between frames conveys more information than unlinked orthogonal views.
 
 We focus on the application of the *manual tours* in this document. In a manual tour, the contributions of one variable are manipulated to show the impact that it has on the structure of the projection. Controlling the coefficients of a single variable can be insightful after finding a projection of interest, perhaps with the use of a *guided tour*. A wider application of tours can be accomplished with with the package `tourr`, [CRAN.R-project.org/package=tourr](https://CRAN.R-project.org/package=tourr).
 
@@ -115,7 +115,6 @@ if(FALSE){
   anim <- animate_gganimate(my_ggtour, fps = 6,
                             height = 3, width = 4.5, units = "in", res = 150)
   gganimate::anim_save("mt_penguins.gif", animation = anim, path = "./vignettes")
-  beepr::beep()
 }
 knitr::include_graphics("./mt_penguins.gif")
 ```
@@ -208,7 +207,6 @@ if(FALSE){
   anim <- animate_gganimate(
     ggt, height = 3, width = 4.5, units = "in", res = 150)
   gganimate::anim_save("gt_penguins.gif", animation = anim, path = "./vignettes")
-  beepr::beep()
 }
 knitr::include_graphics("./gt_penguins.gif")
 ```
@@ -257,7 +255,6 @@ if(FALSE){
   anim <- animate_gganimate(
     ggtour = my_ggtour, height = 3, width = 4.5, units = "in", res = 150)
   gganimate::anim_save("holes_penguins.gif", animation = anim, path = "./vignettes")
-  beepr::beep()
 }
 knitr::include_graphics("./holes_penguins.gif")
 ```

@@ -7,6 +7,7 @@
 - Changed defaults to `map_relative()`; position = "left" or "right" is fully off outside of the data
 - Changed defaults to related `proto_*()`; decreasing the text size (5 -> 4) and line size a (1 -> .6)
 - Adjust `filmstrip & facet_wrap_tour()`: adds theme for borders to help distinguish facets
+- Adjust `theme_spinifex()` to include shading and strip outline consistent with the above point
 
 
 # spinifex v0.3.3

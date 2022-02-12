@@ -36,8 +36,8 @@ filmstrip(ggt)
 ## d = 1 case & specify facet dim
 bas1d     <- basis_pca(dat, d = 1)
 mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
-ggt1d <- ggtour(mt_path1d, dat, angle = 10) +
-  proto_default1d(aes_args = list(fill = clas))
+ggt1d <- ggtour(mt_path1d, dat, angle = 99) +
+  proto_default1d(aes_args = list(fill = clas, color = clas))
 filmstrip(ggt1d, nrow = 12, ncol = 3)
 }
 \seealso{

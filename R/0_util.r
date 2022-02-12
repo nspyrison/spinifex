@@ -701,21 +701,22 @@ scale_fill_discrete <- function(...){
 #'   geom_point() + theme_spinifex()
 theme_spinifex <- function(...){
   ## Color/fill discrete also masked to reduced warnings/messages
-  list(theme_minimal(),
-       theme(
-         axis.text        = element_blank(),
-         panel.grid.major = element_blank(),
-         panel.grid.minor = element_blank(),
-         legend.position  = "bottom",
-         legend.direction = "horizontal",           ## Levels within an aesthetic
-         legend.box       = "vertical",             ## Between aesthetics
-         legend.margin    = margin(0L, 0L, 0L, 0L), ## Tighter legend margin
-         panel.spacing    = unit(0L, "points"),     ## Facet spacing
-         strip.text       = element_text(           ## Facet strip spacing
-               margin = margin(b = 3L, t = 3L)),
-         strip.background =                         ## Facet strip
-           element_rect(size = .6, color = "grey80", fill = NA),
-         ...)                                       ## Ellipsis trumps defaults
+  list(
+    theme_minimal(),
+    theme(
+      axis.text        = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      legend.position  = "bottom",
+      legend.direction = "horizontal",        ## Levels within an aesthetic
+      legend.box       = "vertical",          ## Between aesthetics
+      legend.margin    = margin(0L,0L,0L,0L), ## Tighter legend margin
+      panel.spacing    = unit(0L, "points"),  ## Facet spacing
+      strip.text       = element_text(        ## Facet strip spacing
+        margin = margin(b = 3L, t = 3L)),
+      strip.background =                      ## Facet strip
+        element_rect(size = .4, color = "grey20", fill = "grey90"),
+      ...)                                    ## Ellipsis trumps defaults
   )
 }
 

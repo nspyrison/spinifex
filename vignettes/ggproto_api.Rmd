@@ -87,9 +87,9 @@ data.frame(
 ## Application
 
 ### Manual tour
-```{r}
-library("tourr")
-library("spinifex")
+```{r, eval=FALSE}
+library(tourr)
+library(spinifex)
 
 ## Scale our numeric data
 dat  <- scale_sd(penguins_na.rm[, 1:4])
@@ -108,12 +108,32 @@ ggt <- ggtour(mt_path, dat, angle = .2) +
               identity_args = list(size = 1.5))
 
 ## Animate
-animate_plotly(ggt, fps = 5) ## As a plotly .html widget.
-#animate_gganimate(ggt, fps = 8, rewind = TRUE) ## As a gganimate .gif
+animate_gganimate(ggt, height = 3, width = 4.5, units = "in", res = 150)
+## Or as a plotly html widget
+#animate_plotly(ggt)
+```
+```{r, echo=FALSE, out.width="100%"}
+## Cut down sub-directory size, making animations to gif and including those.
+if(FALSE){
+  library(tourr)
+  library(spinifex)
+  dat  <- scale_sd(penguins_na.rm[, 1:4])
+  clas <- penguins_na.rm$species
+  bas     <- basis_pca(dat)    ## Start basis
+  mv      <- manip_var_of(bas) ## Number of the variable to manipulate
+  mt_path <- manual_tour(bas, manip_var = mv) ## Tour path
+  ggt <- ggtour(mt_path, dat, angle = .2) +
+    proto_basis() +
+    proto_point(aes_args = list(color = clas, shape = clas),
+                identity_args = list(size = 1.5))
+  anim <- animate_gganimate(ggt, height = 3, width = 4.5, units = "in", res = 150)
+  gganimate::anim_save("proto_mt_penguins.gif", animation = anim, path = "./vignettes")
+}
+knitr::include_graphics("./proto_mt_penguins.gif")
 ```
 
-### Tours from `{tourr}`
-```{r}
+### Grand tour, from __tourr__
+```{r, eval=FALSE}
 ## Save a grand tour basis path, projecting through randomly selected bases
 gt_path <- save_history(dat, grand_tour(), max_bases = 3)
 
@@ -124,40 +144,84 @@ ggt <- ggtour(gt_path, dat, angle = .2) +
   proto_point(list(color = clas, shape = clas))
 
 ## Animate
-animate_plotly(ggt)
-#animate_gganimate(ggt)
+animate_gganimate(ggt, height = 2, width = 4.5, units = "in", res = 150)
+## Or as a plotly html widget
+#animate_plotly(ggt)
+```
+```{r, echo=FALSE, out.width="100%"}
+## Cut down sub-directory size, making animations to gif and including those.
+if(FALSE){
+  gt_path <- save_history(dat, grand_tour(), max_bases = 3)
+  ggt <- ggtour(gt_path, dat, angle = .2) + 
+    proto_basis(position = "right") +
+    proto_point(list(color = clas, shape = clas))
+  anim <- animate_gganimate(ggt, height = 2, width = 4.5, units = "in", res = 150)
+  gganimate::anim_save("proto_gt_penguins.gif", animation = anim, path = "./vignettes")
+}
+knitr::include_graphics("./proto_gt_penguins.gif")
 ```
 
 ### 1D tours
-```{r}
+```{r, eval=FALSE}
 ## (Quietly create) a 1d guided tour, optimizing the projection space for the holes() function
 guided_path <- save_history(dat, guided_tour(holes(), d = 1))
 
 ## Static ggplot of all frames in the tour
 ggt <- ggtour(guided_path, dat, angle = .2) +
   proto_basis1d() +
-  proto_density(list(fill = clas), rug_shape = 124L)
+  proto_density(list(fill = clas, color = clas), rug_shape = 3)
 
 ## Animate
-animate_plotly(ggt)
+animate_gganimate(ggt, height = 2, width = 4.5, units = "in", res = 150)
+## Or as a plotly html widget
+#animate_plotly(ggt)
+```
+```{r, echo=FALSE, out.width="100%"}
+## Cut down sub-directory size, making animations to gif and including those.
+if(FALSE){
+  guided_path <- save_history(dat, guided_tour(holes(), d = 1))
+  ggt <- ggtour(guided_path, dat, angle = .2) +
+    proto_basis1d() +
+    proto_density(list(fill = clas, color = clas), rug_shape = 3)
+  anim <- animate_gganimate(ggt, height = 2, width = 4.5, units = "in", res = 150)
+  gganimate::anim_save(
+    "proto_guided1d_penguins.gif", animation = anim, path = "./vignettes")
+}
+knitr::include_graphics("./proto_guided1d_penguins.gif")
 ```
 
 ### Interation with ggplot2 functions
 
 because the output of `ggtour() + proto_*` is a ggplot, users are encouraged to theme and setting functions as well.
 
-```{r}
+```{r, eval=FALSE}
 ggt <- ggt +
   theme_bw() +
   ggtitle("My Tour animation") +
   labs(x = "Projection Y1", y = "density")
 
-animate_plotly(ggt)
+animate_gganimate(ggt, height = 2, width = 4.5, units = "in", res = 150)
+## Or as a plotly html widget
+#animate_plotly(ggt)
+```
+```{r, echo=FALSE, out.width="100%"}
+## Cut down sub-directory size, making animations to gif and including those.
+if(FALSE){
+  ggt <- ggt +
+    theme_bw() +
+    ggtitle("My Tour animation") +
+    labs(x = "Projection Y1", y = "density")
+  
+  anim <- animate_gganimate(ggt, height = 2, width = 4.5, units = "in", res = 150)
+  gganimate::anim_save(
+    "proto_guided1d_interop_penguins.gif", animation = anim, path = "./vignettes")
+}
+knitr::include_graphics("./proto_guided1d_interop_penguins.gif")
 ```
 
 ### Faceting
 
-```{r}
+```{r, eval=FALSE}
 dat     <- scale_sd(PimaIndiansDiabetes_wide[, -9])
 clas    <- PimaIndiansDiabetes_wide$diabetes
 gt_path <- save_history(dat, max = 7)
@@ -168,7 +232,26 @@ ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_basis(position = "center") +
   proto_origin()
 
-animate_plotly(ggt)
+animate_gganimate(ggt, height = 2, width = 4.5, units = "in", res = 150)
+## Or as a plotly html widget
+#animate_plotly(ggt)
+```
+```{r, echo=FALSE, out.width="100%"}
+## Cut down sub-directory size, making animations to gif and including those.
+if(FALSE){
+  dat     <- scale_sd(PimaIndiansDiabetes_wide[, -9])
+  clas    <- PimaIndiansDiabetes_wide$diabetes
+  gt_path <- save_history(dat, max = 7)
+  ggt     <- ggtour(gt_path, dat, angle = .3) +
+    facet_wrap_tour(facet_var = clas, nrow = 1) +
+    proto_point(list(color = clas, shape = clas)) +
+    proto_basis(position = "center") +
+    proto_origin()
+  anim <- animate_gganimate(ggt, height = 2, width = 4.5, units = "in", res = 150)
+  gganimate::anim_save(
+    "proto_facet_penguins.gif", animation = anim, path = "./vignettes")
+}
+knitr::include_graphics("./proto_facet_penguins.gif")
 ```
 
 

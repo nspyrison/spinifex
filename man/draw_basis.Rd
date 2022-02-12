@@ -9,8 +9,8 @@ draw_basis(
   map_to = data.frame(x = c(0, 1), y = c(0, 1)),
   position = c("left", "center", "right", "bottomleft", "topright", "off"),
   manip_col = "blue",
-  line_size = 1,
-  text_size = 5,
+  line_size = 0.6,
+  text_size = 4,
   basis_label = abbreviate(gsub("[^[:alnum:]=]", "", rownames(basis), 3L))
 )
 }
@@ -30,9 +30,9 @@ data. \verb{_basis} Expects one of c("left", "center", "right", "bottomleft",
 applied if the tour isn't a manual tour. Defaults to "blue".}
 
 \item{line_size}{(2D bases only) the thickness of the lines used to make the
-axes and unit circle. Defaults to 1.}
+axes and unit circle. Defaults to 0.6.}
 
-\item{text_size}{Size of the text label of the variables.}
+\item{text_size}{Size of the text label of the variables. Defaults to 4.}
 
 \item{basis_label}{The text labels of the data variables.
 Defaults to the 3 character abbreviation of the rownames of the basis.}
