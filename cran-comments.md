@@ -8,22 +8,16 @@
     "debian-clang-devel"
     "macos-highsierra-release-cran"
     "macos-m1-bigsur-release"
-    "ubuntu-rchk"
+    "ubuntu-gcc-devel"
     "windows-x86_64-devel"
     "windows-x86_64-oldrel"
 
 ## R CMD check results
 
-### Local:
-
 0 errors v | 0 warnings v | 0 notes v
 
 R CMD check succeeded
 
-### Virtual:
-
-- Some flavors exceed 5 seconds for: ggtour and proto_highlight.
--- they take ~ 2.5 sec locally when ignoring don't runs.
 
 
 * This is a new release
