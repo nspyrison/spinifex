@@ -266,7 +266,7 @@ data.frame(
   `related ggplot2 function` =
     c("ggplot", "geom_point", "geom_text", "geom_hex", "NA", "geom- _density & _rect", "geom- _segment & _text", "several protos", "plotly::ggplotly (with animation)", "gganimate::animate"),
   detail =
-    c("Also perfroms setup for the tour.", "-", "-", "Heatmap hexegons, for high observation density", "Line segments for the origin, the space where 0 values project to", "1D density with run hash marks underneath, `position = 'stack'` not working with plotly.", ".html widget, row numbers added as tooltip on hover. plotly doesn't presicly map all ggplot2 settings; legends, point size and opacity may vary.", "Direction and magnetude of variables to the projection disp~", "Default protos for 2/1D tours", ".gif animation. gganimate consumes native ggplots and aestheics should be consistant."), check.names = F
+    c("Also perfroms setup for the tour.", "-", "-", "Heatmap hexegons, for high observation density", "Line segments for the origin, the space where 0 values project to", "1D density with run hash marks underneath, `position = 'stack'` not working with plotly.", "html widget, row numbers added as tooltip on hover. plotly doesn't presicly map all ggplot2 settings; legends, point size and opacity may vary.", "Direction and magnetude of variables to the projection disp~", "Default protos for 2/1D tours", "gif, mp4 and other video animation. gganimate consumes native ggplots and aestheics should be consistant."), check.names = F
 ) %>%
   knitr::kable()
 ```

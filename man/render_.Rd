@@ -8,8 +8,8 @@ render_(
   frames,
   axes = "center",
   manip_col = "blue",
-  line_size = 1,
-  text_size = 5,
+  line_size = 0.6,
+  text_size = 4,
   aes_args = list(),
   identity_args = list(),
   ggproto = list(theme_spinifex())
@@ -26,10 +26,10 @@ map_absolute() call. Defaults to "center".}
 Defaults to "blue".}
 
 \item{line_size}{The size of the lines of the unit circle and variable
-contributions of the basis. Defaults to 1.}
+contributions of the basis. Defaults to .6.}
 
 \item{text_size}{The size of the text labels of the variable
-contributions of the basis. Defaults to 5.}
+contributions of the basis. Defaults to 4.}
 
 \item{aes_args}{A list of aesthetic arguments to passed to
 \verb{geom_point(aes(X)}. Any mapping of the data to an aesthetic,

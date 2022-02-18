@@ -17,9 +17,9 @@
 #' @param manip_col String of the color to highlight the `manip_var`, if used.
 #' Defaults to "blue".
 #' @param line_size The size of the lines of the unit circle and variable 
-#' contributions of the basis. Defaults to 1.
+#' contributions of the basis. Defaults to .6.
 #' @param text_size The size of the text labels of the variable 
-#' contributions of the basis. Defaults to 5.
+#' contributions of the basis. Defaults to 4.
 #' @param aes_args A list of aesthetic arguments to passed to 
 #' `geom_point(aes(X)`. Any mapping of the data to an aesthetic,
 #' for example, `geom_point(aes(color = myCol, shape = myCol))` becomes
@@ -58,8 +58,8 @@
 render_ <- function(frames,
                     axes = "center",
                     manip_col = "blue",
-                    line_size = 1,
-                    text_size = 5,
+                    line_size = .6,
+                    text_size = 4,
                     aes_args = list(),
                     identity_args = list(),
                     ggproto = list(theme_spinifex())

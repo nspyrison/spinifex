@@ -4,8 +4,9 @@
 - Removed forced garbage collection `gc()` calls, too expensive for the minor issues it tried to mitigate
 - `proto_density()` now changes the aspect ratio to 1/2 (y/x), twice as wide
 - `animate_plotly()` will change the x scaleratio to 2 (for non `plotly::subplot` animations)
-- Changed defaults to `map_relative()`; position = "left" or "right" is fully off outside of the data
-- Changed defaults to related `proto_*()`; decreasing the text size (5 -> 4) and line size a (1 -> .6)
+- Changed defaults to `map_relative()`; position = "left" or "right" is fully off outside of the data and slightly smaller
+- Adjust text-related `proto_*()` default; decreasing the text size (5 -> 4) 
+- Adjust line segment-related `proto_*()` default; decreasing the line size a (1 -> .6)
 - Adjust `filmstrip & facet_wrap_tour()`: adds theme for borders to help distinguish facets
 - Adjust `theme_spinifex()` to include shading and strip outline consistent with the above point
 
@@ -14,6 +15,7 @@
 
 - Add do_center_frame = TRUE argument to `ggtour()`, such that tours don't want too far to the sides as they were in cheem radial tours
 - Adjust `theme_spinifex()`: tightening margins, facet strip outlines, and better separating theme elements from ggtour default settings
+
 
 # spinifex v0.3.2
 
@@ -25,6 +27,7 @@
 - `theme_spinifex()` changed removing the duplicate legend display, fewer warnings, and less frame oddities (geom existence issues) with `animate_plotly`
 - Better examples for setting dimensions, resolution, and renders in `animate_*` functions
 - Refreshed readme
+
 
 # spinifex v0.3.1
 

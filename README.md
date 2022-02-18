@@ -1,4 +1,4 @@
-[![CRAN Status Badge](http://www.r-pkg.org/badges/version/spinifex)](https://cran.r-project.org/package=spinifex) [![Codecov test coverage](https://codecov.io/gh/nspyrison/spinifex/branch/master/graph/badge.svg)](https://codecov.io/gh/nspyrison/spinifex?branch=master) [![CRAN Downloads Each Month](http://cranlogs.r-pkg.org/badges/spinifex)](https://cran.r-project.org/package=spinifex)
+[![CRAN Status Badge](http://www.r-pkg.org/badges/version/spinifex)](https://cran.r-project.org/package=spinifex) [![Codecov test coverage](https://codecov.io/gh/nspyrison/spinifex/branch/master/graph/badge.svg)](https://app.codecov.io/gh/nspyrison/spinifex?branch=master) [![CRAN Downloads Each Month](http://cranlogs.r-pkg.org/badges/spinifex)](https://cran.r-project.org/package=spinifex)
 
 # spinifex <img src="man/figures/spinifex_hex.png" alt="spinifex R package!" align="right"/>
 
@@ -68,7 +68,7 @@ The ggproto API is a layered approach to the composition of animated tours, it s
 | display    | facet_wrap_tour    | ggplot2::facet_wrap | facets on the levels of variable                        |
 | display    | append_fixed_y     | -                   | add/overwrite a fixed vertical position                 |
 | animation  | animate_plotly     | plotly::ggplotly    | render as an interactive html widget                    |
-| animation  | animate_gganimate  | gganimate::animate  | render as a .gif .mp4 or other video format             |
+| animation  | animate_gganimate  | gganimate::animate  | render as a gif, mp4, or other video format             |
 | animation  | filmstrip          | -                   | static gpplot faceting on the frames of the animation   |
 
 ## Reporting issues

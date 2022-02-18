@@ -310,8 +310,8 @@ view_manip_space <- function(basis,
                              basis_label = abbreviate(row.names(basis), 3),
                              manip_col = "blue",
                              manip_sp_col = "red",
-                             line_size = 1,
-                             text_size = 5
+                             line_size = .6,
+                             text_size = 4
 ){
   ## NOT DEPRICATED, don't get this with the ggtour api.
   

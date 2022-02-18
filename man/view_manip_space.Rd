@@ -11,8 +11,8 @@ view_manip_space(
   basis_label = abbreviate(row.names(basis), 3),
   manip_col = "blue",
   manip_sp_col = "red",
-  line_size = 1,
-  text_size = 5
+  line_size = 0.6,
+  text_size = 4
 )
 }
 \arguments{
