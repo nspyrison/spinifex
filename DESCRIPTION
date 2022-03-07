@@ -22,7 +22,7 @@ Description: Data visualization tours animates linear projection
 Depends: 
     R (>= 3.5.0),
     tourr
-License: CC BY-NC-SA 4.0
+License: MIT + file LICENSE
 URL: https://github.com/nspyrison/spinifex/
 BugReports: https://github.com/nspyrison/spinifex/issues
 Imports:

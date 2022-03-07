@@ -11,7 +11,8 @@ Meta/
 *.gif
 *.mp4
 
-## Allow gifs for readme.
-!buildignore/readme_img/*.gif
+## Allow gifs for readme and vignettes.
+!buildignore/*.gif
+!vignettes/*.gif
 /doc/
 /Meta/

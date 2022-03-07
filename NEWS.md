@@ -1,3 +1,9 @@
+# spinifex v0.3.5
+
+- Vignettes point to github urls rather than gifs in repo
+- License changes to MIT (from CC BY-NC-SA 4.0)
+
+
 # spinifex v0.3.4
 
 - Cleaned up both vignettes; include plotly output & removed scroll bars from wide code chunks
