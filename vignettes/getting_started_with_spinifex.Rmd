@@ -116,8 +116,11 @@ if(FALSE){
                             height = 3, width = 4.5, units = "in", res = 150)
   gganimate::anim_save("mt_penguins.gif", animation = anim, path = "./vignettes")
 }
-knitr::include_graphics("./mt_penguins.gif")
+#knitr::include_graphics("./mt_penguins.gif")
+#knitr::include_url("https://github.com/nspyrison/spinifex/blob/master/vignettes/mt_penguins.gif?raw=true")
 ```
+
+![](https://github.com/nspyrison/spinifex/blob/master/vignettes/mt_penguins.gif?raw=true)
 
 
 ## Example 2 - Glyph map
@@ -155,6 +158,7 @@ colnames(rot_x) <- c("x1", "x2", "x_manip_sp")
 ```
 
 Likewise, we'll perform a vertical rotation ($\theta$` = pi/2`) on surface temperature (manip_var = 4). Combine the rotations and plot just the rotated values without lat/long or x/y markers, neat!
+
 ```{r Vertical}
 ## Vertical rotation
 m_sp_y    <- create_manip_space(basis = bas, manip_var = 4)
@@ -208,8 +212,11 @@ if(FALSE){
     ggt, height = 3, width = 4.5, units = "in", res = 150)
   gganimate::anim_save("gt_penguins.gif", animation = anim, path = "./vignettes")
 }
-knitr::include_graphics("./gt_penguins.gif")
+#knitr::include_graphics("./gt_penguins.gif")
+#knitr::include_url("https://github.com/nspyrison/spinifex/blob/master/vignettes/gt_penguins.gif?raw=true")
 ```
+
+![](https://github.com/nspyrison/spinifex/blob/master/vignettes/gt_penguins.gif?raw=true)
 
 This shows the optimization path of the holes index. We'll grab the reference axes from the last frame and used that a starting orientation for a manual tour.
 
@@ -256,8 +263,11 @@ if(FALSE){
     ggtour = my_ggtour, height = 3, width = 4.5, units = "in", res = 150)
   gganimate::anim_save("holes_penguins.gif", animation = anim, path = "./vignettes")
 }
-knitr::include_graphics("./holes_penguins.gif")
+#knitr::include_graphics("./holes_penguins.gif")
+#knitr::include_url("https://github.com/nspyrison/spinifex/blob/master/vignettes/holes_penguins.gif?raw=true")
 ```
+
+![](https://github.com/nspyrison/spinifex/blob/master/vignettes/holes_penguins.gif?raw=true)
 
 We can see that `aede2` is important in distinguishing between the purple cluster and the green cluster. However, even when its contribution is zeros the contribution of `tars1` is enough to keep the cluster from overlapping.
 

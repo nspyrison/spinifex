@@ -1,7 +1,7 @@
 # spinifex v0.3.5
 
 - Vignettes point to github urls rather than gifs in repo
-- License changes to MIT (from CC BY-NC-SA 4.0)
+- License changes to MIT (from CC BY-NC-SA 4.0, apparently not FOSS)
 
 
 # spinifex v0.3.4
