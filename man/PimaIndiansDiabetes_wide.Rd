@@ -55,7 +55,8 @@ mt  <- manual_tour(bas, mv)
 
 ggt <- ggtour(mt, dat, angle = .2) +
   proto_default(aes_args = list(color = clas, shape = clas))
-\dontrun{
-animate_plotly(ggt)}
+\donttest{
+animate_plotly(ggt)
+}
 }
 \keyword{datasets}

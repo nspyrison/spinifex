@@ -6,9 +6,10 @@
 #' @author Nicholas Spyrison
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' spinifex::run_app(app_nm = "radial_tour")
-#' spinifex::run_app(app_nm = "radial_tour", display.mode = "showcase")}
+#' spinifex::run_app(app_nm = "radial_tour", display.mode = "showcase")
+#' }
 
 ## Don't source(~global_shinyApps.r), moved setup to 'ui.R'
 source('ui.R', local = TRUE)

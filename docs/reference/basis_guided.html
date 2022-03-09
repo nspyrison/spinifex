@@ -19,7 +19,7 @@ truncated, muted extension of tourr::save_history(guided_tour()))."><!-- mathjax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spinifex</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
       </span>
     </div>
 
@@ -107,20 +107,20 @@ arguments.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">dat_std</span> <span class="op">&lt;-</span> <span class="fu"><a href="scale_sd.html">scale_sd</a></span><span class="op">(</span><span class="va">wine</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu">basis_guided</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_std</span>, index_f <span class="op">=</span> <span class="fu">tourr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tourr/man/holes.html" class="external-link">holes</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   [,1]       [,2]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alcohol    -0.40064228 -0.3451074</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Malic      -0.78387213  0.3189551</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ash        -0.47357780 -0.2843987</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alcalinity  0.02328205 -0.6887727</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Magnesium   0.01456906 -0.4731576</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alcohol    -0.66586828 -0.6597440</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Malic       0.39755534 -0.2436692</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ash         0.24771116 -0.5087866</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alcalinity  0.57983564 -0.3542445</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Magnesium   0.03160688 -0.3478652</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">basis_guided</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_std</span>, index_f <span class="op">=</span> <span class="fu">tourr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tourr/man/cmass.html" class="external-link">cmass</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span class="r-in">             alpha <span class="op">=</span> <span class="fl">.4</span>, cooling <span class="op">=</span> <span class="fl">.9</span>, max.tries <span class="op">=</span> <span class="fl">10</span>, n_sample <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   [,1]       [,2]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alcohol    -0.05336256 -0.4235847</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Malic      -0.22335426 -0.4178092</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ash        -0.54347506  0.5964970</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alcalinity  0.41785461 -0.2711890</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Magnesium   0.69086735  0.4654668</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  [,1]       [,2]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alcohol    -0.1750620 -0.2847570</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Malic      -0.2537527  0.1991293</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ash        -0.4822604  0.2238649</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alcalinity  0.5413391 -0.5891976</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Magnesium   0.6159057  0.6942562</span>
 </code></pre></div>
     </div>
   </div>

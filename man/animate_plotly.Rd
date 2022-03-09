@@ -33,11 +33,11 @@ ggt <- ggtour(mt_path, dat, angle = .3) +
   proto_basis() +
   proto_point(aes_args = list(color = clas, shape = clas),
               identity_args = list(size = 1.5, alpha = .7))
-\dontrun{
+\donttest{
 animate_plotly(ggt, width = 700, height = 450) ## pixels only, no resolution argument
 
 ## Example saving to a .html widget, may require additional setup.
-if(F){
+if(FALSE){
   anim <- animate_plotly(ggt, fps = 10,
                          width = 700, height = 450) ## in pixels
   

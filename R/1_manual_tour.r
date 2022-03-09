@@ -193,8 +193,9 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #'     proto_origin() +
 #'     proto_point(list(color = clas, shape = clas)) +
 #'     proto_basis()
-#' \dontrun{
-#' animate_plotly(ggt)}
+#' \donttest{
+#' animate_plotly(ggt)
+#' }
 manual_tour <- function(basis,
                         manip_var,
                         theta   = NULL,

@@ -53,11 +53,14 @@ Typically called by \code{render_plotly()} or \code{render_gganimate()}. Takes t
 result of \code{array2df()}, and renders them into a ggplot2 object.
 }
 \examples{
+library(spinifex)
+message("It's suggested to switch to the proto api, see `?ggtour` to get started.")
+
 ## Setup
 dat_std <- scale_sd(wine[, 2:6])
-clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
+clas    <- wine$Type
+bas     <- basis_pca(dat_std)
+mv      <- manip_var_of(bas)
 
 mt_array <- manual_tour(basis = bas, manip_var = mv)
 mt_df_ls <- array2df(basis_array = mt_array, data = dat_std)

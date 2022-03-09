@@ -20,32 +20,38 @@
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:6])
-#' clas <- wine$Type
-#' bas <- basis_pca(dat_std)
+#' library(spinifex)
+#' message("It's suggested to switch to the proto api, see `?ggtour` to get started.")
 #' 
+#' dat_std <- scale_sd(wine[, 2:6])
+#' clas    <- wine$Type
+#' bas     <- basis_pca(dat_std)
 #' gt_path <- save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 #' 
-#' \dontrun{
-#' play_tour_path(tour_path = g_path, data = dat_std)
+#' \donttest{
+#' suppressWarnings(
+#'   play_tour_path(tour_path = gt_path, data = dat_std)
+#' )
 #' 
-#' play_tour_path(tour_path = g_path, data = dat_std,
-#'                axes = "bottomleft", angle = .08, fps = 8,
-#'                aes_args = list(color = clas, shape = clas),
-#'                identity_args = list(size = 1.5, alpha = .7),
-#'                ggproto = 
-#'                  list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-#'                render_type = render_gganimate)
+#' suppressWarnings(
+#'   play_tour_path(tour_path = gt_path, data = dat_std,
+#'                  axes = "bottomleft", angle = .08, fps = 8,
+#'                  aes_args = list(color = clas, shape = clas),
+#'                  identity_args = list(size = 1.5, alpha = .7),
+#'                  ggproto = 
+#'                    list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'                  render_type = render_gganimate)
+#' )
 #' 
 #' ## Saving a .gif(may require additional setup)
-#' if(F){ ## Don't run by mistake
+#' if(FALSE){ ## Don't accidentally save file
 #'   ## Export plotly .html widget
-#'   play_tour_path(tour_path = tpath, data = dat_std,
+#'   play_tour_path(tour_path = gt_path, data = dat_std,
 #'                  render_type = render_plotly,
 #'                  html_filename = "myRadialTour.html")
 #'                
 #'   ## Export gganimate .gif
-#'   play_tour_path(tour_path = tpath, data = dat_std,
+#'   play_tour_path(tour_path = gt_path, data = dat_std,
 #'                  render_type = render_gganimate,
 #'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
 #' }}
@@ -108,24 +114,32 @@ play_tour_path <- function(tour_path,
 #' @seealso \code{\link{render_}} For arguments to pass into `...`.
 #' @export
 #' @examples
+#' library(spinifex)
+#' message("It's suggested to switch to the proto api, see `?ggtour` to get started.")
+#' 
+#' ## Setup
 #' dat_std <- scale_sd(wine[, 2:6])
-#' clas <- wine$Type
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
+#' clas    <- wine$Type
+#' bas     <- basis_pca(dat_std)
+#' mv      <- manip_var_of(bas)
 #' 
-#' \dontrun{
-#' play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
+#' \donttest{
+#' suppressWarnings(
+#'   play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
+#' )
 #' 
-#' play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
-#'                  theta = .5 * pi, axes = "right", fps = 5,
-#'                  angle = .08, phi_min = 0, phi_max = 2 * pi,
-#'                  aes_args = list(color = clas, shape = clas),
-#'                  identity_args = list(size = 1.5, alpha = .7),
-#'                  ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-#'                  render_type = render_gganimate)
-#' 
+#' suppressWarnings(
+#'   play_manual_tour(
+#'     basis = bas, data = dat_std, manip_var = mv,
+#'     theta = .5 * pi, axes = "right", fps = 5,
+#'     angle = .08, phi_min = 0, phi_max = 2 * pi,
+#'     aes_args = list(color = clas, shape = clas),
+#'     identity_args = list(size = 1.5, alpha = .7),
+#'     ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+#'     render_type = render_gganimate)
+#' )
 #' ## Saving output may require additional setup
-#' if(F){ ## Don't run by mistake
+#' if(FALSE){ ## Don't accidentally save file
 #'   ## Export plotly .html widget
 #'   play_manual_tour(basis = bas, data = dat_std, manip_var = 6,
 #'                    render_type = render_plotly,
@@ -194,26 +208,37 @@ play_manual_tour <- function(basis = NULL,
 #' @export
 #' @seealso \code{\link{proto_default}} For arguments to pass into `...`.
 #' @examples
+#' library(spinifex)
+#' message("It's suggested to switch to the proto api, see `?ggtour` to get started.")
+#' 
 #' ## Setup
 #' dat_std <- scale_sd(wine[, 2:6])
-#' clas <- wine$Type
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
+#' clas    <- wine$Type
+#' bas     <- basis_pca(dat_std)
+#' mv      <- manip_var_of(bas)
 #' 
 #' ## Minimal example
-#' \dontrun{
-#' view_frame(basis = bas)
+#' \donttest{
+#' suppressWarnings(
+#'   view_frame(basis = bas)
+#' )
 #' 
 #' ## Typical example
-#' view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
+#' suppressWarnings(
+#'   view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
+#' )
 #' 
 #' ## Full example
 #' rtheta <- runif(1, 0, 2 * pi)
 #' rphi   <- runif(1, 0, 2 * pi)
-#' view_frame(basis = bas, data = dat_std, manip_var = mv,
-#'            theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
-#'            aes_args = list(color = clas, shape = clas),
-#'            identity_args = list(size = 1.5, alpha = .7))}
+#' suppressWarnings(
+#'   view_frame(
+#'     basis = bas, data = dat_std, manip_var = mv,
+#'     theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
+#'     aes_args = list(color = clas, shape = clas),
+#'     identity_args = list(size = 1.5, alpha = .7))
+#' )
+#' }
 view_frame <- function(basis = NULL,
                        data = NULL,
                        manip_var = NULL,
@@ -295,6 +320,7 @@ oblique_basis <- function(...) {
 #' @export
 #' @examples
 #' library(spinifex)
+#' 
 #' dat_std <- scale_sd(wine[, 2:6])
 #' bas     <- basis_pca(dat_std)
 #' mv      <- manip_var_of(bas)

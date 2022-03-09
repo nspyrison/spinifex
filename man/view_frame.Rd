@@ -48,26 +48,37 @@ Projects the specified rotation as a 2D ggplot object. One static frame of
 manual tour. Useful for providing user-guided interaction.
 }
 \examples{
+library(spinifex)
+message("It's suggested to switch to the proto api, see `?ggtour` to get started.")
+
 ## Setup
 dat_std <- scale_sd(wine[, 2:6])
-clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
+clas    <- wine$Type
+bas     <- basis_pca(dat_std)
+mv      <- manip_var_of(bas)
 
 ## Minimal example
-\dontrun{
-view_frame(basis = bas)
+\donttest{
+suppressWarnings(
+  view_frame(basis = bas)
+)
 
 ## Typical example
-view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
+suppressWarnings(
+  view_frame(basis = bas, data = dat_std, manip_var = mv, axes = "left")
+)
 
 ## Full example
 rtheta <- runif(1, 0, 2 * pi)
 rphi   <- runif(1, 0, 2 * pi)
-view_frame(basis = bas, data = dat_std, manip_var = mv,
-           theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
-           aes_args = list(color = clas, shape = clas),
-           identity_args = list(size = 1.5, alpha = .7))}
+suppressWarnings(
+  view_frame(
+    basis = bas, data = dat_std, manip_var = mv,
+    theta = rtheta, phi = rphi, basis_label = paste0("MyNm", 1:ncol(dat_std)), 
+    aes_args = list(color = clas, shape = clas),
+    identity_args = list(size = 1.5, alpha = .7))
+)
+}
 }
 \seealso{
 \code{\link{proto_default}} For arguments to pass into \code{...}.

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spinifex</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
       <h1 data-toc-skip>ggproto API</h1>
                         <h4 data-toc-skip class="author">Nicholas Spyrison</h4>
             
-            <h4 data-toc-skip class="date">2022-02-23</h4>
+            <h4 data-toc-skip class="date">2022-03-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nspyrison/spinifex/blob/HEAD/vignettes/ggproto_api.Rmd" class="external-link"><code>vignettes/ggproto_api.Rmd</code></a></small>
       <div class="hidden name"><code>ggproto_api.Rmd</code></div>
@@ -95,11 +95,11 @@
     
 <!-- #Example vignette:
 https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-naniar.Rmd -->
-<p><em>TL;DR: A proto is a list of <code>ggplot2</code> geoms. Proto can be used additively, and necessarily abstract away some of the fine details. We create functions to facilitate animations of linear projections, <strong>tours</strong>. We try to parallel the the workflow of creating ggplots.</em></p>
+<p><strong>Gist:</strong> <strong>ggplot2</strong> is used for a layered composition of static 1- and 2D graphics. We create functions to facilitate layered composition of dynamic animations of linear projections, <em>tours</em>. We parallel the composition of static graphics and try to abstract most of the complexity of replicating data and aesthetic mappings across many and changing number of interpolation frames.</p>
 <div class="section level2">
 <h2 id="what-is-a-proto">What is a proto?<a class="anchor" aria-label="anchor" href="#what-is-a-proto"></a>
 </h2>
-<p>We are moving to a new ‘<code>ggproto</code>’ API for constructing animated tours from <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a> objects. This interface should feel more comfortable to people already familiar with <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a>. Ggproto is the parent class of geoms, layers, and some other plotting elements.</p>
+<p>We are moving to a new ‘<code>ggproto</code>’ API for constructing animated tours from <strong>ggplot2</strong> objects. This interface should feel more comfortable to people already familiar with <strong>ggplot2</strong>. Ggproto is the parent class of geoms, layers, and some other plotting elements.</p>
 <p>Proto objects (or lists of them) can be assigned to a variable without <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code>, they store <em>unevaluated</em> code that will be used to plot. Let’s see what this looks like in ggplot2 before we delve into tour animations.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org" class="external-link">"ggplot2"</a></span><span class="op">)</span>
@@ -139,7 +139,7 @@ https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-nani
 <span class="va">gghead</span> <span class="op">+</span>
   <span class="va">gg_ls</span></code></pre></div>
 <p><img src="ggproto_api_files/figure-html/unnamed-chunk-1-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>In the <code>ggproto</code> API we use this feature to create <code>proto_*()</code> functions, the counter-parts of <code>geom_*()</code> functions. These proto functions are used in composition with <code><a href="../reference/ggtour.html">ggtour()</a></code>, which replaces <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code>, to create animated tours. In adopting this additive, composition approach we aim to maximize the flexibility for the end-users to customize tours while keeping the door open for extension of the development of further <code>proto</code> functions.</p>
+<p>In the <code>ggproto</code> API we use this feature to create <code>proto_\*()</code> functions, the counter-parts of <code>geom_\*()</code> functions. These proto functions are used in composition with <code><a href="../reference/ggtour.html">ggtour()</a></code>, which replaces <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code>, to create animated tours. In adopting this additive, composition approach we aim to maximize the flexibility for the end-users to customize tours while keeping the door open for extension of the development of further <code>proto</code> functions.</p>
 <table class="table">
 <thead><tr class="header">
 <th align="left">object</th>
@@ -168,12 +168,12 @@ https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-nani
 </tr>
 </tbody>
 </table>
-<p><code><a href="../reference/play_manual_tour.html">play_manual_tour()</a></code> abstracted away complexity, but it was becoming too big, and consuming workflow which a function should venue too far into. This made it too bloated to allow for some flexibility, but hard to understand all of the arguments. By paring back to <code>proto_*</code> can keep details where they are more relevant without becoming overbearing in one monster function.</p>
+<p><code><a href="../reference/play_manual_tour.html">play_manual_tour()</a></code> abstracted away complexity, but it was becoming too big, and consuming workflow which a function should venue too far into. This made it too bloated to allow for some flexibility, but hard to understand all of the arguments. By paring back to <code>proto_\*</code> can keep details where they are more relevant without becoming overbearing in one monster function.</p>
 </div>
 <div class="section level2">
 <h2 id="why-proto_-instead-of-new-geom_">Why ‘proto_*’ instead of new ‘geom_*’<a class="anchor" aria-label="anchor" href="#why-proto_-instead-of-new-geom_"></a>
 </h2>
-<p><code>{spinifex} proto_*</code> functions return a list of several <code>geom_*</code> functions, that were designed to facilitate animation across many projection bases. We abstract away of work and complexity that comes with creating and animating tours, but this comes at the price of flexibility. For instance, protos do not know how to deal with facets and hard-code the number and type of geoms which would otherwise become very burdensome to specify all the specifics of.</p>
+<p><strong>spinifex</strong> <code>proto_\*</code> functions return a list of several <code>geom_\*</code> functions, that were designed to facilitate animation across many projection bases. We abstract away of work and complexity that comes with creating and animating tours, but this comes at the price of flexibility. For instance, protos do not know how to deal with facets and hard-code the number and type of geoms which would otherwise become very burdensome to specify all the specifics of.</p>
 </div>
 <div class="section level2">
 <h2 id="application">Application<a class="anchor" aria-label="anchor" href="#application"></a>
@@ -181,6 +181,7 @@ https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-nani
 <div class="section level3">
 <h3 id="manual-tour">Manual tour<a class="anchor" aria-label="anchor" href="#manual-tour"></a>
 </h3>
+<p>The manual tour varies the contribution of a selected variable. This can be used to explore the sensitivity of the variables contribution to the structure in a projection, such as cluster separation.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggobi/tourr" class="external-link">tourr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nspyrison/spinifex/" class="external-link">spinifex</a></span><span class="op">)</span>
@@ -192,7 +193,7 @@ https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-nani
 
 <span class="co">## Manual tour, manipulating the contribution of a selected variable </span>
 <span class="va">bas</span>     <span class="op">&lt;-</span> <span class="fu"><a href="../reference/basis_pca.html">basis_pca</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>    <span class="co">## Start basis</span>
-<span class="va">mv</span>      <span class="op">&lt;-</span> <span class="fu"><a href="../reference/manip_var_of.html">manip_var_of</a></span><span class="op">(</span><span class="va">bas</span><span class="op">)</span> <span class="co">## Number of the variable to manipulate</span>
+<span class="va">mv</span>      <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co">## Number of the variable to manipulate</span>
 <span class="va">mt_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/manual_tour.html">manual_tour</a></span><span class="op">(</span><span class="va">bas</span>, manip_var <span class="op">=</span> <span class="va">mv</span><span class="op">)</span> <span class="co">## Tour path</span>
 
 <span class="co">## Create a static ggplot2 plot with all frames of the tour</span>
@@ -205,11 +206,12 @@ https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-nani
 <span class="fu"><a href="../reference/animate_gganimate.html">animate_gganimate</a></span><span class="op">(</span><span class="va">ggt</span>, height <span class="op">=</span> <span class="fl">3</span>, width <span class="op">=</span> <span class="fl">4.5</span>, units <span class="op">=</span> <span class="st">"in"</span>, res <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
 <span class="co">## Or as a plotly html widget</span>
 <span class="co">#animate_plotly(ggt)</span></code></pre></div>
-<p><img src="proto_mt_penguins.gif" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="https://github.com/nspyrison/spinifex/blob/master/vignettes/proto_mt_penguins.gif?raw=true"></p>
 </div>
 <div class="section level3">
 <h3 id="grand-tour-from-tourr">Grand tour, from <strong>tourr</strong><a class="anchor" aria-label="anchor" href="#grand-tour-from-tourr"></a>
 </h3>
+<p>This tour display composition works with other tours, such as those created with <strong>tourr</strong>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Save a grand tour basis path, projecting through randomly selected bases</span>
 <span class="va">gt_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_history.html">save_history</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://rdrr.io/pkg/tourr/man/grand_tour.html" class="external-link">grand_tour</a></span><span class="op">(</span><span class="op">)</span>, max_bases <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
@@ -224,11 +226,12 @@ https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-nani
 <span class="fu"><a href="../reference/animate_gganimate.html">animate_gganimate</a></span><span class="op">(</span><span class="va">ggt</span>, height <span class="op">=</span> <span class="fl">2</span>, width <span class="op">=</span> <span class="fl">4.5</span>, units <span class="op">=</span> <span class="st">"in"</span>, res <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
 <span class="co">## Or as a plotly html widget</span>
 <span class="co">#animate_plotly(ggt)</span></code></pre></div>
-<p><img src="proto_gt_penguins.gif" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="https://github.com/nspyrison/spinifex/blob/master/vignettes/proto_guided1d_penguins.gif?raw=true"></p>
 </div>
 <div class="section level3">
 <h3 id="d-tours">1D tours<a class="anchor" aria-label="anchor" href="#d-tours"></a>
 </h3>
+<p>We can also projection down to 1D with density curve and a unit rectangle basis instead.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## (Quietly create) a 1d guided tour, optimizing the projection space for the holes() function</span>
 <span class="va">guided_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_history.html">save_history</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://rdrr.io/pkg/tourr/man/guided_tour.html" class="external-link">guided_tour</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/tourr/man/holes.html" class="external-link">holes</a></span><span class="op">(</span><span class="op">)</span>, d <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
@@ -242,41 +245,39 @@ https://github.com/njtierney/naniar/blob/master/vignettes/getting-started-w-nani
 <span class="fu"><a href="../reference/animate_gganimate.html">animate_gganimate</a></span><span class="op">(</span><span class="va">ggt</span>, height <span class="op">=</span> <span class="fl">2</span>, width <span class="op">=</span> <span class="fl">4.5</span>, units <span class="op">=</span> <span class="st">"in"</span>, res <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
 <span class="co">## Or as a plotly html widget</span>
 <span class="co">#animate_plotly(ggt)</span></code></pre></div>
-<p><img src="proto_guided1d_penguins.gif" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="https://github.com/nspyrison/spinifex/blob/master/vignettes/proto_guided1d_penguins.gif?raw=true"></p>
 </div>
 <div class="section level3">
 <h3 id="interation-with-ggplot2-functions">Interation with ggplot2 functions<a class="anchor" aria-label="anchor" href="#interation-with-ggplot2-functions"></a>
 </h3>
-<p>because the output of <code>ggtour() + proto_*</code> is a ggplot, users are encouraged to theme and setting functions as well.</p>
+<p>Because the output of <code>ggtour() + proto_\*</code> is a ggplot, themes and setting functions are interoperable.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ggt</span> <span class="op">&lt;-</span> <span class="va">ggt</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"My Tour animation"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Projection Y1"</span>, y <span class="op">=</span> <span class="st">"density"</span><span class="op">)</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"My Tour Animation"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Y1"</span>, y <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/animate_gganimate.html">animate_gganimate</a></span><span class="op">(</span><span class="va">ggt</span>, height <span class="op">=</span> <span class="fl">2</span>, width <span class="op">=</span> <span class="fl">4.5</span>, units <span class="op">=</span> <span class="st">"in"</span>, res <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
+<span class="fu"><a href="../reference/animate_gganimate.html">animate_gganimate</a></span><span class="op">(</span><span class="va">ggt</span>, height <span class="op">=</span> <span class="fl">2</span>, width <span class="op">=</span> <span class="fl">3</span>, units <span class="op">=</span> <span class="st">"in"</span>, res <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
 <span class="co">## Or as a plotly html widget</span>
 <span class="co">#animate_plotly(ggt)</span></code></pre></div>
-<p><img src="proto_guided1d_interop_penguins.gif" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="https://github.com/nspyrison/spinifex/blob/master/vignettes/proto_guided1d_interop_penguins.gif?raw=true"></p>
 </div>
 <div class="section level3">
 <h3 id="faceting">Faceting<a class="anchor" aria-label="anchor" href="#faceting"></a>
 </h3>
+<p>In <strong>ggplot2</strong> <code>facet_wrap</code> is used to create panels wrapping on levels from 1 or more categorical levels. We call <code>facet_wrap_tour</code> (before proto functions) to apply similar faceting to the <code>ggtour</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dat</span>     <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_sd.html">scale_sd</a></span><span class="op">(</span><span class="va">PimaIndiansDiabetes_wide</span><span class="op">[</span>, <span class="op">-</span><span class="fl">9</span><span class="op">]</span><span class="op">)</span>
-<span class="va">clas</span>    <span class="op">&lt;-</span> <span class="va">PimaIndiansDiabetes_wide</span><span class="op">$</span><span class="va">diabetes</span>
-<span class="va">gt_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_history.html">save_history</a></span><span class="op">(</span><span class="va">dat</span>, max <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>
-
+<code class="sourceCode R"><span class="va">gt_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_history.html">save_history</a></span><span class="op">(</span><span class="va">dat</span>, max <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>
 <span class="va">ggt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ggtour.html">ggtour</a></span><span class="op">(</span><span class="va">gt_path</span>, <span class="va">dat</span>, angle <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="../reference/facet_wrap_tour.html">facet_wrap_tour</a></span><span class="op">(</span>facet_var <span class="op">=</span> <span class="va">clas</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="../reference/proto_point.html">proto_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">clas</span>, shape <span class="op">=</span> <span class="va">clas</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="../reference/proto_basis.html">proto_basis</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"center"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="../reference/proto_origin.html">proto_origin</a></span><span class="op">(</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/animate_gganimate.html">animate_gganimate</a></span><span class="op">(</span><span class="va">ggt</span>, height <span class="op">=</span> <span class="fl">2</span>, width <span class="op">=</span> <span class="fl">4.5</span>, units <span class="op">=</span> <span class="st">"in"</span>, res <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
+<span class="fu"><a href="../reference/animate_gganimate.html">animate_gganimate</a></span><span class="op">(</span><span class="va">ggt</span>, height <span class="op">=</span> <span class="fl">2</span>, width <span class="op">=</span> <span class="fl">6</span>, units <span class="op">=</span> <span class="st">"in"</span>, res <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
 <span class="co">## Or as a plotly html widget</span>
 <span class="co">#animate_plotly(ggt)</span></code></pre></div>
-<p><img src="proto_facet_penguins.gif" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="https://github.com/nspyrison/spinifex/blob/master/vignettes/proto_facet_penguins.gif?raw=true"></p>
 </div>
 </div>
 <div class="section level2">

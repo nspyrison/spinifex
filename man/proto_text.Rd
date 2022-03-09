@@ -39,7 +39,7 @@ gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 
 ggt <- ggtour(gt_path, dat, angle = .2) +
   proto_text(list(color = clas))
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 
@@ -48,7 +48,7 @@ ggt2 <- ggtour(gt_path, dat) +
   proto_text(list(color = clas, size = as.integer(clas)),
              list(alpha = .7),
              row_index = 1:15)
-\dontrun{
+\donttest{
 animate_plotly(ggt2)
 }
 }

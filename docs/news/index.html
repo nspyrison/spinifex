@@ -62,8 +62,12 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.5" id="spinifex-v035">spinifex v0.3.5<a class="anchor" aria-label="anchor" href="#spinifex-v035"></a></h2>
-<ul><li>Vignettes point to github urls rather than gifs in repo</li>
-<li>License changes to MIT (from CC BY-NC-SA 4.0, apparently not FOSS)</li>
+<ul><li>Vignettes point to github urls rather than gifs in repository</li>
+<li>
+<code><a href="../reference/proto_basis.html">proto_basis1d()</a></code> has an text_offset argument for the horizontal position of text labels</li>
+<li>Change roxygen documentation \dontrun’s to \donttest’s</li>
+<li>Clarify examples of deprecated functions</li>
+<li>License changed to MIT (from CC BY-NC-SA 4.0, apparently not FOSS)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.4" id="spinifex-v034">spinifex v0.3.4<small>2022-02-18</small><a class="anchor" aria-label="anchor" href="#spinifex-v034"></a></h2>
@@ -135,8 +139,8 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.6" id="spinifex-v026">spinifex v0.2.6<small>2020-11-09</small><a class="anchor" aria-label="anchor" href="#spinifex-v026"></a></h2>
 <ul><li>New argument, <code>ggproto</code>, accepts a list of <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a> objects for more control over visual output</li>
-<li>New argument, <code>aes_args</code>, accepts a list of arguments to pass into the <code>aes()</code> call within <code>geom_point()</code>. This is used for variable mappings, such as color, but needs to be qualified as this is standard evaluation</li>
-<li>New argument, <code>identity_args</code>, accepts a list of arguments to pass call within <code>geom_point()</code>, but outside of <code>aes()</code>. This is used for scalar options or manually mapped vector such as point size or alpha</li>
+<li>New argument, <code>aes_args</code>, accepts a list of arguments to pass into the <code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code> call within <code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point()</a></code>. This is used for variable mappings, such as color, but needs to be qualified as this is standard evaluation</li>
+<li>New argument, <code>identity_args</code>, accepts a list of arguments to pass call within <code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point()</a></code>, but outside of <code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code>. This is used for scalar options or manually mapped vector such as point size or alpha</li>
 <li>New datasets, <code>PimaIndiansDiabetes_long</code> &amp; <code>PimaIndiansDiabetes_wide</code>
 </li>
 <li>Fixed the centering of axes across frames</li>

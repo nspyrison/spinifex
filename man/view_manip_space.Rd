@@ -49,6 +49,7 @@ manual tours.
 }
 \examples{
 library(spinifex)
+
 dat_std <- scale_sd(wine[, 2:6])
 bas     <- basis_pca(dat_std)
 mv      <- manip_var_of(bas)

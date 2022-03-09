@@ -53,24 +53,32 @@ Performs the a manual tour and returns an animation of \code{render_type}.
 For use with \code{tourr::save_history()} tour paths see \code{play_tour_path()}.
 }
 \examples{
+library(spinifex)
+message("It's suggested to switch to the proto api, see `?ggtour` to get started.")
+
+## Setup
 dat_std <- scale_sd(wine[, 2:6])
-clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
+clas    <- wine$Type
+bas     <- basis_pca(dat_std)
+mv      <- manip_var_of(bas)
 
-\dontrun{
-play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
+\donttest{
+suppressWarnings(
+  play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
+)
 
-play_manual_tour(basis = bas, data = dat_std, manip_var = mv,
-                 theta = .5 * pi, axes = "right", fps = 5,
-                 angle = .08, phi_min = 0, phi_max = 2 * pi,
-                 aes_args = list(color = clas, shape = clas),
-                 identity_args = list(size = 1.5, alpha = .7),
-                 ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
-                 render_type = render_gganimate)
-
+suppressWarnings(
+  play_manual_tour(
+    basis = bas, data = dat_std, manip_var = mv,
+    theta = .5 * pi, axes = "right", fps = 5,
+    angle = .08, phi_min = 0, phi_max = 2 * pi,
+    aes_args = list(color = clas, shape = clas),
+    identity_args = list(size = 1.5, alpha = .7),
+    ggproto = list(ggplot2::theme_void(), ggplot2::ggtitle("My title")),
+    render_type = render_gganimate)
+)
 ## Saving output may require additional setup
-if(F){ ## Don't run by mistake
+if(FALSE){ ## Don't accidentally save file
   ## Export plotly .html widget
   play_manual_tour(basis = bas, data = dat_std, manip_var = 6,
                    render_type = render_plotly,

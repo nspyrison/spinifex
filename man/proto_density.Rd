@@ -51,7 +51,7 @@ ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_density(aes_args = list(color = clas, fill = clas)) +
   proto_basis1d() +
   proto_origin1d()
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 }

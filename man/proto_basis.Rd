@@ -16,7 +16,8 @@ proto_basis1d(
   position = c("bottom1d", "floor1d", "top1d", "full", "off"),
   manip_col = "blue",
   segment_size = 2,
-  text_size = 4
+  text_size = 4,
+  text_offset = -1.15
 )
 }
 \arguments{
@@ -35,6 +36,9 @@ axes and unit circle. Defaults to .6.}
 
 \item{segment_size}{(1D bases only) the width thickness of the rectangle bar
 showing variable magnitude on the axes. Defaults to 2.}
+
+\item{text_offset}{The horizontal offset of the text labels relative to the
+variable contributions in the basis between (-1, 1). Defaults to -1.15.}
 }
 \description{
 Adds basis axes to the animation, the direction and magnitude of
@@ -53,7 +57,7 @@ mt_path <- manual_tour(bas, manip_var = mv)
 ggt <- ggtour(mt_path, dat, angle = .3) +
   proto_point() +
   proto_basis()
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 
@@ -61,7 +65,7 @@ animate_plotly(ggt)
 ggt2 <- ggtour(mt_path, dat) +
   proto_basis(position = "right", manip_col = "green",
               line_size = .8, text_size = 8)
-\dontrun{
+\donttest{
 animate_plotly(ggt2)
 }
 
@@ -73,18 +77,19 @@ mt_path1d <- manual_tour(bas1d, manip_var = mv)
 ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
   proto_density() +
   proto_basis1d()
-\dontrun{
+\donttest{
 animate_plotly(ggt1d)
 }
 
 ## Customized basis1d
 ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
   proto_density() +
-  proto_basis1d(position = "bottom",
-                manip_col = "pink",
+  proto_basis1d(position     = "bottom",
+                manip_col    = "pink",
                 segment_size = 3,
-                text_size = 6)
-\dontrun{
+                text_size    = 6,
+                text_offset  = 1.2)
+\donttest{
 animate_plotly(ggt1d)
 }
 }

@@ -19,7 +19,7 @@ interpolated bases into a long data frame for use in ggplots."><!-- mathjax --><
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spinifex</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
       </span>
     </div>
 
@@ -130,38 +130,38 @@ animation frame. Defaults to TRUE.</p></dd>
 <span class="r-in"><span class="co">## tourr::save_history tour array to long df, as used in play_tour_path()</span></span>
 <span class="r-in"><span class="va">gt_array</span> <span class="op">&lt;-</span> <span class="fu">tourr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tourr/man/save_history.html" class="external-link">save_history</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat_std</span>, max_bases <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.40931 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 1.40931 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.441963 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.477531 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 1.477531 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.238456 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.345785 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.468007 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.620262 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.813149 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.951365 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.271025 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.603838 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.86552 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.573757 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.59537 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.345445 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.412325 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.749202 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.739049 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.628222 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.179378 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> target_dist - cur_dist: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.486415 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> generation:  dist =   1.520137 </span>
 <span class="r-in"><span class="va">ls_df_frames2</span> <span class="op">&lt;-</span> <span class="fu">array2df</span><span class="op">(</span>basis_array <span class="op">=</span> <span class="va">gt_array</span>, data <span class="op">=</span> <span class="va">dat_std</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ls_df_frames2</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ basis_frames:'data.frame':	50 obs. of  4 variables:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ x      : num [1:50] 0.6733 -0.5885 -0.0832 -0.4354 -0.0619 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ y      : num [1:50] 0.17 0.363 0.61 -0.42 0.539 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ x      : num [1:50] 0.0191 0.8044 -0.2638 0.3386 -0.4103 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ y      : num [1:50] -0.744 -0.178 -0.247 -0.327 -0.496 ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ frame  : num [1:50] 1 1 1 1 1 2 2 2 2 2 ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ tooltip: chr [1:50] "Alch" "Mlc" "Ash" "Alcl" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ data_frames :'data.frame':	1780 obs. of  4 variables:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ x      : num [1:1780] 0.744 0.73 0.541 0.728 0.477 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ y      : num [1:1780] 0.743 0.558 0.624 0.684 0.749 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ x      : num [1:1780] 0.262 0.351 0.439 0.351 0.401 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ y      : num [1:1780] 0.219 0.548 0.382 0.237 0.239 ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ frame  : num [1:1780] 1 1 1 1 1 1 1 1 1 1 ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ tooltip: int [1:1780] 1 2 3 4 5 6 7 8 9 10 ...</span>
 </code></pre></div>

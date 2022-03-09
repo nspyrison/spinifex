@@ -37,7 +37,7 @@ gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_point(list(color = clas, shape = clas)) +
   proto_origin() ## `+` in center
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 
@@ -47,7 +47,7 @@ gt_path1d <- save_history(dat, grand_tour(d = 1), max_bases = 5)
 ggt <- ggtour(gt_path1d, dat) +
   proto_density(list(fill = clas, color = clas)) +
   proto_origin1d() ## Adds line at 0.
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 }

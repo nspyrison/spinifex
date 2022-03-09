@@ -53,7 +53,7 @@ mt_path <- manual_tour(bas, manip_var = mv)
 ggt <- ggtour(basis_array = mt_path, data = dat, angle = .3) +
   proto_default(aes_args = list(color = clas, shape = clas),
                 identity_args = list(size = 1.5, alpha = .8))
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 
@@ -66,7 +66,7 @@ ggt <- ggtour(basis_array = mt_path, data = dat, angle = .3) +
               manip_col = "red",
               text_size = 7L) +
   proto_origin()
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 
@@ -76,7 +76,7 @@ mt_path1d <- manual_tour(basis = bas1d, manip_var = mv)
 
 ggt1d <- ggtour(basis_array = mt_path1d, data = dat, angle = .3) +
   proto_default1d(aes_args = list(fill= clas, color = clas))
-\dontrun{
+\donttest{
 animate_plotly(ggt1d)
 }
 
@@ -84,7 +84,7 @@ animate_plotly(ggt1d)
 ggt <- ggtour(basis_array = bas, data = dat) +
   proto_default(aes_args = list(fill= clas, color = clas))
 ## ggtour() returns a static ggplot2 plot
-\dontrun{
+\donttest{
 ggt
 ### or as html widget with tooltips
 animate_plotly(ggt)

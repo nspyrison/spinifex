@@ -42,15 +42,17 @@ mt_path <- manual_tour(bas, mv)
 
 ggt <- ggtour(mt_path, dat) +
   proto_default(aes_args = list(color = clas, shape = clas))
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
+library(spinifex)
+
 ## 1D case:
 gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 3)
 
 ggt <- ggtour(gt_path, dat) +
   proto_default1d(aes_args = list(fill = clas, color = clas))
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 }

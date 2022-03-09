@@ -1,7 +1,10 @@
 # spinifex v0.3.5
 
-- Vignettes point to github urls rather than gifs in repo
-- License changes to MIT (from CC BY-NC-SA 4.0, apparently not FOSS)
+- Vignettes point to github urls rather than gifs in repository
+- `proto_basis1d()` has an text_offset argument for the horizontal position of text labels
+- Change roxygen documentation \\dontrun's to \\donttest's
+- Clarify examples of deprecated functions
+- License changed to MIT (from CC BY-NC-SA 4.0, apparently not FOSS)
 
 
 # spinifex v0.3.4

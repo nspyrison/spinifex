@@ -19,7 +19,7 @@ result of array2df(), and renders them into a ggplot2 object."><!-- mathjax --><
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spinifex</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
       </span>
     </div>
 
@@ -119,11 +119,15 @@ Intended for aesthetic ggplot2 functions (not geom_* family).</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## Setup</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nspyrison/spinifex/" class="external-link">spinifex</a></span><span class="op">)</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"It's suggested to switch to the proto api, see `?ggtour` to get started."</span><span class="op">)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> It's suggested to switch to the proto api, see `?ggtour` to get started.</span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co">## Setup</span></span>
 <span class="r-in"><span class="va">dat_std</span> <span class="op">&lt;-</span> <span class="fu"><a href="scale_sd.html">scale_sd</a></span><span class="op">(</span><span class="va">wine</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">clas</span> <span class="op">&lt;-</span> <span class="va">wine</span><span class="op">$</span><span class="va">Type</span></span>
-<span class="r-in"><span class="va">bas</span> <span class="op">&lt;-</span> <span class="fu"><a href="basis_pca.html">basis_pca</a></span><span class="op">(</span><span class="va">dat_std</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mv</span> <span class="op">&lt;-</span> <span class="fu"><a href="manip_var_of.html">manip_var_of</a></span><span class="op">(</span><span class="va">bas</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">clas</span>    <span class="op">&lt;-</span> <span class="va">wine</span><span class="op">$</span><span class="va">Type</span></span>
+<span class="r-in"><span class="va">bas</span>     <span class="op">&lt;-</span> <span class="fu"><a href="basis_pca.html">basis_pca</a></span><span class="op">(</span><span class="va">dat_std</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">mv</span>      <span class="op">&lt;-</span> <span class="fu"><a href="manip_var_of.html">manip_var_of</a></span><span class="op">(</span><span class="va">bas</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">mt_array</span> <span class="op">&lt;-</span> <span class="fu"><a href="manual_tour.html">manual_tour</a></span><span class="op">(</span>basis <span class="op">=</span> <span class="va">bas</span>, manip_var <span class="op">=</span> <span class="va">mv</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">mt_df_ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="array2df.html">array2df</a></span><span class="op">(</span>basis_array <span class="op">=</span> <span class="va">mt_array</span>, data <span class="op">=</span> <span class="va">dat_std</span><span class="op">)</span></span>

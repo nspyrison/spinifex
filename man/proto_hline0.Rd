@@ -34,7 +34,7 @@ ggt <- ggtour(gt_path, dat, angle = .1) +
   proto_point(list(color = clas, shape = clas)) +
   proto_hline0() + ## horizonatal line at 0
   proto_vline0()   ## vertical line at 0
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 }

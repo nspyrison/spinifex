@@ -18,7 +18,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spinifex</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
       </span>
     </div>
 
@@ -118,11 +118,11 @@ before it restarts from the first frame. Defaults to 1 second.</p></dd>
 <span class="r-in"><span class="va">ggt</span> <span class="op">&lt;-</span> <span class="fu"><a href="ggtour.html">ggtour</a></span><span class="op">(</span><span class="va">mt_path</span>, <span class="va">dat</span>, angle <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span> <span class="op">+</span></span>
 <span class="r-in">  <span class="fu"><a href="proto_default.html">proto_default</a></span><span class="op">(</span>aes_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">clas</span>, shape <span class="op">=</span> <span class="va">clas</span><span class="op">)</span>,</span>
 <span class="r-in">                identity_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.5</span>, alpha <span class="op">=</span> <span class="fl">.7</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span class="r-in"><span class="co"># \donttest{</span></span>
 <span class="r-in"><span class="co">## Default .gif rendering</span></span>
 <span class="r-in"><span class="fu">animate_gganimate</span><span class="op">(</span><span class="va">ggt</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span><span class="op">(</span><span class="cn">F</span><span class="op">)</span><span class="op">{</span> <span class="co">## Don't accidentally save file</span></span>
+<span class="r-in"><span class="kw">if</span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">{</span> <span class="co">## Don't accidentally save file</span></span>
 <span class="r-in">  <span class="co">## Option arguments, rendering to default .gif</span></span>
 <span class="r-in">  <span class="va">anim</span> <span class="op">&lt;-</span> <span class="fu">animate_gganimate</span><span class="op">(</span></span>
 <span class="r-in">    <span class="va">ggt</span>, fps <span class="op">=</span> <span class="fl">10</span>, rewind <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -140,8 +140,8 @@ before it restarts from the first frame. Defaults to 1 second.</p></dd>
 <span class="r-in">    height <span class="op">=</span> <span class="fl">4</span>, width <span class="op">=</span> <span class="fl">6</span>, units <span class="op">=</span> <span class="st">"in"</span>, <span class="co">## "px", "in", "cm", or "mm."</span></span>
 <span class="r-in">    res <span class="op">=</span> <span class="fl">200</span>, <span class="co">## resolution, pixels per dimension unit I think</span></span>
 <span class="r-in">    renderer <span class="op">=</span> <span class="fu">gganimate</span><span class="fu">::</span><span class="fu"><a href="https://gganimate.com/reference/renderers.html" class="external-link">av_renderer</a></span><span class="op">(</span><span class="st">"./my_tour.mp4"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">}</span></span>
 <span class="r-in"><span class="op">}</span></span>
+<span class="r-in"><span class="co"># }</span></span>
 </code></pre></div>
     </div>
   </div>

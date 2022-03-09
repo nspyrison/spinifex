@@ -46,11 +46,11 @@ mt_path <- manual_tour(bas, manip_var = mv)
 ggt <- ggtour(mt_path, dat, angle = .3) +
   proto_default(aes_args = list(color = clas, shape = clas),
                 identity_args = list(size = 1.5, alpha = .7))
-\dontrun{
+\donttest{
 ## Default .gif rendering
 animate_gganimate(ggt)
 
-if(F){ ## Don't accidentally save file
+if(FALSE){ ## Don't accidentally save file
   ## Option arguments, rendering to default .gif
   anim <- animate_gganimate(
     ggt, fps = 10, rewind = TRUE,
@@ -68,7 +68,7 @@ if(F){ ## Don't accidentally save file
     height = 4, width = 6, units = "in", ## "px", "in", "cm", or "mm."
     res = 200, ## resolution, pixels per dimension unit I think
     renderer = gganimate::av_renderer("./my_tour.mp4"))
-  }
+}
 }
 }
 \seealso{

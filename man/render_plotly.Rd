@@ -25,14 +25,18 @@ Takes the result of \code{array2df()} and animations them via \code{{plotly}}
 into a  self-contained HTML widget.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:6])
-clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
+library(spinifex)
+message("It's suggested to switch to the proto api, see `?ggtour` to get started.")
+
+## Setup
+dat_std  <- scale_sd(wine[, 2:6])
+clas     <- wine$Type
+bas      <- basis_pca(dat_std)
+mv       <- manip_var_of(bas)
 mt_array <- manual_tour(basis = bas, manip_var = mv)
 mt_df_ls <- array2df(basis_array = mt_array, data = dat_std)
 
-\dontrun{
+\donttest{
 render_plotly(frames = mt_df_ls)
 
 require("ggplot2")
@@ -43,7 +47,7 @@ render_plotly(
   ggproto = list(theme_bw(), scale_color_brewer(palette = "Set2")))
 
 ## Saving a .gif, may require additional setup
-if(F) ## Don't run by mistake
+if(FALSE) ## Don't accidentally save file
   render_plotly(frames = mt_df_ls, axes = "bottomleft", fps = 10,
                 html_filename = "myRadialTour.html")}
 }

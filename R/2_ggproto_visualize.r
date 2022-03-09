@@ -35,7 +35,7 @@
 #' ggt <- ggtour(basis_array = mt_path, data = dat, angle = .3) +
 #'   proto_default(aes_args = list(color = clas, shape = clas),
 #'                 identity_args = list(size = 1.5, alpha = .8))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 #' 
@@ -48,7 +48,7 @@
 #'               manip_col = "red",
 #'               text_size = 7L) +
 #'   proto_origin()
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 #' 
@@ -58,7 +58,7 @@
 #' 
 #' ggt1d <- ggtour(basis_array = mt_path1d, data = dat, angle = .3) +
 #'   proto_default1d(aes_args = list(fill= clas, color = clas))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt1d)
 #' }
 #' 
@@ -66,7 +66,7 @@
 #' ggt <- ggtour(basis_array = bas, data = dat) +
 #'   proto_default(aes_args = list(fill= clas, color = clas))
 #' ## ggtour() returns a static ggplot2 plot
-#' \dontrun{
+#' \donttest{
 #' ggt
 #' ### or as html widget with tooltips
 #' animate_plotly(ggt)
@@ -171,7 +171,7 @@ ggtour <- function(
 #'   facet_wrap_tour(facet_var = clas, ncol = 2, nrow = 2) +
 #'   proto_default(aes_args = list(color = clas, shape = clas),
 #'                 identity_args = list(size = 1.5))
-#' \dontrun{
+#' \donttest{
 #' animate_gganimate(ggt) ## May not always play well with plotly
 #' }
 facet_wrap_tour <- function(
@@ -237,7 +237,7 @@ facet_wrap_tour <- function(
 #'   proto_point(list(fill = clas, color = clas)) +
 #'   proto_basis1d() +
 #'   proto_origin()
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 append_fixed_y <- function(
@@ -461,11 +461,11 @@ last_ggtour_env <- function(){.store$ggtour_ls}
 #' ggt <- ggtour(mt_path, dat, angle = .3) +
 #'   proto_default(aes_args = list(color = clas, shape = clas),
 #'                 identity_args = list(size = 1.5, alpha = .7))
-#' \dontrun{
+#' \donttest{
 #' ## Default .gif rendering
 #' animate_gganimate(ggt)
 #' 
-#' if(F){ ## Don't accidentally save file
+#' if(FALSE){ ## Don't accidentally save file
 #'   ## Option arguments, rendering to default .gif
 #'   anim <- animate_gganimate(
 #'     ggt, fps = 10, rewind = TRUE,
@@ -483,7 +483,7 @@ last_ggtour_env <- function(){.store$ggtour_ls}
 #'     height = 4, width = 6, units = "in", ## "px", "in", "cm", or "mm."
 #'     res = 200, ## resolution, pixels per dimension unit I think
 #'     renderer = gganimate::av_renderer("./my_tour.mp4"))
-#'   }
+#' }
 #' }
 animate_gganimate <- function(
   ggtour,
@@ -541,11 +541,11 @@ animate_gganimate <- function(
 #'   proto_basis() +
 #'   proto_point(aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 1.5, alpha = .7))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt, width = 700, height = 450) ## pixels only, no resolution argument
 #' 
 #' ## Example saving to a .html widget, may require additional setup.
-#' if(F){
+#' if(FALSE){
 #'   anim <- animate_plotly(ggt, fps = 10,
 #'                          width = 700, height = 450) ## in pixels
 #'   
@@ -643,7 +643,7 @@ animate_plotly <- function(
 # #'   proto_point(aes_args = list(color = clas, shape = clas),
 # #'               identity_args = list(size = 1.5, alpha = .7))
 # #' 
-# #' \dontrun{
+# #' \donttest{
 # #' animate_gganimate_knit2pdf(ggtour)
 # #' }
 # animate_gganimate_knit2pdf <- function(ggtour,
@@ -736,7 +736,7 @@ filmstrip <- function(
 #' ggt <- ggtour(mt_path, dat, angle = .3) +
 #'   proto_point() +
 #'   proto_basis()
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 #' 
@@ -744,7 +744,7 @@ filmstrip <- function(
 #' ggt2 <- ggtour(mt_path, dat) +
 #'   proto_basis(position = "right", manip_col = "green",
 #'               line_size = .8, text_size = 8)
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt2)
 #' }
 #' 
@@ -756,18 +756,19 @@ filmstrip <- function(
 #' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
 #'   proto_density() +
 #'   proto_basis1d()
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt1d)
 #' }
 #' 
 #' ## Customized basis1d
 #' ggt1d <- ggtour(mt_path1d, dat, angle = .3) +
 #'   proto_density() +
-#'   proto_basis1d(position = "bottom",
-#'                 manip_col = "pink",
+#'   proto_basis1d(position     = "bottom",
+#'                 manip_col    = "pink",
 #'                 segment_size = 3,
-#'                 text_size = 6)
-#' \dontrun{
+#'                 text_size    = 6,
+#'                 text_offset  = 1.2)
+#' \donttest{
 #' animate_plotly(ggt1d)
 #' }
 proto_basis <- function(
@@ -831,12 +832,15 @@ proto_basis <- function(
 #' @rdname proto_basis
 #' @param segment_size (1D bases only) the width thickness of the rectangle bar
 #' showing variable magnitude on the axes. Defaults to 2.
+#' @param text_offset The horizontal offset of the text labels relative to the
+#' variable contributions in the basis between (-1, 1). Defaults to -1.15.
 #' @export
 proto_basis1d <- function(
-  position = c("bottom1d", "floor1d",  "top1d", "full", "off"),
-  manip_col = "blue",
+  position     = c("bottom1d", "floor1d",  "top1d", "full", "off"),
+  manip_col    = "blue",
   segment_size = 2,
-  text_size = 4
+  text_size    = 4,
+  text_offset  = -1.15
 ){
   ## Initialize
   eval(.init4proto)
@@ -862,7 +866,7 @@ proto_basis1d <- function(
                          y = rep(.p:1L, .n_frames) / .p,
                          frame = .df_basis$frame,
                          tooltip = .df_basis$tooltip)
-  .df_txt  <- data.frame(x = -1.05, y = .p:1L/.p,
+  .df_txt  <- data.frame(x = text_offset, y = .p:1L/.p,
                          tooltip = .df_basis[.df_basis$frame == 1L, "tooltip"])
   .df_rect <- data.frame(x = c(-1L, 1L), y = c(.5, .p + .5) / .p)
   .df_seg0 <- data.frame(x = 0L, y = c(.5, .p + .5) / .p)
@@ -894,8 +898,9 @@ proto_basis1d <- function(
       .df_rect, fill = NA, color = "grey60"),
     ## Variable abbreviation text
     ggplot2::geom_text(
-      ggplot2::aes(x, y, label = tooltip), .df_txt,
-      size = text_size, color = "grey60", hjust = 1L),
+      ggplot2::aes(x, y, label = tooltip, 
+                   hjust = if(text_offset < 0L) 1L else 0L), 
+      .df_txt, size = text_size, color = "grey60"),
     ## Contribution segments of current basis, changing with frame
     suppressWarnings(ggplot2::geom_segment(
       ggplot2::aes(x = .df_zero$x, y, xend = x, yend = y, frame = frame),
@@ -1055,7 +1060,7 @@ draw_basis <- function(
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_point(aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(size = 2, alpha = .7))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 #' 
@@ -1065,7 +1070,7 @@ draw_basis <- function(
 #'               identity_args = list(size = 2, alpha = .7),
 #'               row_index = which(clas == levels(clas)[1]),
 #'               bkg_color = "grey80") ## FALSE or NULL to skip plotting background
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 proto_point <- function(
@@ -1144,7 +1149,7 @@ proto_point <- function(
 #'   proto_density(aes_args = list(color = clas, fill = clas)) +
 #'   proto_basis1d() +
 #'   proto_origin1d()
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 proto_density <- function(
@@ -1231,7 +1236,7 @@ proto_density <- function(
 #'   proto_point(aes_args = list(color = clas, shape = clas),
 #'               identity_args = list(alpha = .2)) +
 #'   proto_basis()
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 proto_density2d <- function(
@@ -1289,7 +1294,7 @@ proto_density2d <- function(
 #' 
 #' ggt <- ggtour(gt_path, dat, angle = .2) +
 #'   proto_text(list(color = clas))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 #' 
@@ -1298,7 +1303,7 @@ proto_density2d <- function(
 #'   proto_text(list(color = clas, size = as.integer(clas)),
 #'              list(alpha = .7),
 #'              row_index = 1:15)
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt2)
 #' }
 proto_text <- function(
@@ -1359,7 +1364,7 @@ proto_text <- function(
 #'   proto_hex(bins = 20)
 #' 
 #' ## Hexagons don't show up in plotly animation.
-#' \dontrun{
+#' \donttest{
 #' animate_gganimate(ggp)
 #' }
 proto_hex <- function(
@@ -1424,7 +1429,7 @@ proto_hex <- function(
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_default(aes_args = list(color = clas, shape = clas)) +
 #'   proto_highlight(row_index = 5)
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 #' 
@@ -1433,14 +1438,14 @@ proto_hex <- function(
 #'   proto_default(aes_args = list(color = clas, shape = clas)) +
 #'   proto_highlight(row_index = c( 2, 6, 19),
 #'                   identity_args = list(color = "blue", size = 4, shape = 4))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt2)
 #' }
 proto_highlight <- function(
-  aes_args = list(),
+  aes_args      = list(),
   identity_args = list(color = "red", size = 5, shape = 8),
-  row_index = 1,
-  mark_initial = FALSE
+  row_index     = 1,
+  mark_initial  = FALSE
 ){
   ## Initialize
   if(is.null(row_index)) return() ## Must be handle this NULL gracefully
@@ -1485,7 +1490,7 @@ proto_highlight <- function(
 #' ggt <- ggtour(gt_path1d, dat, angle = .3) +
 #'   proto_default1d(aes_args = list(fill = clas, color = clas)) +
 #'   proto_highlight1d(row_index = 7)
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 #' 
@@ -1494,7 +1499,7 @@ proto_highlight <- function(
 #'   proto_default1d(aes_args = list(fill = clas, color = clas)) +
 #'   proto_highlight1d(row_index = c(2, 6, 7),
 #'                     identity_args = list(color = "green", linetype = 1))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt2)
 #' }
 proto_highlight1d <- function(
@@ -1566,7 +1571,7 @@ proto_highlight1d <- function(
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_default(aes_args = list(color = clas, shape = clas)) +
 #'   proto_frame_cor2(xy_position = c(.5, 1.1))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 proto_frame_cor2 <- function(
@@ -1595,15 +1600,17 @@ proto_frame_cor2 <- function(
   .y_dif <- diff(.y_ran)
   .x <- .x_ran[1L] + xy_position[1L] * .x_dif
   .y <- .y_ran[1L] + xy_position[2L] * .y_dif
+  
   ## Prefix text:
   # ## Removes namespace; ie. 'stats::cor' to 'cor'
   # .stat_nm  <- substitute(stat2d)
   # .last_pos <- regexpr("\\:[^\\:]*$", s) + 1L
   # .stat_nm  <- substr(.stat_nm, .last_pos, nchar(.stat_nm))
+  
   ## Create the final df with position, frame, facet_var, label
   .txt_df <- data.frame(
     x = .x, y = .y, .agg,
-    label = paste0("cor^2: ", sprintf("%3.2f", .agg$value)))
+    tooltip = paste0("cor^2: ", sprintf("%3.2f", .agg$value)))
   
   ## Return
   suppressWarnings(ggplot2::geom_text(
@@ -1636,7 +1643,7 @@ proto_frame_cor2 <- function(
 #' ggt <- ggtour(gt_path, dat, angle = .1) +
 #'   proto_point(list(color = clas, shape = clas)) +
 #'   proto_origin() ## `+` in center
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 proto_origin <- function(
@@ -1683,7 +1690,7 @@ proto_origin <- function(
 #' ggt <- ggtour(gt_path1d, dat) +
 #'   proto_density(list(fill = clas, color = clas)) +
 #'   proto_origin1d() ## Adds line at 0.
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 proto_origin1d <- function(
@@ -1743,7 +1750,7 @@ proto_origin1d <- function(
 #'   proto_point(list(color = clas, shape = clas)) +
 #'   proto_hline0() + ## horizonatal line at 0
 #'   proto_vline0()   ## vertical line at 0
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 proto_hline0 <- function(
@@ -1833,7 +1840,7 @@ proto_vline0 <- function(
 #' 
 #' ggt <- ggtour(mt_path, dat) +
 #'   proto_default(aes_args = list(color = clas, shape = clas))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 proto_default <- function(
@@ -1853,12 +1860,14 @@ proto_default <- function(
 #' @export
 #' @aliases proto_def1d
 #' @examples
+#' library(spinifex)
+#' 
 #' ## 1D case:
 #' gt_path <- save_history(dat, grand_tour(d = 1), max_bases = 3)
 #' 
 #' ggt <- ggtour(gt_path, dat) +
 #'   proto_default1d(aes_args = list(fill = clas, color = clas))
-#' \dontrun{
+#' \donttest{
 #' animate_plotly(ggt)
 #' }
 proto_default1d <- function(
@@ -1877,10 +1886,10 @@ proto_default1d <- function(
 
 
 ### UNAPPLIED IDEA DRAFTS -----
-if(FALSE){ ## DONT RUN
+if(FALSE){ ## DONT RUN -- DEV IDEAS
   ## Geom_table won't work with plotly or gganimate animation frames.
   #### Recreate manually with geom_text...
-  if(F){
+  if(FALSE){
     # #' @rdname proto_basis
     # #' @param segment_size (1D bases only) the width thickness of the rectangle bar
     # #' showing variable magnitude on the axes. Defaults to 2.
@@ -1890,7 +1899,7 @@ if(FALSE){ ## DONT RUN
     # #' ggt <- ggtour(mt_path, dat, angle = .3) +
     # #'   proto_default(aes_args = list(color = clas, shape = clas)) +
     # #'   proto_basis_text()
-    # #' \dontrun{
+    # #' \donttest{
     # #' animate_plotly(ggt)
     # #' }
     proto_basis_table <- function(

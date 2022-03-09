@@ -49,14 +49,18 @@ Takes the result of \code{array2df()} and renders them into a
 \emph{gganimate} animation.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:6])
-clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
-mt <- manual_tour(basis = bas, manip_var = mv)
+library(spinifex)
+message("It's suggested to switch to the proto api, see `?ggtour` to get started.")
+
+## Setup
+dat_std  <- scale_sd(wine[, 2:6])
+clas     <- wine$Type
+bas      <- basis_pca(dat_std)
+mv       <- manip_var_of(bas)
+mt       <- manual_tour(basis = bas, manip_var = mv)
 mt_df_ls <- array2df(basis_array = mt, data = dat_std)
 
-\dontrun{
+\donttest{
 render_gganimate(frames = mt_df_ls)
 
 require("ggplot2")
@@ -70,7 +74,7 @@ render_gganimate(
                  scale_color_brewer(palette = "Set2")))
 
 ## Saving a .gif(may require additional setup)
-if(F) ## Don't run by mistake
+if(FALSE) ## Don't run by mistake
   render_gganimate(frames = mt_df_ls, axes = "bottomleft",
                    gif_filename = "myRadialTour.gif", gif_path = "./output")}
 }

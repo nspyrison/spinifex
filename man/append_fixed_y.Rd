@@ -37,7 +37,7 @@ ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_point(list(fill = clas, color = clas)) +
   proto_basis1d() +
   proto_origin()
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 }

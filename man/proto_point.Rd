@@ -46,7 +46,7 @@ gt_path <- save_history(dat, grand_tour(), max_bases = 5)
 ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_point(aes_args = list(color = clas, shape = clas),
               identity_args = list(size = 2, alpha = .7))
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 
@@ -56,7 +56,7 @@ ggt <- ggtour(gt_path, dat, angle = .3) +
               identity_args = list(size = 2, alpha = .7),
               row_index = which(clas == levels(clas)[1]),
               bkg_color = "grey80") ## FALSE or NULL to skip plotting background
-\dontrun{
+\donttest{
 animate_plotly(ggt)
 }
 }

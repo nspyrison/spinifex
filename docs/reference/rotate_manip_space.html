@@ -20,7 +20,7 @@ to the projection plane.'><!-- mathjax --><script src="https://cdnjs.cloudflare.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spinifex</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
       </span>
     </div>
 
@@ -111,24 +111,24 @@ extends "in the z-direction" orthogonal to the projection plane.</p>
 <span class="r-in"><span class="va">msp</span> <span class="op">&lt;-</span> <span class="fu"><a href="create_manip_space.html">create_manip_space</a></span><span class="op">(</span>basis <span class="op">=</span> <span class="va">bas</span>, manip_var <span class="op">=</span> <span class="va">mv</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu">rotate_manip_space</span><span class="op">(</span><span class="va">msp</span>, theta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span>, max <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span><span class="op">)</span>,</span>
 <span class="r-in">                   phi <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span>, max <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   PC1        PC2   manip_sp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alcohol    0.02600859  0.5260390 -0.5260766</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Malic      0.20721037 -0.5670776 -0.1831696</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ash        0.30371880 -0.4946836 -0.5519520</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alcalinity 0.92526336  0.2443841  0.2901105</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Magnesium  0.08961036  0.3118823 -0.5485228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   PC1         PC2   manip_sp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alcohol    0.07391006  0.42687920  0.6053606</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Malic      0.44697134  0.08265683 -0.4375485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ash        0.66518242  0.35583984 -0.2692922</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alcalinity 0.55517959 -0.71014139  0.4329836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Magnesium  0.20990924  0.42428671  0.4267280</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">## d = 1 case </span></span>
 <span class="r-in"><span class="va">bas1d</span> <span class="op">&lt;-</span> <span class="fu"><a href="basis_pca.html">basis_pca</a></span><span class="op">(</span><span class="va">dat_std</span>, d <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">mv</span> <span class="op">&lt;-</span> <span class="fu"><a href="manip_var_of.html">manip_var_of</a></span><span class="op">(</span><span class="va">bas1d</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">msp</span> <span class="op">&lt;-</span> <span class="fu"><a href="create_manip_space.html">create_manip_space</a></span><span class="op">(</span><span class="va">bas1d</span>, <span class="va">mv</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu">rotate_manip_space</span><span class="op">(</span><span class="va">msp</span>, theta <span class="op">=</span> <span class="fl">0</span>, phi <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span>, max <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   PC1    manip_sp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alcohol    0.08797566 -0.08595326</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Malic      0.40387109 -0.39458687</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ash        0.69883752  0.71528045</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Alcalinity 0.54489474 -0.53236866</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Magnesium  0.20943797 -0.20462339</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   PC1   manip_sp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alcohol    -0.0515941 -0.1116500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Malic      -0.2368538 -0.5125534</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ash         0.9077634 -0.4194825</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Alcalinity -0.3195583 -0.6915267</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Magnesium  -0.1228267 -0.2657980</span>
 </code></pre></div>
     </div>
   </div>
