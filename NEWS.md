@@ -1,3 +1,11 @@
+# spinifex v0.3.6
+
+- Clean up messages in `manual_tour`
+- Add more examples interacting `manual_tour` and `proto_density`, and bringing your own basis
+- Fix a couple of odd cases in `basis_olda` & `.lapply_rep_len`
+- More consistent names and indenting in examples
+
+
 # spinifex v0.3.5
 
 - Vignettes point to github urls rather than gifs in repository

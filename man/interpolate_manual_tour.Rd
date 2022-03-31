@@ -18,11 +18,11 @@ specifications. Returns an interpolated basis_array to be consumed by
 }
 \examples{
 ## This function is not meant for external use
-dat_std <- scale_sd(wine[, 2:6])
+dat  <- scale_sd(wine[, 2:6])
 clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
-mt <- manual_tour(bas, mv)
+bas  <- basis_pca(dat)
+mv   <- manip_var_of(bas)
+mt   <- manual_tour(bas, mv)
 
 interp <- spinifex:::interpolate_manual_tour(basis_array = mt, angle = .1)
 dim(interp)

@@ -28,9 +28,9 @@ and non-local scatter while local information is also preserved by
 constructing a neighborhood graph.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:6])
+dat  <- scale_sd(wine[, 2:6])
 clas <- wine$Type
-basis_odp(data = dat_std, class = clas)
+basis_odp(data = dat, class = clas)
 }
 \references{
 Li B, Wang C, Huang D (2009). "Supervised feature extraction based on

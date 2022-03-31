@@ -45,20 +45,20 @@ is_orthonormal <- function(x, tol = 0.001) {
 #' @export
 #' @examples
 #' ## !!This function is not meant for external use!!
-#' dat_std <- scale_sd(wine[, 2:6])
+#' dat  <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
+#' bas  <- basis_pca(dat)
+#' mv   <- manip_var_of(bas)
 #' 
 #' ## Radial tour array to long df, as used in play_manual_tour()
 #' mt_array <- manual_tour(basis = bas, manip_var = mv)
-#' ls_df_frames <- array2df(basis_array = mt_array, data = dat_std,
+#' ls_df_frames <- array2df(basis_array = mt_array, data = dat,
 #'                          basis_label = paste0("MyLabs", 1:nrow(bas)))
 #' str(ls_df_frames)
 #' 
 #' ## tourr::save_history tour array to long df, as used in play_tour_path()
-#' gt_array <- tourr::save_history(data = dat_std, max_bases = 10)
-#' ls_df_frames2 <- array2df(basis_array = gt_array, data = dat_std)
+#' gt_array <- tourr::save_history(data = dat, max_bases = 10)
+#' ls_df_frames2 <- array2df(basis_array = gt_array, data = dat)
 #' str(ls_df_frames2)
 array2df <- function(
   basis_array,
@@ -376,8 +376,8 @@ scale_01 <- function(data){
 #' @export
 #' @family basis producing functions
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:6])
-#' basis_pca(data = dat_std)
+#' dat <- scale_sd(wine[, 2:6])
+#' basis_pca(data = dat)
 basis_pca <- function(data, d = 2){
   #ret <- stats::prcomp(data)$rotation[, 1L:d, drop = FALSE]
   ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
@@ -405,15 +405,15 @@ basis_pca <- function(data, d = 2){
 #' @export
 #' @family basis producing functions
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:6])
-#' clas    <- wine$Type
-#' basis_olda(data = dat_std, class = clas)
+#' dat  <- scale_sd(wine[, 2:6])
+#' clas <- wine$Type
+#' basis_olda(data = dat, class = clas)
 basis_olda <- function(data, class, d = 2){
   #lda <- MASS::lda(class ~ ., data = data.frame(data, class))$scaling
   #ret <- tourr::orthonormalise(lda)[, 1L:d, drop = FALSE]
   ret <- Rdimtools::do.olda(X = as.matrix(data),
                             label = as.factor(class),
-                            ndim = d)$projection
+                            ndim = ncol(data))$projection[, 1:d, drop = FALSE]
   rownames(ret) <- colnames(data)
   colnames(ret) <- paste0("oLD", 1:d)
   ret
@@ -445,9 +445,9 @@ basis_olda <- function(data, class, d = 2){
 #' @export
 #' @family basis producing functions
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:6])
+#' dat  <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
-#' basis_odp(data = dat_std, class = clas)
+#' basis_odp(data = dat, class = clas)
 basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
   ret <- Rdimtools::do.odp(X = as.matrix(data),
                            label = as.factor(class),
@@ -485,8 +485,8 @@ basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
 #' @export
 #' @family basis producing functions
 #' @examples
-#' dat_std <- scale_sd(wine[, 2:6])
-#' basis_onpp(data = dat_std)
+#' dat  <- scale_sd(wine[, 2:6])
+#' basis_onpp(data = dat)
 basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
   ret <- Rdimtools::do.onpp(X = as.matrix(data),
                             ndim = d,
@@ -515,10 +515,10 @@ basis_onpp <- function(data, d = 2, type = c("knn", sqrt(nrow(data)))){
 #' @export
 #' @family basis producing functions
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:6])
-#' basis_guided(data = dat_std, index_f = tourr::holes())
+#' dat <- scale_sd(wine[, 2:6])
+#' basis_guided(data = dat, index_f = tourr::holes())
 #' 
-#' basis_guided(data = dat_std, index_f = tourr::cmass(),
+#' basis_guided(data = dat, index_f = tourr::cmass(),
 #'              alpha = .4, cooling = .9, max.tries = 10, n_sample = 4)
 basis_guided <- function(data, index_f = tourr::holes(), d = 2, ...){
   .mute <- utils::capture.output(
@@ -542,8 +542,8 @@ basis_guided <- function(data, index_f = tourr::holes(), d = 2, ...){
 #' @export
 #' @family basis producing functions
 #' @examples 
-#' dat_std <- scale_sd(wine[, 2:6])
-#' bas <- basis_half_circle(dat_std)
+#' dat <- scale_sd(wine[, 2:6])
+#' bas <- basis_half_circle(dat)
 basis_half_circle <- function(data){
   pp1 <- ncol(data) + 1L ## p++
   arc <- seq(0L, pi, length.out = pp1)[-pp1]
@@ -569,10 +569,9 @@ basis_half_circle <- function(data){
 #' @return Numeric scalar, the column number of a variable.
 #' @export
 #' @family manual tour adjacent functions
-#' @examples 
-#' ## Setup
-#' dat_std <- scale_sd(wine[, 2:6])
-#' bas <- basis_pca(dat_std)
+#' @examples
+#' dat <- scale_sd(wine[, 2:6])
+#' bas <- basis_pca(dat)
 #' 
 #' manip_var_of(basis = bas) ## Variable with the largest contribution
 #' manip_var_of(basis = bas, rank = 5) ## Variable with 5th-largest contribution
@@ -620,7 +619,6 @@ manip_var_of <- function(basis, rank = 1){
 #' @export
 #' @examples 
 #' library(spinifex)
-#' 
 #' dat <- scale_sd(penguins_na.rm[, 1:4])
 #' ## A grand tour path
 #' gt_path <- save_history(data = dat, tour_path = grand_tour(), max_bases = 10)
@@ -777,8 +775,8 @@ devMessage <- function(text){
 # #' @export
 # #' @examples 
 # #' ## !!This function is not meant for external use!!
-# #' dat_std <- scale_sd(wine[, 2:6])
-# #' bas <- basis_pca(dat_std)
+# #' dat <- scale_sd(wine[, 2:6])
+# #' bas <- basis_pca(dat)
 # #' mv <- manip_var_of(bas)
 # #' mt_array <- manual_tour(basis = bas, manip_var = mv)
 # #' as_history_array(mt_array, dat_std)

@@ -15,8 +15,8 @@ serves as a NULL basis, one that is variable agnostic while spacing the
 variables to have minimize variable dependence.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:6])
-bas <- basis_half_circle(dat_std)
+dat <- scale_sd(wine[, 2:6])
+bas <- basis_half_circle(dat)
 }
 \seealso{
 Other basis producing functions: 

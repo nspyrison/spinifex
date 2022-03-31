@@ -305,7 +305,11 @@ last_ggtour_env <- function(){.store$ggtour_ls}
     ## Check cycling
     if(length(.elem) != 1L & typeof(.elem) != "environment"){
       if(length(.elem) != expected_length) 
-        warning(paste0(".lapply_rep_len: `", .nms[i], "` not of length 1 or data; liable to cause cycling issues. Should it be of length 1 or data?"))
+        warning(paste0(
+          ".lapply_rep_len: argument `", .nms[i], "` (length = ", length(.elem), 
+          ") not of length 1 or data (nrow = ", expected_length,
+          "); liable to cause cycling issues. Should it be of length 1 or data?"
+        ))
       ret_vect <- rep_len(.elem, to_length)
     }else ret_vect <- .elem
     list[[i]] <<- ret_vect
@@ -1141,10 +1145,22 @@ proto_point <- function(
 #' @family ggtour proto functions
 #' @examples
 #' library(spinifex)
-#' dat     <- scale_sd(penguins_na.rm[, 1:4])
-#' clas    <- penguins_na.rm$species
-#' gt_path <- save_history(dat, grand_tour(), max = 3)
+#' dat  <- scale_sd(penguins_na.rm[, 1:4])
+#' clas <- penguins_na.rm$species
 #' 
+#' ## Manual tour
+#' bas <- basis_olda(dat, clas)
+#' mt  <- manual_tour(bas, manip_var = 2)
+#' ggt <- ggtour(mt, dat, angle = .3) +
+#'   proto_density(aes_args = list(color = clas, fill = clas)) +
+#'   proto_basis1d() +
+#'   proto_origin1d()
+#' \donttest{
+#' animate_plotly(ggt)
+#' }
+#' 
+#' ## Grand tour
+#' gt_path <- save_history(dat, grand_tour(), max = 3)
 #' ggt <- ggtour(gt_path, dat, angle = .3) +
 #'   proto_density(aes_args = list(color = clas, fill = clas)) +
 #'   proto_basis1d() +

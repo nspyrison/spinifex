@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spinifex</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.6</span>
       </span>
     </div>
 
@@ -61,7 +61,16 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.3.5" id="spinifex-v035">spinifex v0.3.5<a class="anchor" aria-label="anchor" href="#spinifex-v035"></a></h2>
+<h2 class="page-header" data-toc-text="0.3.6" id="spinifex-v036">spinifex v0.3.6<a class="anchor" aria-label="anchor" href="#spinifex-v036"></a></h2>
+<ul><li>Clean up messages in <code>manual_tour</code>
+</li>
+<li>Add more examples interacting <code>manual_tour</code> and <code>proto_density</code>, and bringing your own basis</li>
+<li>Fix a couple of odd cases in <code>basis_olda</code> &amp; <code>.lapply_rep_len</code>
+</li>
+<li>More consistent names and indenting in examples</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.3.5" id="spinifex-v035">spinifex v0.3.5<small>2022-03-09</small><a class="anchor" aria-label="anchor" href="#spinifex-v035"></a></h2>
 <ul><li>Vignettes point to github urls rather than gifs in repository</li>
 <li>
 <code><a href="../reference/proto_basis.html">proto_basis1d()</a></code> has an text_offset argument for the horizontal position of text labels</li>
@@ -139,8 +148,8 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.6" id="spinifex-v026">spinifex v0.2.6<small>2020-11-09</small><a class="anchor" aria-label="anchor" href="#spinifex-v026"></a></h2>
 <ul><li>New argument, <code>ggproto</code>, accepts a list of <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a> objects for more control over visual output</li>
-<li>New argument, <code>aes_args</code>, accepts a list of arguments to pass into the <code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code> call within <code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point()</a></code>. This is used for variable mappings, such as color, but needs to be qualified as this is standard evaluation</li>
-<li>New argument, <code>identity_args</code>, accepts a list of arguments to pass call within <code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point()</a></code>, but outside of <code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code>. This is used for scalar options or manually mapped vector such as point size or alpha</li>
+<li>New argument, <code>aes_args</code>, accepts a list of arguments to pass into the <code>aes()</code> call within <code>geom_point()</code>. This is used for variable mappings, such as color, but needs to be qualified as this is standard evaluation</li>
+<li>New argument, <code>identity_args</code>, accepts a list of arguments to pass call within <code>geom_point()</code>, but outside of <code>aes()</code>. This is used for scalar options or manually mapped vector such as point size or alpha</li>
 <li>New datasets, <code>PimaIndiansDiabetes_long</code> &amp; <code>PimaIndiansDiabetes_wide</code>
 </li>
 <li>Fixed the centering of axes across frames</li>

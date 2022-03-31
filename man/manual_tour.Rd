@@ -45,28 +45,45 @@ the radial tour of the \code{manip_var}, which is rotated from phi's starting
 position to \code{phi_max}, to \code{phi_min}, and back to the start position.
 }
 \examples{
-## Setup
-dat_std <- scale_sd(wine[, 2:6])
+library(spinifex)
+dat  <- scale_sd(wine[, 2:6])
 clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
+bas  <- basis_pca(dat)
+mv   <- manip_var_of(bas)
 manual_tour(basis = bas, manip_var = mv)
 
 ## All arguments
 manual_tour(basis = bas, manip_var = mv,
             theta = pi / 2, phi_min = pi / 16, phi_max = pi)
 
-## d = 1 case
-bas1d <- basis_pca(dat_std, d = 1)
-mv <- manip_var_of(bas1d)
-manual_tour(basis = bas1d, manip_var = mv)
-
-## Animating with ggtour() & proto_*
+## Animating with ggtour() & proto_* (d = 2 case)
 mt <- manual_tour(basis = bas, manip_var = mv)
-ggt <- ggtour(mt, dat_std, angle = .2) +
-    proto_origin() +
-    proto_point(list(color = clas, shape = clas)) +
-    proto_basis()
+ggt <- ggtour(mt, dat, angle = .2) +
+  proto_origin() +
+  proto_point(list(color = clas, shape = clas)) +
+  proto_basis()
+\donttest{
+animate_plotly(ggt)
+}
+
+## d = 1 case
+## basis could be 1- or 2D; protos_* only use 1st column
+mv  <- manip_var_of(bas)
+mt  <- manual_tour(basis = bas, manip_var = mv)
+ggt <- ggtour(mt, dat, angle = .3) +
+  proto_density(aes_args = list(color = clas, fill = clas)) +
+  proto_basis1d() +
+  proto_origin1d()
+\donttest{
+animate_plotly(ggt)
+}
+
+## Bring your own basis
+bas <- matrix(rnorm(2 * ncol(dat)), ncol = 2)
+bas <- orthonormalise(bas) ## manual_tour warns if basis isn't orthonormal
+mt  <- manual_tour(basis = bas, manip_var = 1)
+ggt <- ggtour(mt, dat, angle = .2) +
+  proto_default(aes_args = list(color = clas, shape = clas))
 \donttest{
 animate_plotly(ggt)
 }

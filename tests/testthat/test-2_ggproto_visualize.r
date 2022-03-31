@@ -238,3 +238,19 @@ test_that("facet_wrap_tour", {
   expect_equal(class(fwt_mt1d), c("gg", "ggplot"))
   expect_equal(class(fwt_gt1d), c("gg", "ggplot"))
 })
+
+
+## expect cycle warning ----
+dat  <- scale_sd(penguins_na.rm[, 1:4]) ## PENG
+clas <- flea$species                    ## FLEAS
+bas  <- matrix(c(1,2,3,4), ncol=1)      ## NON ortho bas
+
+test_that("manual tour not ortho basis", {
+  expect_warning(mt <- manual_tour(bas, manip_var = 2))
+})
+
+test_that(".lapply_rep_len cycle check", {
+  expect_warning(ggt <- ggtour(mt, dat, angle = .3) +
+    proto_density(aes_args = list(color = clas, fill = clas)))
+})
+

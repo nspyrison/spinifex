@@ -43,10 +43,22 @@ Adds \code{geom_density()} and \code{geom_rug()} of the projected data. Density
 }
 \examples{
 library(spinifex)
-dat     <- scale_sd(penguins_na.rm[, 1:4])
-clas    <- penguins_na.rm$species
-gt_path <- save_history(dat, grand_tour(), max = 3)
+dat  <- scale_sd(penguins_na.rm[, 1:4])
+clas <- penguins_na.rm$species
 
+## Manual tour
+bas <- basis_olda(dat, clas)
+mt  <- manual_tour(bas, manip_var = 2)
+ggt <- ggtour(mt, dat, angle = .3) +
+  proto_density(aes_args = list(color = clas, fill = clas)) +
+  proto_basis1d() +
+  proto_origin1d()
+\donttest{
+animate_plotly(ggt)
+}
+
+## Grand tour
+gt_path <- save_history(dat, grand_tour(), max = 3)
 ggt <- ggtour(gt_path, dat, angle = .3) +
   proto_density(aes_args = list(color = clas, fill = clas)) +
   proto_basis1d() +

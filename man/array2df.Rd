@@ -37,19 +37,19 @@ interpolated bases into a long data frame for use in ggplots.
 }
 \examples{
 ## !!This function is not meant for external use!!
-dat_std <- scale_sd(wine[, 2:6])
+dat  <- scale_sd(wine[, 2:6])
 clas <- wine$Type
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
+bas  <- basis_pca(dat)
+mv   <- manip_var_of(bas)
 
 ## Radial tour array to long df, as used in play_manual_tour()
 mt_array <- manual_tour(basis = bas, manip_var = mv)
-ls_df_frames <- array2df(basis_array = mt_array, data = dat_std,
+ls_df_frames <- array2df(basis_array = mt_array, data = dat,
                          basis_label = paste0("MyLabs", 1:nrow(bas)))
 str(ls_df_frames)
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
-gt_array <- tourr::save_history(data = dat_std, max_bases = 10)
-ls_df_frames2 <- array2df(basis_array = gt_array, data = dat_std)
+gt_array <- tourr::save_history(data = dat, max_bases = 10)
+ls_df_frames2 <- array2df(basis_array = gt_array, data = dat)
 str(ls_df_frames2)
 }

@@ -23,9 +23,8 @@ Useful for identifying a variable to change the contribution of in a manual
 tour, it's \code{manip_var} argument.
 }
 \examples{
-## Setup
-dat_std <- scale_sd(wine[, 2:6])
-bas <- basis_pca(dat_std)
+dat <- scale_sd(wine[, 2:6])
+bas <- basis_pca(dat)
 
 manip_var_of(basis = bas) ## Variable with the largest contribution
 manip_var_of(basis = bas, rank = 5) ## Variable with 5th-largest contribution

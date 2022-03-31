@@ -29,8 +29,8 @@ neighborhoods. For the more details on \code{type} see
 \code{\link[Rdimtools:aux.graphnbd]{Rdimtools::aux.graphnbd()}}.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:6])
-basis_onpp(data = dat_std)
+dat  <- scale_sd(wine[, 2:6])
+basis_onpp(data = dat)
 }
 \references{
 He X (2005). Locality Preserving Projections. PhD Thesis,

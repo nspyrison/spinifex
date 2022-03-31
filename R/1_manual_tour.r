@@ -19,15 +19,15 @@
 #' @export
 #' @family manual tour adjacent functions
 #' @examples
-#' ## Setup
-#' dat_std <- scale_sd(wine[, 2:6])
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
+#' library(spinifex)
+#' dat <- scale_sd(wine[, 2:6])
+#' bas <- basis_pca(dat)
+#' mv  <- manip_var_of(bas)
 #' create_manip_space(basis = bas, manip_var = mv)
 #' 
 #' ## d = 1 case 
-#' bas1d <- basis_pca(dat_std, d = 1)
-#' mv <- manip_var_of(bas1d)
+#' bas1d <- basis_pca(dat, d = 1)
+#' mv    <- manip_var_of(bas1d)
 #' create_manip_space(bas1d, mv)
 create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
   cn <- colnames(basis)
@@ -79,18 +79,18 @@ create_manip_space <- function(basis, manip_var = manip_var_of(basis)){
 #' @export
 #' @family manual tour adjacent functions
 #' @examples
-#' ## Setup
-#' dat_std <- scale_sd(wine[, 2:6])
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
+#' library(spinifex)
+#' dat <- scale_sd(wine[, 2:6])
+#' bas <- basis_pca(dat)
+#' mv  <- manip_var_of(bas)
 #' msp <- create_manip_space(basis = bas, manip_var = mv)
 #' rotate_manip_space(msp, theta = runif(1, max = 2 * pi),
 #'                    phi = runif(1, max = 2 * pi))
 #' 
-#' ## d = 1 case 
-#' bas1d <- basis_pca(dat_std, d = 1)
-#' mv <- manip_var_of(bas1d)
-#' msp <- create_manip_space(bas1d, mv)
+#' ## d = 1 case
+#' bas1d <- basis_pca(dat, d = 1)
+#' mv    <- manip_var_of(bas1d)
+#' msp   <- create_manip_space(bas1d, mv)
 #' rotate_manip_space(msp, theta = 0, phi = runif(1, max = 2 * pi))
 rotate_manip_space <- function(manip_space, theta, phi) {
   ## Assumptions
@@ -101,7 +101,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
   }
   if(is.na(theta))   theta <- 0L
   if(is.null(theta)) theta <- 0L
-  ### d = 2 case ###
+  ## d = 2 case ##
   if(ncol(manip_space) == 3L){
     ## Initialize
     s_theta <- sin(theta)
@@ -121,7 +121,7 @@ rotate_manip_space <- function(manip_space, theta, phi) {
                  nrow = 3L, ncol = 3L, byrow = TRUE)
     rotated_space <- manip_space %*% R3
   }
-  ### d = 1 case ###
+  ## d = 1 case ##
   if(ncol(manip_space) == 2L){
     ## Initialize
     s_phi   <- sin(phi)
@@ -171,28 +171,45 @@ rotate_manip_space <- function(manip_space, theta, phi) {
 #' @export
 #' @family manual tour adjacent functions
 #' @examples
-#' ## Setup
-#' dat_std <- scale_sd(wine[, 2:6])
+#' library(spinifex)
+#' dat  <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
+#' bas  <- basis_pca(dat)
+#' mv   <- manip_var_of(bas)
 #' manual_tour(basis = bas, manip_var = mv)
 #' 
 #' ## All arguments
 #' manual_tour(basis = bas, manip_var = mv,
 #'             theta = pi / 2, phi_min = pi / 16, phi_max = pi)
 #' 
-#' ## d = 1 case
-#' bas1d <- basis_pca(dat_std, d = 1)
-#' mv <- manip_var_of(bas1d)
-#' manual_tour(basis = bas1d, manip_var = mv)
-#' 
-#' ## Animating with ggtour() & proto_*
+#' ## Animating with ggtour() & proto_* (d = 2 case)
 #' mt <- manual_tour(basis = bas, manip_var = mv)
-#' ggt <- ggtour(mt, dat_std, angle = .2) +
-#'     proto_origin() +
-#'     proto_point(list(color = clas, shape = clas)) +
-#'     proto_basis()
+#' ggt <- ggtour(mt, dat, angle = .2) +
+#'   proto_origin() +
+#'   proto_point(list(color = clas, shape = clas)) +
+#'   proto_basis()
+#' \donttest{
+#' animate_plotly(ggt)
+#' }
+#' 
+#' ## d = 1 case
+#' ## basis could be 1- or 2D; protos_* only use 1st column
+#' mv  <- manip_var_of(bas)
+#' mt  <- manual_tour(basis = bas, manip_var = mv)
+#' ggt <- ggtour(mt, dat, angle = .3) +
+#'   proto_density(aes_args = list(color = clas, fill = clas)) +
+#'   proto_basis1d() +
+#'   proto_origin1d()
+#' \donttest{
+#' animate_plotly(ggt)
+#' }
+#' 
+#' ## Bring your own basis
+#' bas <- matrix(rnorm(2 * ncol(dat)), ncol = 2)
+#' bas <- orthonormalise(bas) ## manual_tour warns if basis isn't orthonormal
+#' mt  <- manual_tour(basis = bas, manip_var = 1)
+#' ggt <- ggtour(mt, dat, angle = .2) +
+#'   proto_default(aes_args = list(color = clas, shape = clas))
 #' \donttest{
 #' animate_plotly(ggt)
 #' }
@@ -207,6 +224,7 @@ manual_tour <- function(basis,
   basis <- as.matrix(basis)
   p <- nrow(basis)
   d <- ncol(basis)
+  if(d > 2L | d < 1L) stop("manual_tour only defined for 1- & 2D projections.")
   if(length(manip_var) != 1L) stop("manual_tour: manip_var expected with length 1.")
   if(manip_var < 1L | manip_var > p)
     stop("manual_tour: manip_var expected to be between 1 and nrow(basis).")
@@ -225,13 +243,13 @@ manual_tour <- function(basis,
     ### d = 1 case
     phi_start <- acos(basis[manip_var, 1L])
     theta <- NA
-  }else{stop("manual_tour only defined for 1- or 2-D projections.")}
+  }
   
   if(is.na(theta) == FALSE)
     if(theta < 0L)   devMessage("theta is negative")
   if(phi_start < 0L) devMessage("phi_start is negative")
   
-  ### Shift phi start in be in-phase between [-pi/2, pi/2]
+  ## Shift phi start in be in-phase between [-pi/2, pi/2]
   if(phi_start > pi / 2L){
     devMessage("phi_start > pi / 2; phi_start <- phi_start - pi & phi_max <- -phi_max")
     phi_start <- phi_start - pi
@@ -241,11 +259,12 @@ manual_tour <- function(basis,
     devMessage("phi_start < -pi / 2; phi_start <- phi_start + pi")
     phi_start <- phi_start + pi
   }
-  ## Ensure correct order of phi_min, phi_start, phi_max
-  if((phi_min < abs(phi_start)) == FALSE)
-    message("Phi is less than phi_min, please set phi_start above ", round(phi_min, 2L))
-  if((phi_max > abs(phi_start)) == FALSE)
-    message("Phi is greater than phi_max, please set phi_start below ", round(phi_max, 2L))
+  # ## Ensure correct order of phi_min, phi_start, phi_max
+  # ## I don't think this is a valid concern after shifting in phase.
+  # if((phi_min < phi_start) == FALSE)
+  #   devMessage("basis's phi is less than phi_min, should phi_min be less than ", round(phi_start, 2L), "?")
+  # if((phi_max > phi_start) == FALSE)
+  #   devMessage("basis's phi is greater than phi_max, should phi_max be greater than ", round(phi_max, 2L), "?")
   
   ## single basis array, desirable downstream
   .dn <- dimnames(basis)
@@ -256,7 +275,7 @@ manual_tour <- function(basis,
   attr(basis_array, "phi_start") <- phi_start
   attr(basis_array, "phi_min")   <- phi_min
   attr(basis_array, "phi_max")   <- phi_max
-  attr(basis_array, "data")      <- data ## Can be NULL
+  attr(basis_array, "data")      <- data  ## Can be NULL
   basis_array
 }
 
@@ -272,11 +291,11 @@ manual_tour <- function(basis,
 #' @family manual tour adjacent functions
 #' @examples
 #' ## This function is not meant for external use
-#' dat_std <- scale_sd(wine[, 2:6])
+#' dat  <- scale_sd(wine[, 2:6])
 #' clas <- wine$Type
-#' bas <- basis_pca(dat_std)
-#' mv <- manip_var_of(bas)
-#' mt <- manual_tour(bas, mv)
+#' bas  <- basis_pca(dat)
+#' mv   <- manip_var_of(bas)
+#' mt   <- manual_tour(bas, mv)
 #' 
 #' interp <- spinifex:::interpolate_manual_tour(basis_array = mt, angle = .1)
 #' dim(interp)

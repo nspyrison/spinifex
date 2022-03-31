@@ -2,21 +2,21 @@
   library("spinifex")
   library("testthat")
   r_idx <- c(1:3, (nrow(wine) - 2):nrow(wine))
-  sub <- wine[r_idx, ]
-  dat_std <- scale_sd(sub[, 2:6])
-  clas    <- sub$Type
-  bas     <- basis_pca(dat_std)
-  mv      <- manip_var_of(bas)
+  sub  <- wine[r_idx, ]
+  dat  <- scale_sd(sub[, 2:6])
+  clas <- sub$Type
+  bas  <- basis_pca(dat)
+  mv   <- manip_var_of(bas)
 }
 
 ##
 ## MATH AND TRANSFORMS -----
 ##
 
-rb <- tourr::basis_random(ncol(dat_std), 2)
+rb <- tourr::basis_random(ncol(dat), 2)
 ib <- tourr::basis_init(n = 4, 2)
-b_pca    <- basis_pca(dat_std)
-b_guide  <- basis_guided(data = dat_std, index_f = tourr::holes())
+b_pca    <- basis_pca(dat)
+b_guide  <- basis_guided(data = dat, index_f = tourr::holes())
 diag4    <- diag(4)
 not_orth <- matrix(sample(1:16, 16), ncol=4)
 
@@ -46,17 +46,17 @@ ret_single <- array2df(basis_array = array_single)
 
 ## Radial tour array to long df, as used in play_manual_tour()
 mt_array <- manual_tour(basis = bas, manip_var = mv)
-ret_mt <- array2df(basis_array = mt_array, data = dat_std,
+ret_mt <- array2df(basis_array = mt_array, data = dat,
                        basis_label = paste0("MyLabs", 1:nrow(bas)),
-                       data_label = paste0("obs# ", 1:nrow(dat_std)))
+                       data_label = paste0("obs# ", 1:nrow(dat)))
 
 
 ## tourr::save_history tour array to long df, as used in play_tour_path()
-gt_array <- save_history(data = dat_std, max_bases = 10)
+gt_array <- save_history(data = dat, max_bases = 10)
 class(gt_array) <- "array"
-ret_gt <- array2df(basis_array = gt_array, data = dat_std,
+ret_gt <- array2df(basis_array = gt_array, data = dat,
                    basis_label = paste0("MyLabs", 1:nrow(bas)),
-                   data_label = paste0("obs# ", 1:nrow(dat_std)))
+                   data_label = paste0("obs# ", 1:nrow(dat)))
 
 test_that("array2df: class", {
   expect_equal(class(ret_single), "list")
@@ -111,9 +111,9 @@ test_that("theme_spinifex: class", {
 ##
 
 ### basis_* -----
-b1 <- basis_pca(dat_std)
-b2 <- basis_half_circle(dat_std)
-b3 <- basis_odp(dat_std, clas)
+b1 <- basis_pca(dat)
+b2 <- basis_half_circle(dat)
+b3 <- basis_odp(dat, clas)
 b4 <- basis_olda(wine[, 2:6], wine$Type)
 
 test_that("basis_*", {
@@ -136,8 +136,8 @@ test_that("basis_*", {
 
 ### basis_guided -----
 
-ret_holes <- basis_guided(data = dat_std, index_f = tourr::holes())
-ret_cmass <- basis_guided(data = dat_std, index_f = tourr::cmass(),
+ret_holes <- basis_guided(data = dat, index_f = tourr::holes())
+ret_cmass <- basis_guided(data = dat, index_f = tourr::cmass(),
                           alpha = .4, cooling = .9, max.tries = 30)
 
 test_that("basis_guided: class and dim", {
@@ -161,7 +161,7 @@ test_that("manip_var_of: class and dim", {
 
 ## scale functions ----
 s1 <- scale_sd(mtcars)
-s2 <- scale_01(dat_std)
+s2 <- scale_01(dat)
 s3 <- scale_01(as.matrix(mtcars))
 
 test_that("scale, class, bounds, dim", {
@@ -175,7 +175,7 @@ test_that("scale, class, bounds, dim", {
   expect_equal(min(s3), 0)
   expect_equal(max(s3), 1)
   expect_equal(dim(s1), dim(mtcars))
-  expect_equal(dim(s2), dim(dat_std))
+  expect_equal(dim(s2), dim(dat))
   expect_equal(dim(s3), dim(mtcars))
 })
 

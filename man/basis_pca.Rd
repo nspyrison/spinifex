@@ -16,8 +16,8 @@ The orthogonal linear components of the variables in the next largest
 direction of variance.
 }
 \examples{
-dat_std <- scale_sd(wine[, 2:6])
-basis_pca(data = dat_std)
+dat <- scale_sd(wine[, 2:6])
+basis_pca(data = dat)
 }
 \seealso{
 \code{\link[Rdimtools:do.pca]{Rdimtools::do.pca}}

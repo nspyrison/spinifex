@@ -24,15 +24,15 @@ the manipulation space from the given basis right concatenated with a zero
 vector, with \code{manip_var} set to 1.
 }
 \examples{
-## Setup
-dat_std <- scale_sd(wine[, 2:6])
-bas <- basis_pca(dat_std)
-mv <- manip_var_of(bas)
+library(spinifex)
+dat <- scale_sd(wine[, 2:6])
+bas <- basis_pca(dat)
+mv  <- manip_var_of(bas)
 create_manip_space(basis = bas, manip_var = mv)
 
 ## d = 1 case 
-bas1d <- basis_pca(dat_std, d = 1)
-mv <- manip_var_of(bas1d)
+bas1d <- basis_pca(dat, d = 1)
+mv    <- manip_var_of(bas1d)
 create_manip_space(bas1d, mv)
 }
 \seealso{
