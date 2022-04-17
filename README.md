@@ -38,7 +38,7 @@ __Manual tour__
 ## Getting started
 ```
 #install.packages("spinifex")             ## Install from CRAN
-library("spinifiex")                      ## Load into session
+library("spinifex")                       ## Load into session
 run_app("radial_tour")                    ## Run a local shiny app, showing radial tours
 vignette("getting started with spinifex") ## Introduction to tours and spinifex
 vignette("ggproto api")                   ## Introduction to the new ggproto api
