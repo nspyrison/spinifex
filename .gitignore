@@ -16,3 +16,5 @@ Meta/
 !vignettes/*.gif
 /doc/
 /Meta/
+
+inst/shiny_apps/radial_tour/rsconnect/*
