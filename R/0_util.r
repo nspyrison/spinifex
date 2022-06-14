@@ -409,7 +409,8 @@ basis_pca <- function(data, d = 2){
 #' clas <- wine$Type
 #' basis_olda(data = dat, class = clas)
 basis_olda <- function(data, class, d = 2){
-  #lda <- MASS::lda(class ~ ., data = data.frame(data, class))$scaling
+  ####lda <- MASS::lda(class ~ ., data = data.frame(data, class))$scaling
+  #lda <- MASS::lda(data.frame(data), class)$scaling ## not only returns k-1 components, :()
   #ret <- tourr::orthonormalise(lda)[, 1L:d, drop = FALSE]
   ret <- Rdimtools::do.olda(X = as.matrix(data),
                             label = as.factor(class),
