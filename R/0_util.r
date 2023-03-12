@@ -13,8 +13,8 @@
 #' @return Single logical, whether or not the matrix is orthonormal.
 #' @export
 #' @examples 
-#' is_orthonormal(tourr::basis_random(n = 6))
-#' is_orthonormal(matrix(1:12, ncol = 2), tol = 0.01)
+#' spinifex::is_orthonormal(tourr::basis_random(n = 6))
+#' spinifex::is_orthonormal(matrix(1:12, ncol = 2), tol = 0.01)
 is_orthonormal <- function(x, tol = 0.001) {
   if(is.numeric(x) == FALSE) stop("'x', expected to be numeric and coercable to matrix.")
   x <- as.matrix(x)

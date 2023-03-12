@@ -21,6 +21,6 @@ at a right angle with the others, and each column has a norm
 length of 1. This must be true for a projection to be linear.
 }
 \examples{
-is_orthonormal(tourr::basis_random(n = 6))
-is_orthonormal(matrix(1:12, ncol = 2), tol = 0.01)
+spinifex::is_orthonormal(tourr::basis_random(n = 6))
+spinifex::is_orthonormal(matrix(1:12, ncol = 2), tol = 0.01)
 }

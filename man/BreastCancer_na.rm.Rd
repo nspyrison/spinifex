@@ -42,7 +42,9 @@ with missing attribute values and duplicate rows removed.
 This is a cleaned subset of \code{mlbench}'s \code{BreastCancer}.
 See \code{help(BreastCancer, package = "mlbench")} for the original.
 
-Replicating this dataset:\preformatted{require("mlbench")
+Replicating this dataset:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{require("mlbench")
 data(BreastCancer)
 
 raw <- BreastCancer
@@ -53,7 +55,7 @@ d <- apply(d, 2L, as.integer)
 d <- data.frame(d, Class = as.factor(raw$Class[idx]))
 BreastCancer_na.rm <- d
 ## save(BreastCancer_na.rm, file = "./data/BreastCancer_na.rm.rda")
-}
+}\if{html}{\out{</div>}}
 }
 \examples{
 library(spinifex)

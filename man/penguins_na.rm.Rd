@@ -37,13 +37,15 @@ size (flipper length, body mass, bill dimensions), and sex.
 \details{
 This is a cleaned subset of \code{palmerpenguins::penguins}.
 
-Replicating this dataset:\preformatted{require(palmerpenguins)
+Replicating this dataset:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{require(palmerpenguins)
 d <- palmerpenguins::penguins
 d <- d[complete.cases(d), ] ## Remove missing, 2 obs of numeric and several in sex
 d <- d[, c(3:6, 1, 7, 2)]   ## Numeric to front, group factors, remove year
 penguins_na.rm <- as.data.frame(d) ## Remove \{tibble\} dependency
 ## save(penguins_na.rm, file = "./data/penguins_na.rm.rda")
-}
+}\if{html}{\out{</div>}}
 }
 \examples{
 library(spinifex)

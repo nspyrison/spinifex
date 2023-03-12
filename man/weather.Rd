@@ -55,13 +55,15 @@ only for repeatable demonstration of various data science operations.
 
 This is a cleaned subset of \code{rattle::weather}.
 
-Replicating this dataset:\preformatted{require("rattle")
+Replicating this dataset:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{require("rattle")
 d <- rattle::weather[, c(1, 3:7, 9, 12:21, 23, 22, 24)]
 d <- d[complete.cases(d), ] ## Remove ~12 row-wise incomplete rows
 d <- as.data.frame(d)  ## Remove tibble dependency
 weather_na.rm <- d
 ## save(weather_na.rm, file = "./data/weather_na.rm.rda")
-}
+}\if{html}{\out{</div>}}
 }
 \examples{
 library(spinifex)

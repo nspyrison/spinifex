@@ -43,10 +43,12 @@ The Type variable has been transformed into a categorical variable.
 The data contains no missing values and consist of only numeric data, with a
 three class target variable (Type) for classification.
 
-Replicating this dataset:\preformatted{require("rattle")
+Replicating this dataset:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{require("rattle")
 str(rattle::wine)
 ## save(wine, file = "./data/wine.rda")
-}
+}\if{html}{\out{</div>}}
 }
 \examples{
 library(spinifex)

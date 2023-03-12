@@ -37,7 +37,9 @@ and mass have been set to NA, see also Wahba et al (1995) and Ripley (1996).
 This is a cleaned subset of \verb{mlbench's} \code{PimaIndiansDiabetes2}.
 See \code{help(PimaIndiansDiabetes2, package = "mlbench")}.
 
-Replicating this dataset:\preformatted{require("mlbench")
+Replicating this dataset:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{require("mlbench")
 data(PimaIndiansDiabetes2)
 
 d <- PimaIndiansDiabetes2
@@ -45,7 +47,7 @@ d <- d[, c(1:3, 6:9)] ## Remove 2 colulmns with the most NAs
 d <- d[complete.cases(d), ] ## Remove ~44 row-wise incomplete rows
 PimaIndiansDiabetes_long <- d
 ## save(PimaIndiansDiabetes_long, file = "./data/PimaIndiansDiabetes_long.rda")
-}
+}\if{html}{\out{</div>}}
 }
 \examples{
 library(spinifex)
