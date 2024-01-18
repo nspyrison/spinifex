@@ -27,7 +27,7 @@ suppressWarnings( ## suppress 8hr deprecation warning
 
 test_that("render_, class and dim", {
   expect_equal(class(ret) , c("gg", "ggplot"))
-  expect_equal(length(ret), 9L)
+  expect_equal(length(ret), length(ggplot2::ggplot()))
 })
 
 ### render_gganimate -----

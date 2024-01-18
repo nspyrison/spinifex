@@ -77,10 +77,11 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 
 test_that("view_frame: gganimate class and length", {
+  expected_length <- length(ggplot2::ggplot())
   expect_equal(class(ret_light), c("gg", "ggplot"))
   expect_equal(class(ret_heavy), c("gg", "ggplot"))
-  expect_equal(length(ret_light), 9L)
-  expect_equal(length(ret_heavy), 9L)
+  expect_equal(length(ret_light), expected_length)
+  expect_equal(length(ret_heavy), expected_length)
 })
 
 
@@ -96,9 +97,10 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 
 test_that("view_manip_space: gganimate class and length", {
+  expected_length <- length(ggplot2::ggplot())
   expect_equal(class(ret_light), c("gg", "ggplot"))
   expect_equal(class(ret_heavy), c("gg", "ggplot"))
-  expect_equal(length(ret_light), 9L)
-  expect_equal(length(ret_heavy), 9L)
+  expect_equal(length(ret_light), expected_length)
+  expect_equal(length(ret_heavy), expected_length)
 })
 
