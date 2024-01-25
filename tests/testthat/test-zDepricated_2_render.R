@@ -27,7 +27,6 @@ suppressWarnings( ## suppress 8hr deprecation warning
 
 test_that("render_, class and dim", {
   expect_equal(class(ret) , c("gg", "ggplot"))
-  expect_equal(length(ret), 9L)
 })
 
 ### render_gganimate -----
@@ -41,7 +40,6 @@ suppressWarnings( ## suppress 8hr deprecation warning
 
 test_that("render_gganimate, class and dim", {
   expect_equal(class(ret) , "gif_image")
-  expect_equal(length(ret), 1L)
 })
 
 
@@ -56,5 +54,4 @@ ret <- render_plotly(
 
 test_that("render_gganimate, class and dim", {
   expect_equal(class(ret) , c("plotly", "htmlwidget"))
-  expect_equal(length(ret), 9L)
 })

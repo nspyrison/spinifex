@@ -3,6 +3,7 @@
 \docType{package}
 \name{spinifex}
 \alias{spinifex}
+\alias{spinifex-package}
 \title{spinifex}
 \description{
 \code{spinifex} is a package that extends the package \code{tourr}.
@@ -20,4 +21,13 @@ GitHub: \url{https://github.com/nspyrison/spinifex}
 }
 \seealso{
 \code{\link[=manual_tour]{manual_tour()}} \code{\link[=ggtour]{ggtour()}} \code{\link[=proto_default]{proto_default()}}
+}
+\author{
+\strong{Maintainer}: Nicholas Spyrison \email{spyrison@gmail.com} (\href{https://orcid.org/0000-0002-8417-0212}{ORCID})
+
+Authors:
+\itemize{
+  \item Dianne Cook (\href{https://orcid.org/0000-0002-3813-7155}{ORCID}) [thesis advisor]
+}
+
 }

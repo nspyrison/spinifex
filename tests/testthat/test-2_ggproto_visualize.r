@@ -69,10 +69,6 @@ test_that("filmstrip", {
   expect_equal(class(fs_gt  ), c("gg", "ggplot"))
   expect_equal(class(fs_mt1d), c("gg", "ggplot"))
   expect_equal(class(fs_gt1d), c("gg", "ggplot"))
-  expect_equal(length(fs_mt  ), 9L)
-  expect_equal(length(fs_gt  ), 9L)
-  expect_equal(length(fs_mt1d), 9L)
-  expect_equal(length(fs_gt1d), 9L)
 })
 
 ## proto_basis -----

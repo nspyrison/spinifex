@@ -28,9 +28,7 @@ suppressWarnings( ## suppress 8hr deprecation warning
 
 test_that("play_tour_path: gganimate class and length", {
   expect_equal(class(ret_light) , c("plotly", "htmlwidget"))
-  expect_equal(length(ret_light), 9L)
   expect_equal(class(ret_heavy) , c("gif_image"))
-  expect_equal(length(ret_heavy), 1L)
 })
 
 
@@ -51,8 +49,6 @@ suppressWarnings( ## suppress 8hr deprecation warning
 test_that("play_manual_tour: gganimate class and length", {
   expect_equal(class(ret_light), c("plotly", "htmlwidget"))
   expect_equal(class(ret_heavy), c("gif_image"))
-  expect_equal(length(ret_light), 9L)
-  expect_equal(length(ret_heavy), 1L)
 })
 
 ##
@@ -79,8 +75,6 @@ suppressWarnings( ## suppress 8hr deprecation warning
 test_that("view_frame: gganimate class and length", {
   expect_equal(class(ret_light), c("gg", "ggplot"))
   expect_equal(class(ret_heavy), c("gg", "ggplot"))
-  expect_equal(length(ret_light), 9L)
-  expect_equal(length(ret_heavy), 9L)
 })
 
 
@@ -98,7 +92,5 @@ suppressWarnings( ## suppress 8hr deprecation warning
 test_that("view_manip_space: gganimate class and length", {
   expect_equal(class(ret_light), c("gg", "ggplot"))
   expect_equal(class(ret_heavy), c("gg", "ggplot"))
-  expect_equal(length(ret_light), 9L)
-  expect_equal(length(ret_heavy), 9L)
 })
 

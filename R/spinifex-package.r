@@ -16,7 +16,7 @@
 #' @name spinifex
 #' @docType package
 #' @seealso [manual_tour()] [ggtour()] [proto_default()]
-NULL
+"_PACKAGE"
 
 ## Print message -----
 #### prints upon first attaching the package
@@ -38,7 +38,7 @@ NULL
 # #' @importFrom tourr grand_tour guided_tour holes cmass lda_pp local_tour
 # #' @importFrom tourr little_tour dependence_tour basis_random basis_init
 # #' @importFrom tourr sphere_data
-# ## @export tourr::save_history() ## don't import made a mute wraper for it.
+# ## @export tourr::save_history() ## don't import made a mute wrapper for it.
 # ## tourr data sets
 # #### Error: object 'flea' is not exported by 'namespace:tourr'
 # #' @importFrom tourr flea olive ozone places ratcns laser tao flea
