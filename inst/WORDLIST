@@ -166,6 +166,7 @@ dontrun's
 donttest's
 roxygen
 ORCID
+testthat
 
 
 ## Last line needs to be blank

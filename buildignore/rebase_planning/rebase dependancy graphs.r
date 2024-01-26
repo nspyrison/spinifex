@@ -1,6 +1,7 @@
 ## Depends on:
-# remotes::install_bioc("Rgraphviz")
-# remotes::install_github("kcf-jackson/funGraphs")
+#' @examples 
+#' remotes::install_bioc("Rgraphviz")
+#' remotes::install_github("kcf-jackson/funGraphs")
 
 #Working from:
 browseURL("https://github.com/kcf-jackson/funGraphs#usage-1")

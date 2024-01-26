@@ -64,8 +64,10 @@ gt1d_path <- save_history(dat, grand_tour(d = 1), 10)
 dim(gt1d_path)
 
 ## A holes guided tour path
-holes_path <- save_history(dat, guided_tour(holes(), max.tries = 100))
+holes_path <- save_history(dat, guided_tour(holes(), max.tries = 10))
 dim(holes_path)
+
+## These are basis_arrays to be used in ?spinifex::ggtour()
 }
 \seealso{
 \code{\link[tourr:save_history]{tourr::save_history}}

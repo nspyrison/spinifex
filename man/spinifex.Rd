@@ -2,8 +2,8 @@
 % Please edit documentation in R/spinifex-package.r
 \docType{package}
 \name{spinifex}
-\alias{spinifex}
 \alias{spinifex-package}
+\alias{spinifex}
 \title{spinifex}
 \description{
 \code{spinifex} is a package that extends the package \code{tourr}.
