@@ -714,7 +714,7 @@ theme_spinifex <- function(...){
       strip.text       = element_text(        ## Facet strip spacing
         margin = margin(b = 3L, t = 3L)),
       strip.background =                      ## Facet strip
-        element_rect(size = .4, color = "grey20", fill = "grey90"),
+        element_rect(linewidth = .4, color = "grey20", fill = "grey90"),
       ...)                                    ## Ellipsis trumps defaults
   )
 }

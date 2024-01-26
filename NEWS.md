@@ -1,3 +1,12 @@
+
+# spinifex v0.3.7
+
+- Changes for packages documentation as requirements changed
+- Replace `size` with `linetype` in line geoms
+- Replace `..ndensity..` with `after_stat(ndensity)` in density geoms
+- Removed length checks from tests as ggplot2 plans a change
+- Fixed a change in behavior in testthat
+
 # spinifex v0.3.6
 
 - Clean up messages in `manual_tour`

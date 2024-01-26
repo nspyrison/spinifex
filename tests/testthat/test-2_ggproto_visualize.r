@@ -2,6 +2,7 @@
 {
   library("spinifex")
   library("testthat")
+  library("ggplot2")
   
   r_idx <- 1L:10L
   dat   <- scale_sd(wine[r_idx, 2L:5L]) ## small chunk for speed.
@@ -246,7 +247,9 @@ test_that("manual tour not ortho basis", {
 })
 
 test_that(".lapply_rep_len cycle check", {
-  expect_warning(ggt <- ggtour(mt, dat, angle = .3) +
-    proto_density(aes_args = list(color = clas, fill = clas)))
+  expect_warning(expect_warning( ## 2x warnign from fill and color
+    ggt <- ggtour(mt, dat, angle = .3) +
+    proto_density(aes_args = list(color = clas, fill = clas))
+  ))
 })
 

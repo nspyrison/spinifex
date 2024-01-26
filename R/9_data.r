@@ -84,7 +84,7 @@
 #'   \item pressure, Diastolic blood pressure (mm Hg)
 #'   \item triceps, Triceps skin fold thickness (mm)
 #'   \item insulin, 2-Hour serum insulin (mu U/ml)
-#'   \item mass, Body mass index (weight in kg/(height in m)\^2)
+#'   \item mass, Body mass index (weight in kg/(height in m, squared))
 #'   \item pedigree, Diabetes pedigree function
 #'   \item age, Age (years)
 #'   \item diabetes, Class variable (test for diabetes), either "pos" or "neg"
@@ -139,7 +139,7 @@
 #'   \item pregnant, Number of times pregnant
 #'   \item glucose, Plasma glucose concentration (glucose tolerance test)
 #'   \item pressure, Diastolic blood pressure (mm Hg)
-#'   \item mass, Body mass index (weight in kg/(height in m)\^2)
+#'   \item mass, Body mass index (weight in kg/(height in m, squared))
 #'   \item pedigree, Diabetes pedigree function
 #'   \item age, Age (years)
 #'   \item diabetes, Class variable (test for diabetes), either "pos" or "neg"

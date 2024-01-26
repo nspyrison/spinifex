@@ -189,3 +189,4 @@ test_that("other basis_* class, orth, ", {
   expect_warning(pz <- pan_zoom(mtcars))
   expect_equal(pz, map_absolute(mtcars))
 })
+

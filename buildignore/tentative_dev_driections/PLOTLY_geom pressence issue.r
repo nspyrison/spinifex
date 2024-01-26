@@ -79,7 +79,7 @@ gg <- ggplot(gapminder, aes(gdpPercap, lifeExp, color = continent)) +
 ggplotly(gg)
 
 ## as 1d density
-gg <- ggplot(gapminder, aes(x=gdpPercap, y=..ndensity.., color = continent)) +
+gg <- ggplot(gapminder, aes(x=gdpPercap, y=after_stat(ndensity), color = continent)) +
   geom_density(aes(frame = year, fill = continent)) +
   scale_x_log10() + theme_minimal() + theme(legend.position = "off")
 ## theme, limits, and plotly::layout(h/w) don't impair density alone
@@ -90,7 +90,7 @@ df <- gapminder %>%
   dplyr::filter(continent %in% c("Asia", "Americas")) %>% 
   spinifex::scale_01
 dummy_bas <- spinifex::basis_pca(dat[,3:6])
-gg <- ggplot(dat, aes(x=gdpPercap, y=..ndensity.., color = continent)) +
+gg <- ggplot(dat, aes(x=gdpPercap, y=after_stat(ndensity), color = continent)) +
   geom_density(aes(frame = year, fill = continent)) +
   #scale_x_log10() +
   spinifex::draw_basis(
