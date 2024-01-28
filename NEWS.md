@@ -6,6 +6,7 @@
 - Replace `..ndensity..` with `after_stat(ndensity)` in density geoms
 - Removed length checks from tests as ggplot2 plans a change
 - Fixed a change in behavior in testthat
+- Moved `gganimate` documentation from `\\donttest` to `\\dontrun` in alignment with `gganimate` documentation. (Else somee OS builds fail, with no mechanism to troubleshoot)
 
 # spinifex v0.3.6
 
@@ -19,7 +20,7 @@
 
 - Vignettes point to github urls rather than gifs in repository
 - `proto_basis1d()` has an text_offset argument for the horizontal position of text labels
-- Change roxygen documentation \\dontrun's to \\donttest's
+- Change roxygen documentation `\\dontrun`'s to `\\donttest`'s
 - Clarify examples of deprecated functions
 - License changed to MIT (from CC BY-NC-SA 4.0, apparently not FOSS)
 

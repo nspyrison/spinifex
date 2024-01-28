@@ -60,7 +60,7 @@ mv       <- manip_var_of(bas)
 mt       <- manual_tour(basis = bas, manip_var = mv)
 mt_df_ls <- array2df(basis_array = mt, data = dat_std)
 
-\donttest{
+\dontrun{
 render_gganimate(frames = mt_df_ls)
 
 require("ggplot2")
