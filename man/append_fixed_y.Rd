@@ -47,13 +47,14 @@ Other ggtour proto functions:
 \code{\link{ggtour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
-\code{\link{proto_density2d}()},
 \code{\link{proto_density}()},
+\code{\link{proto_density2d}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},
 \code{\link{proto_hline0}()},
 \code{\link{proto_origin}()},
 \code{\link{proto_point}()},
-\code{\link{proto_text}()}
+\code{\link{proto_text}()},
+\code{\link{proto_text_repel}()}
 }
 \concept{ggtour proto functions}

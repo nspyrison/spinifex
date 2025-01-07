@@ -6,7 +6,7 @@
 \usage{
 proto_frame_cor2(
   text_size = 4,
-  row_index = TRUE,
+  row_index = NULL,
   xy_position = c(0.7, -0.1),
   ...
 )

@@ -382,7 +382,7 @@ basis_pca <- function(data, d = 2){
   #ret <- stats::prcomp(data)$rotation[, 1L:d, drop = FALSE]
   ret <- Rdimtools::do.pca(X = as.matrix(data), ndim = d)$projection
   rownames(ret) <- colnames(data)
-  colnames(ret) <- paste0("PC", 1:d)
+  colnames(ret) <- paste0("PC", 1L:d)
   ret
 }
 
@@ -414,9 +414,9 @@ basis_olda <- function(data, class, d = 2){
   #ret <- tourr::orthonormalise(lda)[, 1L:d, drop = FALSE]
   ret <- Rdimtools::do.olda(X = as.matrix(data),
                             label = as.factor(class),
-                            ndim = ncol(data))$projection[, 1:d, drop = FALSE]
+                            ndim = ncol(data))$projection[, 1L:d, drop = FALSE]
   rownames(ret) <- colnames(data)
-  colnames(ret) <- paste0("oLD", 1:d)
+  colnames(ret) <- paste0("oLD", 1L:d)
   ret
 }
 
@@ -460,7 +460,7 @@ basis_odp <- function(data, class, d = 2, type = c("proportion", 0.1), ...){
   ret
 }
 
-#' The basis of Orthogonal Neighborhood Preserving Projection (OLPP)
+#' The basis of Orthogonal Neighborhood Preserving Projection (ONPP)
 #' 
 #' Orthogonal Neighborhood Preserving Projection (ONPP) is an unsupervised 
 #' linear dimension reduction method. It constructs a weighted data graph from 
@@ -602,7 +602,7 @@ manip_var_of <- function(basis, rank = 1){
 #' @param max_bases The maximum number of new bases to generate. 
 #' Some tour paths (like the guided tour) may generate less than the maximum. 
 #' Defaults to 10.
-#' @param start First basis, is appended as first frame grand tour if possible.
+#' @param start Optional basis to start at.
 #' @param rescale Whether or not to rescale all variables to range (0,1). 
 #' Defaults to FALSE.
 #' @param sphere Whether or not to sphere (whiten) covariance matrix to the 
@@ -647,15 +647,13 @@ save_history <- function(
   ## Mutable version of tourr::save_history, with slightly different arg defaults
   if(verbose == FALSE){
     .mute <- utils::capture.output(
-      ret <- eval(.expr)
-    )
+      ret <- eval(.expr) %>% suppressMessages()
+    ) 
   } else ret <- eval(.expr)
   
-  ## Append start as first target basis
-  #### if tour_path is a grand tour, start isn't first frame, and dim match
+  ## if tour_path is a grand tour, ensure start is first frame
   if(is.null(start) == FALSE)
     if(attr(tour_path, "name") == "grand" &
-       #any(matrix(ret[,, 1L], ncol = 2) != start) & ## Check for same
        all(dim(start) == dim(ret)[1L:2L]))
       ret <- array(c(start, ret), dim = dim(ret) + c(0L, 0L, 1L))
   
@@ -752,14 +750,15 @@ is_any_layer_class <- function(ggplot, class_nm = "GeomDensity"){
 #' Send a message if the 4th chunk of the package version is 9000.
 #' @param text A character string to message() if package version is _9000.
 devMessage <- function(text){
-  version4 <-  utils::packageVersion(pkg = "spinifex")[1L, 4L]
-  if(is.na(version4) == FALSE)
+  try({
+    version4 <- utils::packageVersion(pkg = "spinifex")[1L, 4L] %>% as.numeric()
     if(version4 == 9000L)
       message(paste0("devMessage: ", text))
+  })
 }
 
 
-# ### as_history_array ----
+# ### as_history_array ---
 # #' Changes an array of bases into a "history_array" class for use 
 # #' in `tourr::interpolate()`.
 # #' 

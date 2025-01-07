@@ -166,6 +166,17 @@ test_that("proto_text", {
   expect_equal(class(pt_gt), c("gg", "ggplot"))
 })
 
+## proto_text_repel -----
+pt_mt <- ggtour(mt, angle = 1L) + proto_text_repel()
+pt_gt <- ggtour(gt, angle = 1L) + proto_text_repel()
+test_that("proto_text", {
+  expect_error(ggtour(gt1d, angle = 1L) + proto_text())
+  expect_equal(class(pt_mt), c("gg", "ggplot"))
+  expect_equal(class(pt_gt), c("gg", "ggplot"))
+  expect_error(animate_plotly(pt_mt))
+  expect_error(animate_plotly(pt_gt))
+})
+
 ## proto_hex -----
 ph_mt <- ggtour(mt, angle = 1L, data = dat) + proto_hex()
 ph_gt <- ggtour(gt, angle = 1L, data = dat) + proto_hex()
@@ -251,5 +262,13 @@ test_that(".lapply_rep_len cycle check", {
     ggt <- ggtour(mt, dat, angle = .3) +
     proto_density(aes_args = list(color = clas, fill = clas))
   ))
+})
+
+## plot_pca -----
+pp  <- plot_pca(dat)
+pps <- plot_pca_scree(dat)
+test_that("plot_pca", {
+  expect_equal(class(pp ), c("gg", "ggplot"))
+  expect_equal(class(pps), c("patchwork", "gg", "ggplot"))
 })
 

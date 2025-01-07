@@ -21,8 +21,8 @@ server <- function(input, output, session) {
     if(input$dat == "flea")           return(tourr::flea)
     if(input$dat == "olive")          return(tourr::olive)
     if(input$dat == "wine")           return(spinifex::wine)
-    if(input$dat == "weather")        return(spinifex::weather)
-    if(input$dat == "breast cancer")  return(spinifex::breastcancer)
+    if(input$dat == "weather")        return(spinifex::weather_na.rm)
+    if(input$dat == "breast cancer")  return(spinifex::BreastCancer_na.rm)
     if(input$dat == "diabetes, long") return(spinifex::PimaIndiansDiabetes_long)
     if(input$dat == "diabetes, wide") return(spinifex::PimaIndiansDiabetes_wide)
     if(input$dat == "Upload file"){

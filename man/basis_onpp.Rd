@@ -2,7 +2,7 @@
 % Please edit documentation in R/0_util.r
 \name{basis_onpp}
 \alias{basis_onpp}
-\title{The basis of Orthogonal Neighborhood Preserving Projection (OLPP)}
+\title{The basis of Orthogonal Neighborhood Preserving Projection (ONPP)}
 \usage{
 basis_onpp(data, d = 2, type = c("knn", sqrt(nrow(data))))
 }

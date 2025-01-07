@@ -13,14 +13,12 @@
 #' @param angle Target angle (radians) for interpolation frames between 
 #' frames of the `basis_array`. Defaults to .05. 
 #' To opt out of interpolation set to NA or 0.
-#' @param basis_label Labels for basis display, a character 
-#' vector with length equal to the number of variables.
-#' Defaults to NULL; 3 character abbreviation from colnames of data or
-#' rownames of basis.
+#' @param basis_label `plotly` tooltip labels for the basis. 
+#' Defaults to NULL; 3 character abbreviation of the rownames of basis.
+#' @param data_label `plotly` tooltip labels for the data. 
+#' Defaults to the NULL, rownames and/or numbers of data.
 #' @param do_center_frame Whether or not to center the mean within each 
 #' animation frame. Defaults to TRUE.
-#' @param data_label Labels for `plotly` tooltip display. 
-#' Defaults to the NULL, rownames and/or numbers of data.
 #' @export
 #' @family ggtour proto functions
 #' @examples
@@ -300,11 +298,12 @@ last_ggtour_env <- function(){.store$ggtour_ls}
   ## Check names
   if(is.null(.nms) | length(.nms) > length(unique(.nms)))
     stop(".lapply_rep_len: args list was unamed or had none unique names. Please ensure that elements of aes_args and indentity_args have unique names.")
+  
   .m <- lapply(seq_along(list), function(i){
     .elem <- list[[i]]
     ## Check cycling
     if(length(.elem) != 1L & typeof(.elem) != "environment"){
-      if(length(.elem) != expected_length) 
+      if(length(.elem) != expected_length)
         warning(paste0(
           ".lapply_rep_len: argument `", .nms[i], "` (length = ", length(.elem), 
           ") not of length 1 or data (nrow = ", expected_length,
@@ -562,6 +561,8 @@ animate_plotly <- function(
   fps = 8,
   ... ## Passed to plotly::ggplotly(). can always call layout/config again
 ){
+  if(is_any_layer_class(ggtour, "GeomTextRepel"))
+    stop("geom_text_repel not implemented in plotly, try animate_gganimate().")
   if(class(ggtour)[1L] == "gg"){
     ## If ggplot
     if(length(ggtour$layers) == 0L) ## plotly subplots, have NULL layers
@@ -887,18 +888,20 @@ proto_basis1d <- function(
   .df_zero <- map_relative(.df_zero, position, .map_to)
   .df_seg  <- map_relative(.df_seg,  position, .map_to)
   .df_txt  <- map_relative(.df_txt,  position, .map_to)
-  .df_rect <- map_relative(.df_rect, position, .map_to)
-  .df_seg0 <- map_relative(.df_seg0, position, .map_to)
+  .df_rect <- map_relative(.df_rect, position, .map_to) %>%
+    dplyr::summarise(xmin = min(x), ymin = min(y), xmax = max(x), ymax = max(y))
+  .df_seg0 <- map_relative(.df_seg0, position, .map_to) %>%
+    dplyr::summarise(x = min(x), y = min(y), xend = max(x), yend = max(y))
   
   ## Return proto
   list(
     ## Middle line, grey, dashed
     ggplot2::geom_segment(
-      ggplot2::aes(x = min(x), y = min(y), xend = max(x), yend = max(y)),
+      ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
       .df_seg0, color = "grey80", linetype = 2L),
     ## Outside rectangle, grey60, unit-width, (height = p+1)
     ggplot2::geom_rect(
-      ggplot2::aes(xmin = min(x), xmax = max(x), ymin = min(y), ymax = max(y)),
+      ggplot2::aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax),
       .df_rect, fill = NA, color = "grey60"),
     ## Variable abbreviation text
     ggplot2::geom_text(
@@ -1117,6 +1120,7 @@ proto_point <- function(
 }
 
 
+
 #' Tour proto for data, 1D density, with rug marks
 #'
 #' Adds `geom_density()` and `geom_rug()` of the projected data. Density 
@@ -1315,8 +1319,14 @@ proto_density2d <- function(
 #' }
 #' 
 #' ## Custom labels, subset of points
+#' dat     <- mtcars[c("mpg", "disp", "hp", "drat", "wt")]
+#' clas    <- as.factor(mtcars$cyl)
+#' bas     <- basis_olda(dat, clas)
+#' lab     <- abbreviate(rownames(mtcars))
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
+#' 
 #' ggt2 <- ggtour(gt_path, dat) +
-#'   proto_text(list(color = clas, size = as.integer(clas)),
+#'   proto_text(list(color = clas, label = lab),
 #'              list(alpha = .7),
 #'              row_index = 1:15)
 #' \donttest{
@@ -1325,7 +1335,7 @@ proto_density2d <- function(
 proto_text <- function(
   aes_args = list(vjust = "outward", hjust = "outward"),
   identity_args = list(nudge_x = 0.05),
-  row_index = TRUE
+  row_index = NULL
 ){
   ## Initialize
   eval(.init4proto)
@@ -1333,10 +1343,14 @@ proto_text <- function(
     stop("proto_text: Data is NULL. Was data passed to the basis array or ggtour?")
   if(is.null(.df_data$y))
     stop("proto_text: Projection y not found, expected a 2D tour.")
+  if(is.null(aes_args$label))
+    aes_args$label <- abbreviate(
+      gsub("[^[:alnum:]=]", "", .df_data$tooltip, 3L))
+
   
   ## do.call aes() over the aes_args
   .aes_func  <- function(...)
-    ggplot2::aes(x = x, y = y, frame = frame, label = tooltip, ...)
+    ggplot2::aes(x = x, y = y, frame = frame, ...)
   .aes_call  <- do.call(.aes_func, aes_args)
   ## do.call geom_point() over the identity_args
   .geom_func <- function(...)suppressWarnings(
@@ -1345,6 +1359,87 @@ proto_text <- function(
   ## Return proto
   do.call(.geom_func, identity_args)
 }
+
+
+#' Tour proto for data, text labels that repel
+#'
+#' Adds `ggrepel::geom_text_repel()` of the projected data.
+#'
+#' @param aes_args A list of arguments to call inside of aes().
+#' aesthetic mapping of the primary geom. For example,
+#' `geom_point(aes(color = my_fct, shape = my_fct))` becomes
+#' `aes_args = list(color = my_fct, shape = my_fct)`.
+#' @param identity_args A list of static, identity arguments passed into 
+#' the primary geom. For instance,
+#' `geom_point(size = 2, alpha = .7)` becomes 
+#' `identity_args = list(size = 2, alpha = .7)`. 
+#' Also passes more foundational arguments such as stat and position, though 
+#' these have been tested less.
+#' @param row_index A numeric or logical index of rows to subset to. 
+#' Defaults to NULL, all observations.
+#' @export
+#' @family ggtour proto functions
+#' @examples
+#' library(spinifex)
+#' dat     <- scale_sd(penguins_na.rm[, 1:4])
+#' clas    <- penguins_na.rm$species
+#' bas     <- basis_pca(dat)
+#' mv      <- manip_var_of(bas)
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 5)
+#' 
+#' ggt <- ggtour(gt_path, dat, angle = .2) +
+#'   proto_text_repel(list(color = clas)) +
+#'   proto_point(list(color = clas, shape = clas),
+#'               list(size = 1))
+#' \donttest{
+#' animate_gganimate(ggt)
+#' }
+#' 
+#' ## Custom labels, subset of points
+#' dat     <- mtcars[c("mpg", "disp", "hp", "drat", "wt")]
+#' clas    <- as.factor(mtcars$cyl)
+#' bas     <- basis_olda(dat, clas)
+#' lab     <- abbreviate(rownames(mtcars))
+#' gt_path <- save_history(dat, grand_tour(), max_bases = 3)
+#' 
+#' ggt2 <- ggtour(gt_path, dat) +
+#'   proto_text_repel(list(color = clas, label = lab),
+#'                    list(size = 1),
+#'                    row_index = 1:30) +
+#'   proto_point(list(color = clas, shape = clas),
+#'               list(size = 1),
+#'               row_index = 1:30)
+#' \donttest{
+#' animate_gganimate(ggt2)
+#' }
+proto_text_repel <- function(
+    aes_args = list(vjust = "outward", hjust = "outward"),
+    identity_args = list(nudge_x = 0.05),
+    row_index = NULL
+){
+  ## Initialize
+  requireNamespace("ggrepel")
+  eval(.init4proto)
+  if(is.null(.df_data))
+    stop("proto_text: Data is NULL. Was data passed to the basis array or ggtour?")
+  if(is.null(.df_data$y))
+    stop("proto_text: Projection y not found, expected a 2D tour.")
+  if(is.null(aes_args$label))
+    aes_args$label <- abbreviate(
+      gsub("[^[:alnum:]=]", "", .df_data$tooltip, 3L))
+  
+  ## do.call aes() over the aes_args
+  .aes_func  <- function(...)
+    ggplot2::aes(x = x, y = y, frame = frame, ...)
+  .aes_call  <- do.call(.aes_func, aes_args)
+  ## do.call geom_point() over the identity_args
+  .geom_func <- function(...)suppressWarnings(
+    ggrepel::geom_text_repel(mapping = .aes_call, data = .df_data, ...))
+  
+  ## Return proto
+  do.call(.geom_func, identity_args)
+}
+
 
 #' Tour proto for data, hexagonal heatmap
 #'
@@ -1592,7 +1687,7 @@ proto_highlight1d <- function(
 #' }
 proto_frame_cor2 <- function(
   text_size = 4,
-  row_index = TRUE,
+  row_index = NULL,
   #stat2d = stats::cor, ## hardcoded stats::cor atm
   xy_position = c(.7, -.1),
   ... ## passed to stats::cor
@@ -1899,6 +1994,80 @@ proto_default1d <- function(
 }
 
 
+# PCA Helpers -----
+
+
+#' Plot 2 components of Principal Component Analysis
+#' 
+#' Performs PCA on the data and used `proto_default` to plot with percent 
+#' variation labels.
+#' 
+#' @param data Numeric matrix or data.frame of the observations.
+#' @param components The 2 numbers of the principal components to use.
+#' @param ... Optionally pass arguments to `proto_default`
+#' @export
+#' @seealso [proto_default()]
+#' @examples
+#' dat <- scale_sd(wine[, 2:6])
+#' plot_pca(data = dat)
+#' 
+#' ## Different components, class coloring
+#' clas <- as.factor(wine$Type)
+#' plot_pca(data = dat, components = c(1, 3), position = "center",
+#'          aes_args = list(color = clas, shape = clas))
+plot_pca <- function(data, components = c(1, 2), ...){
+  .pca <- stats::prcomp(data)
+  bas <- .pca$rotation[, components]
+  pct_var_exp <- round(100 * .pca$sdev^2/sum(.pca$sdev^2), 1)[components]
+  
+  ggtour(bas, data) +
+    proto_default(...) +
+    labs(x = paste0("PC", components[1], ", ", pct_var_exp[1], "% var"),
+         y = paste0("PC", components[2], ", ", pct_var_exp[2], "% var"),)
+}
+
+#' Plot 2 components of Principal Component Analysis
+#' 
+#' Performs PCA on the data and used `proto_default` to plot with percent 
+#' variation labels. Also appends a screeplot of the component variances.
+#' 
+#' @param data Numeric matrix or data.frame of the observations.
+#' @param components The 2 numbers of the principal components to use.
+#' @param ... Optionally pass arguments to `proto_default`
+#' @export
+#' @examples
+#' dat <- scale_sd(wine[, 2:6])
+#' plot_pca_scree(data = dat)
+#' 
+#' ## Different components, class coloring
+#' clas <- as.factor(wine$Type)
+#' plot_pca_scree(data = dat, components = c(1, 3), position = "center",
+#'                aes_args = list(color = clas, shape = clas))
+plot_pca_scree <- function(data, components = c(1, 2), class = NULL, ...){
+  requireNamespace("patchwork")
+  .pca <- stats::prcomp(data)
+  bas <- .pca$rotation[, components]
+  var_df <- data.frame(
+    comp = 1:ncol(data),
+    class = 1:ncol(data) %in% components,
+    var = .pca$sdev^2,
+    pct_exp = round(100 * .pca$sdev^2/sum(.pca$sdev^2), 1),
+    cumvar = round(100 * cumsum(.pca$sdev^2/sum(.pca$sdev^2)), 2)
+  )
+  
+  g1 <- ggtour(bas, data) +
+    proto_default(...) +
+    labs(x = paste0("PC", components[1], ", ", var_df$pct_exp[1], "% var"),
+         y = paste0("PC", components[2], ", ", var_df$pct_exp[2], "% var"),)
+  g2 <- ggplot(var_df) +
+    geom_col(aes(comp, pct_exp, fill = class), color = "black") +
+    geom_line(aes(comp, cumvar)) +
+    geom_point(aes(comp, cumvar)) +
+    labs(y = "Percent var explained", x = "Principal component") +
+    theme_minimal() +
+    theme(legend.position = "none")
+  g1 + g2
+}
 
 
 ### UNAPPLIED IDEA DRAFTS -----

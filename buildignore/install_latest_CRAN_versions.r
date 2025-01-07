@@ -5,24 +5,23 @@ pkgs <- c(
   ##Imports:
   "ggplot2",
   "gganimate",
-  "GGally",
   "plotly",
   "shiny",
-  "RColorBrewer",
+  "Rdimtools",
+  "magrittr",
+  ##Suggests:
+  "MASS",
+  "ggrepel",
+  "patchwork",
+  "hexbin",
+  "htmlwidgets",
   "gifski",
   "png",
   "dplyr",
-  "gridExtra",
-  "shinythemes",
-  "shinyBS",
-  "shinyjs",
-  "reactlog",
-  "DT",
-  ##Suggests: 
-  "knitr",
-  "rmarkdown",
   "testthat",
-  "covr"
+  "lifecycle",
+  "covr",
+  "spelling"
 )
 
 ### grab most recent CRAN ver.

@@ -2,18 +2,18 @@
 .include_dev_display  <- T
 .include_obs_msg      <- T
 
-require("spinifex")
-require("tourr")
-require("ggplot2")
-require("tibble")
-require("shinythemes") ## Themes for shiny, think css files.
-require("shinyjs")     ## Extend JavaScript (Think HTML interactivity) control and formating, 
+requireNamespace("spinifex")
+requireNamespace("tourr")
+requireNamespace("ggplot2")
+requireNamespace("tibble")
+requireNamespace("shinythemes") ## Themes for shiny, think css files.
+requireNamespace("shinyjs")     ## Extend JavaScript (Think HTML interactivity) control and formating, 
 ## Also see ?shinyjs::toggle   &   https://daattali.com/shiny/shinyjs-basic/
 ##### Additionally used in 'primary' and 'devUnderConstruction':
-require("shinyBS")  ## BootStrap functionality, such as tooltips and popovers
+requireNamespace("shinyBS")  ## BootStrap functionality, such as tooltips and popovers
 ## Also see ?shinyBS::bsTooltip   &   https://github.com/ebailey78/shinyBS/
-require("reactlog") ## Custom shiny logging
-require("DT")       ## HTML tabbles for the gallery table
+requireNamespace("reactlog") ## Custom shiny logging
+requireNamespace("DT")       ## HTML tabbles for the gallery table
 
 ## For saving files use:
 # write.csv(tourr::flea, file="./inst/shiny_apps/comparison/flea.csv",row.names=FALSE)

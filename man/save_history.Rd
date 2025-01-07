@@ -26,7 +26,7 @@ Defaults to \code{\link[tourr:grand_tour]{tourr::grand_tour}}.}
 Some tour paths (like the guided tour) may generate less than the maximum.
 Defaults to 10.}
 
-\item{start}{First basis, is appended as first frame grand tour if possible.}
+\item{start}{Optional basis to start at.}
 
 \item{rescale}{Whether or not to rescale all variables to range (0,1).
 Defaults to FALSE.}

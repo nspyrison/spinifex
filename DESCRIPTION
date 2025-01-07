@@ -1,6 +1,6 @@
 Package: spinifex
 Title: Manual Tours, Manual Control of Dynamic Projections of Numeric Multivariate Data
-Version: 0.3.7.0
+Version: 0.3.8.9000
 Authors@R: c(
   person("Nicholas", "Spyrison", role = c("aut", "cre"),
     email = "spyrison@gmail.com",
@@ -34,14 +34,13 @@ Imports:
     magrittr
 Suggests:
     MASS,
+    ggrepel,
+    patchwork,
     hexbin,
     htmlwidgets,
     gifski,
     png,
     dplyr,
-    GGally,
-    rmarkdown,
-    knitr,
     testthat,
     lifecycle,
     covr,
@@ -50,7 +49,6 @@ VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets=c('rd', 'collate', 'namespace'))
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Language: en-US
 Config/testthat/edition: 3
-

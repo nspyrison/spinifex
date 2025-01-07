@@ -24,12 +24,10 @@ stored as an attribute of the the \code{basis_array}.}
 frames of the \code{basis_array}. Defaults to .05.
 To opt out of interpolation set to NA or 0.}
 
-\item{basis_label}{Labels for basis display, a character
-vector with length equal to the number of variables.
-Defaults to NULL; 3 character abbreviation from colnames of data or
-rownames of basis.}
+\item{basis_label}{\code{plotly} tooltip labels for the basis.
+Defaults to NULL; 3 character abbreviation of the rownames of basis.}
 
-\item{data_label}{Labels for \code{plotly} tooltip display.
+\item{data_label}{\code{plotly} tooltip labels for the data.
 Defaults to the NULL, rownames and/or numbers of data.}
 
 \item{do_center_frame}{Whether or not to center the mean within each
@@ -96,13 +94,14 @@ Other ggtour proto functions:
 \code{\link{facet_wrap_tour}()},
 \code{\link{proto_basis}()},
 \code{\link{proto_default}()},
-\code{\link{proto_density2d}()},
 \code{\link{proto_density}()},
+\code{\link{proto_density2d}()},
 \code{\link{proto_hex}()},
 \code{\link{proto_highlight}()},
 \code{\link{proto_hline0}()},
 \code{\link{proto_origin}()},
 \code{\link{proto_point}()},
-\code{\link{proto_text}()}
+\code{\link{proto_text}()},
+\code{\link{proto_text_repel}()}
 }
 \concept{ggtour proto functions}
