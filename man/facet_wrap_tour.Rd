@@ -37,7 +37,7 @@ ggt <- ggtour(mt_path, dat, angle = .3) +
   facet_wrap_tour(facet_var = clas, ncol = 2, nrow = 2) +
   proto_default(aes_args = list(color = clas, shape = clas),
                 identity_args = list(size = 1.5))
-\donttest{
+\dontrun{
 animate_gganimate(ggt) ## May not always play well with plotly
 }
 }

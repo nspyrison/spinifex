@@ -47,7 +47,7 @@ ggp <- ggtour(gt_path, dat) +
   proto_hex(bins = 20)
 
 ## Hexagons don't show up in plotly animation.
-\donttest{
+\dontrun{
 animate_gganimate(ggp)
 }
 }

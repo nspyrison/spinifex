@@ -28,7 +28,7 @@
 #' bas     <- basis_pca(dat_std)
 #' gt_path <- save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 #' 
-#' \donttest{
+#' \dontrun{
 #' suppressWarnings(
 #'   play_tour_path(tour_path = gt_path, data = dat_std)
 #' )
@@ -54,7 +54,8 @@
 #'   play_tour_path(tour_path = gt_path, data = dat_std,
 #'                  render_type = render_gganimate,
 #'                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
-#' }}
+#' }
+#' }
 play_tour_path <- function(tour_path,
                            data  = NULL,
                            angle = .05,
@@ -123,7 +124,7 @@ play_tour_path <- function(tour_path,
 #' bas     <- basis_pca(dat_std)
 #' mv      <- manip_var_of(bas)
 #' 
-#' \donttest{
+#' \dontrun{
 #' suppressWarnings(
 #'   play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
 #' )
@@ -149,7 +150,8 @@ play_tour_path <- function(tour_path,
 #'   play_manual_tour(basis = bas, data = dat_std, manip_var = 1,
 #'                    render_type = render_gganimate,
 #'                    gif_filename = "myRadialTour.gif", gif_path = "./output")
-#' }}
+#' }
+#' }
 play_manual_tour <- function(basis = NULL,
                              data,
                              manip_var,

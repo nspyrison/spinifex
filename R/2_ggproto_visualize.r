@@ -169,7 +169,7 @@ ggtour <- function(
 #'   facet_wrap_tour(facet_var = clas, ncol = 2, nrow = 2) +
 #'   proto_default(aes_args = list(color = clas, shape = clas),
 #'                 identity_args = list(size = 1.5))
-#' \donttest{
+#' \dontrun{
 #' animate_gganimate(ggt) ## May not always play well with plotly
 #' }
 facet_wrap_tour <- function(
@@ -464,7 +464,7 @@ last_ggtour_env <- function(){.store$ggtour_ls}
 #' ggt <- ggtour(mt_path, dat, angle = .3) +
 #'   proto_default(aes_args = list(color = clas, shape = clas),
 #'                 identity_args = list(size = 1.5, alpha = .7))
-#' \donttest{
+#' \dontrun{
 #' ## Default .gif rendering
 #' animate_gganimate(ggt)
 #' 
@@ -1475,7 +1475,7 @@ proto_text_repel <- function(
 #'   proto_hex(bins = 20)
 #' 
 #' ## Hexagons don't show up in plotly animation.
-#' \donttest{
+#' \dontrun{
 #' animate_gganimate(ggp)
 #' }
 proto_hex <- function(

@@ -62,7 +62,7 @@ clas    <- wine$Type
 bas     <- basis_pca(dat_std)
 mv      <- manip_var_of(bas)
 
-\donttest{
+\dontrun{
 suppressWarnings(
   play_manual_tour(basis = bas, data = dat_std, manip_var = mv)
 )
@@ -88,7 +88,8 @@ if(FALSE){ ## Don't accidentally save file
   play_manual_tour(basis = bas, data = dat_std, manip_var = 1,
                    render_type = render_gganimate,
                    gif_filename = "myRadialTour.gif", gif_path = "./output")
-}}
+}
+}
 }
 \seealso{
 \code{\link{render_}} For arguments to pass into \code{...}.

@@ -39,7 +39,7 @@ clas    <- wine$Type
 bas     <- basis_pca(dat_std)
 gt_path <- save_history(dat_std, tour_path = tourr::grand_tour(), max = 5)
 
-\donttest{
+\dontrun{
 suppressWarnings(
   play_tour_path(tour_path = gt_path, data = dat_std)
 )
@@ -65,7 +65,8 @@ if(FALSE){ ## Don't accidentally save file
   play_tour_path(tour_path = gt_path, data = dat_std,
                  render_type = render_gganimate,
                  gif_path = "myOutput", gif_filename = "myRadialTour.gif")
-}}
+}
+}
 }
 \seealso{
 \code{\link{render_}} For arguments to pass into \code{...}.

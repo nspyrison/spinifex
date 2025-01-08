@@ -630,8 +630,10 @@ manip_var_of <- function(basis, rank = 1){
 #' dim(gt1d_path)
 #' 
 #' ## A holes guided tour path
-#' holes_path <- save_history(dat, guided_tour(holes(), max.tries = 100))
+#' holes_path <- save_history(dat, guided_tour(holes(), max.tries = 10))
 #' dim(holes_path)
+#' 
+#' ## These are basis_arrays to be used in ?spinifex::ggtour()
 save_history <- function(
   data,
   tour_path = tourr::grand_tour(),
@@ -752,8 +754,9 @@ is_any_layer_class <- function(ggplot, class_nm = "GeomDensity"){
 devMessage <- function(text){
   try({
     version4 <- utils::packageVersion(pkg = "spinifex")[1L, 4L] %>% as.numeric()
-    if(version4 == 9000L)
-      message(paste0("devMessage: ", text))
+    if(is.na(version4) == FALSE)
+      if(version4 == 9000L)
+        message(paste0("devMessage: ", text))
   })
 }
 

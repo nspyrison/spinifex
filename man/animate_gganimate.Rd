@@ -46,7 +46,7 @@ mt_path <- manual_tour(bas, manip_var = mv)
 ggt <- ggtour(mt_path, dat, angle = .3) +
   proto_default(aes_args = list(color = clas, shape = clas),
                 identity_args = list(size = 1.5, alpha = .7))
-\donttest{
+\dontrun{
 ## Default .gif rendering
 animate_gganimate(ggt)
 
