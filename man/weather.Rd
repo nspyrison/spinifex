@@ -33,7 +33,7 @@ Bureau of Meteorology.
 Definitions adapted from http://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml
 }
 \source{
-{Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data/}
+{Bureau of Meteorology, Commonwealth of Australia} \url{https://reg.bom.gov.au/climate/data-services/}
 
 {rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
 }

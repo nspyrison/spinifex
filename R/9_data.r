@@ -230,7 +230,7 @@
 #' ```
 #' @name weather
 #' @docType data
-#' @source {Bureau of Meteorology, Commonwealth of Australia} \url{http://www.bom.gov.au/climate/data/}
+#' @source {Bureau of Meteorology, Commonwealth of Australia} \url{https://reg.bom.gov.au/climate/data-services/}
 #' @source {rattle, R package. G. Williams, 2020. rattle: Graphical User Interface for Data Science in R} \url{https://CRAN.R-project.org/package=rattle}
 #' @examples
 #' library(spinifex)

@@ -8,6 +8,7 @@
 ^\.Rproj\.user$
 ^cran-comments\.md$
 ^codecov\.yml$
+^\.github$
 
 ^buildignore/.*$
 ^inst/shiny_apps/.*\.png$
