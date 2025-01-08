@@ -43,8 +43,9 @@
 # #### Error: object 'flea' is not exported by 'namespace:tourr'
 # #' @importFrom tourr flea olive ozone places ratcns laser tao flea
 
-## Manual tour globals ------
+
 if(getRversion() >= "2.15.1"){
+  ## Manual tour globals ------
   utils::globalVariables(c(
     "phi_min",
     "phi_max",
@@ -81,6 +82,13 @@ if(getRversion() >= "2.15.1"){
     "y_end",
     "ndensity",
     "label",
-    "frame",    ## Animation frame
-    "tooltip")) ## plotly tooltip
+    "frame",
+    "tooltip",
+    "comp",
+    "cumvar",
+    "pct_exp",
+    "xmax",
+    "xmin",
+    "ymax",
+    "ymin"))
 }

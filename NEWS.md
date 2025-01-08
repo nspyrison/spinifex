@@ -19,7 +19,7 @@
 - Replace `..ndensity..` with `after_stat(ndensity)` in density geoms
 - Removed length checks from tests as ggplot2 plans a change
 - Fixed a change in behavior in testthat
-- Moved `gganimate` documentation from `\\donttest` to `\\dontrun` in alignment with `gganimate` documentation. (Else somee OS builds fail, with no mechanism to troubleshoot)
+- Moved `gganimate` documentation from `\\donttest` to `\\dontrun` in alignment with `gganimate` documentation. (Else some OS builds fail, with no mechanism to troubleshoot)
 
 # spinifex v0.3.6
 

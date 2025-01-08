@@ -4,7 +4,7 @@
 \alias{plot_pca_scree}
 \title{Plot 2 components of Principal Component Analysis}
 \usage{
-plot_pca_scree(data, components = c(1, 2), class = NULL, ...)
+plot_pca_scree(data, components = c(1, 2), ...)
 }
 \arguments{
 \item{data}{Numeric matrix or data.frame of the observations.}

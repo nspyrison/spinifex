@@ -2043,7 +2043,7 @@ plot_pca <- function(data, components = c(1, 2), ...){
 #' clas <- as.factor(wine$Type)
 #' plot_pca_scree(data = dat, components = c(1, 3), position = "center",
 #'                aes_args = list(color = clas, shape = clas))
-plot_pca_scree <- function(data, components = c(1, 2), class = NULL, ...){
+plot_pca_scree <- function(data, components = c(1, 2), ...){
   requireNamespace("patchwork")
   .pca <- stats::prcomp(data)
   bas <- .pca$rotation[, components]
