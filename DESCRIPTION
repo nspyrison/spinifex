@@ -42,6 +42,7 @@ Suggests:
     png,
     dplyr,
     knitr,
+    GGally,
     testthat,
     lifecycle,
     covr,
