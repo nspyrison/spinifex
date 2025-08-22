@@ -652,7 +652,7 @@ animate_plotly <- function(
 # #'   proto_point(aes_args = list(color = clas, shape = clas),
 # #'               identity_args = list(size = 1.5, alpha = .7))
 # #' 
-# #' \donttest{
+# #' \dontrun{
 # #' animate_gganimate_knit2pdf(ggtour)
 # #' }
 # animate_gganimate_knit2pdf <- function(ggtour,
@@ -1395,7 +1395,7 @@ proto_text <- function(
 #'   proto_text_repel(list(color = clas)) +
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 1))
-#' \donttest{
+#' \dontrun{
 #' animate_gganimate(ggt)
 #' }
 #' 
@@ -1413,7 +1413,7 @@ proto_text <- function(
 #'   proto_point(list(color = clas, shape = clas),
 #'               list(size = 1),
 #'               row_index = 1:30)
-#' \donttest{
+#' \dontrun{
 #' animate_gganimate(ggt2)
 #' }
 proto_text_repel <- function(

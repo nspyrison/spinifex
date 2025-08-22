@@ -41,7 +41,7 @@ ggt <- ggtour(gt_path, dat, angle = .2) +
   proto_text_repel(list(color = clas)) +
   proto_point(list(color = clas, shape = clas),
               list(size = 1))
-\donttest{
+\dontrun{
 animate_gganimate(ggt)
 }
 
@@ -59,7 +59,7 @@ ggt2 <- ggtour(gt_path, dat) +
   proto_point(list(color = clas, shape = clas),
               list(size = 1),
               row_index = 1:30)
-\donttest{
+\dontrun{
 animate_gganimate(ggt2)
 }
 }
