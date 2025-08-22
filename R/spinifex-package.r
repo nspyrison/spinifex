@@ -30,6 +30,8 @@
 
 ## Exports ------
 #' @importFrom magrittr `%>%`
+#' @importFrom ggplot2 labs
+## @importFrom ggplot2 labs tries to get around an rhub (only) issue in v0.3.9
 #### as of v0.3.1: giving Warning upon devtools::document() and downstream:
 #### Warning message: In setup_ns_exports(path, export_all, export_imports) :
 ## Import pipe, and some tourr functions

@@ -2026,8 +2026,8 @@ plot_pca <- function(data, components = c(1, 2), ...){
   
   ggtour(bas, data) +
     proto_default(...) +
-    labs(x = paste0("PC", components[1], ", ", pct_var_exp[1], "% var"),
-         y = paste0("PC", components[2], ", ", pct_var_exp[2], "% var"),)
+    ggplot2::labs(x = paste0("PC", components[1], ", ", pct_var_exp[1], "% var"),
+                  y = paste0("PC", components[2], ", ", pct_var_exp[2], "% var"),)
 }
 
 #' Plot 2 components of Principal Component Analysis
@@ -2061,13 +2061,13 @@ plot_pca_scree <- function(data, components = c(1, 2), ...){
   
   g1 <- ggtour(bas, data) +
     proto_default(...) +
-    labs(x = paste0("PC", components[1], ", ", var_df$pct_exp[1], "% var"),
-         y = paste0("PC", components[2], ", ", var_df$pct_exp[2], "% var"),)
+    ggplot2::labs(x = paste0("PC", components[1], ", ", var_df$pct_exp[1], "% var"),
+                  y = paste0("PC", components[2], ", ", var_df$pct_exp[2], "% var"),)
   g2 <- ggplot(var_df) +
     geom_col(aes(comp, pct_exp, fill = class), color = "black") +
     geom_line(aes(comp, cumvar)) +
     geom_point(aes(comp, cumvar)) +
-    labs(y = "Percent var explained", x = "Principal component") +
+    ggplot2::labs(y = "Percent var explained", x = "Principal component") +
     theme_minimal() +
     theme(legend.position = "none")
   g1 + g2

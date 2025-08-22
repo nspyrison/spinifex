@@ -354,7 +354,7 @@ scale_01 <- function(data){
 #        scale_color_brewer(palette = "Dark2"),
 #        scale_fill_brewer(palette = "Dark2"),
 #        coord_fixed(),
-#        labs(x = "", y = ""))
+#        ggplot2::labs(x = "", y = ""))
 # }
 
 
