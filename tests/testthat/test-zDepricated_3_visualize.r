@@ -73,8 +73,8 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 
 test_that("view_frame: gganimate class and length", {
-  expect_equal(class(ret_light), c("gg", "ggplot"))
-  expect_equal(class(ret_heavy), c("gg", "ggplot"))
+  expect_true(inherits(ret_light, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(ret_heavy, c("ggplot", "ggplot2::ggplot")))
 })
 
 
@@ -90,7 +90,7 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 
 test_that("view_manip_space: gganimate class and length", {
-  expect_equal(class(ret_light), c("gg", "ggplot"))
-  expect_equal(class(ret_heavy), c("gg", "ggplot"))
+  expect_true(inherits(ret_light, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(ret_heavy, c("ggplot", "ggplot2::ggplot")))
 })
 

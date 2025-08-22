@@ -103,7 +103,7 @@ t <- theme_spinifex()
 g <- ggplot2::ggplot() + t
 test_that("theme_spinifex: class", {
   expect_equal(class(t), "list")
-  expect_equal(class(g), c("gg", "ggplot"))
+  expect_true(inherits(g, c("ggplot", "ggplot2::ggplot")))
 })
 
 ##

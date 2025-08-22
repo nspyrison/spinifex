@@ -496,6 +496,10 @@ animate_gganimate <- function(
   end_pause = 1,
   ... ## Passed to gganimate::animate
 ){
+  if(requireNamespace("gifski", quietly = TRUE) == FALSE)
+    stop("animate_gganimate: package 'gifski' was not found, please install to render to gif with animate_gganimate")
+  
+  
   ## Early out, print ggplot if only 1 frame.
   if(length(ggtour$layers) == 0L) stop("No layers found, did you forget to add a proto_*?")
   n_frames <- last_ggtour_env()$n_frames

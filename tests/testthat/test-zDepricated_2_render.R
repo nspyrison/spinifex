@@ -26,7 +26,7 @@ suppressWarnings( ## suppress 8hr deprecation warning
 )
 
 test_that("render_, class and dim", {
-  expect_equal(class(ret) , c("gg", "ggplot"))
+  expect_true(inherits(ret, c("ggplot", "ggplot2::ggplot")))
 })
 
 ### render_gganimate -----

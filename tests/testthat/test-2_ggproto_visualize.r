@@ -27,10 +27,10 @@ gg_gt   <- ggtour(gt  , angle = 1L) + proto_default()
 gg_mt1d <- ggtour(mt1d, angle = 1L) + proto_default1d()
 gg_gt1d <- ggtour(gt1d, angle = 1L) + proto_default1d()
 test_that("ggtourr", {
-  expect_equal(class(gg_mt  ), c("gg", "ggplot"))
-  expect_equal(class(gg_gt  ), c("gg", "ggplot"))
-  expect_equal(class(gg_mt1d), c("gg", "ggplot"))
-  expect_equal(class(gg_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(gg_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(gg_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(gg_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(gg_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## lapply_rep_len and eval(.init4proto)
@@ -67,10 +67,10 @@ fs_gt   <- filmstrip(gg_gt  )
 fs_mt1d <- filmstrip(gg_mt1d)
 fs_gt1d <- filmstrip(gg_gt1d)
 test_that("filmstrip", {
-  expect_equal(class(fs_mt  ), c("gg", "ggplot"))
-  expect_equal(class(fs_gt  ), c("gg", "ggplot"))
-  expect_equal(class(fs_mt1d), c("gg", "ggplot"))
-  expect_equal(class(fs_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(fs_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(fs_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(fs_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(fs_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## proto_basis -----
@@ -79,10 +79,10 @@ pb_gt   <- ggtour(gt  , angle = 1L) + proto_basis()
 pb_mt1d <- ggtour(mt1d, angle = 1L) + proto_basis1d()
 pb_gt1d <- ggtour(gt1d, angle = 1L) + proto_basis1d()
 test_that("proto_basis/1d", {
-  expect_equal(class(pb_mt  ), c("gg", "ggplot"))
-  expect_equal(class(pb_gt  ), c("gg", "ggplot"))
-  expect_equal(class(pb_mt1d), c("gg", "ggplot"))
-  expect_equal(class(pb_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(pb_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pb_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pb_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pb_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## draw_basis -----
@@ -93,7 +93,7 @@ db <- ggplot() +
   coord_fixed()
 
 test_that("draw_basis", {
-  expect_equal(class(db), c("gg", "ggplot"))
+  expect_true(inherits(db, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## Aesthetics and basis on specific facet levels
@@ -112,10 +112,10 @@ pd_mt1d <- ggtour(mt1d, angle = 1L) + proto_density()
 pd_gt1d <- ggtour(gt1d, angle = 1L) + proto_density()
 test_that("proto_:point/density", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_point())
-  expect_equal(class(pp_mt  ), c("gg", "ggplot"))
-  expect_equal(class(pp_gt  ), c("gg", "ggplot"))
-  expect_equal(class(pd_mt1d), c("gg", "ggplot"))
-  expect_equal(class(pd_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(pp_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pp_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pd_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pd_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## proto_point & density with row_index & args-----
@@ -137,10 +137,10 @@ pd_gt1d <- ggtour(gt1d, angle = 1L) +
     list(alpha = .9, size = 2L), row_index = 1:3)
 test_that("proto_:point/density", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_point())
-  expect_equal(class(pp_mt  ), c("gg", "ggplot"))
-  expect_equal(class(pp_gt  ), c("gg", "ggplot"))
-  expect_equal(class(pd_mt1d), c("gg", "ggplot"))
-  expect_equal(class(pd_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(pp_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pp_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pd_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pd_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 
@@ -152,10 +152,10 @@ po_mt1d <- ggtour(mt1d, angle = 1L) + proto_origin1d()
 po_gt1d <- ggtour(gt1d, angle = 1L) + proto_origin1d()
 test_that("proto_origin", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_default())
-  expect_equal(class(po_mt  ), c("gg", "ggplot"))
-  expect_equal(class(po_gt  ), c("gg", "ggplot"))
-  expect_equal(class(po_mt1d), c("gg", "ggplot"))
-  expect_equal(class(po_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(po_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(po_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(po_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(po_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## proto_text -----
@@ -163,8 +163,8 @@ pt_mt <- ggtour(mt, angle = 1L) + proto_text()
 pt_gt <- ggtour(gt, angle = 1L) + proto_text()
 test_that("proto_text", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_text())
-  expect_equal(class(pt_mt), c("gg", "ggplot"))
-  expect_equal(class(pt_gt), c("gg", "ggplot"))
+  expect_true(inherits(pt_mt, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pt_gt, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## proto_text_repel -----
@@ -172,8 +172,8 @@ pt_mt <- ggtour(mt, angle = 1L) + proto_text_repel()
 pt_gt <- ggtour(gt, angle = 1L) + proto_text_repel()
 test_that("proto_text", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_text())
-  expect_equal(class(pt_mt), c("gg", "ggplot"))
-  expect_equal(class(pt_gt), c("gg", "ggplot"))
+  expect_true(inherits(pt_mt, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pt_gt, c("ggplot", "ggplot2::ggplot")))
   expect_error(animate_plotly(pt_mt))
   expect_error(animate_plotly(pt_gt))
 })
@@ -183,8 +183,8 @@ ph_mt <- ggtour(mt, angle = 1L, data = dat) + proto_hex()
 ph_gt <- ggtour(gt, angle = 1L, data = dat) + proto_hex()
 test_that("proto_hex", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_hex())
-  expect_equal(class(ph_mt), c("gg", "ggplot"))
-  expect_equal(class(ph_gt), c("gg", "ggplot"))
+  expect_true(inherits(ph_mt, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(ph_gt, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## proto_default -----
@@ -194,10 +194,10 @@ pd_mt1d <- ggtour(mt1d, angle = 1L) + proto_default1d()
 pd_gt1d <- ggtour(gt1d, angle = 1L) + proto_default1d()
 test_that("proto_default/1d", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_default())
-  expect_equal(class(pd_mt  ), c("gg", "ggplot"))
-  expect_equal(class(pd_gt  ), c("gg", "ggplot"))
-  expect_equal(class(pd_mt1d), c("gg", "ggplot"))
-  expect_equal(class(pd_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(pd_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pd_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pd_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pd_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## proto_highlight -----
@@ -207,10 +207,10 @@ ph_mt1d <- ggtour(mt1d, angle = 1L) + proto_highlight1d(row_index = 1L:2L)
 ph_gt1d <- ggtour(gt1d, angle = 1L) + proto_highlight1d(row_index = 1L)
 test_that("proto_highlight/1d", {
   expect_error(ggtour(gt1d, angle = 1L) + proto_default())
-  expect_equal(class(ph_mt  ), c("gg", "ggplot"))
-  expect_equal(class(ph_gt  ), c("gg", "ggplot"))
-  expect_equal(class(ph_mt1d), c("gg", "ggplot"))
-  expect_equal(class(ph_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(ph_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(ph_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(ph_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(ph_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## proto_frame_cor2 -----
@@ -219,8 +219,8 @@ pfc_gt   <- ggtour(gt  , angle = 1L) + proto_frame_cor2(row_index = 1L:2L)
 test_that("proto_frame_cor2", {
   expect_error(ggtour(mt1d, angle = 1L) + proto_frame_cor2(row_index = 1L:2L))
   expect_error(ggtour(gt1d, angle = 1L) + proto_frame_cor2(row_index = 1L))
-  expect_equal(class(pfc_mt), c("gg", "ggplot"))
-  expect_equal(class(pfc_gt), c("gg", "ggplot"))
+  expect_true(inherits(pfc_mt, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(pfc_gt, c("ggplot", "ggplot2::ggplot")))
 })
 
 ## append_fixed_y -----
@@ -229,10 +229,10 @@ afy_gt   <- ggtour(gt  , angle = 1L) + append_fixed_y(1L) + proto_point(row_inde
 afy_mt1d <- ggtour(mt1d, angle = 1L) + append_fixed_y(1L) + proto_point(row_index = 1L:2L)
 afy_gt1d <- ggtour(gt1d, angle = 1L) + append_fixed_y(1L) + proto_point(row_index = 1L)
 test_that("append_fixed_y", {
-  expect_equal(class(afy_mt  ), c("gg", "ggplot"))
-  expect_equal(class(afy_gt  ), c("gg", "ggplot"))
-  expect_equal(class(afy_mt1d), c("gg", "ggplot"))
-  expect_equal(class(afy_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(afy_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(afy_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(afy_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(afy_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 
@@ -242,10 +242,10 @@ fwt_gt   <- ggtour(gt  , angle = 1L) + facet_wrap_tour(clas) + proto_point(row_i
 fwt_mt1d <- ggtour(mt1d, angle = 1L) + facet_wrap_tour(clas) + proto_density(row_index = 1L:2L)
 fwt_gt1d <- ggtour(gt1d, angle = 1L) + facet_wrap_tour(clas) + proto_density(row_index = 1L)
 test_that("facet_wrap_tour", {
-  expect_equal(class(fwt_mt  ), c("gg", "ggplot"))
-  expect_equal(class(fwt_gt  ), c("gg", "ggplot"))
-  expect_equal(class(fwt_mt1d), c("gg", "ggplot"))
-  expect_equal(class(fwt_gt1d), c("gg", "ggplot"))
+  expect_true(inherits(fwt_mt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(fwt_gt  , c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(fwt_mt1d, c("ggplot", "ggplot2::ggplot")))
+  expect_true(inherits(fwt_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
 
@@ -269,7 +269,7 @@ test_that(".lapply_rep_len cycle check", {
 pp  <- plot_pca(dat)
 pps <- plot_pca_scree(dat)
 test_that("plot_pca", {
-  expect_equal(class(pp ), c("gg", "ggplot"))
+  expect_true(inherits(pp, c("ggplot", "ggplot2::ggplot")))
   expect_equal(class(pps), c("patchwork", "gg", "ggplot"))
 })
 
