@@ -2,7 +2,7 @@
 
 - ggplot2 is pushing breaking changes as they transition to S7 objects; changed tests from `expect_equal(class(x), c("gg", "ggplot"))` to `expect_true(inherits(x, c("ggplot", "ggplot2::ggplot")))` according to https://github.com/tidyverse/ggplot2/issues/6498
 - Added a check in `animate_gganimate` asking for gifski to be installed to render to gif (hopefully, preventing some users saving the gif to many png files)
-- 
+- Changed a couple of examples of `animate_gganimate` to dontrun (from donttest) trying to fix rhub errors
 
 
 # spinifex v0.3.8
