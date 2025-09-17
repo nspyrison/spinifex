@@ -1,3 +1,11 @@
+# spinifex v0.3.10
+
+- Added a function `ide`, as a utility for estimating intrinsic data dimensionality
+- ggplot2 v4.0.0 pushed breaking changes as they transition to S7 objects; changed tests from `expect_equal(class(x), c("gg", "ggplot"))` to `expect_true(inherits(x, c("ggplot", "ggplot2::ggplot")))` according to https://github.com/tidyverse/ggplot2/issues/6498
+- Trivial adjustment to `animate_plotly` backing out of experimental dev to support plotly subplots, especially for use by `cheem::global_view`
+- Trivial adjustment `plot_pca_scree` test
+- Tests now use `spinifex::save_history` instead of verbose `tourr::save_history`
+
 # spinifex v0.3.9
 
 - ggplot2 is pushing breaking changes as they transition to S7 objects; changed tests from `expect_equal(class(x), c("gg", "ggplot"))` to `expect_true(inherits(x, c("ggplot", "ggplot2::ggplot")))` according to https://github.com/tidyverse/ggplot2/issues/6498

@@ -25,4 +25,4 @@ pkgs <- c(
 )
 
 ### grab most recent CRAN ver.
-install.packages(pkgs)
+pak::pak(pkgs)

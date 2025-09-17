@@ -761,6 +761,69 @@ devMessage <- function(text){
 }
 
 
+#' Intrinsic dimension estimation (ide).
+#'
+#' This function estimates the intrinsic dimension of a dataset using several
+#' algorithms from the `Rdimtools` package. This is used to inform the number of
+#' dimension that should be kept when embedding data.
+#'
+#' @param data A matrix or data frame containing the data to be analyzed.
+#' @param inc_slow A logical value indicating whether to include the more
+#'   computationally expensive methods in the estimation. If `TRUE`, add 6 
+#'   more expensive methods. Defaults to `FALSE`.
+#'
+#' @return A named vector of estimated intrinsic dimensions. The names correspond
+#'   to the `Rdimtools` function used for each estimate. `NA` is returned for
+#'   any method that fails to run.
+#'
+#' @examples
+#' # Use a tourr dataset with the default (fast) methods
+#' dat <- spinifex::weather_na.rm[, 2:18]
+#' (result <- ide(data = dat, inc_slow = FALSE))
+#'
+#' # The result is a named vector, which can be summarized
+#' summary(result)
+#' # This suggests 6 or so dimensions may be sufficient embedding
+#' # to describe the original 17 variables.
+#'
+#' # Or visualized
+#' hist(result)
+#'
+#' # Note: Including 'inc_slow = TRUE' can take considerably longer
+#' # to run for larger datasets.
+#' \dontrun{
+#' # Run all methods, including the slower ones, on a larger dataset
+#' system.time(ide_long <- ide(dat, inc_slow = TRUE))
+#' }
+#'
+#' @export
+ide <- function(data, inc_slow = FALSE){
+  ls_funcs <- list(Rdimtools::est.boxcount, Rdimtools::est.correlation,
+                   Rdimtools::est.made, Rdimtools::est.mle2,
+                   Rdimtools::est.twonn)
+  nms <- c("est.boxcount", "est.correlation", "est.made", "est.mle2", "est.twonn")
+  if(inc_slow == TRUE){
+    ls_funcs <- c(
+      ls_funcs, list(Rdimtools::est.clustering, Rdimtools::est.danco,
+                     Rdimtools::est.gdistnn, Rdimtools::est.incisingball,
+                     Rdimtools::est.mindkl, Rdimtools::est.Ustat)
+    )
+    nms <- c(nms, "est.clustering", "est.danco", "est.gdistnn",
+             "est.incisingball", "est.mindkl", "est.Ustat")
+  } ## est.incisingball prints histogram...
+  ret <- sapply(1:length(ls_funcs), function(i){
+    tryCatch(ls_funcs[[i]](data)$estdim,
+             error=function(cond){
+               message("Error in an Rdimtools::est.* function (reported as NA)")
+               message(cond)
+               return(NA)
+             })
+  })
+  names(ret) <- c(nms)
+  return(ret)
+}
+
+
 # ### as_history_array ---
 # #' Changes an array of bases into a "history_array" class for use 
 # #' in `tourr::interpolate()`.

@@ -12,16 +12,12 @@
   
   mt   <- manual_tour(bas      , mv, data = dat)
   mt1d <- manual_tour(bas[, 1L], mv, data = dat)
-  .m <- capture.output(
-    gt <- tourr::save_history(dat, guided_tour(holes()), max_bases = 3L)
-  )
-  .m <- capture.output(
-    gt1d <- tourr::save_history(dat, grand_tour(d = 1L),   max_bases = 3L)
-  )
+  gt   <- spinifex::save_history(dat, guided_tour(holes()), max_bases = 3L)
+  gt1d <- spinifex::save_history(dat, grand_tour(d = 1L),   max_bases = 3L)
 }
 
 
-## ggtourr -----
+## ggtourr
 gg_mt   <- ggtour(mt  , angle = 1L) + proto_default()
 gg_gt   <- ggtour(gt  , angle = 1L) + proto_default()
 gg_mt1d <- ggtour(mt1d, angle = 1L) + proto_default1d()
@@ -36,10 +32,10 @@ test_that("ggtourr", {
 ## lapply_rep_len and eval(.init4proto)
 ## will rely on examples for now
 
-## animate_gganimate -----
+## animate_gganimate
 ag_mt   <- animate_gganimate(gg_mt  )
 ag_gt   <- animate_gganimate(gg_gt  )
-# ## removed at v.0.3.7, ran on my env, but not local checks 
+# ## removed at v.0.3.7, ran on my env, but not local(sic, remote?) checks
 #ag_mt1d <- animate_gganimate(gg_mt1d)
 #ag_gt1d <- animate_gganimate(gg_gt1d)
 test_that("animate_gganimate", {
@@ -49,7 +45,7 @@ test_that("animate_gganimate", {
   #expect_equal(class(ag_gt1d) , "gif_image")
 })
 
-## animate_plotly -----
+## animate_plotly
 ap_mt   <- animate_plotly(gg_mt  )
 ap_gt   <- animate_plotly(gg_gt  )
 ap_mt1d <- animate_plotly(gg_mt1d)
@@ -61,7 +57,7 @@ test_that("animate_plotly", {
   expect_equal(class(ap_gt1d), c("plotly", "htmlwidget"))
 })
 
-## filmstrip -----
+## filmstrip
 fs_mt   <- filmstrip(gg_mt  )
 fs_gt   <- filmstrip(gg_gt  )
 fs_mt1d <- filmstrip(gg_mt1d)
@@ -73,7 +69,7 @@ test_that("filmstrip", {
   expect_true(inherits(fs_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
-## proto_basis -----
+## proto_basis
 pb_mt   <- ggtour(mt  , angle = 1L) + proto_basis()
 pb_gt   <- ggtour(gt  , angle = 1L) + proto_basis()
 pb_mt1d <- ggtour(mt1d, angle = 1L) + proto_basis1d()
@@ -85,7 +81,7 @@ test_that("proto_basis/1d", {
   expect_true(inherits(pb_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
-## draw_basis -----
+## draw_basis
 proj <- as.data.frame(dat %*% bas)
 db <- ggplot() +
   geom_point(aes(PC1, PC2), proj) +
@@ -105,7 +101,7 @@ ggplot() +
   draw_basis(bas, proj, "left") +
   theme_spinifex()
 
-## proto_point & density-----
+## proto_point & density
 pp_mt   <- ggtour(mt  , angle = 1L) + proto_point()
 pp_gt   <- ggtour(gt  , angle = 1L) + proto_point()
 pd_mt1d <- ggtour(mt1d, angle = 1L) + proto_density()
@@ -118,7 +114,7 @@ test_that("proto_:point/density", {
   expect_true(inherits(pd_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
-## proto_point & density with row_index & args-----
+## proto_point & density with row_index & args
 pp_mt   <- ggtour(mt  , angle = 1L) +
   proto_point(
     list(color = clas, shape = clas),
@@ -145,7 +141,7 @@ test_that("proto_:point/density", {
 
 
 
-## proto_origin -----
+## proto_origin
 po_mt   <- ggtour(mt,   angle = 1L) + proto_origin()
 po_gt   <- ggtour(gt,   angle = 1L) + proto_origin()
 po_mt1d <- ggtour(mt1d, angle = 1L) + proto_origin1d()
@@ -158,7 +154,7 @@ test_that("proto_origin", {
   expect_true(inherits(po_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
-## proto_text -----
+## proto_text
 pt_mt <- ggtour(mt, angle = 1L) + proto_text()
 pt_gt <- ggtour(gt, angle = 1L) + proto_text()
 test_that("proto_text", {
@@ -167,7 +163,7 @@ test_that("proto_text", {
   expect_true(inherits(pt_gt, c("ggplot", "ggplot2::ggplot")))
 })
 
-## proto_text_repel -----
+## proto_text_repel
 pt_mt <- ggtour(mt, angle = 1L) + proto_text_repel()
 pt_gt <- ggtour(gt, angle = 1L) + proto_text_repel()
 test_that("proto_text", {
@@ -178,7 +174,7 @@ test_that("proto_text", {
   expect_error(animate_plotly(pt_gt))
 })
 
-## proto_hex -----
+## proto_hex
 ph_mt <- ggtour(mt, angle = 1L, data = dat) + proto_hex()
 ph_gt <- ggtour(gt, angle = 1L, data = dat) + proto_hex()
 test_that("proto_hex", {
@@ -187,7 +183,7 @@ test_that("proto_hex", {
   expect_true(inherits(ph_gt, c("ggplot", "ggplot2::ggplot")))
 })
 
-## proto_default -----
+## proto_default
 pd_mt   <- ggtour(mt  , angle = 1L) + proto_default()
 pd_gt   <- ggtour(gt  , angle = 1L) + proto_default()
 pd_mt1d <- ggtour(mt1d, angle = 1L) + proto_default1d()
@@ -200,7 +196,7 @@ test_that("proto_default/1d", {
   expect_true(inherits(pd_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
-## proto_highlight -----
+## proto_highlight
 ph_mt   <- ggtour(mt  , angle = 1L) + proto_highlight(row_index = 1L)
 ph_gt   <- ggtour(gt  , angle = 1L) + proto_highlight(row_index = 1L:2L)
 ph_mt1d <- ggtour(mt1d, angle = 1L) + proto_highlight1d(row_index = 1L:2L)
@@ -213,7 +209,7 @@ test_that("proto_highlight/1d", {
   expect_true(inherits(ph_gt1d, c("ggplot", "ggplot2::ggplot")))
 })
 
-## proto_frame_cor2 -----
+## proto_frame_cor2
 pfc_mt   <- ggtour(mt  , angle = 1L) + proto_frame_cor2(row_index = 1L)
 pfc_gt   <- ggtour(gt  , angle = 1L) + proto_frame_cor2(row_index = 1L:2L)
 test_that("proto_frame_cor2", {
@@ -223,7 +219,7 @@ test_that("proto_frame_cor2", {
   expect_true(inherits(pfc_gt, c("ggplot", "ggplot2::ggplot")))
 })
 
-## append_fixed_y -----
+## append_fixed_y
 afy_mt   <- ggtour(mt  , angle = 1L) + append_fixed_y(1L) + proto_point(row_index = 1L)
 afy_gt   <- ggtour(gt  , angle = 1L) + append_fixed_y(1L) + proto_point(row_index = 1L:2L)
 afy_mt1d <- ggtour(mt1d, angle = 1L) + append_fixed_y(1L) + proto_point(row_index = 1L:2L)
@@ -236,7 +232,7 @@ test_that("append_fixed_y", {
 })
 
 
-## facet_wrap_tour -----
+## facet_wrap_tour
 fwt_mt   <- ggtour(mt  , angle = 1L) + facet_wrap_tour(clas) + proto_point(row_index = 1L)
 fwt_gt   <- ggtour(gt  , angle = 1L) + facet_wrap_tour(clas) + proto_point(row_index = 1L:2L)
 fwt_mt1d <- ggtour(mt1d, angle = 1L) + facet_wrap_tour(clas) + proto_density(row_index = 1L:2L)
@@ -249,7 +245,7 @@ test_that("facet_wrap_tour", {
 })
 
 
-## expect cycle warning ----
+## expect cycle warning
 dat  <- scale_sd(penguins_na.rm[, 1:4]) ## PENG
 clas <- flea$species                    ## FLEAS
 bas  <- matrix(c(1,2,3,4), ncol=1)      ## NON ortho bas
@@ -265,11 +261,11 @@ test_that(".lapply_rep_len cycle check", {
   ))
 })
 
-## plot_pca -----
+## plot_pca
 pp  <- plot_pca(dat)
 pps <- plot_pca_scree(dat)
 test_that("plot_pca", {
   expect_true(inherits(pp, c("ggplot", "ggplot2::ggplot")))
-  expect_equal(class(pps), c("patchwork", "gg", "ggplot"))
+  expect_true(inherits(pps, c("ggplot", "ggplot2::ggplot")))
 })
 

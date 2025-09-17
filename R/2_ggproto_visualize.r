@@ -567,25 +567,24 @@ animate_plotly <- function(
 ){
   if(is_any_layer_class(ggtour, "GeomTextRepel"))
     stop("geom_text_repel not implemented in plotly, try animate_gganimate().")
-  if(class(ggtour)[1L] == "gg"){
-    ## If ggplot
-    if(length(ggtour$layers) == 0L) ## plotly subplots, have NULL layers
-      stop("No layers found, did you forget to add a proto_*?")
-    ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
-    #### Adding many protos is liable to break plotly animations, see above url.
-    ggtour <- ggtour + ggplot2::theme(
-      ## Avoid plotly warnings
-      legend.direction = "vertical", ## horizontal legends not supported
-      aspect.ratio     = NULL)       ## aspect.ratio not supported
-    ## ggplotly without animation settings
-    ggp <- plotly::ggplotly(ggtour, tooltip = "tooltip", ...)
-    ## If density used widen
-    if(is_any_layer_class(ggtour, class_nm = "GeomDensity"))
-      #<add plotly aspect ratio to ggp>
-      ggp <- plotly::layout(
-        ggp, xaxis = list(scaleratio = 2)) ## 2x width
-    ## else plotly::subplot
-  }else ggp <- ggtour
+  
+  ## If ggplot
+  if(length(ggtour$layers) == 0L) ## plotly subplots, have NULL layers
+    stop("No layers found, did you forget to add a proto_*?")
+  ## Frame asymmetry issue: https://github.com/ropensci/plotly/issues/1696
+  #### Adding many protos is liable to break plotly animations, see above url.
+  ggtour <- ggtour + ggplot2::theme(
+    ## Avoid plotly warnings
+    legend.direction = "vertical", ## horizontal legends not supported
+    aspect.ratio     = NULL)       ## aspect.ratio not supported
+  ## ggplotly without animation settings
+  ggp <- plotly::ggplotly(ggtour, tooltip = "tooltip", ...)
+  ## If density used widen
+  if(is_any_layer_class(ggtour, class_nm = "GeomDensity"))
+    #<add plotly aspect ratio to ggp>
+    ggp <- plotly::layout(
+      ggp, xaxis = list(scaleratio = 2)) ## 2x width
+  
   
   ## ggplotly settings, animated or static from ggplot or subplot
   ggp <- ggp %>%

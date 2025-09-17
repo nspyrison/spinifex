@@ -213,7 +213,7 @@ if(FALSE){
 ![](https://github.com/nspyrison/spinifex/blob/master/vignettes/proto_guided1d_penguins.gif?raw=true)
 
 
-### Interation with ggplot2 functions
+### Interaction with ggplot2 functions
 
 Because the output of `ggtour() + proto_\*` is a ggplot, themes and setting functions are interoperable.
 
