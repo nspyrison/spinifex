@@ -26,3 +26,15 @@ pkgs <- c(
 
 ### grab most recent CRAN ver.
 pak::pak(pkgs)
+
+
+## Development build and check reminder
+if(F){
+  devtools::document()
+  devtools::build()
+  devtools::check()
+  
+  rhub::rhub_check()
+  
+  devtools::submit_cran()
+}
